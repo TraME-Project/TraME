@@ -1,0 +1,36 @@
+################################################################################
+##
+##   Copyright (C) 2015 - 2016 Alfred Galichon
+##
+##   This file is part of the R package TraME.
+##
+##   The R package TraME free software: you can redistribute it and/or modify
+##   it under the terms of the GNU General Public License as published by
+##   the Free Software Foundation, either version 2 of the License, or
+##   (at your option) any later version.
+##
+##   The R package BMR is distributed in the hope that it will be useful,
+##   but WITHOUT ANY WARRANTY; without even the implied warranty of
+##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##   GNU General Public License for more details.
+##
+##   You should have received a copy of the GNU General Public License
+##   along with TraME. If not, see <http://www.gnu.org/licenses/>.
+##
+################################################################################
+
+parametricMarket <- function(model, ...) UseMethod("parametricMarket")
+
+initparam <- function(model, ...) UseMethod("initparam")
+
+initparam.default <- function(model)
+{
+    ret = list(param=rep(0,model$nbParams),
+               lb = NULL, ub = NULL)
+}
+
+dparam <- function(model, ...) UseMethod("dparam")
+
+estimate <- function(model, ...) UseMethod("estimate")
+
+estimate.default = mle
