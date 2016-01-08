@@ -1,4 +1,4 @@
-## TraME
+# TraME
 
 Transportation Methods for Econometrics
 
