@@ -4,12 +4,12 @@
 ##
 ##   This file is part of the R package TraME.
 ##
-##   The R package TraME free software: you can redistribute it and/or modify
+##   The R package TraME is free software: you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 2 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package BMR is distributed in the hope that it will be useful,
+##   The R package TraME is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
@@ -24,7 +24,7 @@ test_Logit <- function(nbDraws=1E4, seed=777, outsideOption=TRUE)
     set.seed(seed)
     ptm = proc.time()
     #
-    print('Start of testLogit...') # Keith: change to message
+    message('*===================   Start of testLogit   ===================*\n')
     #
     U = matrix(c(1.6, 3.2, 1.1, 2.9, 1.0, 3.1),nrow=2,byrow=TRUE)
     mu = matrix(c(1, 3, 1, 2, 1, 3), nrow=2, byrow=TRUE)
@@ -41,15 +41,16 @@ test_Logit <- function(nbDraws=1E4, seed=777, outsideOption=TRUE)
     resGSim = G(logitsSim,U,n)
     resGstarSim = Gstar(logitsSim,resGSim$mu,n)
     #
-    print("(i) U and \nabla G*(\nabla G(U)) in (ii) cf and (iii) simulated logit:")
+    message("(i) U and \\nabla G*(\\nabla G(U)) in (ii) cf and (iii) simulated logit:")
     print(c(U))
     print(c(resGstar$U))
     print(c(resGstarSim$U))
     
-    print("G(U) in (i) cf and (ii) simulated logit:")
+    message("\nG(U) in (i) cf and (ii) simulated logit:")
     print(resG$val)
     print(resGSim$val)
-    print("G*(mu) in (i) cf and (ii) simulated logit:")
+    
+    message("\nG*(mu) in (i) cf and (ii) simulated logit:")
     print(resGstar$val)
     print(resGstarSim$val)
     #
@@ -58,13 +59,13 @@ test_Logit <- function(nbDraws=1E4, seed=777, outsideOption=TRUE)
         resGbar = Gbar(logits,U,n,mubar)
         resGbarS = Gbar(logitsSim,U,n,mubar)
         
-        print("Gbar(mu) in (i) cf and (ii) simulated logit")
+        message("\nGbar(mu) in (i) cf and (ii) simulated logit:")
         print(resGbar$val)
         print(resGbarS$val)
     }
     #
     time = proc.time() - ptm
-    print(paste0('End of testLogit. Time elapsed=', time["elapsed"], 's.')) 
+    message(paste0('\nEnd of testLogit. Time elapsed = ', time["elapsed"], 's.\n')) 
 }
 
 test_Probit <- function(nbDraws=1E4, seed=777, outsideOption=TRUE)
@@ -72,7 +73,7 @@ test_Probit <- function(nbDraws=1E4, seed=777, outsideOption=TRUE)
     set.seed(seed)
     ptm = proc.time()
     #
-    print('Start of testProbit...')
+    message('*===================   Start of testProbit   ===================*\n')
     #
     U = matrix(c(1.6, 3.2, 1.1, 2.9, 1.0, 3.1),nrow=2,byrow=T)
     mu = matrix(c(1, 3, 1, 2, 1, 3), nrow=2, byrow=T)
@@ -90,12 +91,12 @@ test_Probit <- function(nbDraws=1E4, seed=777, outsideOption=TRUE)
     resGSim = G(probitsSim,U,n)
     resGstarSim = Gstar(probitsSim,resGSim$mu,n)
     #
-    print("(i) U and \nabla G*(\nabla G(U)) in simulated probit:")
+    message("(i) U and \\nabla G*(\\nabla G(U)) in simulated probit:")
     print(c(U))
     print(c(resGstarSim$U))
     #
     time = proc.time() - ptm
-    print(paste0('End of testProbit. Time elapsed=', time["elapsed"], 's.')) 
+    message(paste0('\nEnd of testProbit. Time elapsed = ', time["elapsed"], 's.\n')) 
     
 }
 
@@ -104,7 +105,7 @@ test_RUSC <- function(nbDraws=1E4,seed=NULL)
     set.seed(seed)
     ptm = proc.time()
     #
-    print('Start of test_RUSC...')
+    message('*===================   Start of test_RUSC   ===================*\n')
     #
     U = matrix(c(1.6, 3.2, 1.1, 2.9, 1.0, 3.1),nrow=2,byrow=T)
     mu = matrix(c(1, 3, 1, 2, 1, 3), nrow=2, byrow=T)
@@ -123,16 +124,16 @@ test_RUSC <- function(nbDraws=1E4,seed=NULL)
     r2 = Gstar(RUSCs,r1$mu,n)
     r2Sim = Gstar(RUSCsSim,r1Sim$mu,n)
     #
-    print("G(U) in (i) cf and (ii) simulated RUSC:")
+    message("G(U) in (i) cf and (ii) simulated RUSC:")
     print(c(r1$val))
     print(c(r1Sim$val))  
     #
-    print("\nabla G(U) in (i) cf and (ii) simulated RUSC:")
+    message("\n\\nabla G(U) in (i) cf and (ii) simulated RUSC:")
     print(c(r1$mu))
     print(c(r1Sim$mu))  
     #
-    print("(i) U and \nabla G*(\nabla G(U)) in (ii) cf and (iii) simulated RUSC:")
-    print("(Note: in RUSC, (ii) should be approx equal to (iii) but not to (i)")
+    message("\n(i) U and \\nabla G*(\\nabla G(U)) in (ii) cf and (iii) simulated RUSC:")
+    message("(Note: in RUSC, (ii) should be approx equal to (iii) but not to (i).)")
     print(c(U))
     print(c(r2$U))
     print(c(r2Sim$U))
@@ -140,16 +141,16 @@ test_RUSC <- function(nbDraws=1E4,seed=NULL)
     r3 = Gstar(RUSCs,mu,n)
     r3Sim = Gstar(RUSCsSim,mu,n)
     #
-    print("\nabla G*(mu) in (i) closed form and (ii) simulated RUSC")
+    message("\n\\nabla G*(mu) in (i) closed form and (ii) simulated RUSC:")
     print(c(r3$U))
     print(c(r3Sim$U))
-    print("G*(mu) in (i) closed form and (ii) simulated RUSC:")
+    message("\nG*(mu) in (i) closed form and (ii) simulated RUSC:")
     print(c(r3$val))
     print(c(r3Sim$val))
     #
     r4 = G (RUSCs,r3$U, n)
     r4Sim = G (RUSCsSim,r3Sim$U,n)
-    print("\nabla G \nabla G*(mu) in (i) closed form and (ii) simulated RUSC")
+    message("\n\\nabla G \\nabla G*(mu) in (i) closed form and (ii) simulated RUSC:")
     print(c(r4$mu))
     print(c(r4Sim$mu))
     #
@@ -157,15 +158,15 @@ test_RUSC <- function(nbDraws=1E4,seed=NULL)
     r5 = Gbar(RUSCs,U,n,mubar)
     r5Sim = Gbar(RUSCsSim,U,n,mubar)
     #
-    print("Gbar(U,mubar) in (i) cf and (ii) simulated RUSC:")
+    message("\nGbar(U,mubar) in (i) cf and (ii) simulated RUSC:")
     print(r5$val)
     print(r5Sim$val)
-    print("\nabla Gbar(U,mubar) in (i) cf and (ii) simulated RUSC:")
+    message("\n\\nabla Gbar(U,mubar) in (i) cf and (ii) simulated RUSC:")
     print(c(r5$mu))
     print(c(r5Sim$mu))
     #
     time = proc.time()-ptm
-    print(paste0('End of test_RUSC. Time elapsed=', time["elapsed"], 's.')) 
+    message(paste0('\nEnd of test_RUSC. Time elapsed = ', time["elapsed"], 's.\n')) 
 }
 
 test_RSC <- function(nbDraws=1E4,seed=NULL)
@@ -173,7 +174,7 @@ test_RSC <- function(nbDraws=1E4,seed=NULL)
     set.seed(seed)
     ptm = proc.time()
     #
-    print('Start of test_RSC...')
+    message('*===================   Start of test_RSC   ===================*\n')
     #
     U = matrix(c(1.6, 3.2, 1.1, 2.9, 1.0, 3.1),nrow=2,byrow=TRUE)
     mu = matrix(c(1, 3, 1, 2, 1, 3), nrow=2, byrow=TRUE)
@@ -193,16 +194,16 @@ test_RSC <- function(nbDraws=1E4,seed=NULL)
     r2 = Gstar(RSCs,r1$mu,n)
     r2Sim = Gstar(RSCsSim,r1Sim$mu,n)
     #
-    print("G(U) in (i) cf and (ii) simulated RSC:")
+    message("G(U) in (i) cf and (ii) simulated RSC:")
     print(c(r1$val))
     print(c(r1Sim$val))  
     #
-    print("\nabla G(U) in (i) cf and (ii) simulated RSC:")
+    message("\n\\nabla G(U) in (i) cf and (ii) simulated RSC:")
     print(c(r1$mu))
     print(c(r1Sim$mu))  
     #
-    print("(i) U and \nabla G*(\nabla G(U)) in (ii) cf and (iii) simulated RSC:")
-    print("(Note: in RSC, (ii) should be approx equal to (iii) but not to (i)")
+    message("\n(i) U and \\nabla G*(\\nabla G(U)) in (ii) cf and (iii) simulated RSC:")
+    message("(Note: in RSC, (ii) should be approx equal to (iii) but not to (i).)")
     print(c(U))
     print(c(r2$U))
     print(c(r2Sim$U))
@@ -210,19 +211,19 @@ test_RSC <- function(nbDraws=1E4,seed=NULL)
     r3 = Gstar (RSCs,mu, n)
     r3Sim = Gstar (RSCsSim,mu,n)
     #
-    print("\nabla G*(mu) in (i) closed form and (ii) simulated RSC")
+    message("\n\\nabla G*(mu) in (i) closed form and (ii) simulated RSC:")
     print(c(r3$U))
     print(c(r3Sim$U))
-    print("G*(mu) in (i) closed form and (ii) simulated RSC:")
+    message("\nG*(mu) in (i) closed form and (ii) simulated RSC:")
     print(c(r3$val))
     print(c(r3Sim$val))
-    print("nabla G*(mu) in (i) closed form and (ii) simulated RSC:")
+    message("\n\\nabla G*(mu) in (i) closed form and (ii) simulated RSC:")
     print(r3$U)
     print(r3Sim$U)
     #
     r4 = G (RSCs,r3$U, n)
     r4Sim = G (RSCsSim,r3Sim$U,n)
-    print("\nabla G \nabla G*(mu) in (i) closed form and (ii) simulated RSC")
+    message("\n\\nabla G \\nabla G*(mu) in (i) closed form and (ii) simulated RSC:")
     print(c(r4$mu))
     print(c(r4Sim$mu))
     #
@@ -230,22 +231,22 @@ test_RSC <- function(nbDraws=1E4,seed=NULL)
     r5 = Gbar(RSCs,U,n,mubar)
     r5Sim = Gbar(RSCsSim,U,n,mubar)
     #
-    print("Gbar(U,mubar) in (i) cf and (ii) simulated RSC:")
+    message("\nGbar(U,mubar) in (i) cf and (ii) simulated RSC:")
     print(r5$val)
     print(r5Sim$val)
-    print("\nabla Gbar(U,mubar) in (i) cf and (ii) simulated RSC:")
+    message("\n\\nabla Gbar(U,mubar) in (i) cf and (ii) simulated RSC:")
     print(c(r5$mu))
     print(c(r5Sim$mu))
     #
     hess = D2Gstar.RSC(RSCs,mu,n)
     thef = function(themu) (Gstar(RSCs,themu,n)$val)
     hessNum = hessian(thef,mu)
-    print("D^2G^* (i) in cf and (ii) using numerical hessian")
+    message("\nD^2G^* (i) in cf and (ii) using numerical hessian:")
     print(hess)
     print(round(hessNum,6))
     #
     time = proc.time()-ptm
-    print(paste0('End of test_RSC. Time elapsed=', time["elapsed"], 's.')) 
+    message(paste0('\nEnd of test_RSC. Time elapsed = ', time["elapsed"], 's.\n')) 
 }
 
 tests_arum <- function(notifications=TRUE)
@@ -260,6 +261,6 @@ tests_arum <- function(notifications=TRUE)
     time = proc.time() - ptm
     #
     if(notifications){
-        print(paste0('All tests of arum completed. Overall time elapsed=', time["elapsed"], 's.'))
+        message(paste0('All tests of arum completed. Overall time elapsed = ', time["elapsed"], 's.'))
     }
 }

@@ -4,12 +4,12 @@
 ##
 ##   This file is part of the R package TraME.
 ##
-##   The R package TraME free software: you can redistribute it and/or modify
+##   The R package TraME is free software: you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 2 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package BMR is distributed in the hope that it will be useful,
+##   The R package TraME is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
@@ -39,7 +39,7 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     }
     #
     if(notifications){ # Keith: change this to 'message' format
-        print('Solving for equilibrium in ITU_logit problem using IPFP') 
+        message('Solving for equilibrium in ITU_logit problem using IPFP.') 
     }
     if((class(market$hetG)!="logit") || (class(market$hetH)!="logit")){
         stop("Error: Heterogeneities are not all logit.")
@@ -87,12 +87,12 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
         
         error = abs(c(mux0,mu0y)-val)
         if(debugmode & notifications){
-            print(paste0("Iter: ", iter, "Error: ", max(error)))
+            message(paste0("Iter: ", iter, ". Error: ", max(error)))
         }
     }
     #
     if(notifications){
-        print(paste0("IPFP converged in ", iter," iterations."))
+        message(paste0("IPFP converged in ", iter," iterations.\n"))
     }
     # Construct the equilibrium outcome based on mux0 and mu0y obtained from above
     mu = MMF(tr,mux0,mu0y, sigma=sigma)  
@@ -116,7 +116,7 @@ newton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e-5,
         stop("Newton does not allow for the case without unmatched agents")
     }
     if(notifications){
-        print('Solving for equilibrium in ITU_general problem using Newton descent.')
+        message('Solving for equilibrium in ITU_general problem using Newton descent.\n')
     }
     #
     n = market$n
@@ -234,7 +234,7 @@ jacobi <- function(market, xFirst=TRUE, notifications=TRUE, wlow=NULL, wup=NULL,
         stop("Jacobi does not yet allow for the case without unmatched agents.")
     }
     if(notifications){
-        print('Solving for equilibrium in ITU_general problem using Jacobi iterations.')
+        message('Solving for equilibrium in ITU_general problem using Jacobi iterations.')
     }
     #
     n = market$n
@@ -297,7 +297,7 @@ jacobi <- function(market, xFirst=TRUE, notifications=TRUE, wlow=NULL, wup=NULL,
     }
     #
     if(notifications){
-        print(paste0("Jacobi iteration converged in ", iter," iterations."))
+        message(paste0("Jacobi iteration converged in ", iter," iterations.\n"))
     }
     #
     mu = G(hetG,U,n)$mu  
@@ -320,7 +320,7 @@ maxWelfare <- function(market, xFirst=TRUE, notifications=FALSE, tol_rel=1e-8)
         stop("maxWelfare only works for TU transfers.")
     }
     if(notifications){
-        print('Solving for equilibrium in TU_general problem using convex optimization.')
+        message('Solving for equilibrium in TU_general problem using convex optimization.\n')
     }
     #
     nbX = length(market$n)
@@ -374,7 +374,7 @@ darum <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8)
         stop("darum only works for NTU transfers.")
     }
     if(notifications){
-        print('Solving for equilibrium in NTU_general problem using DARUM.')
+        message('Solving for equilibrium in NTU_general problem using DARUM.')
     }
     #
     alpha = market$transfers$alpha
@@ -408,7 +408,7 @@ darum <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8)
     }
     #
     if(notifications){
-        print(paste0("Darum iteration converged in ", iter," iterations."))
+        message(paste0("Darum iteration converged in ", iter," iterations.\n"))
     }
     #
     mux0 = n-apply(muD,1,sum)
@@ -462,7 +462,7 @@ CupidsLP <- function(market, xFirst=TRUE, notifications=FALSE)
         stop("cupidsLP only works for TU-empirical markets.")
     }
     if(notifications){
-        print('Solving for equilibrium in TU_empirical problem using LP.')
+        message('Solving for equilibrium in TU_empirical problem using LP.\n')
     }
     #
     nbX = length (market$n)
@@ -490,13 +490,13 @@ CupidsLP <- function(market, xFirst=TRUE, notifications=FALSE)
     #
     # based on this, can compute aggregated equilibrium in LP 
     #
-    A_11 = kronecker(matrix(1,nbY,1),sparseMatrix(1:nbI,1:nbI,x=1))
+    A_11 = suppressMessages( Matrix::kronecker(matrix(1,nbY,1),sparseMatrix(1:nbI,1:nbI,x=1)) )
     A_12 = sparseMatrix(i=NULL,j=NULL,dims=c(nbI*nbY,nbJ),x=0)
-    A_13 = kronecker(sparseMatrix(1:nbY,1:nbY,x=-1),I_ix)
+    A_13 = suppressMessages( Matrix::kronecker(sparseMatrix(1:nbY,1:nbY,x=-1),I_ix) )
     
     A_21 = sparseMatrix(i=NULL,j=NULL,dims=c(nbX*nbJ,nbI),x=0)
-    A_22 = kronecker(sparseMatrix(1:nbJ,1:nbJ,x=1),matrix(1,nbX,1))
-    A_23 = kronecker(t(I_yj),sparseMatrix(1:nbX,1:nbX,x=1))
+    A_22 = suppressMessages( Matrix::kronecker(sparseMatrix(1:nbJ,1:nbJ,x=1),matrix(1,nbX,1)) )
+    A_23 = suppressMessages( Matrix::kronecker(t(I_yj),sparseMatrix(1:nbX,1:nbX,x=1)) )
     
     A_1  = cbind(A_11,A_12,A_13)
     A_2  = cbind(A_21,A_22,A_23)
@@ -545,7 +545,7 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
         stop("oapLP only works for TU transfers.")
     }
     if(notifications){
-        print('Solving for equilibrium in TU_none problem using Linear Programming.')
+        message('Solving for equilibrium in TU_none problem using Linear Programming.\n')
     }
     #
     phi = market$transfers$phi
@@ -554,8 +554,8 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
     
     c = c(phi) # Keith: change this!!!
     
-    A1 = kronecker(matrix(1,1,M),sparseMatrix(1:N,1:N))
-    A2 = kronecker(sparseMatrix(1:M,1:M),matrix(1,1,N))
+    A1 = Matrix::kronecker(matrix(1,1,M),sparseMatrix(1:N,1:N))
+    A2 = Matrix::kronecker(sparseMatrix(1:M,1:M),matrix(1,1,N))
     A = rbind2(A1,A2)
     
     d = c(market$n,market$m)
@@ -674,7 +674,7 @@ eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmod
     OutputFlag = 0  #ifelse(notifications,1,0)
     #
     if(notifications){
-        print('Solving for equilibrium in ITU_none problem using Nash-ITU.')
+        message('Solving for equilibrium in ITU_none problem using Nash-ITU.')
     }
     if(xFirst){
         vcur = vfromus(tr,rep(0,nbX))$v
@@ -682,7 +682,7 @@ eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmod
         vcur = rep(0,nbY)
     }
     if(notifications & debugmode){
-        print(c("vcur=",round(vcur,nb_digits)))
+        message(c("vcur = ",round(vcur,nb_digits)))
     }
     #
     iter = 0
@@ -695,7 +695,7 @@ eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmod
         }
         vcur = vnext
         if(notifications & debugmode){
-            print(c("vcur=",round(vcur,nb_digits)))
+            message(c("vcur = ",round(vcur,nb_digits)))
         }
         #
         iter = iter+1
@@ -704,14 +704,14 @@ eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmod
     v = vcur
     #
     if(notifications){
-        print(paste0("Nash-ITU converged in ",iter," iterations."))
+        message(paste0("Nash-ITU converged in ",iter," iterations."))
     }
     #
     res = ufromvs(tr,v,tol)
     u = res$u
     
-    A1 = kronecker(matrix(1,1,nbY),sparseMatrix(1:nbX,1:nbX))
-    A2 = kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,1,nbX))
+    A1 = Matrix::kronecker(matrix(1,1,nbY),sparseMatrix(1:nbX,1:nbX))
+    A2 = Matrix::kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,1,nbX))
     A = rbind2(A1,A2)
     
     sense = ifelse(abs(c(u,v) - 0) < tol, "<", "=")
@@ -733,24 +733,18 @@ eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmod
     #
     if(min( c(res$subdiff,(abs(u)<tol),(abs(v)<tol)) >= c((mu>0),(mux0>0),(mu0y>0)) )==0){
         if(notifications){
-            print("Equilibrium not found.")
-            print("mu=")
-            print((mu))
-            print("Psi_xy(u_x,v_y)=")
-            print(round((residuals),2))
-            print("mux0=")
-            print(mux0)
-            print("u(x)")
-            print(u)
-            print("mu0y=")
-            print(mu0y)
-            print("v(y)")
-            print(v)
+            message("Equilibrium not found.")
+            message(paste0("mu = ",mu))
+            message(paste0("Psi_xy(u_x,v_y) = ", round((residuals),2)))
+            message(paste0("mux0 = ",mux0))
+            message(paste0("u(x) = ",u))
+            message(paste0("mu0y = ",mu0y))
+            message(paste0("v(y) = ",v,"\n"))
         }
         outcome$success = FALSE
     }else{
         if(notifications){
-            print("Equilibrium found.")
+            message("Equilibrium found.\n")
         }
     }
     #

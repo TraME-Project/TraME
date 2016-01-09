@@ -4,12 +4,12 @@
 ##
 ##   This file is part of the R package TraME.
 ##
-##   The R package TraME free software: you can redistribute it and/or modify
+##   The R package TraME is free software: you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 2 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package BMR is distributed in the hope that it will be useful,
+##   The R package TraME is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
@@ -181,7 +181,7 @@ mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y)
 mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_level=0)
 {
     if(print_level > 0){
-        print(paste0("Maximum Likelihood Estimation of ",class(model)," model."))
+        message(paste0("Maximum Likelihood Estimation of ",class(model)," model."))
     }
     #
     muhatx0  = model$n-apply(muhat,1,sum)
@@ -207,7 +207,7 @@ mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_lev
                  muhat0y=muhat0y)
     #
     if(print_level > 0){
-        print(resopt, show.controls=((1+nbX*nbY):(nbParams+nbX*nbY)))
+        print(res, show.controls=((1+nbX*nbY):(nbParams+nbX*nbY)))
     }
     #
     return(list(thetahat=res$solution))
@@ -216,7 +216,7 @@ mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_lev
 MomentMatchingTUSmooth <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
     if(print_level>0){
-        print(paste0("BFGS optimization used."))
+        message("BFGS optimization used.")
     }
     #
     nbX = length(n)
@@ -271,7 +271,7 @@ MomentMatchingTUSmooth <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol_re
 MomentMatchingTUEmpirical <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
     if (print_level>0){
-        print(paste0("LP optimization used."))
+        message("LP optimization used.")
     }
     #
     nbX = length (n)
@@ -350,7 +350,7 @@ MomentMatchingTUEmpirical <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol
 MomentMatchingTUNone <- function(n, m, kron, Chat, print_level=0)
 {
     if(print_level > 0){
-        print(paste0("LP optimization used."))
+        message("LP optimization used.")
     }
     #
     nbX = length (n)
@@ -400,7 +400,7 @@ MomentMatchingTUNone <- function(n, m, kron, Chat, print_level=0)
 mme <- function(model,muhat, print_level=0)
 {
     if(print_level>0){
-        print(paste0("Moment Matching Estimation of ",class(model)," model."))
+        message(paste0("Moment Matching Estimation of ",class(model)," model."))
     }
     #
     theta0 = initparam(model)$param

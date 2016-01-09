@@ -4,12 +4,12 @@
 ##
 ##   This file is part of the R package TraME.
 ##
-##   The R package TraME free software: you can redistribute it and/or modify
+##   The R package TraME is free software: you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 2 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package BMR is distributed in the hope that it will be useful,
+##   The R package TraME is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
@@ -85,5 +85,5 @@ tests_TraME <- function(withGurobi=TRUE){
     tests_equilibrium(notifications=FALSE)
     tests_estimation(notifications=FALSE)
     time = proc.time() - ptm
-    print(paste0('All tests completed. Overall time elapsed=', time["elapsed"], 's.'))
+    message(paste0('All tests completed. Overall time elapsed=', time["elapsed"], 's.'))
 }

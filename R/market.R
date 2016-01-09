@@ -4,12 +4,12 @@
 ##
 ##   This file is part of the R package TraME.
 ##
-##   The R package TraME free software: you can redistribute it and/or modify
+##   The R package TraME is free software: you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 2 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package BMR is distributed in the hope that it will be useful,
+##   The R package TraME is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
@@ -30,8 +30,8 @@ marketTranspose <- function(market)
     names = names(market)
     # here, transpose additional elements; add 1 to add each time
     if(length(names) > 5 + add){
-        print("Warning: in bipartite market transposition, 
-              some elements have not been copied.")
+        message("Warning: in bipartite market transposition, 
+         some elements have not been copied.")
     }
     #
     return(structure(thelist,class=class(market)))
@@ -102,7 +102,7 @@ outcomeTranspose <- function(outcome)
         thelist$residuals = outcome$residuals
     }  
     if(length(outcome) > nbElts){
-        print("Warning: in outcome transposition, some elements have not been copied.")
+        message("Warning: in outcome transposition, some elements have not been copied.")
     }
     #
     return(structure(thelist))
@@ -130,7 +130,7 @@ margxInv <- function(xs, mkt, ...) UseMethod("margxInv",mkt)
 
 margxInv.default <- function(xs, mkt, Mu0ys, sigma=1) 
 {
-    print("hello default") # Keith: should this be here?
+    message("hello default") # Keith: should this be here?
     coeff = ifelse(is.null(mkt$neededNorm),1,0)
     #
     if(is.null(xs)){

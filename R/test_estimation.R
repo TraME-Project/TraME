@@ -4,12 +4,12 @@
 ##
 ##   This file is part of the R package TraME.
 ##
-##   The R package TraME free software: you can redistribute it and/or modify
+##   The R package TraME is free software: you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 2 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package BMR is distributed in the hope that it will be useful,
+##   The R package TraME is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
@@ -19,12 +19,12 @@
 ##
 ################################################################################
 
-test_loglikelihood = function(seed=777, nbX=5, nbY=4, dX=3, dY=2)
+test_loglikelihood <- function(seed=777, nbX=5, nbY=4, dX=3, dY=2)
 {  
     set.seed(seed)
     tm = proc.time()
     #
-    print('Start of test_loglikelihood...')
+    message('*===================   Start of test_loglikelihood   ===================*\n')
     #
     n = rep(1,nbX)
     m = rep(1,nbY)  
@@ -54,15 +54,15 @@ test_loglikelihood = function(seed=777, nbX=5, nbY=4, dX=3, dY=2)
     tsf = proc.time()  
     #mudmu = dtheta_mu_default(affinitymodel,market,theta0,dtheta)
     mudmu = dtheta_mu_default(affinitymodel,market,theta0)
-    print(paste0('Time elapsed - general: ', (proc.time()-tsf)["elapsed"], 's.')) 
+    message(paste0('Time elapsed - general: ', round((proc.time()-tsf)["elapsed"],5), 's.')) 
     #
     tsf = proc.time()  
     dmunum = dtheta_mu_numeric(affinitymodel,market,theta0,dtheta)
-    print(paste0('Time elapsed - numerical: ', (proc.time()-tsf)["elapsed"], 's.')) 
+    message(paste0('Time elapsed - numerical: ', round((proc.time()-tsf)["elapsed"],5), 's.')) 
     #
     tsf = proc.time()    
     dmulogit=dtheta_mu_logit(affinitymodel,market,theta0,dtheta)
-    print(paste0('Time elapsed - logit: ', (proc.time()-tsf)["elapsed"], 's.')) 
+    message(paste0('Time elapsed - logit: ', round((proc.time()-tsf)["elapsed"],5), 's.')) 
     #
     mu = mudmu$mu 
     #
@@ -76,7 +76,7 @@ test_loglikelihood = function(seed=777, nbX=5, nbY=4, dX=3, dY=2)
     print(gradLLnum)
     #
     time = proc.time() - tm  
-    print(paste0('End of test_loglikelihood. Time elapsed=', time["elapsed"], 's.')) 
+    message(paste0('\nEnd of test_loglikelihood. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
 }
 
 test_mle <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
@@ -84,7 +84,7 @@ test_mle <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     set.seed(seed)
     tm = proc.time()
     #
-    print('Start of test_mle...')
+    message('*===================   Start of test_mle   ===================*\n')
     #
     n = rep(1,nbX)
     m = rep(1,nbY)  
@@ -108,11 +108,11 @@ test_mle <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     affinitymodel = buildModel_affinity(xs,ys,n,m)
     thetahat = mle(affinitymodel,muhat, print_level=0)$thetahat
     #
-    print("Estimator")
+    message("Estimator:")
     print(thetahat)
     #
     time = proc.time() - tm
-    print(paste0('End of test_mle. Time elapsed=', time["elapsed"], 's.')) 
+    message(paste0('\nEnd of test_mle. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
     #
     return(thetahat)
 }
@@ -122,7 +122,7 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     set.seed(seed)
     tm = proc.time()
     #
-    print('Start of test_mle...')
+    message('*===================   Start of test_mle   ===================*\n')
     #
     n = rep(1,nbX)
     m = rep(1,nbY)  
@@ -146,11 +146,11 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     affinitymodel = buildModel_affinity(xs,ys,n,m)
     thetahat = mme(affinitymodel,muhat, print_level=0)$thetahat
     #
-    print("Estimator")
+    message("Estimator:")
     print(thetahat)  
     #
     time = proc.time() - tm  
-    print(paste0('End of test_mle. Time elapsed=', time["elapsed"], 's.')) 
+    message(paste0('\nEnd of test_mle. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
     #
     return(thetahat)
 }
@@ -188,7 +188,7 @@ tests_estimation = function(notifications=T)
     #
     time = proc.time() - ptm
     if(notifications){
-        print(paste0('All tests of Estimation completed. Overall time elapsed=', time["elapsed"], 's.'))
+        message(paste0('All tests of Estimation completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
     }
     
 }
