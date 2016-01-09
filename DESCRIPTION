@@ -7,9 +7,8 @@ Author: Alfred Galichon <ag133@nyu.edu>
 Maintainer: Alfred Galichon <ag133@nyu.edu>
 Description: A package for for solving problems of equilibrium computation and estimation via the Mass Transportation Approach.
 License: GPL (>=2)
-Depends: R (>= 3.2.0), Rcpp (>= 0.12.2), rootSolve, Matrix, numDeriv, nloptr, nleqslv, snow, snowfall
+Depends: R (>= 3.2.0), rootSolve, Matrix, numDeriv, nloptr, nleqslv, snow, snowfall
 Suggests: gurobi
-LinkingTo: Rcpp, RcppArmadillo (>= 0.6.400.2)
 Collate:
   equilibrium.R
   estimation.R
