@@ -24,6 +24,7 @@ install_github("TraME-Project/TraME")
 The TraME test routines are invoked as follows:
 ```
 library(TraME)
+library(gurobi)
 tests_TraME()
 ```
 
