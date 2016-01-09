@@ -13,13 +13,18 @@ demand and matching frameworks via the Mass Transportation Approach.
 The package is under active development and should be considered as
 `alpha stage' software.
 
-### Installation
+### Installation and Testing
 
 The quickest way to install TraME is via the devtools package.
 ```
 install.packages("devtools")
 library(devtools)
 install_github("TraME-Project/TraME")
+```
+To check if the package installed correctly, try running:
+```
+library(TraME)
+tests_TraME()
 ```
 
 ### Authors
