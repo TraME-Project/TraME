@@ -21,7 +21,7 @@ install.packages("devtools")
 library(devtools)
 install_github("TraME-Project/TraME")
 ```
-To check if the package installed correctly, try running:
+The TraME test routines are invoked as follows:
 ```
 library(TraME)
 tests_TraME()
