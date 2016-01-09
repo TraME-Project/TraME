@@ -4,12 +4,12 @@
 ##
 ##   This file is part of the R package TraME.
 ##
-##   The R package TraME free software: you can redistribute it and/or modify
+##   The R package TraME is free software: you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 2 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package BMR is distributed in the hope that it will be useful,
+##   The R package TraME is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
@@ -21,14 +21,14 @@
 
 buildModel_etu <- function(Xvals, Yvals, n=NULL, m=NULL)
 {
-    nbX=dim(t(t(Xvals)))[1]
-    nbY=dim(t(t(Yvals)))[1]
+    nbX = dim(t(t(Xvals)))[1]
+    nbY = dim(t(t(Yvals)))[1]
     #
-    dX=dim(t(t(Xvals)))[2]
-    dY=dim(t(t(Yvals)))[2]
+    dX = dim(t(t(Xvals)))[2]
+    dY = dim(t(t(Yvals)))[2]
     #
-    eX =matrix(rep(1,nbX),ncol=1)
-    eY =matrix(rep(1,nbY),ncol=1)
+    eX = matrix(rep(1,nbX),ncol=1)
+    eY = matrix(rep(1,nbY),ncol=1)
     #
     diff = abs(kronecker(eY,Xvals)-kronecker(Yvals,eX))
     #

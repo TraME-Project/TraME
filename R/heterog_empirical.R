@@ -4,12 +4,12 @@
 ##
 ##   This file is part of the R package TraME.
 ##
-##   The R package TraME free software: you can redistribute it and/or modify
+##   The R package TraME is free software: you can redistribute it and/or modify
 ##   it under the terms of the GNU General Public License as published by
 ##   the Free Software Foundation, either version 2 of the License, or
 ##   (at your option) any later version.
 ##
-##   The R package BMR is distributed in the hope that it will be useful,
+##   The R package TraME is distributed in the hope that it will be useful,
 ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##   GNU General Public License for more details.
@@ -95,8 +95,8 @@ Gstarx.empirical <- function(het, mux, x)
     #
     obj = c(Phi)
     
-    A1 = kronecker(matrix(1,1,nbOptions),sparseMatrix(1:het$aux_nbDraws,1:het$aux_nbDraws))
-    A2 = kronecker(sparseMatrix(1:nbOptions,1:nbOptions),matrix(1,1,het$aux_nbDraws))
+    A1 = Matrix::kronecker(matrix(1,1,nbOptions),sparseMatrix(1:het$aux_nbDraws,1:het$aux_nbDraws))
+    A2 = Matrix::kronecker(sparseMatrix(1:nbOptions,1:nbOptions),matrix(1,1,het$aux_nbDraws))
     
     A = rbind2(A1,A2)
     d = c(p,q)
@@ -139,8 +139,8 @@ Gbarx.empirical <- function(het, Ubarx, mubarx, x)
     #
     A1 = diag(1,het$nbY)
     A2 = sparseMatrix(i=1,j=1,x=0,dims=c(het$nbY,het$aux_nbDraws))
-    A3 = kronecker(sparseMatrix(i=1:het$nbY,j=1:het$nbY),matrix(1,het$aux_nbDraws,1))
-    A4 = - kronecker(matrix(1,het$nbY,1),sparseMatrix(i=1:het$aux_nbDraws,j=1:het$aux_nbDraws))
+    A3 = Matrix::kronecker(sparseMatrix(i=1:het$nbY,j=1:het$nbY),matrix(1,het$aux_nbDraws,1))
+    A4 = - Matrix::kronecker(matrix(1,het$nbY,1),sparseMatrix(i=1:het$aux_nbDraws,j=1:het$aux_nbDraws))
     A5 = sparseMatrix(i=1,j=1,x=0,dims=c(het$aux_nbDraws,het$nbY))
     A6 = - sparseMatrix(i=1:het$aux_nbDraws,j=1:het$aux_nbDraws)
     # should this be rbind or rbind2?
