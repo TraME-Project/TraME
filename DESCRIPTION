@@ -1,8 +1,8 @@
 Package: TraME
 Type: Package
 Title: Transportation Methods for Econometrics
-Version: 0.1.0
-Date: 2016-01-04
+Version: 0.2.0
+Date: 2016-01-11
 Author: Alfred Galichon <ag133@nyu.edu>
 Maintainer: Alfred Galichon <ag133@nyu.edu>
 Description: A package for for solving problems of equilibrium computation and estimation via the Mass Transportation Approach.
@@ -10,9 +10,9 @@ License: GPL (>=2)
 Depends: R (>= 3.2.0), rootSolve, Matrix, numDeriv, nloptr, nleqslv, snow, snowfall
 Suggests: gurobi
 Collate:
-  equilibrium.R
-  estimation.R
-  misc.R
+  main_equilibrium.R
+  main_estimation.R
+  main_misc.R
   heterog.R
   heterog_empirical.R
   heterog_logit.R
@@ -26,6 +26,7 @@ Collate:
   models.R
   model_affinity.R
   model_etu.R
+  nonparametrics.R
   transfers.R
   transfers_ETU.R
   transfers_LTU.R

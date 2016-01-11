@@ -130,7 +130,6 @@ margxInv <- function(xs, mkt, ...) UseMethod("margxInv",mkt)
 
 margxInv.default <- function(xs, mkt, Mu0ys, sigma=1) 
 {
-    message("hello default") # Keith: should this be here?
     coeff = ifelse(is.null(mkt$neededNorm),1,0)
     #
     if(is.null(xs)){
