@@ -122,7 +122,7 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     set.seed(seed)
     tm = proc.time()
     #
-    message('*===================   Start of test_mle   ===================*\n')
+    message('*===================   Start of test_mme   ===================*\n')
     #
     n = rep(1,nbX)
     m = rep(1,nbY)  
@@ -150,7 +150,7 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     print(thetahat)  
     #
     time = proc.time() - tm  
-    message(paste0('\nEnd of test_mle. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
+    message(paste0('\nEnd of test_mme. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
     #
     return(thetahat)
 }
