@@ -85,5 +85,5 @@ tests_TraME <- function(withGurobi=TRUE){
     tests_equilibrium(notifications=FALSE)
     tests_estimation(notifications=FALSE)
     time = proc.time() - ptm
-    message(paste0('All tests completed. Overall time elapsed=', time["elapsed"], 's.'))
+    message(paste0('All tests completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
 }
