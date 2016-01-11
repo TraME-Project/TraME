@@ -1,0 +1,16 @@
+language: r
+sudo: required
+warnings_are_errors: true
+
+env:
+  global:
+    - R_BUILD_ARGS="--no-manual"
+    - R_CHECK_ARGS="--no-manual --as-cran"
+
+after_failure:
+  - ./travis-tool.sh dump_logs
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
