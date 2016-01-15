@@ -1,7 +1,7 @@
 Package: TraME
 Type: Package
 Title: Transportation Methods for Econometrics
-Version: 0.2.1
+Version: 0.3.0
 Date: 2016-01-14
 Author: Alfred Galichon <ag133@nyu.edu>
 Maintainer: Alfred Galichon <ag133@nyu.edu>
