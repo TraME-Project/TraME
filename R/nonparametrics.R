@@ -19,7 +19,8 @@
 ##
 ################################################################################
 
-NonparametricEsimtationTUEmpirical <- function(n, m, hetG, hetH, kron, muhat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+NonparametricEsimtationTUEmpirical <- function(n, m, hetG, hetH, kron, muhat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0, lp_solver=1)
+    # lp_solver = 1 means Gurobi; lp_solver = 2 means GLPK
 {
     if(print_level > 0){
         print(paste0("LP optimization used."))
@@ -66,25 +67,52 @@ NonparametricEsimtationTUEmpirical <- function(n, m, hetG, hetH, kron, muhat, th
     nbconstr = dim(A)[1]
     nbvar = dim(A)[2]
     #
-    lb  =  c(epsilon0_i,t(eta0_j), rep(-Inf,nbX*nbY+nbParams))
+    lb  = c(epsilon0_i,t(eta0_j), rep(-Inf,nbX*nbY+nbParams))
     rhs = c(epsilon_iy, eta_xj)
     obj = c(ni,mj,rep(0,nbX*nbY),c(-muhat))
     #
-    gurobiModel = list(A=A,obj=obj,modelsense="min",rhs=rhs,sense=rep(">=",nbconstr),lb=lb)
-    result = gurobi(gurobiModel, params=list(OutputFlag=0)) 
-    #
-    if(result$status=="OPTIMAL"){
-        U = matrix(result$x[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
-        phihat = matrix(result$x[(nbI+nbJ+nbX*nbY+1):(nbI+nbJ+nbX*nbY+nbParams)], nbX,nbY)
-        V = phihat - U
+    if(lp_solver==1){
+        gurobiModel = list(A=A,obj=obj,modelsense="min",rhs=rhs,sense=rep(">=",nbconstr),lb=lb)
+        result = gurobi(gurobiModel, params=list(OutputFlag=0)) 
         #
-        muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
-        mu = t(I_ix) %*% muiy 
+        if(result$status=="OPTIMAL"){
+            U = matrix(result$x[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
+            phihat = matrix(result$x[(nbI+nbJ+nbX*nbY+1):(nbI+nbJ+nbX*nbY+nbParams)], nbX,nbY)
+            V = phihat - U
+            #
+            muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
+            mu = t(I_ix) %*% muiy 
+            #
+            val = result$objval 
+        }else{
+            warning("optimization problem with Gurobi")
+            return(result)
+        }
+    }else if(lp_solver==2){
+        bounds = list(lower = list(ind = 1:length(lb), val = lb),
+                      upper = list())
+        result = Rglpk_solve_LP(obj=obj,
+                                mat=A,
+                                dir=rep(">=",nrow(A)),
+                                rhs=rhs,
+                                bounds=bounds,
+                                max=FALSE)
         #
-        val = result$objval 
+        if(result$status==0){
+            U = matrix(result$solution[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
+            phihat = matrix(result$solution[(nbI+nbJ+nbX*nbY+1):(nbI+nbJ+nbX*nbY+nbParams)], nbX,nbY)
+            V = phihat - U
+            #
+            muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
+            mu = t(I_ix) %*% muiy 
+            #
+            val = result$optimum
+        }else{
+            warning("optimization problem with GLPK")
+            return(result)
+        }
     }else{
-        print("optimization problem with Gurobi")
-        return(result)
+        stop("unrecognized linear programming solver")
     }
     #
     ret = list(phihat=phihat,

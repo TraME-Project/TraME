@@ -114,7 +114,8 @@ Gstarx.RUSC <- function(het, mux, x)
     return(ret)
 }
 
-Gbarx.RUSC <- function (het, Ubarx, mubarx, x)
+Gbarx.RUSC <- function (het, Ubarx, mubarx, x, lp_solver=1)
+    # lp_solver = 1 means Gurobi; lp_solver = 2 means GLPK
 {
     M = length(Ubarx) + 1
     #
@@ -124,19 +125,39 @@ Gbarx.RUSC <- function (het, Ubarx, mubarx, x)
     lb = rep(0,M)
     ub = c(mubarx,1)
     #
-    model = list(A = matrix(1,1,M),rhs=c(1),
-                 obj = c(het$aux_b[x,] - Ubarx,0),
-                 Q = Q,
-                 lb = lb, ub = ub,
-                 sense='=', modelsense = 'min')
-    #
-    res = gurobi(model,params=list(OutputFlag=0))
-    mux = res$x[1:M-1]
-    Amu = c(het$aux_A[x,,] %*% matrix(mux,ncol=1))
-    Ux  = Amu + het$aux_b[x,]
-    #
-    ret = list(valx = -res$objval - het$aux_c[x],
-               mux = mux, Ux = Ux)
+    if(lp_solver==1){
+        gurobiModel = list(A = matrix(1,1,M),rhs=c(1),
+                           obj = c(het$aux_b[x,] - Ubarx,0),
+                           Q = Q,
+                           lb = lb, ub = ub,
+                           sense='=', modelsense = 'min')
+        #
+        res = gurobi(gurobiModel,params=list(OutputFlag=0))
+        mux = res$x[1:M-1]
+        Amu = c(het$aux_A[x,,] %*% matrix(mux,ncol=1))
+        Ux  = Amu + het$aux_b[x,]
+        #
+        ret = list(valx = -res$objval - het$aux_c[x],
+                   mux=mux, Ux=Ux)
+    }else if(lp_solver==2){
+        bounds <- list(lower = list(ind = 1:M, val = lb),
+                       upper = list(ind = 1:M, val = ub))
+        res = Rglpk_solve_LP(obj=c(het$aux_b[x,] - Ubarx,0),
+                             mat=matrix(1,1,M),
+                             dir="==",
+                             rhs=c(1),
+                             bounds=bounds,
+                             max=FALSE)
+        #
+        mux = res$solution[1:M-1]
+        Amu = c(het$aux_A[x,,] %*% matrix(mux,ncol=1))
+        Ux  = Amu + het$aux_b[x,]
+        #
+        ret = list(valx = -res$optimum - het$aux_c[x],
+                   mux=mux, Ux=Ux)
+    }else{
+        stop("unrecognized linear programming solver")
+    }
     #
     return(ret)
 }
