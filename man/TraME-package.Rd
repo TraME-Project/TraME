@@ -15,11 +15,11 @@ TraME (Transportation Methods for Econometrics) is an R package for for solving 
 \tabular{ll}{
 Package: \tab TraME\cr
 Type: \tab Package\cr
-Version: \tab 0.1.0\cr
-Date: \tab 2016-01-04\cr
+Version: \tab 0.3.0\cr
+Date: \tab 2016-01-14\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab Yes\cr
-Depends: \tab Rcpp, RcppArmadillo, rootSolve, Matrix, numDeriv, nloptr, nleqslv, snow, snowfall\cr
+Depends: \tab rootSolve, Matrix, numDeriv, nloptr, nleqslv, snow, snowfall\cr
 Suggests: \tab gurobi\cr}
 }
 
@@ -29,7 +29,7 @@ Suggests: \tab gurobi\cr}
  author       = {Alfred Galichon},
  title        = {{TraME}: Transportation Methods for Econometrics},
  year         = {2016},
- note         = {R package version 0.1.0.}}}
+ note         = {R package version 0.3.0.}}}
 \emph{}
 }
 

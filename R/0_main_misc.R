@@ -19,7 +19,7 @@
 ##
 ################################################################################
 
-init_TraME <- function(nbSlaves = 0, isMaster=TRUE, withGurobi=TRUE)
+init_TraME <- function(nbSlaves = 0, isMaster=TRUE, withGurobi=TRUE, withGLPK=FALSE)
 {
     assign("TraME_withGurobi", withGurobi, envir = .GlobalEnv)
     assign("TraME_nbSlaves", nbSlaves, envir = .GlobalEnv)
@@ -27,8 +27,12 @@ init_TraME <- function(nbSlaves = 0, isMaster=TRUE, withGurobi=TRUE)
     #
     if(withGurobi){
         require('gurobi')
-    }else{
-        warning("Initialization without Gurobi. LP-based algorithms will not run.")
+    }
+    if(withGLPK){
+        require('Rglpk')
+    }
+    if((withGurobi==FALSE)&&(withGLPK==FALSE)){
+        warning("Initialization without Gurobi or GLPK. LP-based algorithms will not run.")
     }
     #
     if(isMaster){    # this is the master; should initialize the workers, if any
