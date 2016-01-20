@@ -453,8 +453,7 @@ build_disaggregate_epsilon <- function(n, nbX, nbY, hetS)
     return(ret)  
 }
 
-CupidsLP <- function(market, xFirst=TRUE, notifications=FALSE, lp_solver=1)
-    # lp_solver = 1 means Gurobi; lp_solver = 2 means GLPK
+CupidsLP <- function(market, xFirst=TRUE, notifications=FALSE)
 {
     if(!is.null(market$neededNorm)){
         stop("CupidsLP does not yet allow for the case without unmatched agents.")
@@ -510,67 +509,30 @@ CupidsLP <- function(market, xFirst=TRUE, notifications=FALSE, lp_solver=1)
     lb  = c(epsilon0_i,t(eta0_j), rep(-Inf,nbX*nbY))
     rhs = c(epsilon_iy, eta_xj+phi %*% I_yj)
     obj = c(ni,mj,rep(0,nbX*nbY))
+    sense = rep(">=",nbconstr)
+    modelsense = "min"
     #
-    if(lp_solver==1){
-        gurobiModel = list(A=A,obj=obj,modelsense="min",rhs=rhs,sense=rep(">=",nbconstr),lb=lb)
-        result = gurobi(gurobiModel, params=list(OutputFlag=0))
-        #
-        if(result$status=="OPTIMAL"){
-            U = matrix(result$x[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
-            V = phi - U
-            #
-            muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
-            mu = t(I_ix) %*% muiy
-            #
-            val = sum(ni*result$x[1:nbI]) + sum(mj*result$x[(nbI+1):(nbI+nbJ)])
-        }else{
-            stop("optimization problem with Gurobi")
-        }
-        #
-        ret = list(success=TRUE,
-                   mu=mu,
-                   mux0 = market$n - apply(mu,1,sum),
-                   mu0y = market$m - apply(mu,2,sum),
-                   U=U, V=V,
-                   val=result$objval)
-    }else if(lp_solver==2){
-        bounds <- list(lower = list(ind = 1:length(lb), val = lb),
-                       upper = list())
-        result = Rglpk_solve_LP(obj=obj,
-                                mat=A,
-                                dir=rep(">=",nrow(A)),
-                                rhs=rhs,
-                                bounds=bounds,
-                                max=FALSE)
-        #
-        if(result$status==0){
-            U = matrix(result$solution[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
-            V = phi - U
-            #
-            muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
-            mu = t(I_ix) %*% muiy
-            #
-            val = sum(ni*result$solution[1:nbI]) + sum(mj*result$solution[(nbI+1):(nbI+nbJ)])
-        }else{
-            stop("optimization problem with GLPK")
-        }
-        #
-        ret = list(success=TRUE,
-                   mu=mu,
-                   mux0 = market$n - apply(mu,1,sum),
-                   mu0y = market$m - apply(mu,2,sum),
-                   U=U, V=V,
-                   val=result$optimum)
-    }else{
-        stop("unrecognized linear programming solver")
-    }
+    result = genericLP(obj=obj,A=A,modelsense=modelsense,rhs=rhs,sense=sense,lb=lb)
+    #
+    U = matrix(result$solution[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
+    V = phi - U
+    
+    muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
+    mu = t(I_ix) %*% muiy
+    
+    val = sum(ni*result$solution[1:nbI]) + sum(mj*result$solution[(nbI+1):(nbI+nbJ)])
+    #
+    ret = list(success=TRUE,
+               mu=mu,
+               mux0 = market$n - apply(mu,1,sum),
+               mu0y = market$m - apply(mu,2,sum),
+               U=U, V=V,
+               val=result$objval)
     #
     return(ret)
 }
 
-oapLP <- function(market, xFirst=TRUE, notifications=FALSE, lp_solver=1)
-    # note: reservation utilities are normalized to zero
-    # lp_solver = 1 means Gurobi; lp_solver = 2 means GLPK
+oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
 {
     if(!is.null(market$neededNorm)){
         stop("oapLP does not yet allow for the case without unmatched agents.")
@@ -595,57 +557,24 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE, lp_solver=1)
     d = c(market$n,market$m)
     pi_init = c(market$n %*% t(market$m))
     #
-    if(lp_solver==1){
-        result = gurobi(list(A=A,obj=c,modelsense="max",rhs=d,sense="<",start=pi_init),
-                        params=list(OutputFlag=0))
-        #
-        if(result$status=="OPTIMAL"){
-            mu = matrix(result$x,nrow=N)
-            u0 = result$pi[1:N] 
-            v0 = result$pi[(N+1):(N+M)]
-            val = result$objval
-        }else{
-            stop("optimization problem with Gurobi")
-        }
-        #
-        objBis = ifelse(xFirst==TRUE,1,-1)*c(market$n,-market$m)
-        ABis = rbind2(Matrix::t(A),c(market$n,market$m))
-        dBis = c(phi,val)
-        uvinit = c(u0,v0)
-        #
-        resultBis = gurobi(list(A=ABis,obj=objBis,modelsense="max",rhs=dBis,sense=c(rep(">",N*M),"="),start=uvinit),
-                           params=list(OutputFlag=0))
-        #
-        u = resultBis$x[1:N] 
-        v = resultBis$x[(N+1):(N+M)]
-        #
-        residuals = Psi(market$transfers,matrix(u,nrow=N,ncol=M),matrix(v,nrow=N,ncol=M,byrow=T))
-    }else if(lp_solver==2){
-        result = Rglpk_solve_LP(obj=c,mat=A,dir=rep("<",nrow(A)),rhs=d,max=TRUE)
-        #
-        if(result$status==0){
-            mu = matrix(result$solution,nrow=N)
-            u0 = result$pi[1:N] 
-            v0 = result$pi[(N+1):(N+M)]
-            val = result$optimum
-        }else{
-            stop("optimization problem with GLPK")
-        }
-        #
-        objBis = ifelse(xFirst==TRUE,1,-1)*c(market$n,-market$m)
-        ABis = rbind2(Matrix::t(A),c(market$n,market$m))
-        dBis = c(phi,val)
-        #uvinit = c(u0,v0)
-        #
-        resultBis = Rglpk_solve_LP(obj=objBis,mat=ABis,dir=c(rep(">",N*M),"=="),rhs=dBis,max=TRUE)
-        #
-        u = resultBis$solution[1:N] 
-        v = resultBis$solution[(N+1):(N+M)]
-        #
-        residuals = Psi(market$transfers,matrix(u,nrow=N,ncol=M),matrix(v,nrow=N,ncol=M,byrow=T))
-    }else{
-        stop("unrecognized linear programming solver")
-    }
+    result = genericLP(obj=c,A=A,modelsense="max",rhs=d,sense="<",start=pi_init)
+    #
+    mu = matrix(result$solution,nrow=N)
+    u0 = result$pi[1:N] 
+    v0 = result$pi[(N+1):(N+M)]
+    val = result$objval
+    #
+    objBis = ifelse(xFirst==TRUE,1,-1)*c(market$n,-market$m)
+    ABis = rbind2(Matrix::t(A),c(market$n,market$m))
+    dBis = c(phi,val)
+    uvinit = c(u0,v0)
+
+    resultBis = genericLP(obj=objBis,A=ABis,modelsense="max",rhs=dBis,sense=c(rep(">",N*M),"="),start=uvinit)
+    #
+    u = resultBis$solution[1:N] 
+    v = resultBis$solution[(N+1):(N+M)]
+    
+    residuals = Psi(market$transfers,matrix(u,nrow=N,ncol=M),matrix(v,nrow=N,ncol=M,byrow=T))
     #
     outcome = list(success=TRUE,
                    mu=mu,
@@ -658,8 +587,7 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE, lp_solver=1)
     return(outcome)
 }
 
-updatev <- function(market, v, xFirst, lp_solver=1)
-    # lp_solver = 1 means Gurobi; lp_solver = 2 means GLPK
+updatev <- function(market, v, xFirst)
 {
     tr = market$transfers
     
@@ -684,74 +612,29 @@ updatev <- function(market, v, xFirst, lp_solver=1)
         lb = c(-apply(themat,1,min),0)
         c = c(market$n,market$m[y]) # Keith: change this!!!
         #
-        if(lp_solver==1){
-            result = gurobi(list(A=A,obj=c,modelsense="min",rhs=d,sense=">",lb=lb),
-                            params=list(OutputFlag=0))
-            #
-            if(result$status=="OPTIMAL") {
-                u0 = result$x[1:nbX] 
-                v0y = result$x[nbX+1]
-                val = result$objval
-            }else{
-                stop("optimization problem with Gurobi")
-            }
-            #
-            ABis = rbind2(A,c(market$n,market$m[y]))
-            dBis = c(d,val)
-            uvinit = c(u0,v0y)
-            gurobi_list = list(A=ABis, obj=c(rep(0,nbX),1),
-                               modelsense=ifelse(xFirst,"min","max"),
-                               rhs=dBis,
-                               sense=c(rep(">",nbX),"="),
-                               lb=lb, start=uvinit)
-            #
-            resultBis = gurobi(gurobi_list, params=list(OutputFlag=0))
-            #
-            if(resultBis$status=="OPTIMAL"){
-                u = resultBis$x[1:nbX] 
-                vupdated[y] = resultBis$x[nbX+1]
-            }else{
-                stop("optimization problem with Gurobi")
-            }
-        }else if(lp_solver==2){
-            bounds = list(lower = list(ind = 1:length(lb), val = lb),
-                          upper = list())
-            result = Rglpk_solve_LP(obj=c,mat=A,dir=rep(">",nrow(A)),rhs=d,
-                                    bounds=bounds,max=FALSE)
-            #
-            if(result$status==0){
-                u0 = result$solution[1:nbX] 
-                v0y = result$solution[nbX+1]
-                val = result$optimum
-            }else{
-                stop("optimization problem with GLPK")
-            }
-            #
-            ABis = rbind2(A,c(market$n,market$m[y]))
-            dBis = c(d,val)
-            uvinit = c(u0,v0y)
-            maxBis = ifelse(xFirst,FALSE,TRUE)
-            #
-            resultBis = Rglpk_solve_LP(obj=c(rep(0,nbX),1),mat=ABis,dir=c(rep(">",nbX),"=="),rhs=dBis,
-                                       bounds=bounds,max=maxBis)
-            #
-            #
-            if(resultBis$status==0){
-                u = resultBis$solution[1:nbX] 
-                vupdated[y] = resultBis$solution[nbX+1]
-            }else{
-                stop("optimization problem with GLPK")
-            }
-        }else{
-            stop("unrecognized linear programming solver")
-        }
+        result = genericLP(obj=c,A=A,modelsense="min",rhs=d,sense=">",lb=lb)
+        #
+        u0 = result$solution[1:nbX] 
+        v0y = result$solution[nbX+1]
+        val = result$objval
+        #
+        objBis = c(rep(0,nbX),1)
+        ABis = rbind2(A,c(market$n,market$m[y]))
+        modelsenseBis = ifelse(xFirst,"min","max")
+        dBis = c(d,val)
+        senseBis = c(rep(">",nbX),"=")
+        uvinit = c(u0,v0y)
+        
+        resultBis = genericLP(obj=objBis,A=ABis,modelsense=modelsenseBis,rhs=dBis,sense=senseBis,lb=lb,start=uvinit)
+        #
+        u = resultBis$solution[1:nbX] 
+        vupdated[y] = resultBis$solution[nbX+1]
     }
     #
     return(vupdated)  
 }
 
-eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmode=FALSE, lp_solver=1)
-    # lp_solver = 1 means Gurobi; lp_solver = 2 means GLPK
+eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmode=FALSE)
 {
     #
     if(!is.null(market$neededNorm)){
@@ -810,31 +693,11 @@ eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmod
     A2 = Matrix::kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,1,nbX))
     A = rbind2(A1,A2)
     #
-    if(lp_solver==1){
-        sense = ifelse(abs(c(u,v) - 0) < tol, "<", "=")
-        #
-        result = gurobi(list(A=A,obj=c(res$subdiff),modelsense="max",rhs=c(n,m),sense=sense),
-                        params=list(OutputFlag=OutputFlag))
-        #
-        if(result$status=="OPTIMAL"){
-            mu = matrix(result$x,nrow=nbX)
-        }else{
-            stop("optimization problem with Gurobi")
-        }
-    }else if(lp_solver==2){
-        sense = ifelse(abs(c(u,v) - 0) < tol, "<", "==")
-        #
-        result = Rglpk_solve_LP(obj=c(res$subdiff),mat=A,dir=sense,rhs=c(n,m),
-                                max=TRUE)
-        #
-        if(result$status==0){
-            mu = matrix(result$solution,nrow=nbX)
-        }else{
-            stop("optimization problem with GLPK")
-        }
-    }else{
-        stop("unrecognized linear programming solver")
-    }
+    sense = ifelse(abs(c(u,v) - 0) < tol, "<", "=")
+    
+    result = genericLP(obj=c(res$subdiff),A=A,modelsense="max",rhs=c(n,m),sense=sense)
+    #
+    mu = matrix(result$solution,nrow=nbX)
     #
     mux0 = n - apply(mu,1,sum)
     mu0y = m - apply(mu,2,sum)

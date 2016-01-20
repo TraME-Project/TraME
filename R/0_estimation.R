@@ -268,8 +268,7 @@ MomentMatchingTUSmooth <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol_re
     return(ret)
 }
 
-MomentMatchingTUEmpirical <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0, lp_solver=1)
-    # lp_solver = 1 means Gurobi; lp_solver = 2 means GLPK
+MomentMatchingTUEmpirical <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
     if (print_level>0){
         message("LP optimization used.")
@@ -320,51 +319,16 @@ MomentMatchingTUEmpirical <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol
     rhs = c(epsilon_iy, eta_xj)
     obj = c(ni,mj,rep(0,nbX*nbY),c(-Chat))
     #
-    if(lp_solver==1){
-        gurobiModel = list(A=A,obj=obj,
-                           modelsense="min",rhs=rhs,
-                           sense=rep(">=",nbconstr),
-                           lb=lb)
-        #
-        result = gurobi(gurobiModel, params=list(OutputFlag=0)) 
-        #
-        if(result$status=="OPTIMAL") {
-            U = matrix(result$x[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
-            thetahat = result$x[(nbI+nbJ+nbX*nbY+1):(nbI+nbJ+nbX*nbY+nbParams)]
-            V = matrix(kron %*% thetahat,nbX,nbY) - U
-            #
-            muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
-            mu = t(I_ix) %*% muiy
-            #
-            val = result$objval 
-        }else{
-            stop("optimization problem with Gurobi")
-        }
-    }else if(lp_solver==2){
-        bounds <- list(lower = list(ind = 1:length(lb), val = lb),
-                       upper = list())
-        result = Rglpk_solve_LP(obj=obj,
-                                mat=A,
-                                dir=rep(">=",nrow(A)),
-                                rhs=rhs,
-                                bounds=bounds,
-                                max=FALSE)
-        #
-        if(result$status==0) {
-            U = matrix(result$solution[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
-            thetahat = result$solution[(nbI+nbJ+nbX*nbY+1):(nbI+nbJ+nbX*nbY+nbParams)]
-            V = matrix(kron %*% thetahat,nbX,nbY) - U
-            #
-            muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
-            mu = t(I_ix) %*% muiy
-            #
-            val = result$optimum 
-        }else{
-            stop("optimization problem with GLPK")
-        }
-    }else{
-        stop("unrecognized linear programming solver")
-    }
+    result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense=rep(">=",nbconstr),lb=lb)
+    #
+    U = matrix(result$solution[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
+    thetahat = result$solution[(nbI+nbJ+nbX*nbY+1):(nbI+nbJ+nbX*nbY+nbParams)]
+    V = matrix(kron %*% thetahat,nbX,nbY) - U
+    
+    muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
+    mu = t(I_ix) %*% muiy
+    
+    val = result$objval
     #
     ret = list(thetahat=thetahat,
                U=U, V=V,
@@ -374,8 +338,7 @@ MomentMatchingTUEmpirical <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol
     
 }
 
-MomentMatchingTUNone <- function(n, m, kron, Chat, print_level=0, lp_solver=1)
-    # lp_solver = 1 means Gurobi; lp_solver = 2 means GLPK
+MomentMatchingTUNone <- function(n, m, kron, Chat, print_level=0)
 {
     if(print_level > 0){
         message("LP optimization used.")
@@ -398,48 +361,13 @@ MomentMatchingTUNone <- function(n, m, kron, Chat, print_level=0, lp_solver=1)
     obj = c(n,m,c(-Chat))
     lb =c(rep(0,nbX+nbY),rep(-Inf,nbParams))
     #
-    if(lp_solver==1){
-        gurobiModel = list(A=A,obj=obj,
-                           modelsense="min",
-                           rhs=rhs,
-                           sense=rep(">=",nbconstr),
-                           lb=lb)
-        #
-        result = gurobi (gurobiModel, params=list(OutputFlag=0)) 
-        #
-        if (result$status=="OPTIMAL") {
-            u = result$x[1:nbX]
-            v = result$x[(nbX+1):(nbX+nbY)]
-            thetahat = result$x[(1+nbX+nbY):(nbParams+nbX+nbY)]
-            mu = matrix(result$pi,nbX,nbY)
-            val = result$objval
-        }
-        else{
-            stop("optimization problem with Gurobi")
-        }
-    }else if(lp_solver==2){
-        bounds = list(lower = list(ind = 1:length(lb), val = lb),
-                      upper = list())
-        result = Rglpk_solve_LP(obj=obj,
-                                mat=A,
-                                dir=rep(">=",nrow(A)),
-                                rhs=rhs,
-                                bounds=bounds,
-                                max=FALSE)
-        #
-        if (result$status==0) {
-            u = result$solution[1:nbX]
-            v = result$solution[(nbX+1):(nbX+nbY)]
-            thetahat = result$solution[(1+nbX+nbY):(nbParams+nbX+nbY)]
-            mu = matrix(result$pi,nbX,nbY)
-            val = result$optimum
-        }
-        else{
-            stop("optimization problem with GLPK")
-        }
-    }else{
-        stop("unrecognized linear programming solver")
-    }
+    result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense=rep(">=",nbconstr),lb=lb)
+    #
+    u = result$solution[1:nbX]
+    v = result$solution[(nbX+1):(nbX+nbY)]
+    thetahat = result$solution[(1+nbX+nbY):(nbParams+nbX+nbY)]
+    mu = matrix(result$pi,nbX,nbY)
+    val = result$objval
     #
     ret = list(thetahat=thetahat,
                u=u, v=v,
