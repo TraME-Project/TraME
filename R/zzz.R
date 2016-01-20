@@ -17,10 +17,10 @@
             #
             if(class(result_gurobi)=="try-error"){
                 .trame_gurobi_works <<- FALSE
-                message("Gurobi seems to be present on your machine, but failed to solve a simple example.\n")
+                packageStartupMessage("Gurobi seems to be present on your machine, but failed to solve a simple example.\n")
             }else if(round(result_gurobi$objval,0)==77){
                 .trame_gurobi_works <<- TRUE
-                message("TraME will use Gurobi to solve LP problems.")
+                packageStartupMessage("TraME will use Gurobi to solve LP problems.")
             }
         }else if(.trame_glpk_exists==TRUE){
             #
@@ -28,13 +28,13 @@
             #
             if(class(result_gurobi)=="try-error"){
                 .trame_glpk_works <<- FALSE
-                message("GLPK seems to be present on your machine, but failed to solve a simple example.\n")
+                packageStartupMessage("GLPK seems to be present on your machine, but failed to solve a simple example.\n")
             }else if(round(result_gurobi$objval,0)==77){
                 .trame_glpk_works <<- TRUE
-                message("TraME will use GLPK to solve LP problems.")
+                packageStartupMessage("TraME will use GLPK to solve LP problems.")
             }
         }
     }else{
-        message("Could not find any LP solver.\n")
+        packageStartupMessage("Could not find any LP solver.\n")
     }
 }
