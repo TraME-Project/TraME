@@ -115,7 +115,7 @@ D2G.logit <- function(het, U, n, xFirst=TRUE)
     return(H)
 }
 
-D2Gstar.logit <- function(het, mu, n, xFirst=TRUE) # Keith: changed layout a lot
+D2Gstar.logit <- function(het, mu, n, xFirst=TRUE)
 { 
     mux0 = n - apply(mu,1,sum)
     #

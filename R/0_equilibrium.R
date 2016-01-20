@@ -38,7 +38,7 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
         }
     }
     #
-    if(notifications){ # Keith: change this to 'message' format
+    if(notifications){
         message('Solving for equilibrium in ITU_logit problem using IPFP.') 
     }
     if((class(market$hetG)!="logit") || (class(market$hetH)!="logit")){
@@ -69,6 +69,7 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     #
     mu0y = mu0ystart
     mux0 = rep(NA,length=nbX)
+    
     error = 2*tol
     iter = 0
     while(max(error,na.rm=TRUE)>tol){
@@ -108,10 +109,12 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     return(outcome)
 }
 
-newton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e-5, method = "Broyden")
+newton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e-5, method="Broyden")
     # method is "Broyden" or "Newton"
 {
-    # Keith: add a check for method != "Broyden" or "Newton"
+    if(method!="Broyden" && method!="Newton"){
+        stop("invalid input passed to function 'newton': unknown method selected.\nMethod must be either \"Broyden\" or \"Newton\".")
+    }
     if(!is.null(market$neededNorm)){
         stop("Newton does not allow for the case without unmatched agents")
     }
@@ -146,6 +149,7 @@ newton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e-5,
         #
         return(ret)
     }
+    
     jacED <- function(thew){
         term_1 = c(dw_UW(tr,matrix(thew,nbX,nbY)))*D2G(hetG,UW(tr,matrix(thew,nbX,nbY)),n)
         term_2 = c(dw_VW(tr,matrix(thew,nbX,nbY)))*D2G(hetH,t(VW(tr,matrix(thew,nbX,nbY))),m,xFirst=F)
@@ -342,7 +346,7 @@ maxWelfare <- function(market, xFirst=TRUE, notifications=FALSE, tol_rel=1e-8)
     }
     #
     U_init = phi / 2
-    #
+    
     resopt = nloptr(x0 = U_init, eval_f = eval_f,
                     opt = list("algorithm" = "NLOPT_LD_LBFGS",
                                "xtol_rel"=tol_rel,
@@ -415,7 +419,7 @@ darum <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8)
     mu0y = m-apply(muD,2,sum)
     #
     outcome = list(mu=muD,
-                   mux0 = mux0, mu0y = mu0y,
+                   mux0=mux0, mu0y=mu0y,
                    U = resP$U, V = t(resD$U))
     #
     return(outcome)
@@ -457,7 +461,7 @@ CupidsLP <- function(market, xFirst=TRUE, notifications=FALSE)
 {
     if(!is.null(market$neededNorm)){
         stop("CupidsLP does not yet allow for the case without unmatched agents.")
-        }
+    }
     if((class(market$transfers)!="TU")||(class(market$hetG)!="empirical")||(class(market$hetH)!="empirical")){
         stop("cupidsLP only works for TU-empirical markets.")
     }
@@ -547,8 +551,8 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
     phi = market$transfers$phi
     N = dim(phi)[1]
     M = dim(phi)[2]
-    
-    c = c(phi) # Keith: change this!!!
+    #
+    obj = c(phi)
     
     A1 = Matrix::kronecker(matrix(1,1,M),sparseMatrix(1:N,1:N))
     A2 = Matrix::kronecker(sparseMatrix(1:M,1:M),matrix(1,1,N))
@@ -557,7 +561,7 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
     d = c(market$n,market$m)
     pi_init = c(market$n %*% t(market$m))
     #
-    result = genericLP(obj=c,A=A,modelsense="max",rhs=d,sense="<",start=pi_init)
+    result = genericLP(obj=obj,A=A,modelsense="max",rhs=d,sense="<",start=pi_init)
     #
     mu = matrix(result$solution,nrow=N)
     u0 = result$pi[1:N] 
@@ -610,9 +614,9 @@ updatev <- function(market, v, xFirst)
         d = rep(0,nbX)
         A =  cbind2(sparseMatrix(1:nbX,1:nbX),rep(1,nbX))
         lb = c(-apply(themat,1,min),0)
-        c = c(market$n,market$m[y]) # Keith: change this!!!
+        obj = c(market$n,market$m[y])
         #
-        result = genericLP(obj=c,A=A,modelsense="min",rhs=d,sense=">",lb=lb)
+        result = genericLP(obj=obj,A=A,modelsense="min",rhs=d,sense=">",lb=lb)
         #
         u0 = result$solution[1:nbX] 
         v0y = result$solution[nbX+1]

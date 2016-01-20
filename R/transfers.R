@@ -54,7 +54,7 @@ WV <- function(tr, ...)  UseMethod("WV")
 
 MMF <- function(tr, ...) UseMethod("MMF")
 
-MMF.default <- function(tr, mux0s, mu0ys, xs, ys, sigma=1) # Keith: I broke this expression up into pieces
+MMF.default <- function(tr, mux0s, mu0ys, xs, ys, sigma=1)
 {
     term_2 = matrix(-sigma*log(mux0s),nrow=tr$nbX,ncol=tr$nbY)
     term_3 = matrix(-sigma*log(mu0ys),nrow=tr$nbX,ncol=tr$nbY,byrow=TRUE)

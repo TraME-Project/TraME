@@ -13,7 +13,6 @@
         mat <- matrix(c(3, 2, 1, 4, 1, 3, 2, 2, 2), nrow = 3)
         dir <- c("<=", "<=", "<=")
         rhs <- c(60, 40, 80)
-        max <- TRUE
         #
         if(gurobi_exists==TRUE){ # test a simple problem
             #
@@ -29,7 +28,7 @@
             }
         }else if(glpk_exists==TRUE){
             #
-            result_glpk = try(result_glpk = Rglpk::Rglpk_solve_LP(obj, mat, dir, rhs, max = max),silent=TRUE)
+            result_glpk = try(result_glpk = Rglpk::Rglpk_solve_LP(obj, mat, dir, rhs, max = TRUE),silent=TRUE)
             #
             if(class(result_gurobi)=="try-error"){
                 .trame_lp_options$glpk_works <<- FALSE

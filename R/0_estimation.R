@@ -87,11 +87,11 @@ dtheta_mu_logit <- function(model, market, theta, dtheta=diag(length(theta)))
     dtheta_psis = matrix(dtheta_Psi(tr,us,vs,dthetaPsi),nrow=tr$nbX*tr$nbY)
     mudthetapsi = array(c(mu)*c(dtheta_psis),dim=c(tr$nbX,tr$nbY,rangeParams))
     
-    c = apply(mudthetapsi, c(1,3), sum) / sigma # Keith: change this!!!
-    d = apply(mudthetapsi, c(2,3), sum) / sigma
-    num = rbind(c,d)
+    d_1 = apply(mudthetapsi, c(1,3), sum) / sigma
+    d_2 = apply(mudthetapsi, c(2,3), sum) / sigma
+    num = rbind(d_1,d_2)
     #
-    Delta11 = diag(mux0s + apply( mu*du_psis,1,sum),nrow=tr$nbX)
+    Delta11 = diag(mux0s + apply(mu*du_psis,1,sum),nrow=tr$nbX)
     Delta22 = diag(mu0ys + apply(mu*dv_psis,2,sum),nrow=tr$nbY)
     Delta12 = mu * dv_psis
     Delta21 = t(mu * du_psis)
@@ -110,8 +110,8 @@ dtheta_mu_logit <- function(model, market, theta, dtheta=diag(length(theta)))
         dlogmu0yfull[x,,] = dlogmu0y
     }
     #
-    dlogmu = c(du_psis) * matrix(dlogmux0full, ncol=rangeParams) + 
-             c(dv_psis)*matrix(dlogmu0yfull,ncol=rangeParams) - 
+    dlogmu = c(du_psis)*matrix(dlogmux0full, ncol=rangeParams) + 
+             c(dv_psis)*matrix(dlogmu0yfull, ncol=rangeParams) - 
              matrix(dtheta_psis,ncol=rangeParams) / sigma    
     dmu    = c(mu) * dlogmu
     #
