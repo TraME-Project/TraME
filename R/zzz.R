@@ -49,9 +49,9 @@
             }
         }else if(glpk_exists==TRUE){
             #
-            result_glpk = try(result_glpk = Rglpk::Rglpk_solve_LP(obj, mat, dir, rhs, max = TRUE),silent=TRUE)
+            result_glpk = try(Rglpk::Rglpk_solve_LP(obj, mat, dir, rhs, max = TRUE),silent=TRUE)
             #
-            if(class(result_gurobi)=="try-error"){
+            if(class(result_glpk)=="try-error"){
                 .trame_lp_options$glpk_works <<- FALSE
                 packageStartupMessage("GLPK seems to be present on your machine, but failed to solve a simple example.\n")
             }else if(round(result_glpk$optimum,0)==77){
