@@ -114,50 +114,28 @@ Gstarx.RUSC <- function(het, mux, x)
     return(ret)
 }
 
-Gbarx.RUSC <- function (het, Ubarx, mubarx, x, lp_solver=1)
-    # lp_solver = 1 means Gurobi; lp_solver = 2 means GLPK
+Gbarx.RUSC <- function (het, Ubarx, mubarx, x)
 {
     M = length(Ubarx) + 1
     #
+    obj = c(het$aux_b[x,] - Ubarx,0)
+    A = matrix(1,1,M)
+    rhs = c(1)
+    
     Q = matrix(0,M,M)
     Q[1:M-1,1:M-1] = het$aux_A[x,,] / 2
-    #
+    
     lb = rep(0,M)
     ub = c(mubarx,1)
     #
-    if(lp_solver==1){
-        gurobiModel = list(A = matrix(1,1,M),rhs=c(1),
-                           obj = c(het$aux_b[x,] - Ubarx,0),
-                           Q = Q,
-                           lb = lb, ub = ub,
-                           sense='=', modelsense = 'min')
-        #
-        res = gurobi(gurobiModel,params=list(OutputFlag=0))
-        mux = res$x[1:M-1]
-        Amu = c(het$aux_A[x,,] %*% matrix(mux,ncol=1))
-        Ux  = Amu + het$aux_b[x,]
-        #
-        ret = list(valx = -res$objval - het$aux_c[x],
-                   mux=mux, Ux=Ux)
-    }else if(lp_solver==2){
-        bounds <- list(lower = list(ind = 1:M, val = lb),
-                       upper = list(ind = 1:M, val = ub))
-        res = Rglpk_solve_LP(obj=c(het$aux_b[x,] - Ubarx,0),
-                             mat=matrix(1,1,M),
-                             dir="==",
-                             rhs=c(1),
-                             bounds=bounds,
-                             max=FALSE)
-        #
-        mux = res$solution[1:M-1]
-        Amu = c(het$aux_A[x,,] %*% matrix(mux,ncol=1))
-        Ux  = Amu + het$aux_b[x,]
-        #
-        ret = list(valx = -res$optimum - het$aux_c[x],
-                   mux=mux, Ux=Ux)
-    }else{
-        stop("unrecognized linear programming solver")
-    }
+    result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense="=",Q=Q,lb=lb,ub=ub)
+    #
+    mux = result$solution[1:M-1]
+    Amu = c(het$aux_A[x,,] %*% matrix(mux,ncol=1))
+    Ux  = Amu + het$aux_b[x,]
+    #
+    ret = list(valx = -result$objval - het$aux_c[x],
+               mux=mux, Ux=Ux)
     #
     return(ret)
 }

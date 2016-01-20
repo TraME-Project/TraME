@@ -76,8 +76,7 @@ Gx.empirical <- function(het, Ux, x)
     return(ret)
 }
 
-Gstarx.empirical <- function(het, mux, x, lp_solver=1)
-    # lp_solver = 1 means Gurobi; lp_solver = 2 means GLPK
+Gstarx.empirical <- function(het, mux, x)
 {
     nbOptions = ifelse(het$outsideOption,het$nbY+1,het$nbY)
     if(het$xHomogenous){
@@ -102,55 +101,24 @@ Gstarx.empirical <- function(het, mux, x, lp_solver=1)
     A = rbind2(A1,A2)
     d = c(p,q)
     #
-    if(lp_solver==1){
-        gurobiModel = list(A=A,obj=obj,
-                           modelsense="max",
-                           rhs=d,
-                           sense="=")
-        result = gurobi(gurobiModel, params=list(OutputFlag=0))
-        #
-        if(result$status=="OPTIMAL"){
-            # pi = matrix(result$x,nrow=het$aux_nbDraws)
-            u = result$pi[1:het$aux_nbDraws]
-            #
-            if(het$outsideOption){
-                temp = result$pi[(het$aux_nbDraws+1):(het$aux_nbDraws+het$nbY+1)]
-                Uoptx = -temp[1:het$nbY]+temp[het$nbY+1]
-            }else{ 
-                Uoptx = -result$pi[(het$aux_nbDraws+1):(het$aux_nbDraws+het$nbY)] - sum(p*u)
-            }
-            #
-            valx = -result$objval
-        }else{
-            stop("optimization problem with Gurobi")
-        }
-    }else if(lp_solver==2){
-        result = Rglpk_solve_LP(obj=obj,mat=A,dir=rep("==",nrow(A)),rhs=d,max=TRUE)
-        #
-        if(result$status==0){
-            # pi = matrix(result$x,nrow=het$aux_nbDraws)
-            u = result$pi[1:het$aux_nbDraws]
-            #
-            if(het$outsideOption){
-                temp = result$pi[(het$aux_nbDraws+1):(het$aux_nbDraws+het$nbY+1)]
-                Uoptx = -temp[1:het$nbY]+temp[het$nbY+1]
-            }else{ 
-                Uoptx = -result$pi[(het$aux_nbDraws+1):(het$aux_nbDraws+het$nbY)] - sum(p*u)
-            }
-            #
-            valx = -result$optimum
-        }else{
-            stop("optimization problem with GLPK")
-        }
+    result = genericLP(obj=obj,A=A,modelsense="max",rhs=d,sense="=")
+    #
+    # pi = matrix(result$solution,nrow=het$aux_nbDraws)
+    u = result$pi[1:het$aux_nbDraws]
+    
+    if(het$outsideOption){
+        temp = result$pi[(het$aux_nbDraws+1):(het$aux_nbDraws+het$nbY+1)]
+        Uoptx = -temp[1:het$nbY]+temp[het$nbY+1]
     }else{
-        stop("unrecognized linear programming solver")
+        Uoptx = -result$pi[(het$aux_nbDraws+1):(het$aux_nbDraws+het$nbY)] - sum(p*u)
     }
+    
+    valx = -result$objval
     #
     return(list(valx=valx,Ux=Uoptx))
 }
 
-Gbarx.empirical <- function(het, Ubarx, mubarx, x, lp_solver=1)
-    # lp_solver = 1 means Gurobi; lp_solver = 2 means GLPK
+Gbarx.empirical <- function(het, Ubarx, mubarx, x)
 {
     if(!het$outsideOption){
         stop("Gbarx not implemented for empirical with outsideOption=F")
@@ -183,37 +151,12 @@ Gbarx.empirical <- function(het, Ubarx, mubarx, x, lp_solver=1)
     z_init = rbind(z1,z2)
     #
     # ------------- this program really computes Glowerbarx but the result is adapted
-    if(lp_solver==1){
-        gurobiModel = list(A=A,obj=c,
-                           modelsense="max",
-                           rhs=d,
-                           sense="<",
-                           start=z_init)
-        result = gurobi(gurobiModel, params=list(OutputFlag=0))
-        #
-        if(result$status=="OPTIMAL") {
-            Uoptx = c(matrix(result$x[1:het$nbY],nrow=1))
-            deltamux = matrix(result$pi[1:het$nbY],nrow=1)
-            mux = c(mubarx - deltamux)
-            valx = sum(mubarx*Ubarx) - result$objval
-        }
-        else{
-            stop("optimization problem with Gurobi")
-        }
-    }else if(lp_solver==2){
-        result = Rglpk_solve_LP(obj=c,mat=A,dir=rep("<",nrow(A)),rhs=d,max=TRUE)
-        #
-        if(result$status==0){
-            Uoptx = c(matrix(result$solution[1:het$nbY],nrow=1))
-            deltamux = matrix(result$pi[1:het$nbY],nrow=1)
-            mux = c(mubarx - deltamux)
-            valx = sum(mubarx*Ubarx) - result$optimum
-        }else{
-            stop("optimization problem with GLPK")
-        }
-    }else{
-        stop("unrecognized linear programming solver")
-    }
+    result = genericLP(obj=c,A=A,modelsense="max",rhs=d,sense="<",start=z_init)
+    #
+    Uoptx = c(matrix(result$solution[1:het$nbY],nrow=1))
+    deltamux = matrix(result$pi[1:het$nbY],nrow=1)
+    mux = c(mubarx - deltamux)
+    valx = sum(mubarx*Ubarx) - result$objval
     #
     ret = list(valx=valx,
                Ux=Uoptx,
