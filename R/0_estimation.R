@@ -376,7 +376,7 @@ MomentMatchingTUNone <- function(n, m, kron, Chat, print_level=0)
     return(ret)
 }
 
-mme <- function(model,muhat, print_level=0)
+mme <- function(model, muhat, print_level=0)
 {
     if(print_level>0){
         message(paste0("Moment Matching Estimation of ",class(model)," model."))

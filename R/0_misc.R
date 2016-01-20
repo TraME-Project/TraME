@@ -19,33 +19,6 @@
 ##
 ################################################################################
 
-init_TraME <- function(nbSlaves = 0, isMaster=TRUE, withGurobi=TRUE, withGLPK=FALSE)
-{
-    assign("TraME_withGurobi", withGurobi, envir = .GlobalEnv)
-    assign("TraME_nbSlaves", nbSlaves, envir = .GlobalEnv)
-    assign("TraME_isMaster", isMaster, envir = .GlobalEnv)
-    #
-    if(withGurobi){
-        require('gurobi')
-    }
-    if(withGLPK){
-        require('Rglpk')
-    }
-    if((withGurobi==FALSE)&&(withGLPK==FALSE)){
-        warning("Initialization without Gurobi or GLPK. LP-based algorithms will not run.")
-    }
-    #
-    if(isMaster){    # this is the master; should initialize the workers, if any
-        if(nbSlaves==0){
-            sfInit(parallel=FALSE)
-        }else{
-            sfInit(parallel=TRUE, cpus=nbSlaves, type="SOCK")
-            sfExportAll()
-            sfSapply(x=1:nbSlaves,fun=function(myindex){init_TraME(nbSlaves = 0,isMaster = F, withGurobi = withGurobi)})
-        }
-    } 
-}
-
 inversePWA <- function(a, B, C)
 {
     nbX = length(a)
@@ -83,11 +56,13 @@ inversePWA <- function(a, B, C)
     return(vals)
 }
 
-tests_TraME <- function(withGurobi=TRUE){
+tests_TraME <- function(){
     ptm = proc.time()
+    #
     tests_arum(notifications=FALSE)
     tests_equilibrium(notifications=FALSE)
     tests_estimation(notifications=FALSE)
+    #
     time = proc.time() - ptm
     message(paste0('All tests completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
 }

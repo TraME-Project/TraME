@@ -1,4 +1,4 @@
-genericLP <- function(obj,A,modelsense,rhs,sense,Q=NULL,lb=NULL,ub=NULL,start=NULL){
+genericLP <- function(obj, A, modelsense, rhs, sense, Q=NULL, lb=NULL, ub=NULL, start=NULL){
     #
     if(.trame_lp_options$gurobi_exists==TRUE){
         gurobiModel = list(A=A,obj=obj,modelsense=modelsense,rhs=rhs,sense=sense,
