@@ -1,6 +1,6 @@
 genericLP <- function(obj,A,modelsense,rhs,sense,Q=NULL,lb=NULL,ub=NULL,start=NULL){
     #
-    if(.trame_gurobi_exists==TRUE){
+    if(.trame_lp_options$gurobi_exists==TRUE){
         gurobiModel = list(A=A,obj=obj,modelsense=modelsense,rhs=rhs,sense=sense,
                            Q=Q,lb=lb,ub=ub,start=start)
         result = gurobi(gurobiModel, params=list(OutputFlag=0))
@@ -13,7 +13,7 @@ genericLP <- function(obj,A,modelsense,rhs,sense,Q=NULL,lb=NULL,ub=NULL,start=NU
         }else{
             stop("optimization problem with Gurobi")
         }
-    }else if(.trame_glpk_exists==TRUE){
+    }else if(.trame_lp_options$glpk_exists==TRUE){
         if(is.null(Q)==FALSE){
             warning("GLPK cannot solve quadratic programming problems.\n")
         }
