@@ -34,7 +34,7 @@
             if(class(result_gurobi)=="try-error"){
                 .trame_lp_options$glpk_works <<- FALSE
                 packageStartupMessage("GLPK seems to be present on your machine, but failed to solve a simple example.\n")
-            }else if(round(result_gurobi$objval,0)==77){
+            }else if(round(result_glpk$optimum,0)==77){
                 .trame_lp_options$glpk_works <<- TRUE
                 packageStartupMessage("TraME will use GLPK to solve LP problems.")
             }
