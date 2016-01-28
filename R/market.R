@@ -124,9 +124,6 @@ checkNorm <- function(neededNorm, n, m, hetG, hetH)
 #################################################
 ########     Methods for  markets       #########
 #################################################
-#################################################
-
-margxInv <- function(xs, mkt, ...) UseMethod("margxInv",mkt)
 
 margxInv.default <- function(xs, mkt, Mu0ys, sigma=1) 
 {
@@ -145,8 +142,6 @@ margxInv.default <- function(xs, mkt, Mu0ys, sigma=1)
     return(themux0s)
 }
 
-margyInv <- function(ys, mkt, ...) UseMethod("margyInv",mkt)
-
 margyInv.default <- function(ys, mkt, Mux0s, sigma=1)
 {
     coeff = ifelse(is.null(mkt$neededNorm),1,0)
@@ -163,8 +158,6 @@ margyInv.default <- function(ys, mkt, Mux0s, sigma=1)
     #
     return(themu0ys)
 }
-
-solveEquilibrium <- function(market, ...) UseMethod("solveEquilibrium")
 
 build_market_TU_none <- function(n, m, phi, neededNorm=NULL)
 {

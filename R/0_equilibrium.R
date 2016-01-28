@@ -305,8 +305,8 @@ jacobi <- function(market, xFirst=TRUE, notifications=TRUE, wlow=NULL, wup=NULL,
     }
     #
     mu = G(hetG,U,n)$mu  
-    mux0 = n-apply(mu,1,sum)
-    mu0y = m-apply(mu,2,sum)
+    mux0 = n - apply(mu,1,sum)
+    mu0y = m - apply(mu,2,sum)
     #
     ret = list(mu=mu,
                mux0=mux0, mu0y=mu0y,
@@ -335,9 +335,9 @@ maxWelfare <- function(market, xFirst=TRUE, notifications=FALSE, tol_rel=1e-8)
     eval_f <- function(theU)
     {
         theU = matrix(theU,nbX,nbY)
-        resG = G(market$hetG,theU, market$n)
-        resH = G(market$hetH,t(phi-theU), market$m)
-        val  = resG$val+resH$val
+        resG = G(market$hetG,theU,market$n)
+        resH = G(market$hetH,t(phi-theU),market$m)
+        val  = resG$val + resH$val
         #
         ret = list(objective = val,
                    gradient = c(resG$mu - t(resH$mu)))
@@ -353,8 +353,8 @@ maxWelfare <- function(market, xFirst=TRUE, notifications=FALSE, tol_rel=1e-8)
                                "ftol_rel"=1e-15))
     #
     U = matrix(resopt$solution,nbX,nbY)
-    resG = G(market$hetG,U, market$n)
-    resH = G(market$hetH,t(phi-U), market$m)
+    resG = G(market$hetG,U,market$n)
+    resH = G(market$hetH,t(phi-U),market$m)
     mu = resG$mu
     V = phi - U
     #
@@ -487,7 +487,7 @@ CupidsLP <- function(market, xFirst=TRUE, notifications=FALSE)
     I_yj = t(res2$I_ix)
     
     ni = c(I_ix %*% market$n)/res1$nbDraws
-    mj = c( market$m %*% I_yj)/res2$nbDraws
+    mj = c(market$m %*% I_yj)/res2$nbDraws
     
     nbI = length(ni)
     nbJ = length(mj)

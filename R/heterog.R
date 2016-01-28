@@ -26,8 +26,6 @@
 # K. Chiong, A. Galichon, M. Shum: "Duality in dynamic discrete choice models"
 #           
 
-G <- function(het, ...) UseMethod("G")
-
 G.default <- function(het, U, n)
 {
     val = 0
@@ -43,10 +41,6 @@ G.default <- function(het, U, n)
     return(list(val=val,mu=mu))
 }
 
-Gx <- function (het, ...) UseMethod("Gx")
-
-Gstar <- function (het, ...) UseMethod("Gstar")
-
 Gstar.default <- function(het, mu, n)
 {
     val = 0
@@ -60,8 +54,6 @@ Gstar.default <- function(het, mu, n)
     #
     return(list(val=val,U=Uopt))
 }
-
-Gstarx <- function (het, ...) UseMethod("Gstarx")
 
 Gstarx.default <- function(het, mux, x)
 { 
@@ -81,19 +73,11 @@ Gstarx.default <- function(het, mux, x)
     return(list(valx = -resopt$objective, mux = resopt$solution))
 }
 
-D2Gx <- function (het, ...) UseMethod("D2Gx")
-
-D2Gstarx <- function (het, ...) UseMethod("D2Gstarx")
-
 D2Gstarx.default <- function (het, mux, x)
 {
     nablaGstar <- function(themux) (Gstarx(het,themux,x)$Ux)
     return(jacobian(nablaGstar,mux))
 }
-
-D2G <- function (het, ...) UseMethod("D2G")
-
-D2Gstar <- function (het, ...) UseMethod("D2Gstar")
 
 D2Gstar.default <- function (het, mu,n, xFirst=T)
 {
@@ -116,10 +100,6 @@ D2Gstar.default <- function (het, mu,n, xFirst=T)
     return(Hess)
 }
 
-dtheta_NablaGstar <- function (het, ...) UseMethod("dtheta_NablaGstar")
-
-Gbar <- function(het, ...) UseMethod("Gbar")
-
 Gbar.default <- function(het, Ubar, n, mubar)
 {
     if(!het$outsideOption){
@@ -139,8 +119,6 @@ Gbar.default <- function(het, Ubar, n, mubar)
     #
     return(list(val=val,U=Uopt,mu=muopt))
 }
-
-Gbarx <- function(het, ...) UseMethod("Gbarx")
 
 Gbarx.default <- function (het, Ubarx, mubarx, x)
 { 
@@ -171,5 +149,3 @@ Gbarx.default <- function (het, Ubarx, mubarx, x)
     #
     return(list(valx = -resopt$objective, Ux = Gstarx(het,resopt$solution,x)$Ux, mux = resopt$solution))
 }
-
-simul <- function (heterog, ...) UseMethod("simul")

@@ -19,18 +19,10 @@
 ##
 ################################################################################
 
-parametricMarket <- function(model, ...) UseMethod("parametricMarket")
-
-initparam <- function(model, ...) UseMethod("initparam")
-
 initparam.default <- function(model)
 {
     ret = list(param=rep(0,model$nbParams),
                lb = NULL, ub = NULL)
 }
-
-dparam <- function(model, ...) UseMethod("dparam")
-
-estimate <- function(model, ...) UseMethod("estimate")
 
 estimate.default = mle

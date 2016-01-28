@@ -26,34 +26,6 @@
 # O. Bonnet, A. Galichon, and M. Shum: "Yoghurt Chooses Man: The Matching Approach to Identification of Nonadditive Random Utility Models".
 #
 
-Psi <- function(tr, ...) UseMethod("Psi")
-
-du_Psi <- function(tr, ...) UseMethod("du_Psi")
-
-dtheta_Psi <- function(tr, ...) UseMethod("dtheta_Psi")
-
-determineType <- function(tr, ...) UseMethod("determineType")
-
-transfersTranspose <- function(tr, ...) UseMethod("transfersTranspose")
-
-Ucal <- function(tr, ...) UseMethod("Ucal") 
-
-Vcal <- function(tr, ...) UseMethod("Vcal")
-
-UW <- function(tr, ...) UseMethod("UW")
-
-dw_UW = function(tr, ...) UseMethod("dw_UW")
-
-VW <- function(tr, ...) UseMethod("VW")
-
-dw_VW = function(tr, ...) UseMethod("dw_VW")
-
-WU <- function(tr, ...) UseMethod("WU")
-
-WV <- function(tr, ...)  UseMethod("WV")
-
-MMF <- function(tr, ...) UseMethod("MMF")
-
 MMF.default <- function(tr, mux0s, mu0ys, xs, ys, sigma=1)
 {
     term_2 = matrix(-sigma*log(mux0s),nrow=tr$nbX,ncol=tr$nbY)
@@ -66,8 +38,6 @@ MMF.default <- function(tr, mux0s, mu0ys, xs, ys, sigma=1)
     return(ret)
 } 
 
-ufromvs <- function(tr,...) UseMethod("ufromvs")
-
 ufromvs.default <- function(tr, v, tol=0)
 {  
     us = Ucal(tr,v,1:tr$nbX,1:tr$nbY)
@@ -78,8 +48,6 @@ ufromvs.default <- function(tr, v, tol=0)
     #
     return(list(u=u,subdiff=subdiff))
 }
-
-vfromus <- function(tr,...) UseMethod("vfromus")
 
 vfromus.default <- function(tr, u, tol=0)
 {

@@ -27,7 +27,6 @@
 # K. Train: Discrete Choice Models with Simulation. Cambridge.
 # A. Galichon, B. Salanie: " Cupid's Invisible Hand: Social Surplus and Identification in Matching Models"
 # K. Chiong, A. Galichon, M. Shum: "Duality in dynamic discrete choice models"
-#           
 #
 
 build_logits <- function(nbX, nbY, sigma=1, outsideOption=TRUE)
@@ -53,7 +52,7 @@ G.logit <- function(het, U, n)
     }
     #
     ret = list(val = het$sigma*sum(n*log(denom)),
-               mu  = (n /denom)*expU)
+               mu  = (n/denom)*expU)
     #
     return(ret)
 }
