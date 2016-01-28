@@ -180,6 +180,9 @@ mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y)
 
 mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_level=0)
 {
+  nbX = length(model$n)
+  nbY = length(model$m)
+  nbParams = length(model$nbParams)
     if(print_level > 0){
         message(paste0("Maximum Likelihood Estimation of ",class(model)," model."))
     }
