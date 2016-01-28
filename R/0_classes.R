@@ -74,7 +74,7 @@ determineType <- function(tr, ...) UseMethod("determineType")
 
 transfersTranspose <- function(tr, ...) UseMethod("transfersTranspose")
 
-Ucal <- function(tr, ...) UseMethod("Ucal") 
+Ucal <- function(tr, ...) UseMethod("Ucal")
 
 Vcal <- function(tr, ...) UseMethod("Vcal")
 
