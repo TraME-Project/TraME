@@ -176,8 +176,8 @@ newton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e-5,
     mu0y = m - apply(mu,2,sum)
     #
     ret = list(mu=mu,
-                   mux0=mux0, mu0y=mu0y,
-                   U=U, V=V, sol=sol)
+               mux0=mux0, mu0y=mu0y,
+               U=U, V=V, sol=sol)
     #
     return(ret)
 }

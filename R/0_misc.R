@@ -56,7 +56,8 @@ inversePWA <- function(a, B, C)
     return(vals)
 }
 
-tests_TraME <- function(){
+tests_TraME <- function()
+{
     ptm = proc.time()
     #
     tests_arum(notifications=FALSE)
