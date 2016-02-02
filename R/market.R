@@ -108,6 +108,12 @@ outcomeTranspose <- function(outcome)
     return(structure(thelist))
 }
 
+defaultNorm <- function(noSingles=FALSE) {
+  if (noSingles)
+  {return(list(H_edge_logit = function(mux0,mu0y) (mu0y[1])))} else
+  {return(NULL)}
+} 
+
 checkNorm <- function(neededNorm, n, m, hetG, hetH)
 {
     if(sum(n)!=sum(m)){

@@ -34,11 +34,8 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, noSingles=FALSE)
         m = rep(1,nbY)
     }
     #
-    if(noSingles){
-        neededNorm = list(H_edge_logit = function(mux0,mu0y) (mu0y[1]))
-    }else{
-        neededNorm = NULL
-    }
+    neededNorm = defaultNorm(noSingles)
+ 
     #
     ret = list(kron=kronecker(Yvals,Xvals),
                nbParams=dX*dY,
