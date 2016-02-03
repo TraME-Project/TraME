@@ -154,9 +154,9 @@ dtheta_mu <- function(model, theta, dtheta=diag(length(theta)))
     return(ret)
 }
 
-mLogLikelihood <- function(theta,model,muhat,muhatx0,muhat0y) UseMethod("mLogLikelihood", model)
+mLogLikelihood <- function(theta,model,muhat,muhatx0,muhat0y, scale=1) UseMethod("mLogLikelihood", model)
 
-mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y)
+mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y,scale=1)
 {
     mudmu = try( dtheta_mu(model,theta),silent=T)
     #
@@ -170,7 +170,7 @@ mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y)
         #
         mGradLL = - apply(term_grad,2,sum) 
         #
-        ret = list(objective=mLL,gradient=mGradLL)
+        ret = list(objective=mLL / scale ,gradient=mGradLL / scale)
     }else{
         ret = list(objective=NaN, gradient=rep(NaN,model$nbParams))
     }
@@ -182,6 +182,7 @@ mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_lev
 {
   nbX = length(model$n)
   nbY = length(model$m)
+  scale = max(sum(model$n),sum(model$n))
   nbParams = length(model$nbParams)
     if(print_level > 0){
         message(paste0("Maximum Likelihood Estimation of ",class(model)," model."))
@@ -207,7 +208,8 @@ mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_lev
                  model=model,
                  muhat=muhat,
                  muhatx0=muhatx0,
-                 muhat0y=muhat0y)
+                 muhat0y=muhat0y,
+                 scale = scale)
     #
     if(print_level > 0){
         print(res, show.controls=((1+nbX*nbY):(nbParams+nbX*nbY)))
