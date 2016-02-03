@@ -19,21 +19,28 @@
 ##
 ################################################################################
 
-build_market_NTU_logit <- function(n, m, alpha, gamma, sigma=1)
+build_market_NTU_logit <- function(n, m, alpha, gamma, sigma=1, neededNorm=NULL)
 {
-    nbX = length(n)
-    nbY = length(m)
-    #
-    NTUs = build_NTUs(alpha,gamma)
-    logitM = build_logits(nbX,nbY,sigma)
-    logitW = build_logits(nbY,nbX,sigma)
-    #
-    ret = list(n=n,m=m,
-               hetG=logitM,hetH=logitW,
-               transfers=NTUs)
-    class(ret) = "NTU_logit"
-    #
-    return(ret)
+  if(is.null(neededNorm)){
+    outsideOption = TRUE
+  }else{
+    outsideOption = FALSE
+  }
+  #
+  nbX = length(n)
+  nbY = length(m)
+  #
+  NTUs = build_NTUs(alpha,gamma)
+  logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=outsideOption)
+  logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=outsideOption)
+  #
+  ret = list(n=n,m=m,
+             hetG=logitM,hetH=logitW,
+             transfers=NTUs,
+             neededNorm=neededNorm)
+  class(ret) = "NTU_logit"
+  #
+  return(ret)
 }
 
 solveEquilibrium.NTU_logit = ipfp
