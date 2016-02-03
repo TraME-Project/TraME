@@ -154,17 +154,18 @@ dtheta_mu <- function(model, theta, dtheta=diag(length(theta)))
     return(ret)
 }
 
-mLogLikelihood <- function(theta,model,muhat,muhatx0,muhat0y, scale=1) UseMethod("mLogLikelihood", model)
+mLogLikelihood <- function(theta,model,muhat,muhatx0,muhat0y, scale=1, byIndiv=T) UseMethod("mLogLikelihood", model)
 
-mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y,scale=1)
+mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y,scale=1, byIndiv=T)
 {
     mudmu = try( dtheta_mu(model,theta),silent=T)
+    weightCouples = ifelse(byIndiv==TRUE,2,1)
     #
     ret <- 0
     if(class(mudmu)!="try-error"){ 
-        mLL = - sum(2* muhat * log(mudmu$mu)) - sum(muhatx0 * log(mudmu$mux0s)) - sum(muhat0y * log(mudmu$mu0ys))
+        mLL = - sum(weightCouples* muhat * log(mudmu$mu)) - sum(muhatx0 * log(mudmu$mux0s)) - sum(muhat0y * log(mudmu$mu0ys))
         #
-        term_1 = t(2*muhat/matrix(mudmu$mu,nrow=model$nbX) - muhatx0/mudmu$mux0s)
+        term_1 = t(weightCouples*muhat/matrix(mudmu$mu,nrow=model$nbX) - muhatx0/mudmu$mux0s)
         term_2 = muhat0y / mudmu$mu0ys
         term_grad = c(t(term_1 - term_2))*mudmu$dmu
         #
@@ -178,7 +179,7 @@ mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y,scale=1
     return(ret)
 }
 
-mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_level=0)
+mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_level=0, byIndiv=T)
 {
   nbX = length(model$n)
   nbY = length(model$m)
@@ -209,7 +210,8 @@ mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_lev
                  muhat=muhat,
                  muhatx0=muhatx0,
                  muhat0y=muhat0y,
-                 scale = scale)
+                 scale = scale,
+                 byIndiv=byIndiv)
     #
     if(print_level > 0){
         print(res, show.controls=((1+nbX*nbY):(nbParams+nbX*nbY)))
