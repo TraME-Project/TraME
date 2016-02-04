@@ -40,19 +40,19 @@ marketTranspose <- function(market)
 normalizationTranspose <- function(neededNorm)
 {
   if(!is.null(neededNorm)){
-    names = names(neededNorm)
-    thelist = list()
-    nbElts = 0
-    #
-    if("H_edge_logit" %in% neededNorm){
-      nbElts = nbElts + 1
-      thelist$H_edge_logit = function(a,b) (neededNorm$H_edge_logit(1/b,1/a))
+        names = names(neededNorm)
+        thelist = list()
+        nbElts = 0
+        #
+        if("H_edge_logit" %in% neededNorm){
+            nbElts = nbElts + 1
+            thelist$H_edge_logit = function(a,b) (neededNorm$H_edge_logit(1/b,1/a))
+        }
+        #
+        return(thelist)
+    }else{
+        return(NULL)
     }
-    #
-    return(thelist)  
-  }else{
-    return(NULL)
-  }
 }
 
 outcomeTranspose <- function(outcome)
@@ -108,10 +108,13 @@ outcomeTranspose <- function(outcome)
   return(structure(thelist))
 }
 
-defaultNorm <- function(noSingles=FALSE) {
-  if (noSingles)
-  {return(list(H_edge_logit = function(mux0,mu0y) (mu0y[1])))} else
-  {return(NULL)}
+defaultNorm <- function(noSingles=FALSE)
+{
+    if(noSingles){
+        return(list(H_edge_logit = function(mux0,mu0y) (mu0y[1])))
+    }else{
+        return(NULL)
+    }
 } 
 
 checkNorm <- function(neededNorm, n, m, hetG, hetH)

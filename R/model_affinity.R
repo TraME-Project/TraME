@@ -35,7 +35,6 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, noSingles=FALSE)
     }
     #
     neededNorm = defaultNorm(noSingles)
- 
     #
     ret = list(kron=kronecker(Yvals,Xvals),
                nbParams=dX*dY,

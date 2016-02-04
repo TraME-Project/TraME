@@ -160,8 +160,8 @@ newton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e-5,
     }
     #
     sol = nleqslv(x = c(winit),
-                  fn = ED,jac = jacED,
-                  method =  "Broyden", #"Newton",
+                  fn = ED, jac = jacED,
+                  method = "Broyden", #"Newton",
                   control = list(xtol=xtol,maxit = 200)
     )
     #

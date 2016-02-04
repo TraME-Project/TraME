@@ -90,7 +90,7 @@ Gstarx.logit <- function(het, mux, x)
 }
 
 D2G.logit <- function(het, U, n, xFirst=TRUE)
-{ 
+{
     # NOTE; the formula is the same regardless of whether outsideOption == TRUE or FALSE
     muxy = G(het,U,n)$mu
     H = matrix(0,het$nbX*het$nbY,het$nbX*het$nbY)

@@ -154,9 +154,9 @@ dtheta_mu <- function(model, theta, dtheta=diag(length(theta)))
     return(ret)
 }
 
-mLogLikelihood <- function(theta,model,muhat,muhatx0,muhat0y, scale=1, byIndiv=T) UseMethod("mLogLikelihood", model)
+mLogLikelihood <- function(theta, model, muhat, muhatx0, muhat0y, scale=1, byIndiv=T) UseMethod("mLogLikelihood", model)
 
-mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y,scale=1, byIndiv=T)
+mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y, scale=1, byIndiv=T)
 {
     mudmu = try( dtheta_mu(model,theta),silent=T)
     weightCouples = ifelse(byIndiv==TRUE,2,1)
@@ -171,7 +171,7 @@ mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y,scale=1
         #
         mGradLL = - apply(term_grad,2,sum) 
         #
-        ret = list(objective=mLL / scale ,gradient=mGradLL / scale)
+        ret = list(objective = mLL / scale, gradient = mGradLL / scale)
     }else{
         ret = list(objective=NaN, gradient=rep(NaN,model$nbParams))
     }
