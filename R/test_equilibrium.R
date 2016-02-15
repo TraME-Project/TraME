@@ -353,15 +353,15 @@ test_eapNash <- function(nbX=8,nbY=5,seed=777,debugmode = FALSE)
     message(paste0('\nEnd of test_eapNash. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
 }  
 
-tests_equilibrium = function(notifications=TRUE){
+tests_equilibrium = function(notifications=TRUE,nbDraws=1e3){
     ptm = proc.time()
     #
-    test_darum()
+    test_darum(nbDraws=nbDraws)
     test_ipfp()
-    test_newton()
-    test_maxWelfare()
-    test_jacobi()
-    test_cupidsLP()
+    test_newton(nbDraws=nbDraws)
+    test_maxWelfare(nbDraws=nbDraws)
+    test_jacobi(nbDraws=nbDraws)
+    test_cupidsLP(nbDraws=nbDraws)
     test_oapLP()
     test_eapNash()
     #

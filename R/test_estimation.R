@@ -178,7 +178,7 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
 #   return(list(objective=theval,gradient=c(thegrad) ))
 # }
 
-tests_estimation = function(notifications=T)
+tests_estimation = function(notifications=T,nbDraws=1e3)
 {
     ptm = proc.time()
     #

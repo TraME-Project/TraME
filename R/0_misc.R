@@ -56,12 +56,12 @@ inversePWA <- function(a, B, C)
     return(vals)
 }
 
-tests_TraME <- function()
+tests_TraME <- function(nbDraws = 1e3)
 {
     ptm = proc.time()
     #
-    tests_arum(notifications=FALSE)
-    tests_equilibrium(notifications=FALSE)
+    tests_arum(notifications=FALSE,nbDraws=10*nbDraws)
+    tests_equilibrium(notifications=FALSE,nbDraws=nbDraws)
     tests_estimation(notifications=FALSE)
     #
     time = proc.time() - ptm

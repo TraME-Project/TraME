@@ -249,14 +249,14 @@ test_RSC <- function(nbDraws=1E4,seed=NULL)
     message(paste0('\nEnd of test_RSC. Time elapsed = ', time["elapsed"], 's.\n')) 
 }
 
-tests_arum <- function(notifications=TRUE)
+tests_arum <- function(notifications=TRUE,nbDraws=1e4)
 {
     ptm = proc.time()
     #
-    test_Logit()
-    test_Probit()
-    test_RUSC()
-    test_RSC()
+    test_Logit(nbDraws=nbDraws)
+    test_Probit(nbDraws=nbDraws)
+    test_RUSC(nbDraws=nbDraws)
+    test_RSC(nbDraws=nbDraws)
     #
     time = proc.time() - ptm
     #
