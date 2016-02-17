@@ -32,6 +32,7 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     #
     noSingles = !is.null(market$neededNorm)
     if(noSingles){
+        warning("There are known issues with the current implementation of the IPFP in the case without unassigned agents.")
         H = market$neededNorm$H_edge_logit
         if(is.null(H)){
             stop("Function H_edge not included in market$neededNorm")

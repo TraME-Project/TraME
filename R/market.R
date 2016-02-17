@@ -40,19 +40,19 @@ marketTranspose <- function(market)
 normalizationTranspose <- function(neededNorm)
 {
   if(!is.null(neededNorm)){
-        names = names(neededNorm)
-        thelist = list()
-        nbElts = 0
-        #
-        if("H_edge_logit" %in% neededNorm){
-            nbElts = nbElts + 1
-            thelist$H_edge_logit = function(a,b) (neededNorm$H_edge_logit(1/b,1/a))
-        }
-        #
-        return(thelist)
-    }else{
-        return(NULL)
+    names = names(neededNorm)
+    thelist = list()
+    nbElts = 0
+    #
+    if("H_edge_logit" %in% neededNorm){
+      nbElts = nbElts + 1
+      thelist$H_edge_logit = function(a,b) (neededNorm$H_edge_logit(1/b,1/a))
     }
+    #
+    return(thelist)
+  }else{
+    return(NULL)
+  }
 }
 
 outcomeTranspose <- function(outcome)
@@ -110,11 +110,11 @@ outcomeTranspose <- function(outcome)
 
 defaultNorm <- function(noSingles=FALSE)
 {
-    if(noSingles){
-        return(list(H_edge_logit = function(mux0,mu0y) (mu0y[1])))
-    }else{
-        return(NULL)
-    }
+  if(noSingles){
+    return(list(H_edge_logit = function(mux0,mu0y) (mu0y[1])))
+  }else{
+    return(NULL)
+  }
 } 
 
 checkNorm <- function(neededNorm, n, m, hetG, hetH)
@@ -136,7 +136,16 @@ checkNorm <- function(neededNorm, n, m, hetG, hetH)
 
 margxInv.default <- function(xs, mkt, Mu0ys, sigma=1) 
 {
-  coeff = ifelse(is.null(mkt$neededNorm),1,0)
+  if (is.null(mkt$neededNorm))
+  {
+    coeff = 1
+    ubs = mkt$n
+  }
+  else
+  {
+    coeff = 0
+    ubs = rep(1e10,mkt$transfers$nbX)
+  }
   #
   if(is.null(xs)){
     xs = 1:mkt$transfers$nbX
@@ -145,7 +154,7 @@ margxInv.default <- function(xs, mkt, Mu0ys, sigma=1)
   #
   for(x in xs){
     root_fn <- function(z) (coeff*z - mkt$n[x] + sum(MMF(mkt$transfers,z,Mu0ys,xs=x,sigma=sigma)))
-    themux0s[x] = uniroot(root_fn, c(0,mkt$n[x]), tol = 1e-300)$root # Keith: fix tolerence   
+    themux0s[x] = uniroot(root_fn, c(0,ubs[x]), tol = 1e-300)$root # Keith: fix tolerence   
   }
   #
   return(themux0s)
@@ -153,7 +162,16 @@ margxInv.default <- function(xs, mkt, Mu0ys, sigma=1)
 
 margyInv.default <- function(ys, mkt, Mux0s, sigma=1)
 {
-  coeff = ifelse(is.null(mkt$neededNorm),1,0)
+  if (is.null(mkt$neededNorm))
+  {
+    coeff = 1
+    ubs = mkt$m
+  }
+  else
+  {
+    coeff = 0
+    ubs = rep(1e10,mkt$transfers$nbY)
+  }
   #
   if(is.null(ys)){
     ys = 1:mkt$transfers$nbY
@@ -162,7 +180,7 @@ margyInv.default <- function(ys, mkt, Mux0s, sigma=1)
   #
   for(y in ys){
     root_fn <- function(z) (coeff*z - mkt$m[y] + sum(MMF(mkt$transfers,Mux0s,z,ys=y,sigma=sigma)))
-    themu0ys[y] = uniroot(root_fn, c(0,mkt$m[y]), tol=1e-300)$root
+    themu0ys[y] = uniroot(root_fn, c(0,ubs[y]), tol=1e-300)$root
   }
   #
   return(themu0ys)

@@ -44,10 +44,12 @@ test_ipfp <- function(seed=777, nbX=18, nbY=5)
   print(c(r1$mu))
   message("")
   #
-  #    r2 = ipfp(m2,xFirst=TRUE,notifications=TRUE)
-  #    message("Solution of NTU-logit problem using ipfp:")
-  #    print(c(r2$mu))
-  #    message("")
+  if (!noSingles) {
+    r2 = ipfp(m2,xFirst=TRUE,notifications=TRUE)
+    message("Solution of NTU-logit problem using ipfp:")
+    print(c(r2$mu))
+    message("")
+  }
   #
   r3 = ipfp(m3,xFirst=TRUE,notifications=TRUE)
   message("Solution of LTU-logit problem using parallel ipfp:")
