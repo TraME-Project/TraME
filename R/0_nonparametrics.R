@@ -19,28 +19,68 @@
 ##
 ################################################################################
 
-NonparametricEsimtationTUEmpirical <- function(n, m, hetG, hetH, kron, muhat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+NonparametricEstimationTUgeneral <- function(n, m, hetG, hetH, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
-    if(print_level > 0){
-        print(paste0("LP optimization used."))
-    }
-    #
-    nbX = length (n)
-    nbY = length (m)
-    nbParams = nbX*nbY
-    #
-    res1 = build_disaggregate_epsilon(n,nbX,nbY,hetG)
-    res2 = build_disaggregate_epsilon(m,nbY,nbX,hetH)
-    #
-    epsilon_iy = res1$epsilon_iy
-    epsilon0_i = c(res1$epsilon0_i)
+  if(print_level>0){
+    message("BFGS optimization used.")
+  }
+  
+  nbX = length(n)
+  nbY = length(m)
+  
+  #
+  eval_f <- function(thearg){
+    theU = matrix(thearg[1:(nbX*nbY)],nbX,nbY)
+    theV = thearg[(1+nbX*nbY):(2*nbX*nbY)]
     
-    I_ix = res1$I_ix
+    phi = theU+theV
+    phimat = matrix(phi,nbX,nbY)
     #
-    eta_xj = t(res2$epsilon_iy)
-    eta0_j = c(res2$epsilon0_i)
+    resG = G(hetG,theU,n)
+    resH = G(hetH,t(theV),m)
+    #
+    Ehatphi = sum(muhat*phimat)
+    val = resG$val + resH$val - Ehatphi
     
-    I_yj = t(res2$I_ix)
+    tresHmu = t(resH$mu)
+    
+    gradU = c(resG$mu - muhat)
+    gradV = c(tresHmu - muhat)
+    #
+    ret = list(objective = val,
+               gradient = c(gradU,gradV))
+    #
+    return(ret)
+  }
+  #
+  
+  
+  
+}
+
+
+NonparametricEstimationTUEmpirical <- function(n, m, hetG, hetH, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+{
+  if(print_level > 0){
+    print(paste0("LP optimization used."))
+  }
+  #
+  nbX = length (n)
+  nbY = length (m)
+  nbParams = nbX*nbY
+  #
+  res1 = build_disaggregate_epsilon(n,nbX,nbY,hetG)
+  res2 = build_disaggregate_epsilon(m,nbY,nbX,hetH)
+  #
+  epsilon_iy = res1$epsilon_iy
+  epsilon0_i = c(res1$epsilon0_i)
+  
+  I_ix = res1$I_ix
+  #
+  eta_xj = t(res2$epsilon_iy)
+  eta0_j = c(res2$epsilon0_i)
+  
+  I_yj = t(res2$I_ix)
     #
     ni = c(I_ix %*% n)/res1$nbDraws
     mj = c( m %*% I_yj)/res2$nbDraws
@@ -102,8 +142,8 @@ npe <- function(model, muhat, print_level=0)
     }
     #
     if((class(market$hetG)=="empirical") & (class(market$hetH)=="empirical")){
-        outcome = NonparametricEsimtationTUEmpirical(market$n,market$m,market$hetG,market$hetH,
-                                                     kron,muhat,theta0,print_level=print_level)
+        outcome = NonparametricEstimationTUEmpirical(market$n,market$m,market$hetG,market$hetH,
+                                                     muhat,print_level=print_level)
     }else{
         stop("Nonparametric estimation currently defined in empirical case only.")
     }
