@@ -1,4 +1,6 @@
-//inversePWA_R.cpp
+// invPWA_R.cpp
+// Keith O'Hara
+// 02/18/2016
 
 #include "invPWA_R.h"
 using namespace Rcpp;

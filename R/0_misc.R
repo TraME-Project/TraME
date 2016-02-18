@@ -61,7 +61,7 @@ inversePWA <- function(a, B, C)
     #
     vals <- .Call("invPWA_R", a,B,C, PACKAGE = "TraME")$vals
     #
-    return(vals)
+    return(c(vals))
 }
 
 tests_TraME <- function(nbDraws = 1e3)
