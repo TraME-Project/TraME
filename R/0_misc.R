@@ -19,7 +19,7 @@
 ##
 ################################################################################
 
-inversePWA <- function(a, B, C)
+inversePWA_old <- function(a, B, C)
 {
     nbX = length(a)
     nbY = dim(B)[2]
@@ -52,6 +52,14 @@ inversePWA <- function(a, B, C)
             vals[x]= (a[x] - sum((small_C*b)[ysincluded])) / (1 + sum(small_C) - sum(small_C[ysincluded]))
         }
     }
+    #
+    return(vals)
+}
+
+inversePWA <- function(a, B, C)
+{
+    #
+    vals <- .Call("invPWA_R", a,B,C, PACKAGE = "TraME")$vals
     #
     return(vals)
 }
