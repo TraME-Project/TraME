@@ -19,7 +19,7 @@
 ##
 ################################################################################
 
-inversePWA <- function(a, B, C)
+inversePWA <- function(a, B, C, k = 1)
 {
     nbX = length(a)
     nbY = dim(B)[2]
@@ -36,7 +36,7 @@ inversePWA <- function(a, B, C)
         yup = nbY
         while(yup > ylow){
             ymid = ylow + (yup - ylow) %/% 2
-            lhs = b[ymid] + sum(small_C * pmin(b[ymid],b))
+            lhs = k* b[ymid] + sum(small_C * pmin(b[ymid],b))
             if(lhs == a[x]){
                 yup = ylow = ymid
             }else if(lhs > a[x]){
@@ -45,11 +45,11 @@ inversePWA <- function(a, B, C)
                 ylow=ymid+1
             }
         }
-        if((ylow==1) & ( b[ylow]+sum(small_C * pmin(b[ylow],b)) >= a[x])){
-            vals[x] = a[x] / (1+sum(small_C))
+        if((ylow==1) & ( k*b[ylow]+sum(small_C * pmin(b[ylow],b)) >= a[x])){
+            vals[x] = a[x] / (k+sum(small_C))
         }else{
             ysincluded = which((1:nbY) <= ylow)
-            vals[x]= (a[x] - sum((small_C*b)[ysincluded])) / (1 + sum(small_C) - sum(small_C[ysincluded]))
+            vals[x]= (a[x] - sum((small_C*b)[ysincluded])) / (k + sum(small_C) - sum(small_C[ysincluded]))
         }
     }
     #
