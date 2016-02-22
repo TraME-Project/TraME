@@ -156,7 +156,7 @@ dtheta_mu <- function(model, theta, dtheta=diag(length(theta)))
 
 mLogLikelihood <- function(theta, model, muhat, muhatx0, muhat0y, scale=1, byIndiv=T) UseMethod("mLogLikelihood", model)
 
-mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y, scale=1, byIndiv=T)
+mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y, scale=1, byIndiv=T) # to be modified
 {
     mudmu = try( dtheta_mu(model,theta),silent=T)
     weightCouples = ifelse(byIndiv==TRUE,2,1)
