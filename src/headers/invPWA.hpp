@@ -19,7 +19,7 @@
   ##
   ################################################################################*/
 
-arma::vec invPWA (arma::vec a, arma::mat B, arma::mat C)
+arma::vec invPWA (arma::vec a, arma::mat B, arma::mat C, double k)
 {
     int nb_X = a.n_elem;
     int nb_Y = B.n_cols;
@@ -49,7 +49,7 @@ arma::vec invPWA (arma::vec a, arma::mat B, arma::mat C)
             b_low.fill(b(y_low-1));
             b_mid.fill(b(y_mid-1));
             
-            lhs = b(y_mid-1) + arma::sum(small_C % arma::min(b_mid,b));
+            lhs = k * b(y_mid-1) + arma::sum(small_C % arma::min(b_mid,b));
             //
             if(lhs == a(x)){
                 y_low = y_mid;
@@ -62,15 +62,15 @@ arma::vec invPWA (arma::vec a, arma::mat B, arma::mat C)
                 y_low = y_mid + 1;
             }
             //
-            if((y_low==1) && ( b(y_low-1) + arma::sum(small_C % arma::min(b_low,b)) >= a(x) )){
-                vals(x) = a(x) / (1 + small_C_sum);
+            if((y_low==1) && ( k * b(y_low-1) + arma::sum(small_C % arma::min(b_low,b)) >= a(x) )){
+                vals(x) = a(x) / (k + small_C_sum);
             }
             else{
                 y_incl = y_low - 1;
                 
                 temp_vec = (small_C % b);
                 term_1 = a(x) - arma::sum(temp_vec(arma::span(0,y_incl)));
-                term_2 = 1 + sum(small_C) - arma::sum(small_C(arma::span(0,y_incl)));
+                term_2 = k + sum(small_C) - arma::sum(small_C(arma::span(0,y_incl)));
                 
                 vals(x) = term_1 / term_2;
             }

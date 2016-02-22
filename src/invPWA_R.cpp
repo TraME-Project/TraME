@@ -5,14 +5,16 @@
 #include "invPWA_R.h"
 using namespace Rcpp;
 
-SEXP invPWA_R(SEXP a_R, SEXP B_R, SEXP C_R)
+SEXP invPWA_R(SEXP a_R, SEXP B_R, SEXP C_R, SEXP k_R)
 {
     try {
         arma::vec a = as<arma::vec>(a_R);
         arma::mat B = as<arma::mat>(B_R);
         arma::mat C = as<arma::mat>(C_R);
         
-        arma::vec vals = invPWA(a,B,C);
+        double k = as<double>(k_R);
+        
+        arma::vec vals = invPWA(a,B,C,k);
         
         return Rcpp::List::create(Rcpp::Named("vals") = vals);
     } catch( std::exception &ex ) {

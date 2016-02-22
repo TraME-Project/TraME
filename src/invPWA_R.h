@@ -4,5 +4,5 @@
 #include <math.h>
 #include <RcppArmadillo.h>
 #include "headers/invPWA.hpp"
-RcppExport SEXP invPWA_R(SEXP, SEXP, SEXP);
+RcppExport SEXP invPWA_R(SEXP, SEXP, SEXP, SEXP);
 #endif
