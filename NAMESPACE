@@ -1,7 +1,5 @@
-exportPattern("^[[:alpha:]]+")
+useDynLib(TraME)
 
-export(ipfp)
-export(darum)
-export(CupidsLP)
-export(maxWelfare)
-export(oapLP)
+importFrom(Rcpp, evalCpp)
+
+exportPattern("^[[:alpha:]]+")
