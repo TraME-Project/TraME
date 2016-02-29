@@ -28,6 +28,10 @@ library(gurobi)
 tests_TraME()
 ```
 
+Note that TraME requires compilation, and so an appropriate development environment is necessary to install the package.
+* For Windows users, get Rtools.
+* For Mac users, get Xcode and install gfortran 4.8.2.
+
 ### Authors
 
 Alfred Galichon and the TraME team.
