@@ -29,8 +29,12 @@ tests_TraME()
 ```
 
 Note that TraME requires compilation, and so an appropriate development environment is necessary to install the package.
-* For Windows users, get Rtools.
-* For Mac users, get Xcode and install gfortran 4.8.2.
+* For Windows users, get [Rtools](https://cran.r-project.org/bin/windows/Rtools/).
+* For Mac users, get Xcode and install gfortran 4.8.2, the latter of which can be [obtained using](http://www.thecoatlessprofessor.com/programming/rcpp-rcpparmadillo-and-os-x-mavericks-lgfortran-and-lquadmath-error/)
+```
+curl -O http://r.research.att.com/libs/gfortran-4.8.2-darwin13.tar.bz2
+sudo tar fvxz gfortran-4.8.2-darwin13.tar.bz2 -C /
+```
 
 ### Authors
 
