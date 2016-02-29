@@ -19,7 +19,7 @@
 ##
 ################################################################################
 
-inversePWA <- function(a, B, C, k = 1)
+inversePWA_old <- function(a, B, C, k = 1)
 {
     nbX = length(a)
     nbY = dim(B)[2]
@@ -36,13 +36,13 @@ inversePWA <- function(a, B, C, k = 1)
         yup = nbY
         while(yup > ylow){
             ymid = ylow + (yup - ylow) %/% 2
-            lhs = k* b[ymid] + sum(small_C * pmin(b[ymid],b))
+            lhs = k * b[ymid] + sum(small_C * pmin(b[ymid],b))
             if(lhs == a[x]){
                 yup = ylow = ymid
             }else if(lhs > a[x]){
                 yup = ymid
             }else{
-                ylow=ymid+1
+                ylow= ymid + 1
             }
         }
         if((ylow==1) & ( k*b[ylow]+sum(small_C * pmin(b[ylow],b)) >= a[x])){
@@ -54,6 +54,14 @@ inversePWA <- function(a, B, C, k = 1)
     }
     #
     return(vals)
+}
+
+inversePWA <- function(a, B, C, k=1.0)
+{
+    #
+    vals <- .Call("invPWA_R", a,B,C,k, PACKAGE = "TraME")$vals
+    #
+    return(c(vals))
 }
 
 tests_TraME <- function(nbDraws = 1e3)
