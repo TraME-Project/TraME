@@ -19,7 +19,7 @@
 ##
 ################################################################################
 
-NonparametricEstimationTUgeneral <- function(n, m, hetG, hetH, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+NonparametricEstimationTUGeneral <- function(n, m, hetG, hetH, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
   if(print_level>0){
     message("BFGS optimization used.")
@@ -31,7 +31,7 @@ NonparametricEstimationTUgeneral <- function(n, m, hetG, hetH, muhat, xtol_rel=1
   #
   eval_f <- function(thearg){
     theU = matrix(thearg[1:(nbX*nbY)],nbX,nbY)
-    theV = thearg[(1+nbX*nbY):(2*nbX*nbY)]
+    theV = matrix(thearg[(1+nbX*nbY):(2*nbX*nbY)],nbX,nbY)
     
     phi = theU+theV
     phimat = matrix(phi,nbX,nbY)
@@ -43,6 +43,9 @@ NonparametricEstimationTUgeneral <- function(n, m, hetG, hetH, muhat, xtol_rel=1
     val = resG$val + resH$val - Ehatphi
     
     tresHmu = t(resH$mu)
+#     print(dim(resG$mu))
+#     print(dim(resH$mu))
+#     print(dim(muhat))
     
     gradU = c(resG$mu - muhat)
     gradV = c(tresHmu - muhat)
@@ -53,7 +56,20 @@ NonparametricEstimationTUgeneral <- function(n, m, hetG, hetH, muhat, xtol_rel=1
     return(ret)
   }
   #
-  
+  resopt = nloptr(x0=rep(0,2*nbX*nbY),
+                  eval_f=eval_f,
+                  opt=list("algorithm" = "NLOPT_LD_LBFGS",
+                           "xtol_rel"=xtol_rel,
+                           "maxeval"=maxeval,
+                           "print_level"=print_level))
+  #
+  U = matrix(resopt$solution[1:(nbX*nbY)],nbX,nbY)  
+  V = matrix(resopt$solution[(1+nbX*nbY) :(2*nbX*nbY)],nbX,nbY)  
+  phihat = U+V
+  #
+  ret = list(phihat=phihat,
+             U=U, V=V,
+             val=resopt$objval)
   
   
 }
@@ -145,7 +161,8 @@ npe <- function(model, muhat, print_level=0)
         outcome = NonparametricEstimationTUEmpirical(market$n,market$m,market$hetG,market$hetH,
                                                      muhat,print_level=print_level)
     }else{
-        stop("Nonparametric estimation currently defined in empirical case only.")
+      outcome = NonparametricEstimationTUGeneral(market$n,market$m,market$hetG,market$hetH, 
+                                                 muhat,print_level=print_level)
     }
     #
     return(outcome)
