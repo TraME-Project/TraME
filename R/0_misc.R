@@ -75,3 +75,14 @@ tests_TraME <- function(nbDraws = 1e3)
     time = proc.time() - ptm
     message(paste0('All tests completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
 }
+
+
+verify_signature <- function()
+{
+  require(tools)
+  sink("testtrame.txt",type="output")
+  tests_TraME()
+  sink()
+  signature = md5sum("testtrame.txt")
+  return(signature)
+}
