@@ -26,7 +26,7 @@
 # O. Bonnet, A. Galichon, and M. Shum: "Yoghurt Chooses Man: The Matching Approach to Identification of Nonadditive Random Utility Models".
 #
 
-ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, xchunks=NULL, ychunks=NULL, mu0ystart=market$m)
+ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, mu0ystart=market$m)
     # Computes equilibrium in the logit case via IPFP in the all-logit case
 {
     #
@@ -58,13 +58,6 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     nbX = length(n)
     nbY = length(m)
     
-    # Preamble
-    if(is.null(xchunks)){
-        xchunks = sfClusterSplit(1:nbX)
-    } 
-    if(is.null(ychunks)){
-        ychunks = sfClusterSplit(1:nbY)
-    }
     #
     # Algorithm: Loop
     #
@@ -73,13 +66,14 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     
     error = 2*tol
     iter = 0
+    tm = proc.time()  
     while(max(error,na.rm=TRUE)>tol){
         iter = iter+1
         val = c(mux0,mu0y)
         
         #Solve for mux0 and then mu0y
-        mux0 = unlist(sfLapply(x=xchunks,fun=margxInv,mkt=market,Mu0y=mu0y,sigma=sigma))
-        mu0y = unlist(sfLapply(x=ychunks,fun=margyInv,mkt=market,Mux0=mux0,sigma=sigma))
+        mux0 = margxInv(1:nbX,mkt=market,Mu0y=mu0y,sigma=sigma)
+        mu0y = margyInv(1:nbY,mkt=market,Mux0=mux0,sigma=sigma)
         
         if(noSingles){
             rescale = H(mux0,mu0y)
@@ -93,6 +87,8 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
         }
     }
     #
+    time = proc.time()-tm  
+    time = time["elapsed"] 
     if(notifications){
         message(paste0("IPFP converged in ", iter," iterations.\n"))
     }
@@ -105,7 +101,8 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
                    mux0 = mux0, mu0y = mu0y,
                    U = U, V = V,
                    u = - sigma * log(mux0),
-                   v = - sigma * log(mu0y))
+                   v = - sigma * log(mu0y),
+                   iter=iter, time=time)
     #
     return(outcome)
 }
