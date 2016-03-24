@@ -25,8 +25,91 @@
 # A. Galichon, S.D. Kominers, and S. Weber: "An Empirical Framework for Matching with Imperfectly Transferable Utility"  
 # O. Bonnet, A. Galichon, and M. Shum: "Yoghurt Chooses Man: The Matching Approach to Identification of Nonadditive Random Utility Models".
 #
+ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, xchunks=NULL, ychunks=NULL, mu0ystart=market$m)
+    # Computes equilibrium in the logit case via IPFP in the all-logit case
+{
+    #
+    noSingles = !is.null(market$neededNorm)
+    if(noSingles){
+        warning("There are known issues with the current implementation of the IPFP in the case without unassigned agents.")
+        H = market$neededNorm$H_edge_logit
+        if(is.null(H)){
+            stop("Function H_edge not included in market$neededNorm")
+        }
+    }
+    #
+    if(notifications){
+        message('Solving for equilibrium in ITU_logit problem using IPFP.') 
+    }
+    if((class(market$hetG)!="logit") || (class(market$hetH)!="logit")){
+        stop("Error: Heterogeneities are not all logit.")
+    }
+    if(market$hetG$sigma != market$hetH$sigma){
+        stop("Error: scaling parameters of the logit differs on both sides of the market.")
+    }
+    #
+    sigma = market$hetG$sigma
+    
+    n = market$n
+    m = market$m
+    tr = market$transfers
+    
+    nbX = length(n)
+    nbY = length(m)
+    
+    # Preamble
+    if(is.null(xchunks)){
+        xchunks = sfClusterSplit(1:nbX)
+    } 
+    if(is.null(ychunks)){
+        ychunks = sfClusterSplit(1:nbY)
+    }
+    #
+    # Algorithm: Loop
+    #
+    mu0y = mu0ystart
+    mux0 = rep(NA,length=nbX)
+    
+    error = 2*tol
+    iter = 0
+    while(max(error,na.rm=TRUE)>tol){
+        iter = iter+1
+        val = c(mux0,mu0y)
+        
+        #Solve for mux0 and then mu0y
+        mux0 = unlist(sfLapply(x=xchunks,fun=margxInv,mkt=market,Mu0y=mu0y,sigma=sigma))
+        mu0y = unlist(sfLapply(x=ychunks,fun=margyInv,mkt=market,Mux0=mux0,sigma=sigma))
+        
+        if(noSingles){
+            rescale = H(mux0,mu0y)
+            mux0 = mux0 * rescale
+            mu0y = mu0y / rescale
+        }
+        
+        error = abs(c(mux0,mu0y)-val)
+        if(debugmode & notifications){
+            message(paste0("Iter: ", iter, ". Error: ", max(error)))
+        }
+    }
+    #
+    if(notifications){
+        message(paste0("IPFP converged in ", iter," iterations.\n"))
+    }
+    # Construct the equilibrium outcome based on mux0 and mu0y obtained from above
+    mu = MMF(tr,mux0,mu0y, sigma=sigma)  
+    U = sigma * log(mu/mux0)
+    V = sigma * t(log(t(mu) / mu0y))
+    #
+    outcome = list(mu = mu,
+                   mux0 = mux0, mu0y = mu0y,
+                   U = U, V = V,
+                   u = - sigma * log(mux0),
+                   v = - sigma * log(mu0y))
+    #
+    return(outcome)
+}
 
-ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, mu0ystart=market$m)
+ipfptime <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, mu0ystart=market$m)
     # Computes equilibrium in the logit case via IPFP in the all-logit case
 {
     #
