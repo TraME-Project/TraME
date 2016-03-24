@@ -68,21 +68,35 @@ tests_TraME <- function(nbDraws = 1e3)
 {
     ptm = proc.time()
     #
-    tests_arum(notifications=FALSE,nbDraws=10*nbDraws)
-    tests_equilibrium(notifications=FALSE,nbDraws=nbDraws)
-    tests_estimation(notifications=FALSE)
+    hash_arum <- tests_arum(notifications=FALSE,nbDraws=10*nbDraws)
+    hash_equilibrium <- tests_equilibrium(notifications=FALSE,nbDraws=nbDraws)
+    hash_estimation <- tests_estimation(notifications=FALSE)
     #
     time = proc.time() - ptm
     message(paste0('All tests completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
+    #
+    ret <- c(hash_arum,hash_equilibrium,hash_estimation)
+    return(ret)
 }
 
 
 verify_signature <- function()
 {
-  require(tools)
-  sink("testtrame.txt",type="output")
-  tests_TraME()
-  sink()
-  signature = md5sum("testtrame.txt")
-  return(signature)
+    output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()))
+    #
+    true_hash <- c("9235d561de4671dcc87d7cbbfa617f4b","2c60b28fcd51e679483ea713bff62022","c65ddb9f306639769b0cba259e8d3903")
+    #
+    if(identical(hash_vals,true_hash)){
+        message('Test results are correct!\n')
+    }else{
+        if(!identical(hash_vals[1],true_hash[1])){
+            message('There is a problem with arum test results.\n')
+        }
+        if(!identical(hash_vals[2],true_hash[2])){
+            message('There is a problem with equilibrium test results.\n')
+        }
+        if(!identical(hash_vals[3],true_hash[3])){
+            message('There is a problem with estimation test results.\n')
+        }
+    }
 }
