@@ -65,7 +65,10 @@ test_Logit <- function(nbDraws=1E4, seed=777, outsideOption=TRUE)
     }
     #
     time = proc.time() - ptm
-    message(paste0('\nEnd of testLogit. Time elapsed = ', time["elapsed"], 's.\n')) 
+    message(paste0('\nEnd of testLogit. Time elapsed = ', time["elapsed"], 's.\n'))
+    #
+    ret <- c(resGstar$U,resGstarSim$U,resG$val,resGSim$val,resGstar$val,resGstarSim$val,resGbar$val,resGbarS$val)
+    return(ret)
 }
 
 test_Probit <- function(nbDraws=1E4, seed=777, outsideOption=TRUE)
@@ -97,7 +100,9 @@ test_Probit <- function(nbDraws=1E4, seed=777, outsideOption=TRUE)
     #
     time = proc.time() - ptm
     message(paste0('\nEnd of testProbit. Time elapsed = ', time["elapsed"], 's.\n')) 
-    
+    #
+    ret <- c(resGstarSim$U)
+    return(ret)
 }
 
 test_RUSC <- function(nbDraws=1E4,seed=NULL)
@@ -148,8 +153,8 @@ test_RUSC <- function(nbDraws=1E4,seed=NULL)
     print(c(r3$val))
     print(c(r3Sim$val))
     #
-    r4 = G (RUSCs,r3$U, n)
-    r4Sim = G (RUSCsSim,r3Sim$U,n)
+    r4 = G(RUSCs,r3$U, n)
+    r4Sim = G(RUSCsSim,r3Sim$U,n)
     message("\n\\nabla G \\nabla G*(mu) in (i) closed form and (ii) simulated RUSC:")
     print(c(r4$mu))
     print(c(r4Sim$mu))
@@ -167,6 +172,9 @@ test_RUSC <- function(nbDraws=1E4,seed=NULL)
     #
     time = proc.time()-ptm
     message(paste0('\nEnd of test_RUSC. Time elapsed = ', time["elapsed"], 's.\n')) 
+    #
+    ret <- c(r1$val,r1Sim$val,r1$mu,r1Sim$mu,r2$U,r2Sim$U,r3$U,r3Sim$U,r3$val,r3Sim$val,r4$mu,r4Sim$mu,r5$val,r5Sim$val,r5$mu,r5Sim$mu)
+    return(ret)
 }
 
 test_RSC <- function(nbDraws=1E4,seed=NULL)
@@ -217,9 +225,6 @@ test_RSC <- function(nbDraws=1E4,seed=NULL)
     message("\nG*(mu) in (i) closed form and (ii) simulated RSC:")
     print(c(r3$val))
     print(c(r3Sim$val))
-    message("\n\\nabla G*(mu) in (i) closed form and (ii) simulated RSC:")
-    print(r3$U)
-    print(r3Sim$U)
     #
     r4 = G (RSCs,r3$U, n)
     r4Sim = G (RSCsSim,r3Sim$U,n)
@@ -247,20 +252,28 @@ test_RSC <- function(nbDraws=1E4,seed=NULL)
     #
     time = proc.time()-ptm
     message(paste0('\nEnd of test_RSC. Time elapsed = ', time["elapsed"], 's.\n')) 
+    #
+    ret <- c(r1$val,r1Sim$val,r1$mu,r1Sim$mu,r2$U,r2Sim$U,r3$U,r3Sim$U,r3$val,r3Sim$val,r4$mu,r4Sim$mu,r5$val,r5Sim$val,r5$mu,r5Sim$mu)
+    return(ret)
 }
 
 tests_arum <- function(notifications=TRUE,nbDraws=1e4)
 {
     ptm = proc.time()
     #
-    test_Logit(nbDraws=nbDraws)
-    test_Probit(nbDraws=nbDraws)
-    test_RUSC(nbDraws=nbDraws)
-    test_RSC(nbDraws=nbDraws)
+    res_logit  <- test_Logit(nbDraws=nbDraws)
+    res_probit <- test_Probit(nbDraws=nbDraws)
+    res_RUSC   <- test_RUSC(nbDraws=nbDraws)
+    res_RSC    <- test_RSC(nbDraws=nbDraws)
+    # MD5 checksum
+    res_all <- c(res_logit,res_probit,res_RUSC,res_RSC)
+    res_md5 <- digest(res_all,algo="md5")
     #
     time = proc.time() - ptm
     #
     if(notifications){
         message(paste0('All tests of arum completed. Overall time elapsed = ', time["elapsed"], 's.'))
     }
+    #
+    return(res_md5)
 }
