@@ -266,7 +266,7 @@ tests_arum <- function(notifications=TRUE,nbDraws=1e4)
     res_RUSC   <- test_RUSC(nbDraws=nbDraws)
     res_RSC    <- test_RSC(nbDraws=nbDraws)
     # MD5 checksum
-    res_all <- c(res_logit,res_probit,res_RUSC,res_RSC)
+    res_all <- round(c(res_logit,res_probit,res_RUSC,res_RSC),5)
     res_md5 <- digest(res_all,algo="md5")
     #
     time = proc.time() - ptm

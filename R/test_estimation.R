@@ -191,7 +191,7 @@ tests_estimation = function(notifications=T,nbDraws=1e3)
     res_mle <- test_mle()
     res_mme <- test_mme()
     # MD5 checksum
-    res_all <- c(res_LL,res_mle,res_mme)
+    res_all <- round(c(res_LL,res_mle,res_mme),5)
     res_md5 <- digest(res_all,algo="md5")
     #
     time = proc.time() - ptm

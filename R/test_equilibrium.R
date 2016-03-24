@@ -388,7 +388,7 @@ tests_equilibrium = function(notifications=TRUE,nbDraws=1e3){
     res_oapLP  <- test_oapLP()
     res_nash   <- test_eapNash()
     # MD5 checksum
-    res_all <- c(res_darum,res_ipfp,res_newton,res_maxW,res_jacobi,res_CLP,res_oapLP,res_nash)
+    res_all <- round(c(res_darum,res_ipfp,res_newton,res_maxW,res_jacobi,res_CLP,res_oapLP,res_nash),5)
     res_md5 <- digest(res_all,algo="md5")
     #
     time = proc.time() - ptm
