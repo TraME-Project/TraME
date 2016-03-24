@@ -56,7 +56,10 @@ test_ipfp <- function(seed=777, nbX=18, nbY=5)
   print(c(r3$mu))
   #
   time <- proc.time() - tm
-  message(paste0('\nEnd of test_ipfp. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
+  message(paste0('\nEnd of test_ipfp. Time elapsed = ', round(time["elapsed"],5), 's.\n'))
+  #
+  ret <- c(r1$mu,r3$mu)
+  return(ret)
 }
 
 test_newton <- function(seed=777, nbX=5, nbY=3, nbDraws=1e3)
@@ -90,7 +93,9 @@ test_newton <- function(seed=777, nbX=5, nbY=3, nbDraws=1e3)
     #
     time = proc.time() - tm
     message(paste0('\nEnd of test_newton. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
-    return(r1bis$sol)
+    #
+    ret <- c(r1$mu,r1bis$mu,r1$U,r1bis$U,r1$V,r1bis$V)
+    return(ret)
 }
 
 test_maxWelfare = function(seed=777, nbX=5, nbY=3, nbDraws=1e3)
@@ -155,7 +160,10 @@ test_maxWelfare = function(seed=777, nbX=5, nbY=3, nbDraws=1e3)
     print(c(r2$V)[1:min(5,nbX*nbY)])  
     #
     time = proc.time() - tm
-    message(paste0('\nEnd of test_maxWelfare. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
+    message(paste0('\nEnd of test_maxWelfare. Time elapsed = ', round(time["elapsed"],5), 's.\n'))
+    #
+    ret <- c(r1$mu,r1bis$mu,r1$U,r1bis$U,r1$V,r1bis$V,r2Sim$val,r2$val,r2Sim$mu,r2$mu,r2Sim$U,r2$U,r2Sim$V,r2$V)
+    return(ret)
 }
 
 test_jacobi <- function(nbDraws=1E3, seed=777, extensiveTesting = FALSE)
@@ -203,7 +211,10 @@ test_jacobi <- function(nbDraws=1E3, seed=777, extensiveTesting = FALSE)
     }
     #
     time = proc.time()-ptm
-    message(paste0('\nEnd of test_jacobi. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
+    message(paste0('\nEnd of test_jacobi. Time elapsed = ', round(time["elapsed"],5), 's.\n'))
+    #
+    ret <- c(r1_jacobi$mu,r2_jacobi$mu)
+    return(ret) 
 }
 
 test_darum <- function(nbDraws=1E3,seed=777)
@@ -243,7 +254,10 @@ test_darum <- function(nbDraws=1E3,seed=777)
     print(c(r1Sim$mu))
     #
     time = proc.time() - ptm
-    message(paste0('\nEnd of test_darum. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
+    message(paste0('\nEnd of test_darum. Time elapsed = ', round(time["elapsed"],5), 's.\n'))
+    #
+    ret <- c(r1$mu,r1Sim$mu)
+    return(ret)
 }
 
 test_cupidsLP <- function(nbX=5, nbY=3, nbDraws=1E3, seed=777)
@@ -286,7 +300,9 @@ test_cupidsLP <- function(nbX=5, nbY=3, nbDraws=1E3, seed=777)
     #
     time = proc.time() - ptm
     message(paste0('\nEnd of test_cupidsLP. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
-    
+    #
+    ret <- c(r1SimSmart$mu,rTUProbit$mu)
+    return(ret)
 }
 
 test_oapLP <- function(nbX=8,nbY=5,seed=777)
@@ -313,7 +329,9 @@ test_oapLP <- function(nbX=8,nbY=5,seed=777)
     print(res$v)
     #
     time <- proc.time()-ptm
-    message(paste0('\nEnd of test_oapLP. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
+    message(paste0('\nEnd of test_oapLP. Time elapsed = ', round(time["elapsed"],5), 's.\n'))
+    #
+    ret <- c(res$u,res$v)
 }  
 
 test_eapNash <- function(nbX=8,nbY=5,seed=777,debugmode = FALSE)
@@ -352,24 +370,32 @@ test_eapNash <- function(nbX=8,nbY=5,seed=777,debugmode = FALSE)
     # print("---------")
     #
     time <- proc.time() - ptm
-    message(paste0('\nEnd of test_eapNash. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
+    message(paste0('\nEnd of test_eapNash. Time elapsed = ', round(time["elapsed"],5), 's.\n'))
+    #
+    ret <- c(c(unash1,unash2),c(vnash1,vnash2))
+    return(ret)
 }  
 
 tests_equilibrium = function(notifications=TRUE,nbDraws=1e3){
     ptm = proc.time()
     #
-    test_darum(nbDraws=nbDraws)
-    test_ipfp()
-    test_newton(nbDraws=nbDraws)
-    test_maxWelfare(nbDraws=nbDraws)
-    test_jacobi(nbDraws=nbDraws)
-    test_cupidsLP(nbDraws=nbDraws)
-    test_oapLP()
-    test_eapNash()
+    res_darum  <- test_darum(nbDraws=nbDraws)
+    res_ipfp   <- test_ipfp()
+    res_newton <- test_newton(nbDraws=nbDraws)
+    res_maxW   <- test_maxWelfare(nbDraws=nbDraws)
+    res_jacobi <- test_jacobi(nbDraws=nbDraws)
+    res_CLP    <- test_cupidsLP(nbDraws=nbDraws)
+    res_oapLP  <- test_oapLP()
+    res_nash   <- test_eapNash()
+    # MD5 checksum
+    res_all <- c(res_darum,res_ipfp,res_newton,res_maxW,res_jacobi,res_CLP,res_oapLP,res_nash)
+    res_md5 <- digest(res_all,algo="md5")
     #
     time = proc.time() - ptm
     if(notifications){
         message(paste0('All tests of Equilibrium completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
     }
+    #
+    return(res_md5)
 }
 

@@ -76,7 +76,10 @@ test_loglikelihood <- function(seed=777, nbX=5, nbY=4, dX=3, dY=2)
     print(gradLLnum)
     #
     time = proc.time() - tm  
-    message(paste0('\nEnd of test_loglikelihood. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
+    message(paste0('\nEnd of test_loglikelihood. Time elapsed = ', round(time["elapsed"],5), 's.\n'))
+    #
+    ret <- c(LL,gradLL,gradLLlogit,gradLLnum)
+    return(ret)
 }
 
 test_mle <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
@@ -114,7 +117,8 @@ test_mle <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     time = proc.time() - tm
     message(paste0('\nEnd of test_mle. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
     #
-    return(thetahat)
+    ret <- c(thetahat)
+    return(ret)
 }
 
 test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
@@ -140,7 +144,7 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     phi = xs %*% A %*% t(ys)
     #
     mktLogit = build_market_TU_logit(n,m,phi)
-    noise = matrix(1+ noiseScale*rnorm(nbX*nbY),nrow=nbX)
+    noise = matrix(1 + noiseScale*rnorm(nbX*nbY),nrow=nbX)
     muhat = ipfp(mktLogit, T, F)$mu * noise
     #
     affinitymodel = buildModel_affinity(xs,ys,n,m)
@@ -152,7 +156,8 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     time = proc.time() - tm  
     message(paste0('\nEnd of test_mme. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
     #
-    return(thetahat)
+    ret <- c(thetahat)
+    return(ret)
 }
 
 ###################################################################################
@@ -182,13 +187,17 @@ tests_estimation = function(notifications=T,nbDraws=1e3)
 {
     ptm = proc.time()
     #
-    test_loglikelihood()
-    test_mle()
-    test_mme()
+    res_LL  <- test_loglikelihood()
+    res_mle <- test_mle()
+    res_mme <- test_mme()
+    # MD5 checksum
+    res_all <- c(res_LL,res_mle,res_mme)
+    res_md5 <- digest(res_all,algo="md5")
     #
     time = proc.time() - ptm
     if(notifications){
         message(paste0('All tests of Estimation completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
     }
-    
+    #
+    return(res_md5)
 }

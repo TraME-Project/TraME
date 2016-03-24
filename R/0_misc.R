@@ -68,21 +68,21 @@ tests_TraME <- function(nbDraws = 1e3)
 {
     ptm = proc.time()
     #
-    tests_arum(notifications=FALSE,nbDraws=10*nbDraws)
-    tests_equilibrium(notifications=FALSE,nbDraws=nbDraws)
-    tests_estimation(notifications=FALSE)
+    hash_arum <- tests_arum(notifications=FALSE,nbDraws=10*nbDraws)
+    hash_equilibrium <- tests_equilibrium(notifications=FALSE,nbDraws=nbDraws)
+    hash_estimation <- tests_estimation(notifications=FALSE)
     #
     time = proc.time() - ptm
     message(paste0('All tests completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
+    #
+    ret <- c(hash_arum,hash_equilibrium,hash_estimation)
+    return(ret)
 }
 
 
 verify_signature <- function()
 {
-  require(tools)
-  sink("testtrame.txt",type="output")
-  tests_TraME()
-  sink()
-  signature = md5sum("testtrame.txt")
-  return(signature)
+    hash_vals <- tests_TraME()
+    #
+    true_hash <- c("fec78b3876dedcdc07c6e35e57d9e846")
 }
