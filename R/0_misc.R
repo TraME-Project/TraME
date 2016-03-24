@@ -82,7 +82,7 @@ tests_TraME <- function(nbDraws = 1e3)
 
 verify_signature <- function()
 {
-    hash_vals <- invisible(suppressMessages(tests_TraME()))
+    output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()))
     #
     true_hash <- c("ca52ac2b503b3c5473a0491221a3d418","2c60b28fcd51e679483ea713bff62022","c65ddb9f306639769b0cba259e8d3903")
     #

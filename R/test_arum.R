@@ -105,7 +105,7 @@ test_Probit <- function(nbDraws=1E4, seed=777, outsideOption=TRUE)
     return(ret)
 }
 
-test_RUSC <- function(nbDraws=1E4,seed=NULL)
+test_RUSC <- function(nbDraws=1E4,seed=777)
 {
     set.seed(seed)
     ptm = proc.time()
@@ -177,7 +177,7 @@ test_RUSC <- function(nbDraws=1E4,seed=NULL)
     return(ret)
 }
 
-test_RSC <- function(nbDraws=1E4,seed=NULL)
+test_RSC <- function(nbDraws=1E4,seed=777)
 {
     set.seed(seed)
     ptm = proc.time()
