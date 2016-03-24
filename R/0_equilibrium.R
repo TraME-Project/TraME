@@ -154,6 +154,7 @@ PARipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1
     
     error = 2*tol
     iter = 0
+    tm = proc.time()  
     while(max(error,na.rm=TRUE)>tol){
         iter = iter+1
         val = c(mux0,mu0y)
@@ -174,6 +175,10 @@ PARipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1
         }
     }
     #
+    time = proc.time()-tm  
+    time = time["elapsed"] 
+    
+    
     if(notifications){
         message(paste0("IPFP converged in ", iter," iterations.\n"))
     }
@@ -186,7 +191,8 @@ PARipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1
                    mux0 = mux0, mu0y = mu0y,
                    U = U, V = V,
                    u = - sigma * log(mux0),
-                   v = - sigma * log(mu0y))
+                   v = - sigma * log(mu0y),
+                   time=time)
     #
     return(outcome)
 }
