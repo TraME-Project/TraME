@@ -84,7 +84,7 @@ verify_signature <- function()
 {
     output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()))
     #
-    true_hash <- c("ca52ac2b503b3c5473a0491221a3d418","2c60b28fcd51e679483ea713bff62022","c65ddb9f306639769b0cba259e8d3903")
+    true_hash <- c("9235d561de4671dcc87d7cbbfa617f4b","2c60b28fcd51e679483ea713bff62022","c65ddb9f306639769b0cba259e8d3903")
     #
     if(identical(hash_vals,true_hash)){
         message('Test results are correct!\n')
