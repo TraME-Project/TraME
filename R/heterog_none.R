@@ -33,8 +33,8 @@ Gx.none <- function(heterog, Ux, x)
     nbY = length(Ux)
     y = which.max(c(Ux,0))
     #
-    mux = rep(0,nbY+1)
-    mux[y] = 1
+    mux = rep(0,nbY)
+    if (y<=nbY) {mux[y] = 1}
     #
     return(list(valx = max(c(Ux,0),mux = mux)))
 }

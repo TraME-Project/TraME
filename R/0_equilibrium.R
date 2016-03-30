@@ -513,20 +513,20 @@ darum <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8)
     return(outcome)
 }
 
-build_disaggregate_epsilon <- function(n, nbX, nbY, hetS) 
+build_disaggregate_epsilon <- function(n, nbX, nbY, het) 
     # takes U_xy and het as input; returns U_iy as output
 {
-    nbDraws = hetS$aux_nbDraws
+    nbDraws = het$aux_nbDraws
     nbI = nbX*nbDraws
     
     epsilons = matrix(0,nbI,nbY+1)
     I_ix = matrix(0,nbI,nbX)
     #
     for(x in 1:nbX){
-        if(hetS$xHomogenous){
-            epsilon = hetS$atoms
+        if(het$xHomogenous){
+            epsilon = het$atoms
         }else{
-            epsilon = matrix(hetS$atoms[,,x],nrow=hetS$aux_nbDraw)
+            epsilon = matrix(het$atoms[,,x],nrow=het$aux_nbDraw)
         }
         #
         epsilons[((x-1)*nbDraws+1):(x*nbDraws),] = epsilon
