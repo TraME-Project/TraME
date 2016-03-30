@@ -75,28 +75,36 @@ tests_TraME <- function(nbDraws = 1e3)
     time = proc.time() - ptm
     message(paste0('All tests completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
     #
-    ret <- c(hash_arum,hash_equilibrium,hash_estimation)
-    return(ret)
+    hash_vals <- c(hash_arum,hash_equilibrium,hash_estimation)
+    message(compare_hashvals(hash_vals))
+    return(hash_vals)
 }
 
+compare_hashvals <- function(hash_vals)
+{
+  true_hash <- c("456eeafce1147f6f5de6b09158004f5f", "155851eeaaf0a5fb6b20e2bbd15f39d3", "1291c1bcbcfda7db348a15b247939bee")
+  #
+  if(identical(hash_vals,true_hash)){ conclusion = 'Test results are correct!\n'
+  }else{
+    conclusion = '*** CAUTION *** There is a problem with the results of: '
+    if(!identical(hash_vals[1],true_hash[1])){
+      conclusion= paste0(conclusion,'arum tests; ')
+    }
+    if(!identical(hash_vals[2],true_hash[2])){
+      conclusion = paste0(conclusion,'equilibrium tests; ')
+    }
+    if(!identical(hash_vals[3],true_hash[3])){
+      conclusion = paste0(conclusion,'estimation tests; ')
+    }
+    conclusion = paste0(conclusion,'please check.\n')
+  }
+  return(conclusion)
+}
 
 verify_signature <- function()
 {
     output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()))
     #
-    true_hash <- c("456eeafce1147f6f5de6b09158004f5f", "155851eeaaf0a5fb6b20e2bbd15f39d3", "1291c1bcbcfda7db348a15b247939bee")
-    #
-    if(identical(hash_vals,true_hash)){
-        message('Test results are correct!\n')
-    }else{
-        if(!identical(hash_vals[1],true_hash[1])){
-            message('There is a problem with arum test results.\n')
-        }
-        if(!identical(hash_vals[2],true_hash[2])){
-            message('There is a problem with equilibrium test results.\n')
-        }
-        if(!identical(hash_vals[3],true_hash[3])){
-            message('There is a problem with estimation test results.\n')
-        }
-    }
+    message(compare_hashvals(hash_vals))
+
 }
