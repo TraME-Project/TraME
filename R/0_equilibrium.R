@@ -90,7 +90,7 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     time = proc.time()-tm  
     time = time["elapsed"] 
     if(notifications){
-        message(paste0("IPFP converged in ", iter," iterations.\n"))
+        message(paste0("IPFP converged in ", iter," iterations and ", round(time,digits=2), " seconds.\n"))
     }
     # Construct the equilibrium outcome based on mux0 and mu0y obtained from above
     mu = MMF(tr,mux0,mu0y, sigma=sigma)  
@@ -197,7 +197,100 @@ PARipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1
     return(outcome)
 }
 
-newton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e-5, method="Broyden")
+
+nodalNewton <- function(market, xFirst=TRUE, notifications=FALSE, sigma = 1E-6, maxiter = 100, tol = 1e-3, xtol = 1e-3)
+{
+  if(!is.null(market$neededNorm)){
+    stop("nodalNewton does not yet allow for the case without unmatched agents.")
+  }
+  if(notifications){
+    message('Solving for equilibrium in MFE problem using nodalNewton.')
+  }
+  #
+  if((class(market$hetG)!="logit") || (class(market$hetH)!="logit")){
+    stop("Error: Heterogeneities are not all logit.")
+  }
+  if(market$hetG$sigma != market$hetH$sigma){
+    stop("Error: scaling parameters of the logit differs on both sides of the market.")
+  }
+  #
+  n = market$n
+  m = market$m
+  sigma = market$hetG$sigma
+  tr = market$transfers
+  #
+  theus = rep(0,tr$nbX)
+  thevs = rep(0,tr$nbY)
+  themux0s = rep(0,tr$nbX)
+  themu0ys = rep(0,tr$nbY)
+  themu = matrix(0,tr$nbX,tr$nbY)
+  #
+  Z <- function(uv)
+  {
+    theus <<- uv[1:tr$nbX]
+    thevs <<- uv[(tr$nbX+1):(tr$nbX+tr$nbY)]
+    themux0s <<- exp(- theus / sigma)
+    themu0ys <<- exp(- thevs / sigma)
+    themu <<- MMF(tr,themux0s,themu0ys,sigma=sigma)
+    return( c(themux0s + apply(themu,1,sum) - n,
+              themu0ys + apply(themu,2,sum) - m ))
+  }
+  #
+  JZ <- function(uv)
+  {
+    #     theus = uv[1:tr$nbX]
+    #     thevs = uv[(tr$nbX+1):(tr$nbX+tr$nbY)] ## note -- this is redundant with the computation of Z
+    #     themux0s = exp(- theus / sigma) ## note -- this is redundant with the computation of Z
+    #     themu0ys = exp(- thevs / sigma)  ## note -- this is redundant with the computation of Z
+    #     themu = MMF(tr,themux0s,themu0ys,sigma=sigma) ## note -- this is redundant with the computation of Z
+    du_psis = du_Psi(tr,theus,thevs)
+    dv_psis = 1 - du_psis
+    Delta11 = diag(themux0s + apply(themu*du_psis,1,sum),nrow=tr$nbX)
+    Delta22 = diag(themu0ys + apply(themu*dv_psis,2,sum),nrow=tr$nbY)
+    Delta12 = themu * dv_psis
+    Delta21 = t(themu * du_psis)
+    Delta = rbind(cbind(Delta11,Delta12),cbind(Delta21,Delta22))
+    hess = (-1/sigma) * Delta
+    return(hess)
+  }
+  #
+  xinit = -sigma* c(log(n/2),log(m/2))
+  tm = proc.time()  
+  sol = nleqslv(x = xinit,
+                fn = Z, jac = JZ,
+                method = "Broyden", # "Newton"
+                control = list(xtol=xtol,maxit = maxiter)
+  )
+  time = proc.time()-tm  
+  time = time["elapsed"] 
+  iter = sol$iter
+  if(notifications){
+    message(paste0("nodalNewton converged in ", iter," iterations and ", round(time,digits=2), " seconds.\n"))
+  }
+  #
+  theus = sol$x[1:tr$nbX]
+  thevs = sol$x[(tr$nbX+1):(tr$nbX+tr$nbY)]
+  themux0s = exp(- theus / sigma)
+  themu0ys = exp(- thevs / sigma)
+  themu = MMF(tr,themux0s,themu0ys,sigma=sigma)
+  error = max(abs(c(themux0s + apply(themu,1,sum) - n,themu0ys + apply(themu,2,sum) - m ))) # calling this gives the right value to themu, themux0s and themu0ys
+  U = sigma * log(themu/themux0s)
+  V = sigma * t(log(t(themu) / themu0ys))
+  #
+  outcome = list(mu = themu,
+                 mux0 = themux0s, mu0y = themu0ys,
+                 U = U, V = V,
+                 u = theus,
+                 v = thevs,
+                 iter=iter, time=time,
+                 error=error)
+  #
+  return(outcome)
+}
+
+
+
+arcNewton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e-5, method="Broyden")
     # method is "Broyden" or "Newton"
 {
     if(method!="Broyden" && method!="Newton"){

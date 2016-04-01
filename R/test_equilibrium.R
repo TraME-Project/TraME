@@ -62,12 +62,55 @@ test_ipfp <- function(seed=777, nbX=18, nbY=5)
   return(ret)
 }
 
-test_newton <- function(seed=777, nbX=5, nbY=3, nbDraws=1e3)
+
+test_nodalNewton <- function(seed=777, nbX=17, nbY=15, nbDraws=1e3)
+{
+  set.seed(seed)
+  tm = proc.time()
+  #
+  message('*===================   Start of test_nodalNewton   ===================*\n')
+  #
+  n = rep(1,nbX)
+  m = rep(1,nbY)
+  
+  phi =  1+matrix(runif(nbX*nbY),nrow=nbX)
+  alpha = matrix(runif(nbX*nbY),nrow=nbX)
+  gamma = matrix(runif(nbX*nbY),nrow=nbX)
+  #
+  m1 = build_market_TU_logit(n,m,phi)
+  m2 = build_market_NTU_logit(n,m,alpha,gamma)
+  
+  r1 = ipfp(m1,xFirst=TRUE,notifications=TRUE)
+  r1bis = nodalNewton(m1,xFirst=TRUE,notifications=TRUE)
+  #
+  message("Solution of TU-logit:")
+  message("mux0 using (i) IPFP and (ii) nodalNewton:")
+  print(r1$mux0[1:min(nbX,10)])
+  print(r1bis$mux0[1:min(nbX,10)])
+  #
+  
+  r2 = ipfp(m2,xFirst=TRUE,notifications=TRUE)
+  r2bis = nodalNewton(m2,xFirst=TRUE,notifications=TRUE)
+  #
+  message("Solution of NTU-logit:")
+  message("mu using (i) IPFP and (ii) nodalNewton:")
+  print(r2$mux0[1:min(nbX,10)])
+  print(r2bis$mux0[1:min(nbX,10)])
+  #
+  time = proc.time() - tm
+  message(paste0('\nEnd of test_nodalNewton. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
+  #
+  ret <- c(r1$mu,r1bis$mu,r1$U,r1bis$U,r1$V,r1bis$V,r2$mu,r2bis$mu,r2$U,r2bis$U,r2$V,r2bis$V)
+  return(ret)
+}
+
+
+test_arcNewton <- function(seed=777, nbX=5, nbY=3, nbDraws=1e3)
 {
     set.seed(seed)
     tm = proc.time()
     #
-    message('*===================   Start of test_newton   ===================*\n')
+    message('*===================   Start of test_arcNewton   ===================*\n')
     #
     n = rep(1,nbX)
     m = rep(1,nbY)
@@ -79,20 +122,20 @@ test_newton <- function(seed=777, nbX=5, nbY=3, nbDraws=1e3)
     r1bis = newton(m1,xFirst=TRUE,notifications=TRUE)
     #
     message("Solution of TU-logit:")
-    message("mu using (i) IPFP and (ii) newton:")
+    message("mu using (i) IPFP and (ii) arcNewton:")
     print(r1$mu)
     print(r1bis$mu)
     #
-    message("U using (i) IPFP and (ii) newton:")
+    message("U using (i) IPFP and (ii) arcNewton:")
     print(c(r1$U)[1:min(5,nbX*nbY)])
     print(c(r1bis$U)[1:min(5,nbX*nbY)])
     #
-    message("V using (i) IPFP and (ii) newton:")
+    message("V using (i) IPFP and (ii) arcNewton:")
     print(c(r1$V)[1:min(5,nbX*nbY)])
     print(c(r1bis$V)[1:min(5,nbX*nbY)])  
     #
     time = proc.time() - tm
-    message(paste0('\nEnd of test_newton. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
+    message(paste0('\nEnd of test_arcNewton. Time elapsed = ', round(time["elapsed"],5), 's.\n')) 
     #
     ret <- c(r1$mu,r1bis$mu,r1$U,r1bis$U,r1$V,r1bis$V)
     return(ret)
@@ -381,14 +424,15 @@ tests_equilibrium = function(notifications=TRUE,nbDraws=1e3){
     #
     res_darum  <- test_darum(nbDraws=nbDraws)
     res_ipfp   <- test_ipfp()
-    res_newton <- test_newton(nbDraws=nbDraws)
+    res_nodalNewton <- test_arcNewton()
+    res_arcNewton <- test_arcNewton(nbDraws=nbDraws)
     res_maxW   <- test_maxWelfare(nbDraws=nbDraws)
     res_jacobi <- test_jacobi(nbDraws=nbDraws)
     res_CLP    <- test_cupidsLP(nbDraws=nbDraws)
     res_oapLP  <- test_oapLP()
     res_nash   <- test_eapNash()
     # MD5 checksum
-    res_all <- round(c(res_darum,res_ipfp,res_newton,res_maxW,res_jacobi,res_CLP,res_oapLP,res_nash),5)
+    res_all <- round(c(res_darum,res_ipfp,res_nodalNewton,res_arcNewton,res_maxW,res_jacobi,res_CLP,res_oapLP,res_nash),5)
     res_md5 <- digest(res_all,algo="md5")
     #
     time = proc.time() - ptm
