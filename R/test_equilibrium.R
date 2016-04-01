@@ -119,7 +119,7 @@ test_arcNewton <- function(seed=777, nbX=5, nbY=3, nbDraws=1e3)
     #
     m1 = build_market_TU_logit(n,m,phi)
     r1 = ipfp(m1,xFirst=TRUE,notifications=TRUE)
-    r1bis = newton(m1,xFirst=TRUE,notifications=TRUE)
+    r1bis = arcNewton(m1,xFirst=TRUE,notifications=TRUE)
     #
     message("Solution of TU-logit:")
     message("mu using (i) IPFP and (ii) arcNewton:")
