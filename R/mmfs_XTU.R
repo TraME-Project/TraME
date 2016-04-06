@@ -24,7 +24,7 @@
 # A. Galichon, S. Weber: "Estimation of Matching Function Equilibria"
 #           
 #########################  TU #########################################
-build_LTUmmfs <- function(n,m,phi,neededNorm)
+build_TUmmfs <- function(n,m,phi,neededNorm)
 {
   ret = list(n=n,
              m=m,
