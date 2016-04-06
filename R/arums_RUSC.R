@@ -29,7 +29,7 @@ build_RUSC <- function(zeta, outsideOption=TRUE)
     # dim(zeta)=c(nbX,nbY+1) and the last column corresponds to singlehood
 {
     if(!outsideOption){
-        stop("outsideOption=F not implemented yet on RUSC heterogeneity")
+        stop("outsideOption=F not implemented yet on RUSC arums")
     }
     #
     nbX = dim(zeta)[1]
@@ -67,7 +67,7 @@ build_RUSC <- function(zeta, outsideOption=TRUE)
     return(ret)
 }
 
-Gx.RUSC <- function(het, Ux, x)
+Gx.RUSC <- function(arums, Ux, x)
 {
     M = length(Ux) + 1
     #
@@ -75,21 +75,21 @@ Gx.RUSC <- function(het, Ux, x)
     Uxtilde  = c(Ux,0)
     #
     for(i in 1:M){
-        y = het$aux_ord[x,i]
+        y = arums$aux_ord[x,i]
         runmax = 0
         #
         j = 1
         while(j < i){
-            z = het$aux_ord[x,j]
-            runmax = max(runmax, (Uxtilde[y]-Uxtilde[z])/(het$zeta[x,z]-het$zeta[x,y]))
+            z = arums$aux_ord[x,j]
+            runmax = max(runmax, (Uxtilde[y]-Uxtilde[z])/(arums$zeta[x,z]-arums$zeta[x,y]))
             j = j + 1
         }
         #
         runmin = 1
         j = M
         while(j > i){
-            z = het$aux_ord[x,j]
-            runmin = min(runmin, (Uxtilde[y]-Uxtilde[z])/(het$zeta[x,z]-het$zeta[x,y]))
+            z = arums$aux_ord[x,j]
+            runmin = min(runmin, (Uxtilde[y]-Uxtilde[z])/(arums$zeta[x,z]-arums$zeta[x,y]))
             j = j - 1 
         }
         #
@@ -98,32 +98,32 @@ Gx.RUSC <- function(het, Ux, x)
     #
     mux = muxtilde[1:M-1]
     #
-    valx = sum(mux*(Ux-het$aux_b[x,])) - matrix(mux,nrow=1)%*%het$aux_A[x,,]%*%matrix(mux,ncol=1)/2 - het$aux_c[x]
+    valx = sum(mux*(Ux-arums$aux_b[x,])) - matrix(mux,nrow=1)%*%arums$aux_A[x,,]%*%matrix(mux,ncol=1)/2 - arums$aux_c[x]
     ret = list(valx = valx, mux  = mux)
     #
     return(ret)
 }
 
-Gstarx.RUSC <- function(het, mux, x)
+Gstarx.RUSC <- function(arums, mux, x)
 {
-    Amu = c(het$aux_A[x,,] %*% matrix(mux,ncol=1))
+    Amu = c(arums$aux_A[x,,] %*% matrix(mux,ncol=1))
     #
-    ret = list(valx = sum(mux*Amu)/2 + sum(mux*het$aux_b[x,]) + het$aux_c[x],
-               Ux   = Amu + het$aux_b[x,])
+    ret = list(valx = sum(mux*Amu)/2 + sum(mux*arums$aux_b[x,]) + arums$aux_c[x],
+               Ux   = Amu + arums$aux_b[x,])
     #
     return(ret)
 }
 
-Gbarx.RUSC <- function (het, Ubarx, mubarx, x)
+Gbarx.RUSC <- function (arums, Ubarx, mubarx, x)
 {
     M = length(Ubarx) + 1
     #
-    obj = c(het$aux_b[x,] - Ubarx,0)
+    obj = c(arums$aux_b[x,] - Ubarx,0)
     A = matrix(1,1,M)
     rhs = c(1)
     
     Q = matrix(0,M,M)
-    Q[1:M-1,1:M-1] = het$aux_A[x,,] / 2
+    Q[1:M-1,1:M-1] = arums$aux_A[x,,] / 2
     
     lb = rep(0,M)
     ub = c(mubarx,1)
@@ -131,30 +131,30 @@ Gbarx.RUSC <- function (het, Ubarx, mubarx, x)
     result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense="=",Q=Q,lb=lb,ub=ub)
     #
     mux = result$solution[1:M-1]
-    Amu = c(het$aux_A[x,,] %*% matrix(mux,ncol=1))
-    Ux  = Amu + het$aux_b[x,]
+    Amu = c(arums$aux_A[x,,] %*% matrix(mux,ncol=1))
+    Ux  = Amu + arums$aux_b[x,]
     #
-    ret = list(valx = -result$objval - het$aux_c[x],
+    ret = list(valx = -result$objval - arums$aux_c[x],
                mux=mux, Ux=Ux)
     #
     return(ret)
 }
 
-simul.RUSC <- function(het, nbDraws, seed=NULL)
+simul.RUSC <- function(arums, nbDraws, seed=NULL)
 {  
     set.seed(seed)
     #
-    atoms = array(0,dim=c(nbDraws,het$nbY+1,het$nbX))
-    for(x in 1:het$nbX){
-        atoms[,,x] =  matrix(runif(nbDraws),ncol=1) %*% matrix(het$zeta[x,],nrow=1)
+    atoms = array(0,dim=c(nbDraws,arums$nbY+1,arums$nbX))
+    for(x in 1:arums$nbX){
+        atoms[,,x] =  matrix(runif(nbDraws),ncol=1) %*% matrix(arums$zeta[x,],nrow=1)
     }
     #
-    ret = list(nbX=het$nbX, nbY=het$nbY,
+    ret = list(nbX=arums$nbX, nbY=arums$nbY,
                nbParams=length(atoms),
                atoms=atoms,
                aux_nbDraws=nbDraws,
                xHomogenous=FALSE,
-               outsideOption=het$outsideOption)
+               outsideOption=arums$outsideOption)
     class(ret) = "empirical"
     #
     return(ret)

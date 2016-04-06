@@ -35,7 +35,7 @@ build_market_TU_logit <- function(n, m, phi, sigma=1, neededNorm=NULL)
     logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=outsideOption)
     #
     ret = list(n=n,m=m,
-               hetG=logitM, hetH=logitW,
+               arumsG=logitM, arumsH=logitW,
                transfers=TUs,
                neededNorm=neededNorm)
     class(ret) = "TU_logit"

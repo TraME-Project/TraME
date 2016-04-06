@@ -19,7 +19,7 @@
 ##
 ################################################################################
 
-NonparametricEstimationTUGeneral <- function(n, m, hetG, hetH, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+NonparametricEstimationTUGeneral <- function(n, m, arumsG, arumsH, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
   if(print_level>0){
     message("BFGS optimization used.")
@@ -36,8 +36,8 @@ NonparametricEstimationTUGeneral <- function(n, m, hetG, hetH, muhat, xtol_rel=1
     phi = theU+theV
     phimat = matrix(phi,nbX,nbY)
     #
-    resG = G(hetG,theU,n)
-    resH = G(hetH,t(theV),m)
+    resG = G(arumsG,theU,n)
+    resH = G(arumsH,t(theV),m)
     #
     Ehatphi = sum(muhat*phimat)
     val = resG$val + resH$val - Ehatphi
@@ -75,7 +75,7 @@ NonparametricEstimationTUGeneral <- function(n, m, hetG, hetH, muhat, xtol_rel=1
 }
 
 
-NonparametricEstimationTUEmpirical <- function(n, m, hetG, hetH, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+NonparametricEstimationTUEmpirical <- function(n, m, arumsG, arumsH, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
   if(print_level > 0){
     print(paste0("LP optimization used."))
@@ -85,8 +85,8 @@ NonparametricEstimationTUEmpirical <- function(n, m, hetG, hetH, muhat, xtol_rel
   nbY = length (m)
   nbParams = nbX*nbY
   #
-  res1 = build_disaggregate_epsilon(n,nbX,nbY,hetG)
-  res2 = build_disaggregate_epsilon(m,nbY,nbX,hetH)
+  res1 = build_disaggregate_epsilon(n,nbX,nbY,arumsG)
+  res2 = build_disaggregate_epsilon(m,nbY,nbX,arumsH)
   #
   epsilon_iy = res1$epsilon_iy
   epsilon0_i = c(res1$epsilon0_i)
@@ -157,11 +157,11 @@ npe <- function(model, muhat, print_level=0)
         stop("Nonparametric estimation currently only applies to TU models.")
     }
     #
-    if((class(market$hetG)=="empirical") & (class(market$hetH)=="empirical")){
-        outcome = NonparametricEstimationTUEmpirical(market$n,market$m,market$hetG,market$hetH,
+    if((class(market$arumsG)=="empirical") & (class(market$arumsH)=="empirical")){
+        outcome = NonparametricEstimationTUEmpirical(market$n,market$m,market$arumsG,market$arumsH,
                                                      muhat,print_level=print_level)
     }else{
-      outcome = NonparametricEstimationTUGeneral(market$n,market$m,market$hetG,market$hetH, 
+      outcome = NonparametricEstimationTUGeneral(market$n,market$m,market$arumsG,market$arumsH, 
                                                  muhat,print_level=print_level)
     }
     #

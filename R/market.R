@@ -22,7 +22,7 @@
 marketTranspose <- function(market)
 {
   thelist=list(n=market$m, m=market$n, 
-               hetG=market$hetH, hetH=market$hetG,
+               arumsG=market$arumsH, arumsH=market$arumsG,
                transfers=transfersTranspose(market$transfers),
                neededNorm=normalizationTranspose(market$neededNorm))
   #
@@ -117,16 +117,16 @@ defaultNorm <- function(noSingles=FALSE)
   }
 } 
 
-checkNorm <- function(neededNorm, n, m, hetG, hetH)
+checkNorm <- function(neededNorm, n, m, arumsG, arumsH)
 {
   if(sum(n)!=sum(m)){
     stop("Normalization asked but sum(n) does not coincide with sum(m)")
   }
-  if(hetG$outsideOption==TRUE){
-    stop("Normalization asked but hetG should not allow an outside option")
+  if(arumsG$outsideOption==TRUE){
+    stop("Normalization asked but arumsG should not allow an outside option")
   }
-  if(hetH$outsideOption==TRUE){
-    stop("Normalization asked but hetH should not allow an outside option")
+  if(arumsH$outsideOption==TRUE){
+    stop("Normalization asked but arumsH should not allow an outside option")
   }
 }
 
@@ -200,7 +200,7 @@ build_market_TU_none <- function(n, m, phi, neededNorm=NULL)
   noneW = build_none(nbY,nbX)
   #
   ret = list(n=n, m=m,
-             hetG=noneM, hetH=noneW,
+             arumsG=noneM, arumsH=noneW,
              transfers=TUs,
              neededNorm=neededNorm)
   class(ret) = "TU_none"
@@ -210,10 +210,10 @@ build_market_TU_none <- function(n, m, phi, neededNorm=NULL)
 
 solveEquilibrium.TU_none = oapLP
 
-build_market_TU_general <- function(n, m, phi, hetG, hetH, neededNorm=NULL)
+build_market_TU_general <- function(n, m, phi, arumsG, arumsH, neededNorm=NULL)
 {
   if(!is.null(neededNorm)){
-    checkNorm(neededNorm,n,m,hetG,hetH)
+    checkNorm(neededNorm,n,m,arumsG,arumsH)
   }
   #
   nbX = length(n)
@@ -222,7 +222,7 @@ build_market_TU_general <- function(n, m, phi, hetG, hetH, neededNorm=NULL)
   TUs = build_TUs(phi)
   #
   ret = list(n=n, m=m,
-             hetG=hetG, hetH=hetH,
+             arumsG=arumsG, arumsH=arumsH,
              transfers=TUs,
              neededNorm=neededNorm)
   class(ret) = "TU_general"
@@ -232,14 +232,14 @@ build_market_TU_general <- function(n, m, phi, hetG, hetH, neededNorm=NULL)
 
 solveEquilibrium.TU_general = maxWelfare
 
-build_market_TU_empirical <- function(n, m, phi, hetG, hetH, nbDraws, seed=NULL, neededNorm=NULL)
+build_market_TU_empirical <- function(n, m, phi, arumsG, arumsH, nbDraws, seed=NULL, neededNorm=NULL)
 {
   if(!is.null(neededNorm)){
-    checkNorm(neededNorm,n,m,hetG,hetH)
+    checkNorm(neededNorm,n,m,arumsG,arumsH)
   }
   #
-  hetGsim = simul(hetG,nbDraws,seed)
-  hetHsim = simul(hetH,nbDraws,seed)
+  arumsGsim = simul(arumsG,nbDraws,seed)
+  arumsHsim = simul(arumsH,nbDraws,seed)
   #
   nbX = length(n)
   nbY = length(m)
@@ -247,7 +247,7 @@ build_market_TU_empirical <- function(n, m, phi, hetG, hetH, nbDraws, seed=NULL,
   TUs = build_TUs(phi)
   #
   ret = list(n=n, m=m,
-             hetG=hetGsim, hetH=hetHsim,
+             arumsG=arumsGsim, arumsH=arumsHsim,
              transfers=TUs,
              neededNorm=neededNorm)
   class(ret) = "TU_empirical"
@@ -271,7 +271,7 @@ build_market_NTU_none <- function(n, m, alpha, gamma, neededNorm=NULL)
   noneW = build_none(nbY,nbX)
   #
   ret = list(n=n, m=m,
-             hetG=noneM, hetH=noneW,
+             arumsG=noneM, arumsH=noneW,
              transfers=NTUs,
              neededNorm=neededNorm)
   class(ret) = "NTU_none"
@@ -281,17 +281,17 @@ build_market_NTU_none <- function(n, m, alpha, gamma, neededNorm=NULL)
 
 solveEquilibrium.NTU_none = darum
 
-build_market_NTU_general <- function(n, m, alpha, gamma, hetG, hetH, neededNorm=NULL)
+build_market_NTU_general <- function(n, m, alpha, gamma, arumsG, arumsH, neededNorm=NULL)
 {
   if(!is.null(neededNorm)){
-    checkNorm(neededNorm,n,m,hetG,hetH)
+    checkNorm(neededNorm,n,m,arumsG,arumsH)
   }
   #
   NTUs = build_NTUs(alpha,gamma)
   #
   ret = list(alpha=alpha, gamma=gamma,
              n=n,m=m,
-             hetG=hetG, hetH=hetH,
+             arumsG=arumsG, arumsH=arumsH,
              transfers=NTUs,
              neededNorm=neededNorm)
   class(ret) = "NTU_general"
@@ -315,7 +315,7 @@ build_market_LTU_none <- function(n, m, lambda, phi, neededNorm=NULL)
   noneW = build_none(nbY,nbX)
   #
   ret = list(n=n, m=m,
-             hetG=noneM, hetH=noneW,
+             arumsG=noneM, arumsH=noneW,
              transfers=LTUs,
              neededNorm=neededNorm)
   class(ret) = "LTU_none"
@@ -342,7 +342,7 @@ build_market_LTU_logit <- function(n, m, lambda, phi, sigma=1, neededNorm=NULL)
   logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=outsideOption)
   #
   ret = list(n=n, m=m,
-             hetG=logitM, hetH=logitW,
+             arumsG=logitM, arumsH=logitW,
              transfers=LTUs,
              neededNorm=neededNorm)
   class(ret) = "LTU_logit"
@@ -363,7 +363,7 @@ build_market_ITU_logit <- function(n, m, transfers, sigma=1, neededNorm=NULL)
   logitW = build_logits(nbY,nbX,sigma,outsideOption=is.null(neededNorm))
   #
   ret = list(n=n, m=m,
-             hetG=logitM, hetH=logitW,
+             arumsG=logitM, arumsH=logitW,
              transfers=transfers) # Keith: should this include neededNorm?
   class(ret) = "ITU_logit"
   #
@@ -372,10 +372,10 @@ build_market_ITU_logit <- function(n, m, transfers, sigma=1, neededNorm=NULL)
 
 solveEquilibrium.ITU_logit = ipfp
 
-build_market_ITU_general <- function(n, m, hetG, hetH, transfers, neededNorm=NULL)
+build_market_ITU_general <- function(n, m, arumsG, arumsH, transfers, neededNorm=NULL)
 {
   ret = list(n=n, m=m,
-             hetG=hetG, hetH=hetH,
+             arumsG=arumsG, arumsH=arumsH,
              transfers=transfers,
              neededNorm=neededNorm)
   class(ret) = "ITU_general"

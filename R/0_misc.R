@@ -88,7 +88,7 @@ compare_hashvals <- function(hash_vals)
   }else{
     conclusion = '*** CAUTION *** There is a problem with the results of: '
     if(!identical(hash_vals[1],true_hash[1])){
-      conclusion= paste0(conclusion,'arum tests; ')
+      conclusion= paste0(conclusion,'arums tests; ')
     }
     if(!identical(hash_vals[2],true_hash[2])){
       conclusion = paste0(conclusion,'equilibrium tests; ')

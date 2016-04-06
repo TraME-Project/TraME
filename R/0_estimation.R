@@ -36,8 +36,8 @@ dtheta_mu_default <- function(model, market, theta, dtheta=diag(length(theta)))
     dthetaH = dthetaPsiGH$dparamsH
     
     tr = market$transfers
-    hetG = market$hetG
-    hetH = market$hetH
+    arumsG = market$arumsG
+    arumsH = market$arumsH
     
     duPsimat = du_Psi(tr,U,V)
     dvPsimat = 1 - duPsimat
@@ -47,14 +47,14 @@ dtheta_mu_default <- function(model, market, theta, dtheta=diag(length(theta)))
     #   duPsi = Diagonal(x = duPsimat) 
     #   dvPsi = Diagonal( x = dvPsimat)
     #
-    HessGstar = D2Gstar(market$hetG,mu,market$n,xFirst=T)  
-    HessHstar = D2Gstar(market$hetH,t(mu),market$m,xFirst=F)
+    HessGstar = D2Gstar(market$arumsG,mu,market$n,xFirst=T)  
+    HessHstar = D2Gstar(market$arumsH,t(mu),market$m,xFirst=F)
     #
     denom = duPsivec * HessGstar + dvPsivec * HessHstar
     
     num1 = dtheta_Psi(tr,U,V,dthetaPsi)
-    num2 = duPsivec * dtheta_NablaGstar(hetG,mu,market$n,dthetaG,xFirst=TRUE)
-    num3 = dvPsivec * dtheta_NablaGstar(hetH,t(mu),market$m,dthetaH,xFirst=FALSE)
+    num2 = duPsivec * dtheta_NablaGstar(arumsG,mu,market$n,dthetaG,xFirst=TRUE)
+    num3 = dvPsivec * dtheta_NablaGstar(arumsH,t(mu),market$m,dthetaH,xFirst=FALSE)
     #
     dmu = -solve(denom, num1)
     num = cbind(num1, num2, num3)
@@ -65,7 +65,7 @@ dtheta_mu_default <- function(model, market, theta, dtheta=diag(length(theta)))
 dtheta_mu_logit <- function(model, market, theta, dtheta=diag(length(theta)))
 {
     rangeParams = dim(dtheta)[2]
-    sigma = market$hetG$sigma
+    sigma = market$arumsG$sigma
     
     dthetaPsiGH = dparam(model, dtheta)
     dthetaPsi = dthetaPsiGH$dparamsPsi
@@ -141,9 +141,9 @@ dtheta_mu <- function(model, theta, dtheta=diag(length(theta)))
     market = parametricMarket(model,theta)
     #
     ret <- 0
-    check_1 = (class(market$hetG)=="logit")
-    check_2 = (class(market$hetH)=="logit")
-    check_3 = (market$hetG$sigma == market$hetH$sigma)
+    check_1 = (class(market$arumsG)=="logit")
+    check_2 = (class(market$arumsH)=="logit")
+    check_3 = (market$arumsG$sigma == market$arumsH$sigma)
     
     if(check_1 && check_2 && check_3){
         ret = dtheta_mu_logit(model,market,theta,dtheta)
@@ -220,7 +220,7 @@ mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_lev
     return(list(thetahat=res$solution))
 }
 
-MomentMatchingTUSmooth <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+MomentMatchingTUSmooth <- function(n, m, arumsG, arumsH, kron, Chat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
     if(print_level>0){
         message("BFGS optimization used.")
@@ -238,8 +238,8 @@ MomentMatchingTUSmooth <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol_re
         phi = kron %*% thetheta
         phimat = matrix(phi,nbX,nbY)
         #
-        resG = G(hetG,theU,n)
-        resH = G(hetH,t(phimat-theU),m)
+        resG = G(arumsG,theU,n)
+        resH = G(arumsH,t(phimat-theU),m)
         #
         Ehatphi = sum(thetheta * Chat)
         val = resG$val + resH$val - Ehatphi
@@ -275,7 +275,7 @@ MomentMatchingTUSmooth <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol_re
     return(ret)
 }
 
-MomentMatchingTUEmpirical <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+MomentMatchingTUEmpirical <- function(n, m, arumsG, arumsH, kron, Chat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
     if (print_level>0){
         message("LP optimization used.")
@@ -285,8 +285,8 @@ MomentMatchingTUEmpirical <- function(n, m, hetG, hetH, kron, Chat, theta0, xtol
     nbY = length (m)
     nbParams = length(Chat)
     #
-    res1 = build_disaggregate_epsilon(n,nbX,nbY,hetG)
-    res2 = build_disaggregate_epsilon(m,nbY,nbX,hetH)
+    res1 = build_disaggregate_epsilon(n,nbX,nbY,arumsG)
+    res2 = build_disaggregate_epsilon(m,nbY,nbX,arumsH)
     #
     epsilon_iy = res1$epsilon_iy
     epsilon0_i = c(res1$epsilon0_i)
@@ -399,7 +399,7 @@ mme <- function(model, muhat, print_level=0)
         stop("Moment Matching Estimation only applies for TU models.")
     }
     if(length(dtheta$dparamsG) + length(dtheta$dparamsH) > 0){
-        stop("Moment Matching Estimation does not support parameterization of heterogeneity.")
+        stop("Moment Matching Estimation does not support parameterization of arums.")
     }
     if(!model$isLinear){
         stop("Moment Matching Estimation does not support nonlinear parameterizations.")
@@ -408,13 +408,13 @@ mme <- function(model, muhat, print_level=0)
     kron = dtheta$dparamsPsi
     Chat = c(c(muhat) %*% kron)
     #
-    if((class(market$hetG)=="empirical") & (class(market$hetH)=="empirical")){
-        outcome = MomentMatchingTUEmpirical(market$n,market$m,market$hetG,market$hetH,
+    if((class(market$arumsG)=="empirical") & (class(market$arumsH)=="empirical")){
+        outcome = MomentMatchingTUEmpirical(market$n,market$m,market$arumsG,market$arumsH,
                                             kron,Chat,theta0,print_level=print_level)
-    }else if((class(market$hetG)=="none") & (class(market$hetH)=="none")){
+    }else if((class(market$arumsG)=="none") & (class(market$arumsH)=="none")){
         outcome = MomentMatchingTUNone(market$n,market$m,kron,Chat,print_level=print_level)
     }else{
-        outcome = MomentMatchingTUSmooth(market$n,market$m,market$hetG,market$hetH,
+        outcome = MomentMatchingTUSmooth(market$n,market$m,market$arumsG,market$arumsH,
                                          kron,Chat,theta0,print_level=print_level)
     }
     #

@@ -272,7 +272,7 @@ tests_arum <- function(notifications=TRUE,nbDraws=1e4)
     time = proc.time() - ptm
     #
     if(notifications){
-        message(paste0('All tests of arum completed. Overall time elapsed = ', time["elapsed"], 's.'))
+        message(paste0('All tests of arums completed. Overall time elapsed = ', time["elapsed"], 's.'))
     }
     #
     return(res_md5)

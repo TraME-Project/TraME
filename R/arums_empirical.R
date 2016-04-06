@@ -50,44 +50,44 @@ build_empirical <- function(nbX, nbY, atoms, outsideOption=TRUE)
     return(ret)
 }
 
-Gx.empirical <- function(het, Ux, x)
+Gx.empirical <- function(arums, Ux, x)
 {
-    if(het$outsideOption){
+    if(arums$outsideOption){
         Uxs = c(Ux,0)
     }else{
         Uxs = Ux
     }
-    if(het$xHomogenous){
-        Utilde = matrix(1,nrow=het$aux_nbDraws,ncol=1) %*% matrix(Uxs,nrow=1) + het$atoms
+    if(arums$xHomogenous){
+        Utilde = matrix(1,nrow=arums$aux_nbDraws,ncol=1) %*% matrix(Uxs,nrow=1) + arums$atoms
     }else{
-        Utilde = matrix(1,nrow=het$aux_nbDraws,ncol=1) %*% matrix(Uxs,nrow=1) + het$atoms[,,x]
+        Utilde = matrix(1,nrow=arums$aux_nbDraws,ncol=1) %*% matrix(Uxs,nrow=1) + arums$atoms[,,x]
     }
     #
     argmaxs = apply(Utilde, 1, which.max)
     #
     thesum = 0
-    for(t in 1:het$aux_nbDraws){
+    for(t in 1:arums$aux_nbDraws){
         thesum = thesum + Utilde[t,argmaxs[t]]
     }
     #
-    ret = list(valx = thesum/het$aux_nbDraws,
-               mux = apply(matrix(c(1:het$nbY),ncol=1),1,function(x) sum(argmaxs==x)) / het$aux_nbDraws)
+    ret = list(valx = thesum/arums$aux_nbDraws,
+               mux = apply(matrix(c(1:arums$nbY),ncol=1),1,function(x) sum(argmaxs==x)) / arums$aux_nbDraws)
     #
     return(ret)
 }
 
-Gstarx.empirical <- function(het, mux, x)
+Gstarx.empirical <- function(arums, mux, x)
 {
-    nbOptions = ifelse(het$outsideOption,het$nbY+1,het$nbY)
-    if(het$xHomogenous){
-        Phi = het$atoms
+    nbOptions = ifelse(arums$outsideOption,arums$nbY+1,arums$nbY)
+    if(arums$xHomogenous){
+        Phi = arums$atoms
     }else{
-        Phi = het$atoms[,,x]
+        Phi = arums$atoms[,,x]
     }
     #
-    p = rep(1,het$aux_nbDraws) / het$aux_nbDraws
+    p = rep(1,arums$aux_nbDraws) / arums$aux_nbDraws
     q = 0
-    if(het$outsideOption){
+    if(arums$outsideOption){
         q = c(mux, 1-sum(mux))
     }else{
         q = mux
@@ -95,22 +95,22 @@ Gstarx.empirical <- function(het, mux, x)
     #
     obj = c(Phi)
     
-    A1 = Matrix::kronecker(matrix(1,1,nbOptions),sparseMatrix(1:het$aux_nbDraws,1:het$aux_nbDraws))
-    A2 = Matrix::kronecker(sparseMatrix(1:nbOptions,1:nbOptions),matrix(1,1,het$aux_nbDraws))
+    A1 = Matrix::kronecker(matrix(1,1,nbOptions),sparseMatrix(1:arums$aux_nbDraws,1:arums$aux_nbDraws))
+    A2 = Matrix::kronecker(sparseMatrix(1:nbOptions,1:nbOptions),matrix(1,1,arums$aux_nbDraws))
     
     A = rbind2(A1,A2)
     d = c(p,q)
     #
     result = genericLP(obj=obj,A=A,modelsense="max",rhs=d,sense="=")
     #
-    # pi = matrix(result$solution,nrow=het$aux_nbDraws)
-    u = result$pi[1:het$aux_nbDraws]
+    # pi = matrix(result$solution,nrow=arums$aux_nbDraws)
+    u = result$pi[1:arums$aux_nbDraws]
     
-    if(het$outsideOption){
-        temp = result$pi[(het$aux_nbDraws+1):(het$aux_nbDraws+het$nbY+1)]
-        Uoptx = -temp[1:het$nbY]+temp[het$nbY+1]
+    if(arums$outsideOption){
+        temp = result$pi[(arums$aux_nbDraws+1):(arums$aux_nbDraws+arums$nbY+1)]
+        Uoptx = -temp[1:arums$nbY]+temp[arums$nbY+1]
     }else{
-        Uoptx = -result$pi[(het$aux_nbDraws+1):(het$aux_nbDraws+het$nbY)] - sum(p*u)
+        Uoptx = -result$pi[(arums$aux_nbDraws+1):(arums$aux_nbDraws+arums$nbY)] - sum(p*u)
     }
     
     valx = -result$objval
@@ -118,23 +118,23 @@ Gstarx.empirical <- function(het, mux, x)
     return(list(valx=valx,Ux=Uoptx))
 }
 
-Gbarx.empirical <- function(het, Ubarx, mubarx, x)
+Gbarx.empirical <- function(arums, Ubarx, mubarx, x)
 {
-    if(!het$outsideOption){
+    if(!arums$outsideOption){
         stop("Gbarx not implemented for empirical with outsideOption=F")
     }
-    if(het$xHomogenous){
-        Phi = het$atoms
+    if(arums$xHomogenous){
+        Phi = arums$atoms
     }else{
-        Phi = het$atoms[,,x]
+        Phi = arums$atoms[,,x]
     }
     #
-    A1 = diag(1,het$nbY)
-    A2 = sparseMatrix(i=1,j=1,x=0,dims=c(het$nbY,het$aux_nbDraws))
-    A3 = Matrix::kronecker(sparseMatrix(i=1:het$nbY,j=1:het$nbY),matrix(1,het$aux_nbDraws,1))
-    A4 = - Matrix::kronecker(matrix(1,het$nbY,1),sparseMatrix(i=1:het$aux_nbDraws,j=1:het$aux_nbDraws))
-    A5 = sparseMatrix(i=1,j=1,x=0,dims=c(het$aux_nbDraws,het$nbY))
-    A6 = - sparseMatrix(i=1:het$aux_nbDraws,j=1:het$aux_nbDraws)
+    A1 = diag(1,arums$nbY)
+    A2 = sparseMatrix(i=1,j=1,x=0,dims=c(arums$nbY,arums$aux_nbDraws))
+    A3 = Matrix::kronecker(sparseMatrix(i=1:arums$nbY,j=1:arums$nbY),matrix(1,arums$aux_nbDraws,1))
+    A4 = - Matrix::kronecker(matrix(1,arums$nbY,1),sparseMatrix(i=1:arums$aux_nbDraws,j=1:arums$aux_nbDraws))
+    A5 = sparseMatrix(i=1,j=1,x=0,dims=c(arums$aux_nbDraws,arums$nbY))
+    A6 = - sparseMatrix(i=1:arums$aux_nbDraws,j=1:arums$aux_nbDraws)
     # should this be rbind or rbind2?
     A  = rbind2(cbind2(A1,A2),rbind2(cbind2(A3,A4),cbind2(A5,A6)))
     #
@@ -143,18 +143,18 @@ Gbarx.empirical <- function(het, Ubarx, mubarx, x)
     d  = rbind2(d1,d2)
     #
     c1 = matrix(t(mubarx),ncol=1)
-    c2 = matrix(-1/het$aux_nbDraws,het$aux_nbDraws,1)
+    c2 = matrix(-1/arums$aux_nbDraws,arums$aux_nbDraws,1)
     c  = rbind(c1,c2)
     #
-    z1 = matrix(0,het$nbY,1)
+    z1 = matrix(0,arums$nbY,1)
     z2 = matrix(apply(Phi, 1, function(x) max(x)),ncol=1)
     z_init = rbind(z1,z2)
     #
     # ------------- this program really computes Glowerbarx but the result is adapted
     result = genericLP(obj=c,A=A,modelsense="max",rhs=d,sense="<",start=z_init)
     #
-    Uoptx = c(matrix(result$solution[1:het$nbY],nrow=1))
-    deltamux = matrix(result$pi[1:het$nbY],nrow=1)
+    Uoptx = c(matrix(result$solution[1:arums$nbY],nrow=1))
+    deltamux = matrix(result$pi[1:arums$nbY],nrow=1)
     mux = c(mubarx - deltamux)
     valx = sum(mubarx*Ubarx) - result$objval
     #
@@ -165,31 +165,31 @@ Gbarx.empirical <- function(het, Ubarx, mubarx, x)
     return(ret)
 }
 
-simul.empirical <- function(het, nbDraws, seed=NULL) 
+simul.empirical <- function(arums, nbDraws, seed=NULL) 
 {
     set.seed(seed)
     #
-    nbOptions = ifelse(het$outsideOption,het$nbY+1,het$nbY)
-    if(het$xHomogenous){ 
+    nbOptions = ifelse(arums$outsideOption,arums$nbY+1,arums$nbY)
+    if(arums$xHomogenous){ 
         bootstraped_atoms = vector(0,dim=c(nbDraws,nbOptions))
         for(y in 1:nbOptions){
-            bootstraped_atoms[,y] = sample(het$atoms[,y],nbDraws,replace=TRUE)
+            bootstraped_atoms[,y] = sample(arums$atoms[,y],nbDraws,replace=TRUE)
         }
     }else{
-        bootstraped_atoms = vector(0,dim=c(nbDraws,nbOptions,het$nbX))
+        bootstraped_atoms = vector(0,dim=c(nbDraws,nbOptions,arums$nbX))
         for(x in 1:nbX){
             for(y in 1:nbOptions){
-                bootstraped_atoms[,y,x] = sample(het$atoms[,y,x],nbDraws,replace=TRUE)
+                bootstraped_atoms[,y,x] = sample(arums$atoms[,y,x],nbDraws,replace=TRUE)
             }
         }
     }
     #
-    ret = list(nbX=het$nbX, nbY=het$nbY,
+    ret = list(nbX=arums$nbX, nbY=arums$nbY,
                nbParams=length(bootstrapped_atoms),
                atoms=bootstraped_atoms,
                aux_nbDraws=nbDraws,
-               xHomogenous=het$xHomogenous,
-               outsideOption=het$outsideOption)
+               xHomogenous=arums$xHomogenous,
+               outsideOption=arums$outsideOption)
     class(ret) = "empirical"
     #
     return(ret)  

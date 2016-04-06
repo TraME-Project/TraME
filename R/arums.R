@@ -26,13 +26,13 @@
 # K. Chiong, A. Galichon, M. Shum: "Duality in dynamic discrete choice models"
 #           
 
-G.default <- function(het, U, n)
+G.default <- function(arums, U, n)
 {
     val = 0
-    mu = matrix(0,het$nbX,het$nbY)
+    mu = matrix(0,arums$nbX,arums$nbY)
     #
-    for(x in 1:het$nbX){
-        resGx = Gx(het,U[x,],x)
+    for(x in 1:arums$nbX){
+        resGx = Gx(arums,U[x,],x)
         #
         val = val + n[x]*resGx$valx
         mu[x,] = n[x]*resGx$mux
@@ -41,13 +41,13 @@ G.default <- function(het, U, n)
     return(list(val=val,mu=mu))
 }
 
-Gstar.default <- function(het, mu, n)
+Gstar.default <- function(arums, mu, n)
 {
     val = 0
-    Uopt = matrix(0,het$nbX,het$nbY)
+    Uopt = matrix(0,arums$nbX,arums$nbY)
     #
-    for(x in 1:het$nbX){
-        resx = Gstarx(het,mu[x,]/n[x],x)
+    for(x in 1:arums$nbX){
+        resx = Gstarx(arums,mu[x,]/n[x],x)
         val = val + n[x]*resx$valx
         Uopt[x,] = resx$Ux
     }
@@ -55,63 +55,63 @@ Gstar.default <- function(het, mu, n)
     return(list(val=val,U=Uopt))
 }
 
-Gstarx.default <- function(het, mux, x)
+Gstarx.default <- function(arums, mux, x)
 { 
-    if(!het$outsideOption){
+    if(!arums$outsideOption){
         stop("Gstarx.default not supported for outsideOption==F")
     }
     #
     thef <- function(Ux)
     {
-        res = Gx(het,Ux,x)
+        res = Gx(arums,Ux,x)
         return(list("objective" =  res$valx - sum(mux*Ux), "gradient" = res$mux - mux))
     }
     #
-    resopt = nloptr(x0= rep(0,het$nbY), eval_f = thef,
+    resopt = nloptr(x0= rep(0,arums$nbY), eval_f = thef,
                     opt = list(algorithm = 'NLOPT_LD_LBFGS', xtol_rel = xtol_rel, "ftol_rel"=1e-15))
     #
     return(list(valx = -resopt$objective, mux = resopt$solution))
 }
 
-D2Gstarx.default <- function (het, mux, x)
+D2Gstarx.default <- function (arums, mux, x)
 {
-    nablaGstar <- function(themux) (Gstarx(het,themux,x)$Ux)
+    nablaGstar <- function(themux) (Gstarx(arums,themux,x)$Ux)
     return(jacobian(nablaGstar,mux))
 }
 
-D2Gstar.default <- function (het, mu,n, xFirst=T)
+D2Gstar.default <- function (arums, mu,n, xFirst=T)
 {
-    if(!het$outsideOption){
+    if(!arums$outsideOption){
         stop("Method D2Gstar.default not implemented yet when outsideOption==F")
     }
     #
-    Hess = Diagonal(het$nbX*het$nbY,0)
+    Hess = Diagonal(arums$nbX*arums$nbY,0)
     #
-    for(x in 1:het$nbX){
+    for(x in 1:arums$nbX){
         if(xFirst){
-            inds=x+het$nbX*(0:(het$nbY-1))
-            Hess[inds,inds] = D2Gstarx(het,mu[x,]/n[x],x) / n[x]
+            inds=x+arums$nbX*(0:(arums$nbY-1))
+            Hess[inds,inds] = D2Gstarx(arums,mu[x,]/n[x],x) / n[x]
         }else{
-            inds= (1:het$nbY) + (x-1)*het$nbY
-            Hess[inds,inds] = D2Gstarx(het,mu[x,]/n[x],x) / n[x]
+            inds= (1:arums$nbY) + (x-1)*arums$nbY
+            Hess[inds,inds] = D2Gstarx(arums,mu[x,]/n[x],x) / n[x]
         }
     }
     #
     return(Hess)
 }
 
-Gbar.default <- function(het, Ubar, n, mubar)
+Gbar.default <- function(arums, Ubar, n, mubar)
 {
-    if(!het$outsideOption){
+    if(!arums$outsideOption){
         stop("Method Gbar.default not implemented yet when outsideOption==F")
     }
     #
     val = 0
-    Uopt = matrix(0,het$nbX,het$nbY)
-    muopt = matrix(0,het$nbX,het$nbY)
+    Uopt = matrix(0,arums$nbX,arums$nbY)
+    muopt = matrix(0,arums$nbX,arums$nbY)
     #
-    for(x in 1:het$nbX){
-        resx = Gbarx (het, Ubar[x,],mubar[x,]/n[x],x )
+    for(x in 1:arums$nbX){
+        resx = Gbarx (arums, Ubar[x,],mubar[x,]/n[x],x )
         val = val + n[x]*resx$valx
         Uopt[x,] = resx$Ux
         muopt[x,] = n[x]*resx$mux
@@ -120,14 +120,14 @@ Gbar.default <- function(het, Ubar, n, mubar)
     return(list(val=val,U=Uopt,mu=muopt))
 }
 
-Gbarx.default <- function (het, Ubarx, mubarx, x)
+Gbarx.default <- function (arums, Ubarx, mubarx, x)
 { 
-    if(!het$outsideOption){
+    if(!arums$outsideOption){
         stop("Method Gbarx.default not implemented yet when outsideOption==F")
     }
     #
     thef <- function(mux){
-        res = Gstarx(het,mux,x)
+        res = Gstarx(arums,mux,x)
         #
         return(list("objective" = res$valx - sum(mux*Ubarx),
                     "gradient" = res$Ux - Ubarx))
@@ -135,10 +135,10 @@ Gbarx.default <- function (het, Ubarx, mubarx, x)
     #
     theg <- function(mux){
         return(list("constraints" = sum(mux) - 1, 
-                    "jacobian" = rep(1,het$nbY)))
+                    "jacobian" = rep(1,arums$nbY)))
     }
     #
-    lb = rep(0,het$nbY)
+    lb = rep(0,arums$nbY)
     ub = mubarx
     #
     resopt = nloptr(x0 = mubarx/2, eval_f = thef, eval_g_ineq = theg,
@@ -147,5 +147,5 @@ Gbarx.default <- function (het, Ubarx, mubarx, x)
                                local_opts = list("algorithm" = "NLOPT_LD_MMA","xtol_rel"=1e-7),
                                "xtol_rel"=1e-7))
     #
-    return(list(valx = -resopt$objective, Ux = Gstarx(het,resopt$solution,x)$Ux, mux = resopt$solution))
+    return(list(valx = -resopt$objective, Ux = Gstarx(arums,resopt$solution,x)$Ux, mux = resopt$solution))
 }
