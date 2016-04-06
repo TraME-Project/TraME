@@ -32,8 +32,7 @@ build_LTUs <- function(lambda, phi)
     ret = list(nbX = nbX, nbY = nbY,
                nbParams = 2* nbX * nbY,
                lambda = lambda, phi = phi, 
-               aux_zeta = aux_zeta,
-               aux_expphi = exp(phi))
+               aux_zeta = aux_zeta)
     class(ret) = "LTU"
     #
     return(ret)
@@ -66,16 +65,6 @@ dtheta_Psi.LTU <- function(tr, U, V, dtheta=NULL)
 
 determineType.LTU <- function(tr, xs=1:tr$nbX, ys=1:tr$nbY) (1)
 
-MMF.LTU <- function(tr, mux0s, mu0ys, xs=1:tr$nbX, ys=1:tr$nbY, sigma=1)
-{
-    term_1 = mux0s^tr$lambda[xs,ys]
-    term_2 = t( mu0ys^t(tr$aux_zeta[xs,ys]) )
-    term_3 = tr$aux_expphi[xs,ys]^(1/sigma)
-    #
-    ret = term_1 * term_2 * term_3
-    #
-    return(ret)
-}
 
 Ucal.LTU <- function(tr, vs, xs=1:tr$nbX, ys=1:tr$nbY)
 {
@@ -144,8 +133,7 @@ transfersTranspose.LTU <- function(tr)
     ret = list(nbX = tr$nbY, nbY = tr$nbX,
                nbParams = tr$nbParams,
                lambda = t(tr$aux_zeta), phi = t(tr$phi),
-               aux_zeta = t(tr$lambda),
-               aux_expphi = t(tr$aux_expphi))
+               aux_zeta = t(tr$lambda))
     class(ret) = "LTU"
     #
     return(ret)

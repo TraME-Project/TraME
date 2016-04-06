@@ -26,9 +26,7 @@ build_NTUs <- function(alpha, gamma)
     #
     ret = list(nbX = nbX, nbY = nbY,
                nbParams = 2 * nbX * nbY,
-               alpha = alpha, gamma = gamma,
-               aux_expalpha = exp(alpha),
-               aux_expgamma = exp(gamma))
+               alpha = alpha, gamma = gamma)
     class(ret) = "NTU"
     #
     return(ret)
@@ -64,16 +62,6 @@ dtheta_Psi.NTU <- function(tr, U, V, dtheta=NULL)
 determineType.NTU <- function(tr, xs=1:tr$nbX, ys=1:tr$nbY)
 {
     return(2)
-}
-
-MMF.NTU <- function(tr, mux0s, mu0ys, xs=1:tr$nbX, ys=1:tr$nbY, sigma=1)
-{
-    term_1 = mux0s * tr$aux_expalpha[xs,ys]^(1/sigma)
-    term_2 = t( mu0ys * t(tr$aux_expgamma[xs,ys]^(1/sigma)) )
-    #
-    ret = pmin(term_1, term_2)
-    #
-    return(ret)
 }
 
 UW.NTU <- function(tr, ws, xs=1:tr$nbX, ys=1:tr$nbY)
@@ -112,9 +100,7 @@ transfersTranspose.NTU <- function(tr)
 {
     ret = list(nbX = tr$nbY, nbY = tr$nbX,
                nbParams = tr$nbParams,
-               alpha = t(tr$gamma), gamma = t(tr$alpha),
-               aux_expalpha = t(tr$aux_expgamma),
-               aux_expgamma = t(tr$aux_expalpha))
+               alpha = t(tr$gamma), gamma = t(tr$alpha))
     class(ret) = "NTU"
     #
     return(ret)

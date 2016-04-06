@@ -69,12 +69,12 @@ build_RUSC <- function(zeta, outsideOption=TRUE)
 
 Gx.RUSC <- function(arums, Ux, x)
 {
-    M = length(Ux) + 1
+    nbAlt = length(Ux) + 1
     #
-    muxtilde = rep(0,M)
+    muxtilde = rep(0,nbAlt)
     Uxtilde  = c(Ux,0)
     #
-    for(i in 1:M){
+    for(i in 1:nbAlt){
         y = arums$aux_ord[x,i]
         runmax = 0
         #
@@ -86,7 +86,7 @@ Gx.RUSC <- function(arums, Ux, x)
         }
         #
         runmin = 1
-        j = M
+        j = nbAlt
         while(j > i){
             z = arums$aux_ord[x,j]
             runmin = min(runmin, (Uxtilde[y]-Uxtilde[z])/(arums$zeta[x,z]-arums$zeta[x,y]))
@@ -96,7 +96,7 @@ Gx.RUSC <- function(arums, Ux, x)
         muxtilde[y] = max(runmin-runmax,0)
     }
     #
-    mux = muxtilde[1:M-1]
+    mux = muxtilde[1:nbAlt-1]
     #
     valx = sum(mux*(Ux-arums$aux_b[x,])) - matrix(mux,nrow=1)%*%arums$aux_A[x,,]%*%matrix(mux,ncol=1)/2 - arums$aux_c[x]
     ret = list(valx = valx, mux  = mux)
@@ -116,21 +116,21 @@ Gstarx.RUSC <- function(arums, mux, x)
 
 Gbarx.RUSC <- function (arums, Ubarx, mubarx, x)
 {
-    M = length(Ubarx) + 1
+    nbAlt = length(Ubarx) + 1
     #
     obj = c(arums$aux_b[x,] - Ubarx,0)
-    A = matrix(1,1,M)
+    A = matrix(1,1,nbAlt)
     rhs = c(1)
     
-    Q = matrix(0,M,M)
-    Q[1:M-1,1:M-1] = arums$aux_A[x,,] / 2
+    Q = matrix(0,nbAlt,nbAlt)
+    Q[1:(nbAlt-1),1:(nbAlt-1)] = arums$aux_A[x,,] / 2
     
-    lb = rep(0,M)
+    lb = rep(0,nbAlt)
     ub = c(mubarx,1)
     #
     result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense="=",Q=Q,lb=lb,ub=ub)
     #
-    mux = result$solution[1:M-1]
+    mux = result$solution[1:nbAlt-1]
     Amu = c(arums$aux_A[x,,] %*% matrix(mux,ncol=1))
     Ux  = Amu + arums$aux_b[x,]
     #

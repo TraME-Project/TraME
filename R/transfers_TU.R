@@ -31,8 +31,7 @@ build_TUs <- function(phi)
     #
     ret = list(nbX = nbX, nbY = nbY,
                nbParams = nbX*nbY,
-               phi = phi,
-               aux_expphiover2 = exp(phi/2))
+               phi = phi)
     class(ret) = "TU"
     #
     return(ret)
@@ -65,15 +64,6 @@ determineType.TU <- function(tr, xs=1:tr$nbX, ys=1:tr$nbY)
     return(1)
 }
 
-MMF.TU <- function(tr, mux0s, mu0ys, xs=1:tr$nbX, ys=1:tr$nbY, sigma=1)
-{
-    term_1 = tr$aux_expphiover2[xs,ys]^(1/sigma)
-    term_2 = sqrt(mux0s %*% t(mu0ys))
-    #
-    ret = term_1 * term_2
-    #
-    return(ret)
-}
 
 Ucal.TU <- function(tr, vs, xs=1:tr$nbX, ys=1:tr$nbY)
 {

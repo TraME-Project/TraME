@@ -46,9 +46,9 @@ simul <- function (arums, ...) UseMethod("simul")
 
 # market classes
 
-margxInv <- function(xs, mkt, ...) UseMethod("margxInv",mkt)
+margxInv <- function(xs, mmfs, ...) UseMethod("margxInv",mmfs)
 
-margyInv <- function(ys, mkt, ...) UseMethod("margyInv",mkt)
+margyInv <- function(ys, mmfs, ...) UseMethod("margyInv",mmfs)
 
 solveEquilibrium <- function(market, ...) UseMethod("solveEquilibrium")
 
@@ -90,7 +90,7 @@ WU <- function(tr, ...) UseMethod("WU")
 
 WV <- function(tr, ...)  UseMethod("WV")
 
-MMF <- function(tr, ...) UseMethod("MMF")
+M <- function(mmfs, ...) UseMethod("M")
 
 ufromvs <- function(tr,...) UseMethod("ufromvs")
 

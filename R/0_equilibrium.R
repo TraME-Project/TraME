@@ -30,10 +30,12 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     # Computes equilibrium in the logit case via IPFP in the all-logit case
 {
     #
-    noSingles = !is.null(market$neededNorm)
+  if (!("mmfs" %in% "market$types")) {stop("ipfp only defined for market whose types contains mmfs.")}
+  mmfs = market$mmfs
+    noSingles = !is.null(mms$neededNorm)
     if(noSingles){
         warning("There are known issues with the current implementation of the IPFP in the case without unassigned agents.")
-        H = market$neededNorm$H_edge_logit
+        H = mmfs$neededNorm$H_edge_logit
         if(is.null(H)){
             stop("Function H_edge not included in market$neededNorm")
         }
@@ -42,28 +44,16 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     if(notifications){
         message('Solving for equilibrium in ITU_logit problem using IPFP.') 
     }
-    if((class(market$arumsG)!="logit") || (class(market$arumsH)!="logit")){
-        stop("Error: Heterogeneities are not all logit.")
-    }
-    if(market$arumsG$sigma != market$arumsH$sigma){
-        stop("Error: scaling parameters of the logit differs on both sides of the market.")
-    }
-    #
-    sigma = market$arumsG$sigma
-    
-    n = market$n
-    m = market$m
-    tr = market$transfers
-    
+    n = mmfs$n
+    m = mmfs$m
     nbX = length(n)
     nbY = length(m)
-    
     #
     # Algorithm: Loop
     #
     mu0y = mu0ystart
     mux0 = rep(NA,length=nbX)
-    
+    #
     error = 2*tol
     iter = 0
     tm = proc.time()  
@@ -72,8 +62,8 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
         val = c(mux0,mu0y)
         
         #Solve for mux0 and then mu0y
-        mux0 = margxInv(1:nbX,mkt=market,Mu0y=mu0y,sigma=sigma)
-        mu0y = margyInv(1:nbY,mkt=market,Mux0=mux0,sigma=sigma)
+        mux0 = margxInv(1:nbX,mmfs=mmfs,Mu0y=mu0y)
+        mu0y = margyInv(1:nbY,mmfs=mmfs,Mux0=mux0)
         
         if(noSingles){
             rescale = H(mux0,mu0y)
@@ -93,106 +83,11 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
         message(paste0("IPFP converged in ", iter," iterations and ", round(time,digits=2), " seconds.\n"))
     }
     # Construct the equilibrium outcome based on mux0 and mu0y obtained from above
-    mu = MMF(tr,mux0,mu0y, sigma=sigma)  
-    U = sigma * log(mu/mux0)
-    V = sigma * t(log(t(mu) / mu0y))
+    mu = M(mmfs,mux0,mu0y)  
     #
     outcome = list(mu = mu,
                    mux0 = mux0, mu0y = mu0y,
-                   U = U, V = V,
-                   u = - sigma * log(mux0),
-                   v = - sigma * log(mu0y),
                    iter=iter, time=time)
-    #
-    return(outcome)
-}
-
-PARipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, xchunks=NULL, ychunks=NULL, mu0ystart=market$m)
-    # Computes equilibrium in the logit case via IPFP in the all-logit case
-{
-    #
-    noSingles = !is.null(market$neededNorm)
-    if(noSingles){
-        warning("There are known issues with the current implementation of the IPFP in the case without unassigned agents.")
-        H = market$neededNorm$H_edge_logit
-        if(is.null(H)){
-            stop("Function H_edge not included in market$neededNorm")
-        }
-    }
-    #
-    if(notifications){
-        message('Solving for equilibrium in ITU_logit problem using IPFP.') 
-    }
-    if((class(market$arumsG)!="logit") || (class(market$arumsH)!="logit")){
-        stop("Error: Heterogeneities are not all logit.")
-    }
-    if(market$arumsG$sigma != market$arumsH$sigma){
-        stop("Error: scaling parameters of the logit differs on both sides of the market.")
-    }
-    #
-    sigma = market$arumsG$sigma
-    
-    n = market$n
-    m = market$m
-    tr = market$transfers
-    
-    nbX = length(n)
-    nbY = length(m)
-    
-    # Preamble
-    if(is.null(xchunks)){
-        xchunks = sfClusterSplit(1:nbX)
-    } 
-    if(is.null(ychunks)){
-        ychunks = sfClusterSplit(1:nbY)
-    }
-    #
-    # Algorithm: Loop
-    #
-    mu0y = mu0ystart
-    mux0 = rep(NA,length=nbX)
-    
-    error = 2*tol
-    iter = 0
-    tm = proc.time()  
-    while(max(error,na.rm=TRUE)>tol){
-        iter = iter+1
-        val = c(mux0,mu0y)
-        
-        #Solve for mux0 and then mu0y
-        mux0 = unlist(sfLapply(x=xchunks,fun=margxInv,mkt=market,Mu0y=mu0y,sigma=sigma))
-        mu0y = unlist(sfLapply(x=ychunks,fun=margyInv,mkt=market,Mux0=mux0,sigma=sigma))
-        
-        if(noSingles){
-            rescale = H(mux0,mu0y)
-            mux0 = mux0 * rescale
-            mu0y = mu0y / rescale
-        }
-        
-        error = abs(c(mux0,mu0y)-val)
-        if(debugmode & notifications){
-            message(paste0("Iter: ", iter, ". Error: ", max(error)))
-        }
-    }
-    #
-    time = proc.time()-tm  
-    time = time["elapsed"] 
-    
-    
-    if(notifications){
-        message(paste0("IPFP converged in ", iter," iterations.\n"))
-    }
-    # Construct the equilibrium outcome based on mux0 and mu0y obtained from above
-    mu = MMF(tr,mux0,mu0y, sigma=sigma)  
-    U = sigma * log(mu/mux0)
-    V = sigma * t(log(t(mu) / mu0y))
-    #
-    outcome = list(mu = mu,
-                   mux0 = mux0, mu0y = mu0y,
-                   U = U, V = V,
-                   u = - sigma * log(mux0),
-                   v = - sigma * log(mu0y),
-                   time=time)
     #
     return(outcome)
 }
@@ -730,13 +625,13 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
     }
     #
     phi = market$transfers$phi
-    N = dim(phi)[1]
-    M = dim(phi)[2]
+    nbX = dim(phi)[1]
+    nbY = dim(phi)[2]
     #
     obj = c(phi)
     
-    A1 = Matrix::kronecker(matrix(1,1,M),sparseMatrix(1:N,1:N))
-    A2 = Matrix::kronecker(sparseMatrix(1:M,1:M),matrix(1,1,N))
+    A1 = Matrix::kronecker(matrix(1,1,nbY),sparseMatrix(1:nbX,1:nbX))
+    A2 = Matrix::kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,1,nbX))
     A = rbind2(A1,A2)
     
     d = c(market$n,market$m)
@@ -744,9 +639,9 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
     #
     result = genericLP(obj=obj,A=A,modelsense="max",rhs=d,sense="<",start=pi_init)
     #
-    mu = matrix(result$solution,nrow=N)
-    u0 = result$pi[1:N] 
-    v0 = result$pi[(N+1):(N+M)]
+    mu = matrix(result$solution,nrow=nbX)
+    u0 = result$pi[1:nbX] 
+    v0 = result$pi[(nbX+1):(nbX+nbY)]
     val = result$objval
     #
     objBis = ifelse(xFirst==TRUE,1,-1)*c(market$n,-market$m)
@@ -754,12 +649,12 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
     dBis = c(phi,val)
     uvinit = c(u0,v0)
 
-    resultBis = genericLP(obj=objBis,A=ABis,modelsense="max",rhs=dBis,sense=c(rep(">",N*M),"="),start=uvinit)
+    resultBis = genericLP(obj=objBis,A=ABis,modelsense="max",rhs=dBis,sense=c(rep(">",nbX*nbY),"="),start=uvinit)
     #
-    u = resultBis$solution[1:N] 
-    v = resultBis$solution[(N+1):(N+M)]
+    u = resultBis$solution[1:nbX] 
+    v = resultBis$solution[(nbX+1):(nbX+nbY)]
     
-    residuals = Psi(market$transfers,matrix(u,nrow=N,ncol=M),matrix(v,nrow=N,ncol=M,byrow=T))
+    residuals = Psi(market$transfers,matrix(u,nrow=nbX,ncol=nbY),matrix(v,nrow=nbX,ncol=nbY,byrow=T))
     #
     outcome = list(success=TRUE,
                    mu=mu,

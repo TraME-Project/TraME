@@ -132,16 +132,16 @@ build_RSCbeta <- function(zeta, alpha, beta)
 
 Gx.RSC <- function(arums, Ux, x)
 {
-    M =  arums$nbY + 1
+    nbAlt =  arums$nbY + 1
     #
-    muxtilde = rep(0,M)
+    muxtilde = rep(0,nbAlt)
     Uxtilde = c(Ux,0)
     #
     valx = 0
     Eepssofar = 0
     cumulmusofar = 0
     #
-    for(i in 1:M){
+    for(i in 1:nbAlt){
         y = arums$aux_ord[x,i]
         runmax = arums$aux_quant(0)
         #
@@ -159,7 +159,7 @@ Gx.RSC <- function(arums, Ux, x)
         }
         #
         runmin = arums$aux_quant(1)
-        j = M
+        j = nbAlt
         while(j > i){
             z = arums$aux_ord[x,j]
             runmin = min(runmin, (Uxtilde[y]-Uxtilde[z])/(arums$zeta[x,z]-arums$zeta[x,y]))
@@ -182,7 +182,7 @@ Gx.RSC <- function(arums, Ux, x)
         }
     }  
     #
-    mux = muxtilde[1:M-1]
+    mux = muxtilde[1:nbAlt-1]
     #
     ret = list(valx = sum(mux*Ux) - Gstarx.RSC(arums,mux,x)$valx,
                mux  = mux)
@@ -298,13 +298,13 @@ simul.RSC <- function(arums, nbDraws, seed=NULL)
 #   q = c(mux, (1-sum(mux)))
 #   aux_ord = arums$aux_ord[x,]
 #   zeta = arums$zeta[x,]
-#   M = arums$nbY+1
-#   v = rep(0,M) 
+#   nbAlt = arums$nbY+1
+#   v = rep(0,nbAlt) 
 #   t = q[aux_ord[1]]
 #   eps = arums$aux_quant_eps(t)
 #   v[aux_ord[1]] = zeta[aux_ord[1]]*eps
 #   valx = zeta[aux_ord[1]] * arums$aux_pot_eps(q[aux_ord[1]])
-#   for (j in 2:M)
+#   for (j in 2:nbAlt)
 #   {
 #     valx = valx + zeta[aux_ord[j]] * (arums$aux_pot_eps(t+q[aux_ord[j]])-arums$aux_pot_eps(t)) 
 #     v[aux_ord[j]] = v[aux_ord[j-1]] + arums$aux_quant_eps(t)* (zeta[aux_ord[j]]-zeta[aux_ord[j-1]])
@@ -312,7 +312,7 @@ simul.RSC <- function(arums, nbDraws, seed=NULL)
 #   }
 #   
 #   
-#   Ux = v[M] - v[1:(M-1)]  # CHANGE HERE TO BE VERIFIED
+#   Ux = v[nbAlt] - v[1:(nbAlt-1)]  # CHANGE HERE TO BE VERIFIED
 #   
 #   return(list(valx= -valx,
 #               Ux=  Ux ))

@@ -21,15 +21,17 @@
 
 marketTranspose <- function(market)
 {
-  thelist=list(n=market$m, m=market$n, 
+  thelist=list(types = market$types,
+               n=market$m, m=market$n, 
+               neededNorm=normalizationTranspose(market$neededNorm),
+               mmfs = mmfsTranspose(market$mmfs),
                arumsG=market$arumsH, arumsH=market$arumsG,
-               transfers=transfersTranspose(market$transfers),
-               neededNorm=normalizationTranspose(market$neededNorm))
+               transfers=transfersTranspose(market$transfers))
   #
   add = 0
   names = names(market)
   # here, transpose additional elements; add 1 to add each time
-  if(length(names) > 5 + add){
+  if(length(names) > length(thelist) + add){
     message("Warning: in bipartite market transposition, 
          some elements have not been copied.")
   }
@@ -134,58 +136,6 @@ checkNorm <- function(neededNorm, n, m, arumsG, arumsH)
 ########     Methods for  markets       #########
 #################################################
 
-margxInv.default <- function(xs, mkt, Mu0ys, sigma=1) 
-{
-  if (is.null(mkt$neededNorm))
-  {
-    coeff = 1
-    ubs = mkt$n
-  }
-  else
-  {
-    coeff = 0
-    ubs = rep(1e10,mkt$transfers$nbX)
-  }
-  #
-  if(is.null(xs)){
-    xs = 1:mkt$transfers$nbX
-  }
-  themux0s = rep(0,length(xs))
-  #
-  for(x in xs){
-    root_fn <- function(z) (coeff*z - mkt$n[x] + sum(MMF(mkt$transfers,z,Mu0ys,xs=x,sigma=sigma)))
-    themux0s[x] = uniroot(root_fn, c(0,ubs[x]), tol = 1e-300)$root # Keith: fix tolerence   
-  }
-  #
-  return(themux0s)
-}
-
-margyInv.default <- function(ys, mkt, Mux0s, sigma=1)
-{
-  if (is.null(mkt$neededNorm))
-  {
-    coeff = 1
-    ubs = mkt$m
-  }
-  else
-  {
-    coeff = 0
-    ubs = rep(1e10,mkt$transfers$nbY)
-  }
-  #
-  if(is.null(ys)){
-    ys = 1:mkt$transfers$nbY
-  }
-  themu0ys = rep(0,mkt$transfers$nbY)
-  #
-  for(y in ys){
-    root_fn <- function(z) (coeff*z - mkt$m[y] + sum(MMF(mkt$transfers,Mux0s,z,ys=y,sigma=sigma)))
-    themu0ys[y] = uniroot(root_fn, c(0,ubs[y]), tol=1e-300)$root
-  }
-  #
-  return(themu0ys)
-}
-
 build_market_TU_none <- function(n, m, phi, neededNorm=NULL)
 {
   if(!is.null(neededNorm) && (sum(n) != sum(m))){
@@ -199,7 +149,8 @@ build_market_TU_none <- function(n, m, phi, neededNorm=NULL)
   noneM = build_none(nbX,nbY)
   noneW = build_none(nbY,nbX)
   #
-  ret = list(n=n, m=m,
+  ret = list(types = "arums",
+             n=n, m=m,
              arumsG=noneM, arumsH=noneW,
              transfers=TUs,
              neededNorm=neededNorm)
@@ -221,7 +172,8 @@ build_market_TU_general <- function(n, m, phi, arumsG, arumsH, neededNorm=NULL)
   #
   TUs = build_TUs(phi)
   #
-  ret = list(n=n, m=m,
+  ret = list(types = "arums",
+             n=n, m=m,
              arumsG=arumsG, arumsH=arumsH,
              transfers=TUs,
              neededNorm=neededNorm)
@@ -246,7 +198,8 @@ build_market_TU_empirical <- function(n, m, phi, arumsG, arumsH, nbDraws, seed=N
   #
   TUs = build_TUs(phi)
   #
-  ret = list(n=n, m=m,
+  ret = list(types = "arums",
+             n=n, m=m,
              arumsG=arumsGsim, arumsH=arumsHsim,
              transfers=TUs,
              neededNorm=neededNorm)
@@ -270,7 +223,8 @@ build_market_NTU_none <- function(n, m, alpha, gamma, neededNorm=NULL)
   noneM = build_none(nbX,nbY)
   noneW = build_none(nbY,nbX)
   #
-  ret = list(n=n, m=m,
+  ret = list(types = "arums",
+             n=n, m=m,
              arumsG=noneM, arumsH=noneW,
              transfers=NTUs,
              neededNorm=neededNorm)
@@ -289,7 +243,8 @@ build_market_NTU_general <- function(n, m, alpha, gamma, arumsG, arumsH, neededN
   #
   NTUs = build_NTUs(alpha,gamma)
   #
-  ret = list(alpha=alpha, gamma=gamma,
+  ret = list(types = "arums",
+             alpha=alpha, gamma=gamma,
              n=n,m=m,
              arumsG=arumsG, arumsH=arumsH,
              transfers=NTUs,
@@ -314,7 +269,8 @@ build_market_LTU_none <- function(n, m, lambda, phi, neededNorm=NULL)
   noneM = build_none(nbX,nbY)
   noneW = build_none(nbY,nbX)
   #
-  ret = list(n=n, m=m,
+  ret = list(types = "arums",
+             n=n, m=m,
              arumsG=noneM, arumsH=noneW,
              transfers=LTUs,
              neededNorm=neededNorm)
@@ -340,17 +296,24 @@ build_market_LTU_logit <- function(n, m, lambda, phi, sigma=1, neededNorm=NULL)
   LTUs = build_LTUs(lambda,phi)
   logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=outsideOption)
   logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=outsideOption)
+  # 
+  LTUmmfs = build_LTUmmfs(n,m,lambda,phi/sigma,neededNorm)
   #
-  ret = list(n=n, m=m,
+  ret = list(types = c("arums","mmfs"),
+             n=n, m=m,
+             neededNorm=neededNorm,
+             #
              arumsG=logitM, arumsH=logitW,
              transfers=LTUs,
-             neededNorm=neededNorm)
+             #
+             mmfs = LTUmmfs
+             )
   class(ret) = "LTU_logit"
   #
   return(ret)
 }
 
-build_market_ITU_logit <- function(n, m, transfers, sigma=1, neededNorm=NULL)
+build_market_ITU_logit <- function(n, m, transfers, neededNorm=NULL)
 {
   if(!is.null(neededNorm) && (sum(n) != sum(m))){
     stop("Normalization asked but sum(n) does not coincide with sum(m)")
@@ -362,9 +325,17 @@ build_market_ITU_logit <- function(n, m, transfers, sigma=1, neededNorm=NULL)
   logitM = build_logits(nbX,nbY,sigma,outsideOption=is.null(neededNorm))
   logitW = build_logits(nbY,nbX,sigma,outsideOption=is.null(neededNorm))
   #
-  ret = list(n=n, m=m,
+  ITUmmfs = build_ITUmmfs(n,m,transfers)
+  #
+  ret = list(types = c("arums","mmfs"),
+             n=n, m=m,
+             neededNorm=neededNorm,
+             #
              arumsG=logitM, arumsH=logitW,
-             transfers=transfers) # Keith: should this include neededNorm?
+             transfers=transfers,
+             #
+             mmfs = ITUmmfs
+             ) 
   class(ret) = "ITU_logit"
   #
   return(ret)
@@ -374,7 +345,8 @@ solveEquilibrium.ITU_logit = ipfp
 
 build_market_ITU_general <- function(n, m, arumsG, arumsH, transfers, neededNorm=NULL)
 {
-  ret = list(n=n, m=m,
+  ret = list(types = "arums",
+             n=n, m=m,
              arumsG=arumsG, arumsH=arumsH,
              transfers=transfers,
              neededNorm=neededNorm)
@@ -384,3 +356,68 @@ build_market_ITU_general <- function(n, m, arumsG, arumsH, transfers, neededNorm
 }
 
 solveEquilibrium.ITU_general = jacobi
+
+
+build_market_NTU_logit <- function(n, m, alpha, gamma, sigma=1, neededNorm=NULL)
+{
+  if(!is.null(neededNorm) && (sum(n) != sum(m))){
+    stop("Normalization asked but sum(n) does not coincide with sum(m)")
+  }
+  #
+  nbX = length(n)
+  nbY = length(m)
+  #
+  NTUs = build_NTUs(alpha,gamma)
+  logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=is.null(neededNorm))
+  logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=is.null(neededNorm))
+  #
+  NTUmmfs = build_NTUmmfs(n,m,alpha/sigma,gamma/sigma)
+  #
+  ret = list(types = c("arums","mmfs"),
+             n=n,m=m,
+             neededNorm=neededNorm,
+             #
+             arumsG=logitM,arumsH=logitW,
+             transfers=NTUs,
+             #
+             mmfs = NTUmmfs
+             )
+  class(ret) = "NTU_logit"
+  #
+  return(ret)
+}
+
+solveEquilibrium.NTU_logit = ipfp
+
+
+build_market_TU_logit <- function(n, m, phi, sigma=1, neededNorm=NULL)
+{
+  if(!is.null(neededNorm) && (sum(n) != sum(m))){
+    stop("Normalization asked but sum(n) does not coincide with sum(m)")
+  }
+  #
+  nbX = length(n)
+  nbY = length(m)
+  #
+  TUs = build_TUs(phi)
+  logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=is.null(neededNorm))
+  logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=is.null(neededNorm))
+  #
+  TUmmfs = build_TUmmfs(n,m,phi/sigma)
+  #
+  ret = list(types = c("arums","mmfs"),
+             n=n,m=m,
+             neededNorm=neededNorm,
+             #
+             arumsG=logitM, arumsH=logitW,
+             transfers=TUs,
+             #
+             mmfs = TUmmfs
+             )
+  class(ret) = "TU_logit"
+  #
+  return(ret)
+}
+
+solveEquilibrium.TU_logit = ipfp
+
