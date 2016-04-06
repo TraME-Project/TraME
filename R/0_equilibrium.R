@@ -32,7 +32,7 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     #
   if (!("mmfs" %in% market$types)) {stop("ipfp only defined for market whose types contains mmfs.")}
   mmfs = market$mmfs
-    noSingles = !is.null(mms$neededNorm)
+    noSingles = !is.null(mmfs$neededNorm)
     if(noSingles){
         warning("There are known issues with the current implementation of the IPFP in the case without unassigned agents.")
         H = mmfs$neededNorm$H_edge_logit
