@@ -62,9 +62,7 @@ parametricMarket.etu <- function(model, theta)
     
     tau = matrix(theta3, model$nbX, model$nbY)
     #
-    tr = build_ETUs(alpha, gamma, tau)
-    #
-    ret = build_market_ITU_logit(model$n,model$m,tr,sigma=1)
+    ret = build_market_ETU_logit(model$n,model$m,alpha,gamma,tau,sigma=1)
     #
     return(ret)
 }

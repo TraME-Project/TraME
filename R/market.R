@@ -313,7 +313,7 @@ build_market_LTU_logit <- function(n, m, lambda, phi, sigma=1, neededNorm=NULL)
   return(ret)
 }
 
-build_market_ITU_logit <- function(n, m, transfers, neededNorm=NULL)
+build_market_ETU_logit <- function(n, m, alpha,gamma,tau, neededNorm=NULL)
 {
   if(!is.null(neededNorm) && (sum(n) != sum(m))){
     stop("Normalization asked but sum(n) does not coincide with sum(m)")
@@ -322,17 +322,19 @@ build_market_ITU_logit <- function(n, m, transfers, neededNorm=NULL)
   nbX = length(n)
   nbY = length(m)
   #
+  #
+  ETUs = build_ETUs(alpha, gamma, tau)
   logitM = build_logits(nbX,nbY,sigma,outsideOption=is.null(neededNorm))
   logitW = build_logits(nbY,nbX,sigma,outsideOption=is.null(neededNorm))
   #
-  ITUmmfs = build_ITUmmfs(n,m,transfers)
+  ETUmmfs = build_ETUmmfs(n,m,transfers)
   #
   ret = list(types = c("arums","mmfs"),
              n=n, m=m,
              neededNorm=neededNorm,
              #
              arumsG=logitM, arumsH=logitW,
-             transfers=transfers,
+             transfers=ETUs,
              #
              mmfs = ITUmmfs
              ) 

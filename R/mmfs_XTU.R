@@ -114,7 +114,7 @@ build_NTUmmfs <- function(n,m,alpha,gamma,neededNorm)
 M.NTUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:tr$nbX, ys=1:tr$nbY)
 {
   term_1 = mux0s * mmfs$expalpha[xs,ys]
-  term_2 = t( mu0ys * t(mmfs$expgamma[xs,ys] )
+  term_2 = t( mu0ys * t(mmfs$expgamma[xs,ys] ))
   #
   ret = pmin(term_1, term_2)
   #
@@ -133,11 +133,33 @@ margyInv.NTUmmfs = function(ys,mmfs,Mux0s)
 {
   if (is.null(ys)) {ys = 1:length(mmfs$m)}
   if (!is.null(mmfs$neededNorm)) {stop('not supported yet')}
-  themu0ys = inversePWA(mmfs$m[ys], t(( mmfs$expalpha[,ys] / mmfs$expgamma[,ys]) * Mux0s), t(mmfs$expgamma[,ys] ) 
+  themu0ys = inversePWA(mmfs$m[ys], t(( mmfs$expalpha[,ys] / mmfs$expgamma[,ys]) * Mux0s), t(mmfs$expgamma[,ys] ) ) 
   return(themu0ys)
 }
 #
 ######################### ITU #########################################
 #
+build_ETUmmfs <- function(n,m,alpha,gamma,tau,neededNorm)
+{
+  ret = list(n=n,
+             m=m,
+             neededNorm=neededNorm,
+             expminusalphaovertau = exp(-alpha/tau),
+             expminusgammaovertau = exp(-gamma/tau),
+             tauinv = 1/tau
+             )
 
-build_ITUmmfs <- function(n,m,transfers,neededNorm)
+  class(ret)="ETUmmfs"
+}
+#
+M.ETUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:tr$nbX, ys=1:tr$nbY)
+{
+
+  term_1 = mmfs$expminusalphaovertau[xs,ys] / (mux0s^mmfs$tauinv)
+  term_2 = mmfs$expminusgammaovertau[xs,ys] / t(mu0ys^t(mmfs$tauinv))
+  term_exp = tr$tau[xs,ys]
+  #
+  ret = (2/(term_1 + term_2))^(1/mmfs$tauinv)
+  #
+  return(ret)
+}
