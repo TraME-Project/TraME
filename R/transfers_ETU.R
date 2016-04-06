@@ -99,18 +99,6 @@ dtheta_Psi.ETU <- function(tr, U, V, dtheta=NULL)
 
 determineType.ETU <- function(tr, xs=1:tr$nbX, ys=1:tr$nbY) (2)
 
-MMF.ETU <- function(tr, mux0s, mu0ys, xs=1:tr$nbX, ys=1:tr$nbY, sigma=1)
-{
-    mtauinv = -sigma/tr$tau[xs,ys]
-    #
-    term_1 = mux0s^mtauinv * tr$aux_expminusalphaovertau[xs,ys]
-    term_2 = t(mu0ys^t(mtauinv)) * tr$aux_expminusgammaovertau[xs,ys]
-    term_exp = tr$tau[xs,ys]/sigma
-    #
-    ret = (2/(term_1 + term_2))^term_exp
-    #
-    return(ret)
-}
 
 Ucal.ETU <- function(tr, vs, xs=1:tr$nbX, ys=1:tr$nbY)
 {

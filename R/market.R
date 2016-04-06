@@ -369,7 +369,7 @@ build_market_NTU_logit <- function(n, m, alpha, gamma, sigma=1, neededNorm=NULL)
   nbX = length(n)
   nbY = length(m)
   #
-  NTUs = build_NTUs(alpha,gamma)
+  NTUs = build_NTUs(alpha,gamma,neededNorm)
   logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=is.null(neededNorm))
   logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=is.null(neededNorm))
   #
@@ -405,7 +405,7 @@ build_market_TU_logit <- function(n, m, phi, sigma=1, neededNorm=NULL)
   logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=is.null(neededNorm))
   logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=is.null(neededNorm))
   #
-  TUmmfs = build_TUmmfs(n,m,phi/sigma)
+  TUmmfs = build_TUmmfs(n,m,phi/sigma,neededNorm)
   #
   ret = list(types = c("arums","mmfs"),
              n=n,m=m,
