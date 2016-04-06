@@ -32,6 +32,7 @@ build_TUmmfs <- function(n,m,phi,neededNorm)
              expphiover2 = exp(phi/2)
              )
   class(ret)="TUmmfs"
+  return(ret)
 }
 #
 M.TUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:tr$nbX, ys=1:tr$nbY)
@@ -87,6 +88,7 @@ ret = list(n=n,
            expphi=exp(phi),
            aux_zeta = 1-lambda)
 class(ret)="LTUmmfs"
+return(ret)
 }
 #
 M.LTUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:tr$nbX, ys=1:tr$nbY)
@@ -109,6 +111,7 @@ build_NTUmmfs <- function(n,m,alpha,gamma,neededNorm)
              expalpha = exp(alpha),
              expgamma=exp(gamma))
   class(ret)="NTUmmfs"
+  return(ret)
 }
 #
 M.NTUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:tr$nbX, ys=1:tr$nbY)
@@ -148,7 +151,6 @@ build_ETUmmfs <- function(n,m,alpha,gamma,tau,neededNorm)
              expminusgammaovertau = exp(-gamma/tau),
              tauinv = 1/tau
              )
-
   class(ret)="ETUmmfs"
 }
 #
