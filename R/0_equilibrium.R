@@ -30,7 +30,7 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     # Computes equilibrium in the logit case via IPFP in the all-logit case
 {
     #
-  if (!("mmfs" %in% "market$types")) {stop("ipfp only defined for market whose types contains mmfs.")}
+  if (!("mmfs" %in% market$types)) {stop("ipfp only defined for market whose types contains mmfs.")}
   mmfs = market$mmfs
     noSingles = !is.null(mms$neededNorm)
     if(noSingles){
