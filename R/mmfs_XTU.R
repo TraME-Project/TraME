@@ -85,7 +85,7 @@ ret = list(n=n,
            neededNorm=neededNorm,
            lambda = lambda,
            expphi=exp(phi),
-           aux_zeta = aux_zeta)
+           aux_zeta = 1-lambda)
 class(ret)="LTUmmfs"
 }
 #
