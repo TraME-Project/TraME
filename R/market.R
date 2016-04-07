@@ -298,7 +298,7 @@ build_market_LTU_logit <- function(n, m, lambda, phi, sigma=1, neededNorm=NULL)
   logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=outsideOption)
   logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=outsideOption)
   # 
-  LTUmmfs = build_LTUmmfs(n,m,lambda,phi/sigma,neededNorm)
+  LTUmmfs = build_LTUmmfs(n,m,lambda,exp(phi/sigma),neededNorm)
   #
   ret = list(types = c("arums","mmfs"),
              n=n, m=m,
@@ -328,7 +328,7 @@ build_market_ETU_logit <- function(n, m, alpha,gamma,tau, neededNorm=NULL)
   logitM = build_logits(nbX,nbY,sigma,outsideOption=is.null(neededNorm))
   logitW = build_logits(nbY,nbX,sigma,outsideOption=is.null(neededNorm))
   #
-  ETUmmfs = build_ETUmmfs(n,m,transfers)
+  ETUmmfs = build_ETUmmfs(n,m,exp(-alpha/tau),exp(-gamma/tau),-1/tau,neededNorm)
   #
   ret = list(types = c("arums","mmfs"),
              n=n, m=m,
@@ -374,7 +374,7 @@ build_market_NTU_logit <- function(n, m, alpha, gamma, sigma=1, neededNorm=NULL)
   logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=is.null(neededNorm))
   logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=is.null(neededNorm))
   #
-  NTUmmfs = build_NTUmmfs(n,m,alpha/sigma,gamma/sigma,neededNorm)
+  NTUmmfs = build_NTUmmfs(n,m,exp(alpha/sigma),exp(gamma/sigma),neededNorm)
   #
   ret = list(types = c("arums","mmfs"),
              n=n,m=m,
@@ -406,7 +406,7 @@ build_market_TU_logit <- function(n, m, phi, sigma=1, neededNorm=NULL)
   logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=is.null(neededNorm))
   logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=is.null(neededNorm))
   #
-  TUmmfs = build_TUmmfs(n,m,phi/sigma,neededNorm)
+  TUmmfs = build_TUmmfs(n,m,exp(phi/(2*sigma)),neededNorm)
   #
   ret = list(types = c("arums","mmfs"),
              n=n,m=m,
