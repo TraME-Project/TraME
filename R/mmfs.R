@@ -29,7 +29,7 @@
 
 
 
-margxInv.default <- function(xs, mmfs, Mu0ys) 
+margxInv.default <- function(xs, mmfs, Mu0ys)
 {
   nbX = length(mmfs$n)
   if (is.null(mmfs$neededNorm))
@@ -94,7 +94,7 @@ build_TUmmfs <- function(n,m,phi,neededNorm)
   return(ret)
 }
 #
-M.TUmmfs <- function(mmfs, mux0s, mu0ys, xs=length(mmfs$n), ys=length(mmfs$m))
+M.TUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:length(mmfs$n), ys=1:length(mmfs$m))
 {
   term_1 = mmfs$expphiover2[xs,ys]
   term_2 = sqrt(mux0s %*% t(mu0ys))
@@ -150,7 +150,7 @@ build_LTUmmfs <- function(n,m,lambda,phi,neededNorm)
   return(ret)
 }
 #
-M.LTUmmfs <- function(mmfs, mux0s, mu0ys, xs=length(mmfs$n), ys=length(mmfs$m))
+M.LTUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:length(mmfs$n), ys=1:length(mmfs$m))
 {
   term_1 = mux0s^mmfs$lambda[xs,ys]
   term_2 = t( mu0ys^t(mmfs$aux_zeta[xs,ys]) )
@@ -173,7 +173,7 @@ build_NTUmmfs <- function(n,m,alpha,gamma,neededNorm)
   return(ret)
 }
 #
-M.NTUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:length(mmfs$n), ys=length(mmfs$m))
+M.NTUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:length(mmfs$n), ys=1:length(mmfs$m))
 {
   term_1 = mux0s * mmfs$expalpha[xs,ys]
   term_2 = t( mu0ys * t(mmfs$expgamma[xs,ys] ))
@@ -213,7 +213,7 @@ build_ETUmmfs <- function(n,m,alpha,gamma,tau,neededNorm)
   class(ret)="ETUmmfs"
 }
 #
-M.ETUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:length(mmfs$n), ys=length(mmfs$m))
+M.ETUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:length(mmfs$n), ys=1:length(mmfs$m))
 {
   
   term_1 = mmfs$expminusalphaovertau[xs,ys] / (mux0s^mmfs$tauinv)
