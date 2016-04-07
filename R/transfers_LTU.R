@@ -37,7 +37,18 @@ build_LTUs <- function(lambda, phi)
     #
     return(ret)
 }
-
+#
+transfersTranspose.LTU <- function(tr)
+{
+  ret = list(nbX = tr$nbY, nbY = tr$nbX,
+             nbParams = tr$nbParams,
+             lambda = t(tr$aux_zeta), phi = t(tr$phi),
+             aux_zeta = t(tr$lambda))
+  class(ret) = "LTU"
+  #
+  return(ret)
+}
+#
 Psi.LTU <- function(tr, U, V)
 {
     ret = tr$lambda * U + tr$aux_zeta * V - tr$phi
@@ -128,13 +139,3 @@ WV.LTU <- function(tr, Vs, xs=1:tr$nbX, ys=1:tr$nbY)
     return(ret)
 }
 
-transfersTranspose.LTU <- function(tr)
-{
-    ret = list(nbX = tr$nbY, nbY = tr$nbX,
-               nbParams = tr$nbParams,
-               lambda = t(tr$aux_zeta), phi = t(tr$phi),
-               aux_zeta = t(tr$lambda))
-    class(ret) = "LTU"
-    #
-    return(ret)
-}

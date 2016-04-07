@@ -31,7 +31,17 @@ build_NTUs <- function(alpha, gamma)
     #
     return(ret)
 }
-
+#
+transfersTranspose.NTU <- function(tr)
+{
+  ret = list(nbX = tr$nbY, nbY = tr$nbX,
+             nbParams = tr$nbParams,
+             alpha = t(tr$gamma), gamma = t(tr$alpha))
+  class(ret) = "NTU"
+  #
+  return(ret)
+}
+#
 Psi.NTU <- function(tr, U, V)
 {
     return(pmax(U - tr$alpha, V - tr$gamma))
@@ -96,12 +106,4 @@ WV.NTU <- function(tr, Vs, xs=1:tr$nbX, ys=1:tr$nbY)
     return(tr$gamma[xs,ys] - Vs)
 }
 
-transfersTranspose.NTU <- function(tr)
-{
-    ret = list(nbX = tr$nbY, nbY = tr$nbX,
-               nbParams = tr$nbParams,
-               alpha = t(tr$gamma), gamma = t(tr$alpha))
-    class(ret) = "NTU"
-    #
-    return(ret)
-}
+

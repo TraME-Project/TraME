@@ -38,7 +38,19 @@ build_ETUs <- function(alpha, gamma, tau)
     #
     return(ret)
 }
-
+#
+transfersTranspose.ETU <- function(tr)
+{
+  ret = list(nbX = tr$nbY, nbY = tr$nbX,
+             nbParams = tr$nbParams,
+             alpha=t(tr$gamma), gamma=t(tr$alpha), tau=t(tr$tau),
+             aux_expminusalphaovertau = t(tr$aux_expminusgammaovertau),
+             aux_expminusgammaovertau = t(tr$aux_expminusalphaovertau))
+  class(ret) = "ETU"
+  #
+  return(ret)
+}
+#
 Psi.ETU <- function(tr, U, V)
 {
     term_1 = exp(U/tr$tau)*tr$aux_expminusalphaovertau
@@ -161,16 +173,4 @@ WV.ETU <- function(tr, Vs, xs=1:tr$nbX, ys=1:tr$nbY)
     term_log = term_1 - term_2
     #
     ret = tr$tau[xs,ys] * log(term_log)
-}
-
-transfersTranspose.ETU <- function(tr)
-{
-    ret = list(nbX = tr$nbY, nbY = tr$nbX,
-               nbParams = tr$nbParams,
-               alpha=t(tr$gamma), gamma=t(tr$alpha), tau=t(tr$tau),
-               aux_expminusalphaovertau = t(tr$aux_expminusgammaovertau),
-               aux_expminusgammaovertau = t(tr$aux_expminusalphaovertau))
-    class(ret) = "ETU"
-    #
-    return(ret)
 }

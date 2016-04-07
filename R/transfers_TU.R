@@ -36,7 +36,18 @@ build_TUs <- function(phi)
     #
     return(ret)
 }
-
+#
+transfersTranspose.TU <- function(tr)
+{
+  ret = list(nbX = tr$nbY, nbY = tr$nbX,
+             nbParams = tr$nbParams,
+             phi = t(tr$phi)
+  )
+  class(ret) = "TU"
+  #
+  return(ret)
+}
+#
 Psi.TU <- function(tr, U, V)
 {
     return((U + V - tr$phi)/2)
@@ -106,15 +117,4 @@ WU.TU <- function(tr, Us, xs=1:tr$nbX, ys=1:tr$nbY)
 WV.TU <- function(tr, Vs, xs=1:tr$nbX, ys=1:tr$nbY)
 {
     return(tr$phi[xs,ys] - 2*Vs)
-}
-
-transfersTranspose.TU <- function(tr)
-{
-    ret = list(nbX = tr$nbY, nbY = tr$nbX,
-               nbParams = tr$nbParams,
-               phi = t(tr$phi),
-               aux_expphiover2 = t(tr$aux_expphiover2))
-    class(ret) = "TU"
-    #
-    return(ret)
 }
