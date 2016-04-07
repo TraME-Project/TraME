@@ -60,7 +60,18 @@ Psi.ETU <- function(tr, U, V)
     #
     return(ret)
 }
-
+#
+Psi_sub.ETU <- function(tr, U, V,xs,ys)
+{
+  tauxsys = tr$tau[xs,ys]
+  term_1 = exp(U/ tauxsys)*tr$aux_expminusalphaovertau[xs,ys]
+  term_2 = exp(V/ tauxsys)*tr$aux_expminusgammaovertau[xs,ys]
+  #
+  ret = tauxsys * log((term_1 + term_2)/2)
+  #
+  return(ret)
+}
+#
 du_Psi.ETU <- function(tr, U, V)
 {
     term_1 = V - U + tr$alpha - tr$gamma
@@ -70,7 +81,17 @@ du_Psi.ETU <- function(tr, U, V)
     #
     return(ret)
 }
-
+#
+du_Psi.ETU <- function(tr, U, V, xs, ys)
+{
+  term_1 = V - U + tr$alpha[xs,ys] - tr$gamma[xs,ys]
+  term_2 = tr$tau[xs,ys]
+  #
+  ret = 1/(1 + exp(term_1/term_2))
+  #
+  return(ret)
+}
+#
 dtheta_Psi.ETU <- function(tr, U, V, dtheta=NULL) 
 {
     dupsimat = du_Psi(tr,U,V)
@@ -109,7 +130,7 @@ dtheta_Psi.ETU <- function(tr, U, V, dtheta=NULL)
     }
 }
 
-determineType.ETU <- function(tr, xs=1:tr$nbX, ys=1:tr$nbY) (2)
+determineType.ETU <- function(tr, ...) (2)
 
 
 Ucal.ETU <- function(tr, vs, xs=1:tr$nbX, ys=1:tr$nbY)
@@ -128,29 +149,6 @@ Vcal.ETU <- function(tr, us, xs=1:tr$nbX, ys=1:tr$nbY)
     term_log = 2 - exp(term_1/tr$tau[xs,ys])
     #
     ret = tr$gamma[xs,ys] + tr$tau[xs,ys] * log(term_log)
-    #
-    return(ret)
-}
-
-UW.ETU <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    term_1 = tr$aux_expminusalphaovertau[xs,ys]
-    term_2 = exp(-Ws/tr$tau[xs,ys]) * tr$aux_expminusgammaovertau[xs,ys]
-    term_log = (term_1 + term_2)/2
-    #
-    ret = -tr$tau[xs,ys] * log(term_log)
-    #
-    return(ret)
-    
-}
-
-VW.ETU <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    term_1 = tr$aux_expminusgammaovertau[xs,ys]
-    term_2 = exp(Ws/tr$tau[xs,ys]) * tr$aux_expminusalphaovertau[xs,ys]
-    term_log = (term_2 + term_1)/2
-    #
-    ret = -tr$tau[xs,ys] * log(term_log)
     #
     return(ret)
 }

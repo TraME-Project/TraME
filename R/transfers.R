@@ -25,26 +25,23 @@
 # A. Galichon, S.D. Kominers, and S. Weber: "An Empirical Framework for Matching with Imperfectly Transferable Utility". 
 # O. Bonnet, A. Galichon, and M. Shum: "Yoghurt Chooses Man: The Matching Approach to Identification of Nonadditive Random Utility Models".
 #
-
-
-ufromvs.default <- function(tr, v, tol=0)
-{  
-    us = Ucal(tr,v,1:tr$nbX,1:tr$nbY)
-    u = pmax(apply(us,1,max),0)
-    #
-    subdiff = matrix(0,tr$nbX,tr$nbY)
-    subdiff[which(abs(u-us) <= tol)] = 1
-    #
-    return(list(u=u,subdiff=subdiff))
-}
-
-vfromus.default <- function(tr, u, tol=0)
+UW<- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
 {
-    vs = Vcal(tr,u,1:tr$nbX,1:tr$nbY)
-    v = pmax(apply(vs,2,max),0)
-    #
-    tsubdiff = matrix(0,tr$nbY,tr$nbX)
-    tsubdiff[which(abs(v-t(vs)) <= tol)] = 1
-    #
-    return(list(v=v,subdiff=t(tsubdiff) ))
+  return(-Psi_sub(tr,0,-Ws,xs,ys))
 }
+#
+VW <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
+{
+  return(-Psi_sub(tr,Ws,0,xs,ys))
+}
+#
+dw_UW <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
+{
+  return(1-du_Psi_sub.TU(tr,0,-Ws,xs,ys) )
+}
+#
+dw_VW <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
+{
+  return(-du_Psi_sub.TU(tr,Ws,0,xs,ys) )
+}
+

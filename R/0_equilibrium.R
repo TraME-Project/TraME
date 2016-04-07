@@ -719,7 +719,29 @@ updatev <- function(market, v, xFirst)
     #
     return(vupdated)  
 }
-
+#
+ufromvs <- function(tr, v, tol=0)
+{  
+  us = Ucal(tr,v,1:tr$nbX,1:tr$nbY)
+  u = pmax(apply(us,1,max),0)
+  #
+  subdiff = matrix(0,tr$nbX,tr$nbY)
+  subdiff[which(abs(u-us) <= tol)] = 1
+  #
+  return(list(u=u,subdiff=subdiff))
+}
+#
+vfromus <- function(tr, u, tol=0)
+{
+  vs = Vcal(tr,u,1:tr$nbX,1:tr$nbY)
+  v = pmax(apply(vs,2,max),0)
+  #
+  tsubdiff = matrix(0,tr$nbY,tr$nbX)
+  tsubdiff[which(abs(v-t(vs)) <= tol)] = 1
+  #
+  return(list(v=v,subdiff=t(tsubdiff) ))
+}
+#
 eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmode=FALSE)
 {
     #

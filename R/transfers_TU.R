@@ -53,10 +53,22 @@ Psi.TU <- function(tr, U, V)
     return((U + V - tr$phi)/2)
 }
 
+Psi_sub.TU <- function(tr,U,V,xs,ys) # here for vectorization purposes only 
+{
+  return((U + V - tr$phi[xs,ys])/2)
+}
+  
+
 du_Psi.TU <- function(tr, U, V)
 {
     ret = matrix(1/2, nrow=tr$nbX, ncol=tr$nbY)
     return(ret)
+}
+
+du_Psi_sub.TU <- function(tr, U, V, xs, ys)
+{
+  ret = matrix(1/2, nrow=length(xs), ncol=length(ys))
+  return(ret)
 }
 
 dtheta_Psi.TU <- function(tr, U, V, dtheta=NULL) 
@@ -70,7 +82,7 @@ dtheta_Psi.TU <- function(tr, U, V, dtheta=NULL)
     return(ret)
 }
 
-determineType.TU <- function(tr, xs=1:tr$nbX, ys=1:tr$nbY)
+determineType.TU <- function(tr, ...)
 {
     return(1)
 }
@@ -78,7 +90,7 @@ determineType.TU <- function(tr, xs=1:tr$nbX, ys=1:tr$nbY)
 
 Ucal.TU <- function(tr, vs, xs=1:tr$nbX, ys=1:tr$nbY)
 {
-    ret = tr$phi[xs,ys] - matrix(vs,tr$nbX,tr$nbY,byrow=TRUE)
+    ret = tr$phi[xs,ys] - matrix(vs,length(xs),length(ys),byrow=TRUE)
     return(ret)
 }
 
@@ -87,27 +99,6 @@ Vcal.TU <- function(tr, us, xs=1:tr$nbX, ys=1:tr$nbY)
     return(tr$phi[xs,ys] - us)
 }
 
-UW.TU <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    return((tr$phi[xs,ys] + Ws)/2)
-}
-
-dw_UW.TU <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    ret = matrix(1/2,length(xs),length(ys))
-    return(ret)
-}
-
-VW.TU <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    return((tr$phi[xs,ys]-Ws)/2)
-}
-
-dw_VW.TU <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    ret = matrix(-1/2,length(xs),length(ys))
-    return(ret)
-}
 
 WU.TU <- function(tr, Us, xs=1:tr$nbX, ys=1:tr$nbY)
 {

@@ -54,9 +54,17 @@ Psi.LTU <- function(tr, U, V)
     ret = tr$lambda * U + tr$aux_zeta * V - tr$phi
     return(ret)
 }
-
-du_Psi.LTU <- function(tr, U, V) ( tr$lambda )
-
+#
+Psi_sub.LTU <- function(tr, U, V,xs,ys)
+{
+  ret = tr$lambda[xs,ys] * U + tr$aux_zeta[xs,ys] * V - tr$phi[xs,ys]
+  return(ret)
+}
+#
+du_Psi.LTU <- function(tr, ...) ( tr$lambda )
+#
+du_Psi_sub.LTU <- function(tr, U, V,xs,ys) ( tr$lambda[xs,ys] )
+#
 dtheta_Psi.LTU <- function(tr, U, V, dtheta=NULL) 
 {
     UminusV = c(U - V)
@@ -74,7 +82,7 @@ dtheta_Psi.LTU <- function(tr, U, V, dtheta=NULL)
     }
 }
 
-determineType.LTU <- function(tr, xs=1:tr$nbX, ys=1:tr$nbY) (1)
+determineType.LTU <- function(tr, ...) (1)
 
 
 Ucal.LTU <- function(tr, vs, xs=1:tr$nbX, ys=1:tr$nbY)
@@ -94,31 +102,7 @@ Vcal.LTU <- function(tr, us, xs=1:tr$nbX, ys=1:tr$nbY)
     #
     return(ret)
 }
-
-UW.LTU <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    ret = tr$phi[xs,ys] + tr$aux_zeta[xs,ys]*Ws
-    return(ret)
-}
-
-dw_UW.LTU <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    ret = tr$aux_zeta[xs,ys]
-    return(ret)
-}
-
-VW.LTU <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    ret = tr$phi[xs,ys] - tr$lambda[xs,ys]*Ws
-    return(ret)
-}
-
-dw_VW.LTU <- function(tr, Ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    ret = -tr$lambda[xs,ys]
-    return(ret)
-}
-
+#
 WU.LTU <- function(tr, Us, xs=1:tr$nbX, ys=1:tr$nbY)
 {
     numer = Us - tr$phi[xs,ys]
@@ -128,7 +112,7 @@ WU.LTU <- function(tr, Us, xs=1:tr$nbX, ys=1:tr$nbY)
     #
     return(ret)
 }
-
+#
 WV.LTU <- function(tr, Vs, xs=1:tr$nbX, ys=1:tr$nbY)
 {
     numer = tr$phi[xs,ys] - Vs

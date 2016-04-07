@@ -72,7 +72,11 @@ estimate <- function(model, ...) UseMethod("estimate")
 
 Psi <- function(tr, ...) UseMethod("Psi")
 
+Psi_sub <- function(tr, ...) UseMethod("Psi_sub")
+
 du_Psi <- function(tr, ...) UseMethod("du_Psi")
+
+du_Psi_sub <- function(tr, ...) UseMethod("du_Psi")
 
 dtheta_Psi <- function(tr, ...) UseMethod("dtheta_Psi")
 
@@ -98,6 +102,3 @@ WV <- function(tr, ...)  UseMethod("WV")
 
 M <- function(mmfs, ...) UseMethod("M")
 
-ufromvs <- function(tr,...) UseMethod("ufromvs")
-
-vfromus <- function(tr,...) UseMethod("vfromus")

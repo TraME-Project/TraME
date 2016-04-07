@@ -46,13 +46,24 @@ Psi.NTU <- function(tr, U, V)
 {
     return(pmax(U - tr$alpha, V - tr$gamma))
 }
-
+#
+Psi_sub.NTU <- function(tr, U, V, xs, ys)
+{
+  return(pmax(U - tr$alpha[xs,ys], V - tr$gamma[xs,ys]))
+}
+#
 du_Psi.NTU <- function(tr, U, V)
 {
     ret = ifelse(U-tr$alpha >= V - tr$gamma,1,0)
     return(ret)
 }
-
+#
+du_Psi_sub.NTU <- function(tr, U, V, xs, ys)
+{
+  ret = ifelse(U-tr$alpha[xs,ys] >= V - tr$gamma[xs,ys],1,0)
+  return(ret)
+}
+#
 dtheta_Psi.NTU <- function(tr, U, V, dtheta=NULL) 
 {
     dupsi = c(du_Psi(tr,U,V))
@@ -69,32 +80,11 @@ dtheta_Psi.NTU <- function(tr, U, V, dtheta=NULL)
     }
 }
 
-determineType.NTU <- function(tr, xs=1:tr$nbX, ys=1:tr$nbY)
+determineType.NTU <- function(tr, ...)
 {
     return(2)
 }
 
-UW.NTU <- function(tr, ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    return(pmin(tr$alpha[xs,ys], ws+tr$gamma[xs,ys]))
-}
-
-dw_UW.NTU <- function(tr, ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    ret = ifelse(tr$alpha[xs,ys]>ws+tr$gamma[xs,ys],1,0)
-    return(ret)
-}
-
-VW.NTU <- function(tr, ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    return(pmin(tr$alpha[xs,ys]-ws,tr$gamma[xs,ys]))
-}
-
-dw_VW.NTU <- function(tr, ws, xs=1:tr$nbX, ys=1:tr$nbY)
-{
-    ret = ifelse(tr$alpha[xs,ys]-ws<tr$gamma[xs,ys],-1,0)
-    return(ret)
-}
 
 WU.NTU <- function(tr, Us, xs=1:tr$nbX, ys=1:tr$nbY)
 {
