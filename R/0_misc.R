@@ -82,7 +82,7 @@ tests_TraME <- function(nbDraws = 1e3)
 
 compare_hashvals <- function(hash_vals)
 {
-  true_hash <- c("456eeafce1147f6f5de6b09158004f5f", "021138f554d6b48d72965d039ffb6f97", "1291c1bcbcfda7db348a15b247939bee")
+  true_hash <- c("659ba9a641a1415cfe0cd36ded9d097c", "70995dea67d9deeed03d717c0c29d405", "1291c1bcbcfda7db348a15b247939bee")
   #
   if(identical(hash_vals,true_hash)){ conclusion = 'Test results are correct!\n'
   }else{
