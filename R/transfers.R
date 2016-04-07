@@ -26,17 +26,6 @@
 # O. Bonnet, A. Galichon, and M. Shum: "Yoghurt Chooses Man: The Matching Approach to Identification of Nonadditive Random Utility Models".
 #
 
-MMF.default <- function(tr, mux0s, mu0ys, xs, ys, sigma=1)
-{
-    term_2 = matrix(-sigma*log(mux0s),nrow=tr$nbX,ncol=tr$nbY)
-    term_3 = matrix(-sigma*log(mu0ys),nrow=tr$nbX,ncol=tr$nbY,byrow=TRUE)
-    #
-    term_exp = Psi(tr,term_2,term_3)[xs,ys]
-    #
-    ret = exp(-term_exp/sigma)
-    #
-    return(ret)
-} 
 
 ufromvs.default <- function(tr, v, tol=0)
 {  

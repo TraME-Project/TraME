@@ -85,8 +85,14 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     # Construct the equilibrium outcome based on mux0 and mu0y obtained from above
     mu = M(mmfs,mux0,mu0y)  
     #
+    U = log(mu/mux0)          # We'll suppress this soon
+    V = t(log(t(mu) / mu0y))  # We'll suppress this soon
+    #
     outcome = list(mu = mu,
                    mux0 = mux0, mu0y = mu0y,
+                   U = U, V = V,
+                   u = - log(mux0), # We'll suppress this soon
+                   v = - log(mu0y), # We'll suppress this soon
                    iter=iter, time=time)
     #
     return(outcome)
@@ -126,7 +132,7 @@ nodalNewton <- function(market, xFirst=TRUE, notifications=FALSE, sigma = 1E-6, 
     thevs <<- uv[(tr$nbX+1):(tr$nbX+tr$nbY)]
     themux0s <<- exp(- theus / sigma)
     themu0ys <<- exp(- thevs / sigma)
-    themu <<- MMF(tr,themux0s,themu0ys,sigma=sigma)
+    themu <<- M(market$mmfs,themux0s,themu0ys)
     return( c(themux0s + apply(themu,1,sum) - n,
               themu0ys + apply(themu,2,sum) - m ))
   }
@@ -137,7 +143,7 @@ nodalNewton <- function(market, xFirst=TRUE, notifications=FALSE, sigma = 1E-6, 
     #     thevs = uv[(tr$nbX+1):(tr$nbX+tr$nbY)] ## note -- this is redundant with the computation of Z
     #     themux0s = exp(- theus / sigma) ## note -- this is redundant with the computation of Z
     #     themu0ys = exp(- thevs / sigma)  ## note -- this is redundant with the computation of Z
-    #     themu = MMF(tr,themux0s,themu0ys,sigma=sigma) ## note -- this is redundant with the computation of Z
+    #     themu = M(market$mmfs,themux0s,themu0ys) ## note -- this is redundant with the computation of Z
     du_psis = du_Psi(tr,theus,thevs)
     dv_psis = 1 - du_psis
     Delta11 = diag(themux0s + apply(themu*du_psis,1,sum),nrow=tr$nbX)
@@ -167,7 +173,7 @@ nodalNewton <- function(market, xFirst=TRUE, notifications=FALSE, sigma = 1E-6, 
   thevs = sol$x[(tr$nbX+1):(tr$nbX+tr$nbY)]
   themux0s = exp(- theus / sigma)
   themu0ys = exp(- thevs / sigma)
-  themu = MMF(tr,themux0s,themu0ys,sigma=sigma)
+  themu = M(market$mmfs,themux0s,themu0ys)
   error = max(abs(c(themux0s + apply(themu,1,sum) - n,themu0ys + apply(themu,2,sum) - m ))) # calling this gives the right value to themu, themux0s and themu0ys
   U = sigma * log(themu/themux0s)
   V = sigma * t(log(t(themu) / themu0ys))
