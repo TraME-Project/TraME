@@ -44,11 +44,17 @@ Gbarx <- function(arums, ...) UseMethod("Gbarx")
 
 simul <- function (arums, ...) UseMethod("simul")
 
-# market classes
+# mmfs class
+
+mmfsTranspose <- function(mmfs) UseMethod("mmfsTranspose")
+
+M <- function(mmfs,...) UseMethod("M")
 
 margxInv <- function(xs, mmfs, ...) UseMethod("margxInv",mmfs)
 
 margyInv <- function(ys, mmfs, ...) UseMethod("margyInv",mmfs)
+
+# market classes
 
 solveEquilibrium <- function(market, ...) UseMethod("solveEquilibrium")
 

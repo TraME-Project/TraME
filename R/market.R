@@ -39,6 +39,7 @@ marketTranspose <- function(market)
   return(structure(thelist,class=class(market)))
 }
 
+
 normalizationTranspose <- function(neededNorm)
 {
   if(!is.null(neededNorm)){
@@ -307,7 +308,7 @@ build_market_LTU_logit <- function(n, m, lambda, phi, sigma=1, neededNorm=NULL)
              transfers=LTUs,
              #
              mmfs = LTUmmfs
-             )
+  )
   class(ret) = "LTU_logit"
   #
   return(ret)
@@ -337,7 +338,7 @@ build_market_ETU_logit <- function(n, m, alpha,gamma,tau, neededNorm=NULL)
              transfers=ETUs,
              #
              mmfs = ITUmmfs
-             ) 
+  ) 
   class(ret) = "ITU_logit"
   #
   return(ret)
@@ -383,7 +384,7 @@ build_market_NTU_logit <- function(n, m, alpha, gamma, sigma=1, neededNorm=NULL)
              transfers=NTUs,
              #
              mmfs = NTUmmfs
-             )
+  )
   class(ret) = "NTU_logit"
   #
   return(ret)
@@ -415,7 +416,7 @@ build_market_TU_logit <- function(n, m, phi, sigma=1, neededNorm=NULL)
              transfers=TUs,
              #
              mmfs = TUmmfs
-             )
+  )
   class(ret) = "TU_logit"
   #
   return(ret)

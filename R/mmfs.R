@@ -26,9 +26,11 @@
 #           
 # mmfs has n, and m and neededNorm
 # M.mmfs <- function(mmfs, mux0, mu0y)
-
-
-
+#
+################################################################################
+########################    Default and generic methods ########################
+################################################################################
+#
 margxInv.default <- function(xs, mmfs, Mu0ys)
 {
   nbX = length(mmfs$n)
@@ -55,7 +57,7 @@ margxInv.default <- function(xs, mmfs, Mu0ys)
   #
   return(themux0s)
 }
-
+#
 margyInv.default <- function(ys, mmfs, Mux0s)
 {
   nbY = length(mmfs$m)
@@ -82,13 +84,27 @@ margyInv.default <- function(ys, mmfs, Mux0s)
   #
   return(themu0ys)
 }
-#########################  TU #########################################
+#
+################################################################################
+########################             TU MMfs            ########################
+################################################################################
 build_TUmmfs <- function(n,m,phi,neededNorm)
 {
   ret = list(n=n,
              m=m,
              neededNorm=neededNorm,
              expphiover2 = exp(phi/2)
+  )
+  class(ret)="TUmmfs"
+  return(ret)
+}
+#
+mmfsTranspose.TUmmfs <- function(mmfs)
+{
+  ret = list(n=mmfs$m,
+             m=mmfs$n,
+             neededNorm=normalizationTranspose(mmfs$neededNorm),
+             expphiover2 = t(mmfs$expphiover2)
   )
   class(ret)="TUmmfs"
   return(ret)
@@ -137,7 +153,9 @@ margyInv.TUmmfs <- function(ys, mmfs, Mux0s)
   #
   return(ret)
 }
-######################### LTU #########################################
+################################################################################
+########################            LTU MMfs            ########################
+################################################################################
 build_LTUmmfs <- function(n,m,lambda,phi,neededNorm)
 {
   ret = list(n=n,
@@ -146,6 +164,19 @@ build_LTUmmfs <- function(n,m,lambda,phi,neededNorm)
              lambda = lambda,
              expphi=exp(phi),
              aux_zeta = 1-lambda)
+  class(ret)="LTUmmfs"
+  return(ret)
+}
+#
+mmfsTranspose.LTUmmfs <- function(mmfs)
+{
+  ret = list(n=mmfs$m,
+             m=mmfs$n,
+             neededNorm=normalizationTranspose(mmfs$neededNorm),
+             lambda = t(mmfs$lambda),
+             expphi=t(mmfs$expphi),
+             aux_zeta = t(mmfs$aux_zeta)
+             )
   class(ret)="LTUmmfs"
   return(ret)
 }
@@ -160,8 +191,9 @@ M.LTUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:length(mmfs$n), ys=1:length(mmfs$
   #
   return(ret)
 }
-#
-######################### NTU #########################################
+################################################################################
+########################            NTU MMfs            ########################
+################################################################################
 build_NTUmmfs <- function(n,m,alpha,gamma,neededNorm)
 {
   ret = list(n=n,
@@ -169,6 +201,18 @@ build_NTUmmfs <- function(n,m,alpha,gamma,neededNorm)
              neededNorm=neededNorm,
              expalpha = exp(alpha),
              expgamma=exp(gamma))
+  class(ret)="NTUmmfs"
+  return(ret)
+}
+#
+mmfsTranspose.NTUmmfs <- function(mmfs)
+{
+  ret = list(n = mmfs$m,
+             m = mmfs$n,
+             neededNorm = normalizationTranspose(mmfs$neededNorm),
+             expalpha = t(mmfs$expalpha),
+             expgamma = t(mmfs$expgamma)
+  )
   class(ret)="NTUmmfs"
   return(ret)
 }
@@ -198,9 +242,9 @@ margyInv.NTUmmfs = function(ys,mmfs,Mux0s)
   themu0ys = inversePWA(mmfs$m[ys], t(( mmfs$expalpha[,ys] / mmfs$expgamma[,ys]) * Mux0s), t(mmfs$expgamma[,ys] ) ) 
   return(themu0ys)
 }
-#
-######################### ITU #########################################
-#
+################################################################################
+########################            ETU MMfs            ########################
+################################################################################
 build_ETUmmfs <- function(n,m,alpha,gamma,tau,neededNorm)
 {
   ret = list(n=n,
@@ -211,6 +255,19 @@ build_ETUmmfs <- function(n,m,alpha,gamma,tau,neededNorm)
              tauinv = 1/tau
   )
   class(ret)="ETUmmfs"
+}
+#
+mmfsTranspose.ETUmmfs <- function(mmfs)
+{
+  ret = list(n = mmfs$m,
+             m = mmfs$n,
+             neededNorm = normalizationTranspose(mmfs$neededNorm),
+             expminusalphaovertau = t(mmfs$expminusalphaovertau),
+             expminusgammaovertau = t(mmfs$expminusgammaovertau),
+             tauinv = t(mmfs$tauinv)
+             )
+  class(ret)="ETUmmfs"
+  return(ret)
 }
 #
 M.ETUmmfs <- function(mmfs, mux0s, mu0ys, xs=1:length(mmfs$n), ys=1:length(mmfs$m))
