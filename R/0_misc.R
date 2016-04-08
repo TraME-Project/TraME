@@ -103,15 +103,16 @@ compare_hashvals <- function(hash_vals)
 
 verify_signature <- function(save_output=FALSE,output_file=NA)
 {
-    output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()))
-    #
-    message(compare_hashvals(hash_vals))
     #
     if(save_output==TRUE){
         if(is.character(output_file)==TRUE){
-            save(output_hide,file=output_file)            
+            output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()),file=output_file)
         }else{
-            save(output_hide,file="TraME_test_results.txt")
+            output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()),file="TraME_test_results.txt")
         }
+    }else{
+        output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()))
     }
+    #
+    message(compare_hashvals(hash_vals))
 }
