@@ -1,6 +1,6 @@
 # TraME
 
-Transportation Methods for Econometrics
+***Tra***nsportation ***M***ethods for ***E***conometrics
 
 ### Overview
 
