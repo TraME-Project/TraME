@@ -108,41 +108,41 @@ compare_hashvals <- function(hash_vals)
     #
     temp_paste <- character(0)
     
-    if(!identical(main_hash$true,main_hash$actual)){
+    if(identical(main_hash$true,main_hash$actual)){
         message('Test results are correct!')
     }else{
         message('*** CAUTION *** There is a problem with the results of:\n')
         #
-        if(identical(main_hash$true[1],main_hash$actual[1])){
+        if(!identical(main_hash$true[1],main_hash$actual[1])){
             message('-- arums tests, specifically: ')
             
             temp_paste <- character(0)
             for(jj in 1:length(arum_hash$test_names)){
-                if(identical(arum_hash$true[jj],arum_hash$actual[jj])){
+                if(!identical(arum_hash$true[jj],arum_hash$actual[jj])){
                     temp_paste <- c(temp_paste, arum_hash$test_names[jj], "\n")
                 }
             }
             message(temp_paste)
         }
         
-        if(identical(main_hash$true[2],main_hash$actual[2])){
+        if(!identical(main_hash$true[2],main_hash$actual[2])){
             message('-- equilibrium tests, specifically: ')
             
             temp_paste <- character(0)
             for(jj in 1:length(equil_hash$test_names)){
-                if(identical(equil_hash$true[jj],equil_hash$actual[jj])){
+                if(!identical(equil_hash$true[jj],equil_hash$actual[jj])){
                     temp_paste <- c(temp_paste, equil_hash$test_names[jj], "\n")
                 }
             }
             message(temp_paste)
         }
         
-        if(identical(main_hash$true[3],main_hash$actual[3])){
+        if(!identical(main_hash$true[3],main_hash$actual[3])){
             message('-- estimation tests, specifically: ')
             
             temp_paste <- character(0)
             for(jj in 1:length(estim_hash$test_names)){
-                if(identical(estim_hash$true[jj],estim_hash$actual[jj])){
+                if(!identical(estim_hash$true[jj],estim_hash$actual[jj])){
                     temp_paste <- c(temp_paste, estim_hash$test_names[jj], "\n")
                 }
             }
