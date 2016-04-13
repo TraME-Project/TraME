@@ -119,10 +119,9 @@ compare_hashvals <- function(hash_vals)
             temp_paste <- character(0)
             for(jj in 1:length(arum_hash$test_names)){
                 if(identical(arum_hash$true[jj],arum_hash$actual[jj])){
-                    temp_paste <- c(temp_paste, arum_hash$test_names[jj])
+                    temp_paste <- c(temp_paste, arum_hash$test_names[jj], "\n")
                 }
             }
-            temp_paste <- c(temp_paste,".\n")
             message(temp_paste)
         }
         
@@ -132,10 +131,9 @@ compare_hashvals <- function(hash_vals)
             temp_paste <- character(0)
             for(jj in 1:length(equil_hash$test_names)){
                 if(identical(equil_hash$true[jj],equil_hash$actual[jj])){
-                    temp_paste <- c(temp_paste, equil_hash$test_names[jj])
+                    temp_paste <- c(temp_paste, equil_hash$test_names[jj], "\n")
                 }
             }
-            temp_paste <- c(temp_paste,".\n")
             message(temp_paste)
         }
         
@@ -145,10 +143,9 @@ compare_hashvals <- function(hash_vals)
             temp_paste <- character(0)
             for(jj in 1:length(estim_hash$test_names)){
                 if(identical(estim_hash$true[jj],estim_hash$actual[jj])){
-                    temp_paste <- c(temp_paste, estim_hash$test_names[jj])
+                    temp_paste <- c(temp_paste, estim_hash$test_names[jj], "\n")
                 }
             }
-            temp_paste <- c(temp_paste,".\n")
             message(temp_paste)
         }
         message('Please check.')
