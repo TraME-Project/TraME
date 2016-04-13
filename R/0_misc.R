@@ -188,8 +188,8 @@ verify_signature <- function(save_output=FALSE,output_file=NA)
     equil_CLP_true_hash         <- "563827536851a806fa7e89aba4d36d21"
     equil_oapLP_true_hash       <- "71baf868ceac93dc3dde74e71c62c25a"
     equil_nash_true_hash        <- "46c423efaa759127592f9b7b18013609"
-    equil_c_true_hash <- c(equil_darum_true_hash,equil_ipfp_true_hash,equil_nodalNewton_true_hash,equil_arcNewton_true_hash
-                           equil_maxW_true_hash,equil_jacobi_true_hash,equil_CLP_true_hash,equil_oapLP_true_hash,equil_nash_true_hash
+    equil_c_true_hash <- c(equil_darum_true_hash,equil_ipfp_true_hash,equil_nodalNewton_true_hash,equil_arcNewton_true_hash,
+                           equil_maxW_true_hash,equil_jacobi_true_hash,equil_CLP_true_hash,equil_oapLP_true_hash,equil_nash_true_hash,
                            equil_nash_true_hash)
     # names of test functions
     arum_c_test_names <- c("test_Logit","test_Probit","test_RUSC","test_RSC")
@@ -216,8 +216,8 @@ verify_signature <- function(save_output=FALSE,output_file=NA)
     equil_CLP_hash_val <- hash_vals$hash_equilibrium$res_CLP_md5
     equil_oapLP_hash_val <- hash_vals$hash_equilibrium$res_oapLP_md5
     equil_nash_hash_val <- hash_vals$hash_equilibrium$res_nash_md5
-    equil_c_hash_val <- c(equil_darum_hash_val,equil_ipfp_hash_val,equil_nodalNewton_hash_val,equil_arcNewton_hash_val
-                           equil_maxW_hash_val,equil_jacobi_hash_val,equil_CLP_hash_val,equil_oapLP_hash_val,equil_nash_hash_val
+    equil_c_hash_val <- c(equil_darum_hash_val,equil_ipfp_hash_val,equil_nodalNewton_hash_val,equil_arcNewton_hash_val,
+                           equil_maxW_hash_val,equil_jacobi_hash_val,equil_CLP_hash_val,equil_oapLP_hash_val,equil_nash_hash_val,
                            equil_nash_hash_val)
     #
     ret_main <- list(true = main_true_hash, actual = main_hash_vals)
