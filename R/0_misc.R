@@ -76,9 +76,25 @@ tests_TraME <- function(nbDraws = 1e3)
     message(paste0('All tests completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
     #
     hash_vals <- list(hash_arum=hash_arum,hash_equilibrium=hash_equilibrium,hash_estimation=hash_estimation)
-    message(compare_hashvals(hash_vals))
+    #message(compare_hashvals(hash_vals))
     #
     return(hash_vals)
+}
+
+verify_signature <- function(save_output=FALSE,output_file=NA)
+{
+    #
+    if(save_output==TRUE){
+        if(is.character(output_file)==TRUE){
+            output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()),file=output_file)
+        }else{
+            output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()),file="TraME_test_results.txt")
+        }
+    }else{
+        output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()))
+    }
+    #
+    message(compare_hashvals(hash_vals))
 }
 
 compare_hashvals <- function(hash_vals)
@@ -152,22 +168,6 @@ compare_hashvals <- function(hash_vals)
     return(conclusion)
 }
 
-verify_signature <- function(save_output=FALSE,output_file=NA)
-{
-    #
-    if(save_output==TRUE){
-        if(is.character(output_file)==TRUE){
-            output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()),file=output_file)
-        }else{
-            output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()),file="TraME_test_results.txt")
-        }
-    }else{
-        output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()))
-    }
-    #
-    message(compare_hashvals(hash_vals))
-}
-
 .combine_hashvals <- function(hash_vals)
 {
     # True values
@@ -221,8 +221,8 @@ verify_signature <- function(save_output=FALSE,output_file=NA)
                            equil_nash_hash_val)
     #
     ret_main <- list(true = main_true_hash, actual = main_hash_vals)
-    ret_arum <- list(true = arum_c_true_hash, actual = arum_c_hash_vals, test_names = arum_c_test_names)
-    ret_equil <- list(true = equil_c_true_hash, actual = equil_c_hash_vals, test_names = equil_c_test_names)
+    ret_arum <- list(true = arum_c_true_hash, actual = arum_c_hash_val, test_names = arum_c_test_names)
+    ret_equil <- list(true = equil_c_true_hash, actual = equil_c_hash_val, test_names = equil_c_test_names)
     ret_estim <- list(test_names = estim_c_test_names)
     #
     ret <- list(main_hash = ret_main, arum_hash = ret_arum, equil_hash = ret_equil, estim_hash = ret_estim)
