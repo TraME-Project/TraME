@@ -275,75 +275,6 @@ MomentMatchingTUSmooth <- function(n, m, arumsG, arumsH, kron, Chat, theta0, xto
     return(ret)
 }
 
-MomentMatchingTUEmpirical <- function(n, m, arumsG, arumsH, kron, Chat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0)
-{
-    if (print_level>0){
-        message("LP optimization used.")
-    }
-    #
-    nbX = length (n)
-    nbY = length (m)
-    nbParams = length(Chat)
-    #
-    res1 = build_disaggregate_epsilon(n,nbX,nbY,arumsG)
-    res2 = build_disaggregate_epsilon(m,nbY,nbX,arumsH)
-    #
-    epsilon_iy = res1$epsilon_iy
-    epsilon0_i = c(res1$epsilon0_i)
-    I_ix = res1$I_ix
-    
-    eta_xj = t(res2$epsilon_iy)
-    eta0_j = c(res2$epsilon0_i)  
-    I_yj = t(res2$I_ix)
-    #
-    ni = c(I_ix %*% n)/res1$nbDraws
-    mj = c( m %*% I_yj)/res2$nbDraws
-    
-    nbI = length(ni)
-    nbJ = length(mj)
-    #
-    # based on this, can compute aggregated equilibrium in LP 
-    #
-    A_11 = kronecker(matrix(1,nbY,1),sparseMatrix(1:nbI,1:nbI,x=1))
-    A_12 = sparseMatrix(i=NULL,j=NULL,dims=c(nbI*nbY,nbJ),x=0)
-    A_13 = kronecker(sparseMatrix(1:nbY,1:nbY,x=-1),I_ix)
-    A_14 = sparseMatrix(i=NULL,j=NULL,dims=c(nbI*nbY,nbParams),x=0)
-    
-    A_21 = sparseMatrix(i=NULL,j=NULL,dims=c(nbX*nbJ,nbI),x=0)
-    A_22 = kronecker(sparseMatrix(1:nbJ,1:nbJ,x=1),matrix(1,nbX,1))
-    A_23 = kronecker(t(I_yj),sparseMatrix(1:nbX,1:nbX,x=1))
-    A_24 = -t(matrix(matrix(t(kron),nbParams*nbX,nbY) %*% I_yj, nbParams, nbX*nbJ))
-    
-    A_1  = cbind(A_11,A_12,A_13, A_14)
-    A_2  = cbind(A_21,A_22,A_23, A_24)
-    
-    A    = rbind(A_1,A_2)
-    #
-    nbconstr = dim(A)[1]
-    nbvar = dim(A)[2]
-    #
-    lb  = c(epsilon0_i,t(eta0_j), rep(-Inf,nbX*nbY+nbParams))
-    rhs = c(epsilon_iy, eta_xj)
-    obj = c(ni,mj,rep(0,nbX*nbY),c(-Chat))
-    #
-    result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense=rep(">=",nbconstr),lb=lb)
-    #
-    U = matrix(result$solution[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
-    thetahat = result$solution[(nbI+nbJ+nbX*nbY+1):(nbI+nbJ+nbX*nbY+nbParams)]
-    V = matrix(kron %*% thetahat,nbX,nbY) - U
-    
-    muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
-    mu = t(I_ix) %*% muiy
-    
-    val = result$objval
-    #
-    ret = list(thetahat=thetahat,
-               U=U, V=V,
-               val=val)
-    #
-    return(ret)
-    
-}
 
 MomentMatchingTUNone <- function(n, m, kron, Chat, print_level=0)
 {
@@ -383,7 +314,7 @@ MomentMatchingTUNone <- function(n, m, kron, Chat, print_level=0)
     return(ret)
 }
 
-mme <- function(model, muhat, print_level=0)
+mme.default <- function(model, muhat, print_level=0)
 {
     if(print_level>0){
         message(paste0("Moment Matching Estimation of ",class(model)," model."))

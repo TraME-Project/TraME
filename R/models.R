@@ -115,7 +115,11 @@ initparam.etu <- function(model)
 ########################      TU-empirical model            ####################
 ################################################################################
 #
-buildModel_TU_empirical = function(n,m,phi_xyk, hetG, hetH, nbDraws,seed=777) {
+buildModel_TU_empirical = function(n,m,phi_xyk, arumsG, arumsH) {
+  if  (class(arumsG)!="empirical" )
+  {stop("arumsG provided to buildModel_TU_empirical is not of class empirical.")}
+  if  (class(arumsH)!="empirical" )
+  {stop("arumsH provided to buildModel_TU_empirical is not of class empirical.")}
   dims = dim(phi_xyk)
   nbParams = dims[1]
   nbX = dims[2]
@@ -126,8 +130,8 @@ buildModel_TU_empirical = function(n,m,phi_xyk, hetG, hetH, nbDraws,seed=777) {
                nbY=nbY,
                n = n,
                m = m,
-               hetG=hetG,
-               hetH=hetH)
+               arumsG=arumsG,
+               arumsH=arumsH)
   
   class(ret) =   "TU_empirical"
   return(ret)
@@ -139,7 +143,7 @@ parametricMarket.TU_empirical <- function(model, theta)
   phimat = matrix(model$phi_xyk,ncol = model$nbParams)
   Phimat = apply(phimat,1,sum)
   Phi = matrix(Phi,model$nbX,model$nbY)
-return(  build_market_TU_general(model$n,model$m,Phi,model$hetG,model$hetH))
+return(  build_market_TU_general(model$n,model$m,Phi,model$arumsG,model$arumsH))
 }
 #
 dparam.TU_empirical  <- function(model,dparams=diag(model$nbParams))
@@ -152,4 +156,117 @@ dparam.TU_empirical  <- function(model,dparams=diag(model$nbParams))
                dparamsG = dparamsG,
                dparamsH = dparamsH))
 }
+#
+mme.TU_empirical <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+{
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of ",class(model)," model via LP optimization."))
+  }
+  kron = matrix(model$phi_xyk,ncol = model$nbParams) %*% dparams
+  Chat = c(c(muhat) %*% kron)
+  theta0 = initparam(model)$param
 
+  #
+  nbX = length (model$n)
+  nbY = length (model$m)
+  #
+  res1 = build_disaggregate_epsilon(model$n,nbX,nbY,model$arumsG)
+  res2 = build_disaggregate_epsilon(model$m,nbY,nbX,model$arumsH)
+  #
+  epsilon_iy = res1$epsilon_iy
+  epsilon0_i = c(res1$epsilon0_i)
+  I_ix = res1$I_ix
+  
+  eta_xj = t(res2$epsilon_iy)
+  eta0_j = c(res2$epsilon0_i)  
+  I_yj = t(res2$I_ix)
+  #
+  ni = c(I_ix %*% model$n)/res1$nbDraws
+  mj = c( model$m %*% I_yj)/res2$nbDraws
+  
+  nbI = length(ni)
+  nbJ = length(mj)
+  #
+  # based on this, can compute aggregated equilibrium in LP 
+  #
+  A_11 = kronecker(matrix(1,nbY,1),sparseMatrix(1:nbI,1:nbI,x=1))
+  A_12 = sparseMatrix(i=NULL,j=NULL,dims=c(nbI*nbY,nbJ),x=0)
+  A_13 = kronecker(sparseMatrix(1:nbY,1:nbY,x=-1),I_ix)
+  A_14 = sparseMatrix(i=NULL,j=NULL,dims=c(nbI*nbY,nbParams),x=0)
+  
+  A_21 = sparseMatrix(i=NULL,j=NULL,dims=c(nbX*nbJ,nbI),x=0)
+  A_22 = kronecker(sparseMatrix(1:nbJ,1:nbJ,x=1),matrix(1,nbX,1))
+  A_23 = kronecker(t(I_yj),sparseMatrix(1:nbX,1:nbX,x=1))
+  A_24 = -t(matrix(matrix(t(kron),model$nbParams*nbX,nbY) %*% I_yj, model$nbParams, nbX*nbJ))
+  
+  A_1  = cbind(A_11,A_12,A_13, A_14)
+  A_2  = cbind(A_21,A_22,A_23, A_24)
+  
+  A    = rbind(A_1,A_2)
+  #
+  nbconstr = dim(A)[1]
+  nbvar = dim(A)[2]
+  #
+  lb  = c(epsilon0_i,t(eta0_j), rep(-Inf,nbX*nbY+model$nbParams))
+  rhs = c(epsilon_iy, eta_xj)
+  obj = c(ni,mj,rep(0,nbX*nbY),c(-Chat))
+  #
+  result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense=rep(">=",nbconstr),lb=lb)
+  #
+  U = matrix(result$solution[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
+  thetahat = result$solution[(nbI+nbJ+nbX*nbY+1):(nbI+nbJ+nbX*nbY+model$nbParams)]
+  V = matrix(kron %*% thetahat,nbX,nbY) - U
+  
+  muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
+  mu = t(I_ix) %*% muiy
+  
+  val = result$objval
+  #
+  ret = list(thetahat=thetahat,
+             U=U, V=V,
+             val=val)
+  #
+  return(ret)
+  
+}
+#
+################################################################################
+########################          TU-none model             ####################
+################################################################################
+#
+buildModel_TU_none = function(n,m,phi_xyk,seed=777) {
+  dims = dim(phi_xyk)
+  nbParams = dims[1]
+  nbX = dims[2]
+  nbY = dims[3]
+  ret = list(  phi_xyk = phi_xyk,
+               nbParams = nbParams,                         
+               nbX=nbX,
+               nbY=nbY,
+               n = n,
+               m = m)
+  
+  class(ret) =   "TU_empirical"
+  return(ret)
+  
+}
+#
+parametricMarket.TU_empirical <- function(model, theta)
+{
+  phimat = matrix(model$phi_xyk,ncol = model$nbParams)
+  Phimat = apply(phimat,1,sum)
+  Phi = matrix(Phi,model$nbX,model$nbY)
+  return(  build_market_TU_general(model$n,model$m,Phi,model$arumsG,model$arumsH))
+}
+#
+dparam.TU_empirical  <- function(model,dparams=diag(model$nbParams))
+  # params is (lambda1,lambda2)
+{
+  dparamsPsi = matrix(model$phi_xyk,ncol = model$nbParams) %*% dparams
+  dparamsG = matrix(0,nrow=0,ncol=dim(dparams)[2])
+  dparamsH = matrix(0,nrow=0,ncol=dim(dparams)[2])
+  return( list(dparamsPsi=dparamsPsi,
+               dparamsG = dparamsG,
+               dparamsH = dparamsH))
+}
+#
