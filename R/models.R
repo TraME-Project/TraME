@@ -135,6 +135,7 @@ buildModel_TU_empirical = function(n,m,phi_xyk, hetG, hetH, nbDraws,seed=777) {
 }
 #
 parametricMarket.TU_empirical <- function(model, theta)
+{
   phimat = matrix(model$phi_xyk,ncol = model$nbParams)
   Phimat = apply(phimat,1,sum)
   Phi = matrix(Phi,model$nbX,model$nbY)
