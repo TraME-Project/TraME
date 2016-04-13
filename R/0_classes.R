@@ -102,3 +102,6 @@ WV <- function(tr, ...)  UseMethod("WV")
 
 M <- function(mmfs, ...) UseMethod("M")
 
+# estimation classes
+
+mme <- function(model, ...) UseMethod("mme")
