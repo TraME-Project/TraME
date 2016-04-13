@@ -94,7 +94,7 @@ verify_signature <- function(save_output=FALSE,output_file=NA)
         output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()))
     }
     #
-    message(compare_hashvals(hash_vals))
+    compare_hashvals(hash_vals)
 }
 
 compare_hashvals <- function(hash_vals)
@@ -109,12 +109,12 @@ compare_hashvals <- function(hash_vals)
     temp_paste <- character(0)
     
     if(!identical(main_hash$true,main_hash$actual)){
-        conclusion = 'Test results are correct!\n'
+        message('Test results are correct!')
     }else{
-        conclusion = '*** CAUTION *** There is a problem with the results of:\n'
+        message('*** CAUTION *** There is a problem with the results of:\n')
         #
         if(identical(main_hash$true[1],main_hash$actual[1])){
-            conclusion = paste0(conclusion,'arums tests, specifically: ')
+            message('-- arums tests, specifically: ')
             
             temp_paste <- character(0)
             for(jj in 1:length(arum_hash$test_names)){
@@ -127,11 +127,11 @@ compare_hashvals <- function(hash_vals)
                 }
                 temp_paste <- c(temp_paste,".\n")
             }
-            conclusion = paste0(conclusion,temp_paste)
+            message(paste0(temp_paste))
         }
         
         if(identical(main_hash$true[2],main_hash$actual[2])){
-            conclusion = paste0(conclusion,'equilibrium tests, specifically: ')
+            message('-- equilibrium tests, specifically: ')
             
             temp_paste <- character(0)
             for(jj in 1:length(equil_hash$test_names)){
@@ -144,11 +144,11 @@ compare_hashvals <- function(hash_vals)
                 }
                 temp_paste <- c(temp_paste,".\n")
             }
-            conclusion = paste0(conclusion,temp_paste)
+            message(paste0(temp_paste))
         }
         
         if(identical(main_hash$true[3],main_hash$actual[3])){
-            conclusion = paste0(conclusion,'estimation tests, specifically: ')
+            message('-- estimation tests, specifically: ')
             
             temp_paste <- character(0)
             for(jj in 1:length(estim_hash$test_names)){
@@ -161,11 +161,10 @@ compare_hashvals <- function(hash_vals)
                 }
                 temp_paste <- c(temp_paste,".\n")
             }
-            conclusion = paste0(conclusion,temp_paste)
+            message(paste0(temp_paste))
         }
-        conclusion = paste0(conclusion,'Please check.\n')
+        message('Please check.')
     }
-    return(conclusion)
 }
 
 .combine_hashvals <- function(hash_vals)
