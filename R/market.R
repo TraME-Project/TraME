@@ -150,7 +150,7 @@ build_market_TU_none <- function(n, m, phi, neededNorm=NULL)
   noneM = build_none(nbX,nbY)
   noneW = build_none(nbY,nbX)
   #
-  ret = list(types = "arums",
+  ret = list(types = "itu-rum",
              n=n, m=m,
              arumsG=noneM, arumsH=noneW,
              transfers=TUs,
@@ -173,7 +173,7 @@ build_market_TU_general <- function(n, m, phi, arumsG, arumsH, neededNorm=NULL)
   #
   TUs = build_TUs(phi)
   #
-  ret = list(types = "arums",
+  ret = list(types = "itu-rum",
              n=n, m=m,
              arumsG=arumsG, arumsH=arumsH,
              transfers=TUs,
@@ -199,7 +199,7 @@ build_market_TU_empirical <- function(n, m, phi, arumsG, arumsH, nbDraws, seed=N
   #
   TUs = build_TUs(phi)
   #
-  ret = list(types = "arums",
+  ret = list(types = "itu-rum",
              n=n, m=m,
              arumsG=arumsGsim, arumsH=arumsHsim,
              transfers=TUs,
@@ -224,7 +224,7 @@ build_market_NTU_none <- function(n, m, alpha, gamma, neededNorm=NULL)
   noneM = build_none(nbX,nbY)
   noneW = build_none(nbY,nbX)
   #
-  ret = list(types = "arums",
+  ret = list(types = "itu-rum",
              n=n, m=m,
              arumsG=noneM, arumsH=noneW,
              transfers=NTUs,
@@ -244,7 +244,7 @@ build_market_NTU_general <- function(n, m, alpha, gamma, arumsG, arumsH, neededN
   #
   NTUs = build_NTUs(alpha,gamma)
   #
-  ret = list(types = "arums",
+  ret = list(types = "itu-rum",
              alpha=alpha, gamma=gamma,
              n=n,m=m,
              arumsG=arumsG, arumsH=arumsH,
@@ -270,7 +270,7 @@ build_market_LTU_none <- function(n, m, lambda, phi, neededNorm=NULL)
   noneM = build_none(nbX,nbY)
   noneW = build_none(nbY,nbX)
   #
-  ret = list(types = "arums",
+  ret = list(types = "itu-rum",
              n=n, m=m,
              arumsG=noneM, arumsH=noneW,
              transfers=LTUs,
@@ -300,7 +300,7 @@ build_market_LTU_logit <- function(n, m, lambda, phi, sigma=1, neededNorm=NULL)
   # 
   LTUmmfs = build_LTUmmfs(n,m,lambda,exp(phi/sigma),neededNorm)
   #
-  ret = list(types = c("arums","mmfs"),
+  ret = list(types = c("itu-rum","mfe"),
              n=n, m=m,
              neededNorm=neededNorm,
              #
@@ -330,7 +330,7 @@ build_market_ETU_logit <- function(n, m, alpha,gamma,tau, neededNorm=NULL)
   #
   ETUmmfs = build_ETUmmfs(n,m,exp(-alpha/tau),exp(-gamma/tau),-1/tau,neededNorm)
   #
-  ret = list(types = c("arums","mmfs"),
+  ret = list(types = c("itu-rum","mfe"),
              n=n, m=m,
              neededNorm=neededNorm,
              #
@@ -339,16 +339,16 @@ build_market_ETU_logit <- function(n, m, alpha,gamma,tau, neededNorm=NULL)
              #
              mmfs = ITUmmfs
   ) 
-  class(ret) = "ITU_logit"
+  class(ret) = "ETU_logit"
   #
   return(ret)
 }
-
+#
 solveEquilibrium.ITU_logit = ipfp
-
+#
 build_market_ITU_general <- function(n, m, arumsG, arumsH, transfers, neededNorm=NULL)
 {
-  ret = list(types = "arums",
+  ret = list(types = "itu-rum",
              n=n, m=m,
              arumsG=arumsG, arumsH=arumsH,
              transfers=transfers,
@@ -357,10 +357,9 @@ build_market_ITU_general <- function(n, m, arumsG, arumsH, transfers, neededNorm
   #
   return(ret)
 }
-
+#
 solveEquilibrium.ITU_general = jacobi
-
-
+#
 build_market_NTU_logit <- function(n, m, alpha, gamma, sigma=1, neededNorm=NULL)
 {
   if(!is.null(neededNorm) && (sum(n) != sum(m))){
@@ -376,7 +375,7 @@ build_market_NTU_logit <- function(n, m, alpha, gamma, sigma=1, neededNorm=NULL)
   #
   NTUmmfs = build_NTUmmfs(n,m,exp(alpha/sigma),exp(gamma/sigma),neededNorm)
   #
-  ret = list(types = c("arums","mmfs"),
+  ret = list(types = c("itu-rum","mfe"),
              n=n,m=m,
              neededNorm=neededNorm,
              #
@@ -408,7 +407,7 @@ build_market_TU_logit <- function(n, m, phi, sigma=1, neededNorm=NULL)
   #
   TUmmfs = build_TUmmfs(n,m,exp(phi/(2*sigma)),neededNorm)
   #
-  ret = list(types = c("arums","mmfs"),
+  ret = list(types = c("itu-rum","mfe"),
              n=n,m=m,
              neededNorm=neededNorm,
              #
