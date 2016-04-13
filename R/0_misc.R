@@ -127,7 +127,7 @@ compare_hashvals <- function(hash_vals)
                 }
                 temp_paste <- c(temp_paste,".\n")
             }
-            message(paste0(temp_paste))
+            message(temp_paste)
         }
         
         if(identical(main_hash$true[2],main_hash$actual[2])){
@@ -144,7 +144,7 @@ compare_hashvals <- function(hash_vals)
                 }
                 temp_paste <- c(temp_paste,".\n")
             }
-            message(paste0(temp_paste))
+            message(temp_paste)
         }
         
         if(identical(main_hash$true[3],main_hash$actual[3])){
@@ -161,7 +161,7 @@ compare_hashvals <- function(hash_vals)
                 }
                 temp_paste <- c(temp_paste,".\n")
             }
-            message(paste0(temp_paste))
+            message(temp_paste)
         }
         message('Please check.')
     }
