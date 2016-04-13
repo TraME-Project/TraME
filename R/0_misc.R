@@ -75,8 +75,9 @@ tests_TraME <- function(nbDraws = 1e3)
     time = proc.time() - ptm
     message(paste0('All tests completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
     #
-    hash_vals <- c(hash_arum,hash_equilibrium,hash_estimation)
+    hash_vals <- list(hash_arum=hash_arum,hash_equilibrium=hash_equilibrium,hash_estimation=hash_estimation)
     message(compare_hashvals(hash_vals))
+    #
     return(hash_vals)
 }
 

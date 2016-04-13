@@ -183,21 +183,28 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
 #   return(list(objective=theval,gradient=c(thegrad) ))
 # }
 
-tests_estimation = function(notifications=T,nbDraws=1e3)
+tests_estimation = function(notifications=TRUE,nbDraws=1e3)
 {
     ptm = proc.time()
     #
-    res_LL  <- test_loglikelihood()
-    res_mle <- test_mle()
-    res_mme <- test_mme()
+    res_LL  <- round(test_loglikelihood(),5)
+    res_mle <- round(test_mle(),5)
+    res_mme <- round(test_mme(),5)
+    
+    res_all <- c(res_LL,res_mle,res_mme)
     # MD5 checksum
-    res_all <- round(c(res_LL,res_mle,res_mme),5)
-    res_md5 <- digest(res_all,algo="md5")
+    res_LL_md5 <- digest(res_LL,algo="md5")
+    res_mle_md5 <- digest(res_mle,algo="md5")
+    res_mme_md5 <- digest(res_mme,algo="md5")
+    
+    res_all_md5 <- digest(res_all,algo="md5")
     #
     time = proc.time() - ptm
     if(notifications){
         message(paste0('All tests of Estimation completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
     }
     #
-    return(res_md5)
+    ret <- list(res_all_md5=res_all_md5,res_LL_md5=res_LL_md5,res_mle_md5=res_mle_md5,res_mme_md5=res_mme_md5)
+    #
+    return(ret)
 }

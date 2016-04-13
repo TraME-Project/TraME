@@ -422,24 +422,40 @@ test_eapNash <- function(nbX=8,nbY=5,seed=777,debugmode = FALSE)
 tests_equilibrium = function(notifications=TRUE,nbDraws=1e3){
     ptm = proc.time()
     #
-    res_darum  <- test_darum(nbDraws=nbDraws)
-    res_ipfp   <- test_ipfp()
-    res_nodalNewton <- test_arcNewton()
-    res_arcNewton <- test_arcNewton(nbDraws=nbDraws)
-    res_maxW   <- test_maxWelfare(nbDraws=nbDraws)
-    res_jacobi <- test_jacobi(nbDraws=nbDraws)
-    res_CLP    <- test_cupidsLP(nbDraws=nbDraws)
-    res_oapLP  <- test_oapLP()
-    res_nash   <- test_eapNash()
+    res_darum       <- round(test_darum(nbDraws=nbDraws),5)
+    res_ipfp        <- round(test_ipfp(),5)
+    res_nodalNewton <- round(test_arcNewton(),5)
+    res_arcNewton   <- round(test_arcNewton(nbDraws=nbDraws),5)
+    res_maxW        <- round(test_maxWelfare(nbDraws=nbDraws),5)
+    res_jacobi      <- round(test_jacobi(nbDraws=nbDraws),5)
+    res_CLP         <- round(test_cupidsLP(nbDraws=nbDraws),5)
+    res_oapLP       <- round(test_oapLP(),5)
+    res_nash        <- round(test_eapNash(),5)
+    
+    res_all <- c(res_darum,res_ipfp,res_nodalNewton,res_arcNewton,res_maxW,res_jacobi,res_CLP,res_oapLP,res_nash)
     # MD5 checksum
-    res_all <- round(c(res_darum,res_ipfp,res_nodalNewton,res_arcNewton,res_maxW,res_jacobi,res_CLP,res_oapLP,res_nash),5)
-    res_md5 <- digest(res_all,algo="md5")
+    res_darum_md5       <- digest(res_darum,algo="md5")
+    res_ipfp_md5        <- digest(res_ipfp,algo="md5")
+    res_nodalNewton_md5 <- digest(res_nodalNewton,algo="md5")
+    res_arcNewton_md5   <- digest(res_arcNewton,algo="md5")
+    res_maxW_md5        <- digest(res_maxW,algo="md5")
+    res_jacobi_md5      <- digest(res_jacobi,algo="md5")
+    res_CLP_md5         <- digest(res_CLP,algo="md5")
+    res_oapLP_md5       <- digest(res_oapLP,algo="md5")
+    res_nash_md5        <- digest(res_nash,algo="md5")
+    
+    res_all_md5 <- digest(res_all,algo="md5")
     #
     time = proc.time() - ptm
     if(notifications){
         message(paste0('All tests of Equilibrium completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
     }
     #
-    return(res_md5)
+    ret <- list(res_all_md5=res_all_md5,res_darum_md5=res_darum_md5,res_ipfp_md5=res_ipfp_md5,
+                res_nodalNewton_md5=res_nodalNewton_md5,res_arcNewton_md5=res_arcNewton_md5,
+                res_maxW_md5=res_maxW_md5,res_jacobi_md5=res_jacobi_md5,res_CLP_md5=res_CLP_md5,
+                res_oapLP_md5=res_oapLP_md5,res_nash_md5=res_nash_md5)
+    #
+    return(ret)
 }
 
