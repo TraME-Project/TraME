@@ -53,7 +53,7 @@ buildModel_ETU_logit <- function(Xvals, Yvals, n=NULL, m=NULL)
     m=rep(1,nbY)
   }
   #
-  ret = list(types = c("mfe"),
+  ret = list(types = c("itu-rum", "mfe"),
              diff=diff,
              nbParams=2*dim(t(t(diff)))[2]+1,
              nbX=nbX, nbY=nbY,

@@ -223,20 +223,21 @@ mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_lev
 
 
 
-mme.default <- function(model, muhat, print_level=0)
+mme.default <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
   if(print_level>0){
     message(paste0("Moment Matching Estimation of ",class(model)," model."))
   }
   #
   theta0 = initparam(model)$param
-  #  lb    =initparam(model)$lb
-  #  ub    =initparam(model)$ub
   dtheta = dparam(model)
   market = parametricMarket(model,theta0)
   #
+  if (!("itu-rum" %in% model$types)) {
+    stop("Moment Matching Estimation only applies for itu-rum models for now.")
+  }
   if(class(market$transfers)!="TU"){
-    stop("Moment Matching Estimation only applies for TU models.")
+    stop("Moment Matching Estimation only applies for TU models for now.")
   }
   if(length(dtheta$dparamsG) + length(dtheta$dparamsH) > 0){
     stop("Moment Matching Estimation does not support parameterization of arums.")
@@ -248,13 +249,12 @@ mme.default <- function(model, muhat, print_level=0)
   kron = dtheta$dparamsPsi
   Chat = c(c(muhat) %*% kron)
   #
-#  MomentMatchingTUSmooth <- function(n, m, arumsG, arumsH, kron, Chat, theta0, xtol_rel=1e-4, maxeval=1e5, print_level=0)
     if (print_level>0){
       message(paste0("Moment Matching Estimation of ",class(model)," model via BFGS optimization."))
     }
     #
-    nbX = length(n)
-    nbY = length(m)
+    nbX = length(model$n)
+    nbY = length(model$m)
     
     nbParams = dim(kron)[2]
     #
@@ -265,8 +265,8 @@ mme.default <- function(model, muhat, print_level=0)
       phi = kron %*% thetheta
       phimat = matrix(phi,nbX,nbY)
       #
-      resG = G(arumsG,theU,n)
-      resH = G(arumsH,t(phimat-theU),m)
+      resG = G(model$arumsG,theU,model$n)
+      resH = G(model$arumsH,t(phimat-theU),model$m)
       #
       Ehatphi = sum(thetheta * Chat)
       val = resG$val + resH$val - Ehatphi
