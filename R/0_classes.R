@@ -50,6 +50,10 @@ mmfsTranspose <- function(mmfs) UseMethod("mmfsTranspose")
 
 M <- function(mmfs,...) UseMethod("M")
 
+Mx0 <- function(mmfs,...) UseMethod("Mx0")
+
+M0y <- function(mmfs,...) UseMethod("M0y")
+
 margxInv <- function(xs, mmfs, ...) UseMethod("margxInv",mmfs)
 
 margyInv <- function(ys, mmfs, ...) UseMethod("margyInv",mmfs)

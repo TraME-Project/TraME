@@ -26,7 +26,7 @@
 # O. Bonnet, A. Galichon, and M. Shum: "Yoghurt Chooses Man: The Matching Approach to Identification of Nonadditive Random Utility Models".
 #
 
-ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, mu0ystart=market$m)
+ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, bystart=market$m)
     # Computes equilibrium in the logit case via IPFP in the all-logit case
 {
     #
@@ -51,27 +51,27 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     #
     # Algorithm: Loop
     #
-    mu0y = mu0ystart
-    mux0 = rep(NA,length=nbX)
+    by = bystart
+    ax = rep(NA,length=nbX)
     #
     error = 2*tol
     iter = 0
     tm = proc.time()  
     while(max(error,na.rm=TRUE)>tol){
         iter = iter+1
-        val = c(mux0,mu0y)
+        val = c(ax,by)
         
-        #Solve for mux0 and then mu0y
-        mux0 = margxInv(1:nbX,mmfs=mmfs,Mu0y=mu0y)
-        mu0y = margyInv(1:nbY,mmfs=mmfs,Mux0=mux0)
+        #Solve for ax and then by
+        ax = margxInv(1:nbX,mmfs=mmfs,By=by)
+        by = margyInv(1:nbY,mmfs=mmfs,Ax=ax)
         
         if(noSingles){
-            rescale = H(mux0,mu0y)
-            mux0 = mux0 * rescale
-            mu0y = mu0y / rescale
+            rescale = H(ax,by)
+            ax = ax * rescale
+            by = by / rescale
         }
         
-        error = abs(c(mux0,mu0y)-val)
+        error = abs(c(ax,by)-val)
         if(debugmode & notifications){
             message(paste0("Iter: ", iter, ". Error: ", max(error)))
         }
@@ -82,10 +82,12 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     if(notifications){
         message(paste0("IPFP converged in ", iter," iterations and ", round(time,digits=2), " seconds.\n"))
     }
-    # Construct the equilibrium outcome based on mux0 and mu0y obtained from above
-    mu = M(mmfs,mux0,mu0y)  
+    # Construct the equilibrium outcome based on ax and by obtained from above
+    mu = M(mmfs,ax,by)  
+    mux0 = Mx0(mmfs,ax)
+    mu0y = M0y(mmfs,by)
     #
-    U = log(mu/mux0)          # We'll suppress this soon
+    U = log(mu/ mux0)          # We'll suppress this soon
     V = t(log(t(mu) / mu0y))  # We'll suppress this soon
     #
     outcome = list(mu = mu,

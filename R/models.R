@@ -27,7 +27,6 @@ initparam.default <- function(model)
   ret = list(param=rep(0,model$nbParams),
              lb = NULL, ub = NULL)
 }
-
 estimate.default = mle
 #
 ################################################################################
@@ -54,7 +53,7 @@ buildModel_ETU_logit <- function(Xvals, Yvals, n=NULL, m=NULL)
     m=rep(1,nbY)
   }
   #
-  ret = list(types = c("itu-rum", "mfe"),
+  ret = list(types = c("mfe"),
              diff=diff,
              nbParams=2*dim(t(t(diff)))[2]+1,
              nbX=nbX, nbY=nbY,
@@ -140,14 +139,13 @@ buildModel_TU_empirical = function(n,m,phi_xyk, arumsG, arumsH) {
 #
 parametricMarket.TU_empirical <- function(model, theta)
 {
-  phimat = matrix(model$phi_xyk,ncol = model$nbParams)
-  Phimat = apply(phimat,1,sum)
-  Phi = matrix(Phi,model$nbX,model$nbY)
-return(  build_market_TU_general(model$n,model$m,Phi,model$arumsG,model$arumsH))
+  phi_xyk_mat = matrix(model$phi_xyk,ncol = model$nbParams)
+  phi_xy_vec = apply(phi_xyk_mat,1,sum)
+  phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
+return(  build_market_TU_general(model$n,model$m,phi_xy_mat,model$arumsG,model$arumsH))
 }
 #
 dparam.TU_empirical  <- function(model,dparams=diag(model$nbParams))
-  # params is (lambda1,lambda2)
 {
   dparamsPsi = matrix(model$phi_xyk,ncol = model$nbParams) %*% dparams
   dparamsG = matrix(0,nrow=0,ncol=dim(dparams)[2])
@@ -160,12 +158,10 @@ dparam.TU_empirical  <- function(model,dparams=diag(model$nbParams))
 mme.TU_empirical <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
   if (print_level>0){
-    message(paste0("Moment Matching Estimation of ",class(model)," model via LP optimization."))
+    message(paste0("Moment Matching Estimation of TU_empirical model via LP optimization."))
   }
-  kron = matrix(model$phi_xyk,ncol = model$nbParams) %*% dparams
+  kron = matrix(model$phi_xyk,ncol = model$nbParams)
   Chat = c(c(muhat) %*% kron)
-  theta0 = initparam(model)$param
-
   #
   nbX = length (model$n)
   nbY = length (model$m)
@@ -176,14 +172,14 @@ mme.TU_empirical <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_lev
   epsilon_iy = res1$epsilon_iy
   epsilon0_i = c(res1$epsilon0_i)
   I_ix = res1$I_ix
-  
+  #
   eta_xj = t(res2$epsilon_iy)
   eta0_j = c(res2$epsilon0_i)  
   I_yj = t(res2$I_ix)
   #
   ni = c(I_ix %*% model$n)/res1$nbDraws
   mj = c( model$m %*% I_yj)/res2$nbDraws
-  
+  #
   nbI = length(ni)
   nbJ = length(mj)
   #
@@ -192,16 +188,16 @@ mme.TU_empirical <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_lev
   A_11 = kronecker(matrix(1,nbY,1),sparseMatrix(1:nbI,1:nbI,x=1))
   A_12 = sparseMatrix(i=NULL,j=NULL,dims=c(nbI*nbY,nbJ),x=0)
   A_13 = kronecker(sparseMatrix(1:nbY,1:nbY,x=-1),I_ix)
-  A_14 = sparseMatrix(i=NULL,j=NULL,dims=c(nbI*nbY,nbParams),x=0)
-  
+  A_14 = sparseMatrix(i=NULL,j=NULL,dims=c(nbI*nbY,model$nbParams),x=0)
+  #
   A_21 = sparseMatrix(i=NULL,j=NULL,dims=c(nbX*nbJ,nbI),x=0)
   A_22 = kronecker(sparseMatrix(1:nbJ,1:nbJ,x=1),matrix(1,nbX,1))
   A_23 = kronecker(t(I_yj),sparseMatrix(1:nbX,1:nbX,x=1))
   A_24 = -t(matrix(matrix(t(kron),model$nbParams*nbX,nbY) %*% I_yj, model$nbParams, nbX*nbJ))
-  
+  #
   A_1  = cbind(A_11,A_12,A_13, A_14)
   A_2  = cbind(A_21,A_22,A_23, A_24)
-  
+  #
   A    = rbind(A_1,A_2)
   #
   nbconstr = dim(A)[1]
@@ -216,10 +212,10 @@ mme.TU_empirical <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_lev
   U = matrix(result$solution[(nbI+nbJ+1):(nbI+nbJ+nbX*nbY)],nrow=nbX)
   thetahat = result$solution[(nbI+nbJ+nbX*nbY+1):(nbI+nbJ+nbX*nbY+model$nbParams)]
   V = matrix(kron %*% thetahat,nbX,nbY) - U
-  
+  #
   muiy = matrix(result$pi[1:(nbI*nbY)],nrow=nbI)
   mu = t(I_ix) %*% muiy
-  
+  #
   val = result$objval
   #
   ret = list(thetahat=thetahat,
@@ -227,7 +223,6 @@ mme.TU_empirical <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_lev
              val=val)
   #
   return(ret)
-  
 }
 #
 ################################################################################
@@ -245,22 +240,19 @@ buildModel_TU_none = function(n,m,phi_xyk,seed=777) {
                nbY=nbY,
                n = n,
                m = m)
-  
-  class(ret) =   "TU_empirical"
+  class(ret) =   "TU_none"
   return(ret)
-  
 }
 #
-parametricMarket.TU_empirical <- function(model, theta)
+parametricMarket.TU_none<- function(model, theta)
 {
-  phimat = matrix(model$phi_xyk,ncol = model$nbParams)
-  Phimat = apply(phimat,1,sum)
-  Phi = matrix(Phi,model$nbX,model$nbY)
-  return(  build_market_TU_general(model$n,model$m,Phi,model$arumsG,model$arumsH))
+  phi_xyk_mat = matrix(model$phi_xyk,ncol = model$nbParams)
+  phi_xy_vec = apply(phi_xyk_mat,1,sum)
+  phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
+  return( build_market_TU_none(model$n,model$m,phi_xy_mat) )
 }
 #
-dparam.TU_empirical  <- function(model,dparams=diag(model$nbParams))
-  # params is (lambda1,lambda2)
+dparam.TU_none  <- function(model,dparams=diag(model$nbParams))
 {
   dparamsPsi = matrix(model$phi_xyk,ncol = model$nbParams) %*% dparams
   dparamsG = matrix(0,nrow=0,ncol=dim(dparams)[2])
@@ -270,3 +262,43 @@ dparam.TU_empirical  <- function(model,dparams=diag(model$nbParams))
                dparamsH = dparamsH))
 }
 #
+mme.TU_none <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+# MomentMatchingTUNone <- function(n, m, kron, Chat, print_level=0)
+{
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of TU_none model via LP optimization."))
+  }
+  kron = matrix(model$phi_xyk,ncol = model$nbParams)
+  Chat = c(c(muhat) %*% kron)
+  #
+  nbX = length (model$n)
+  nbY = length (model$m)
+  #
+  A_1 = kronecker(matrix(1,nbY,1),sparseMatrix(1:nbX,1:nbX))
+  A_2 = kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,nbX,1))
+  A_3 = -kron
+  #
+  A   = cbind(A_1,A_2,A_3)
+  #
+  nbconstr = dim(A)[1]
+  nbvar = dim(A)[2]
+  #
+  rhs = rep(0,nbX*nbY)
+  obj = c(model$n,model$m,c(-Chat))
+  lb =c(rep(0,nbX+nbY),rep(-Inf,model$nbParams))
+  #
+  result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense=rep(">=",nbconstr),lb=lb)
+  #
+  u = result$solution[1:nbX]
+  v = result$solution[(nbX+1):(nbX+nbY)]
+  thetahat = result$solution[(1+nbX+nbY):(model$nbParams+nbX+nbY)]
+  mu = matrix(result$pi,nbX,nbY)
+  val = result$objval
+  #
+  ret = list(thetahat=thetahat,
+             u=u, v=v,
+             val=val)
+  #
+  return(ret)
+}
+
