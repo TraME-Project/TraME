@@ -32,7 +32,68 @@ estimate.default = mle
 ################################################################################
 ########################       affinity model            #######################
 ################################################################################
-buildModel_affinity <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
+#
+buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, noSingles=FALSE)
+{
+  nbX = dim(Xvals)[1]
+  nbY = dim(Yvals)[1]
+  #
+  dX = dim(Xvals)[2]
+  dY = dim(Yvals)[2]
+  #
+  if(is.null(n)){
+    n = rep(1,nbX)
+  }
+  if(is.null(m)){
+    m = rep(1,nbY)
+  }
+  #
+  neededNorm = defaultNorm(noSingles)
+  #
+  ret = list(types = c("itu-rum", "mfe"),
+             kron=kronecker(Yvals,Xvals),
+             nbParams=dX*dY,
+             dX=dX, dY=dY,
+             nbX = nbX, nbY = nbY,
+             n=n, m=m,
+             neededNorm = neededNorm,
+             isLinear=TRUE)
+  class(ret) = "affinity"
+  #
+  return(ret)
+}
+#
+parametricMarket.affinity <- function(model, theta)
+  # theta is simply the affinity matrix
+{
+  phi = matrix(model$kron %*% c(theta),nrow=model$nbX)
+  #
+  ret = build_market_TU_logit(model$n,model$m,phi,
+                              neededNorm=model$neededNorm)
+  #
+  return(ret)
+}
+
+
+dparam.affinity <- function(model, dparams=diag(model$nbParams))
+{
+  dparamsPsi = model$kron %*% dparams
+  dparamsG = matrix(0,nrow=0,ncol=dim(dparams)[2])
+  dparamsH = matrix(0,nrow=0,ncol=dim(dparams)[2])
+  #
+  ret = list(dparamsPsi = dparamsPsi,
+             dparamsG   = dparamsG,
+             dparamsH   = dparamsH)
+  #
+  return(ret)
+}
+#
+#
+################################################################################
+########################       TU_logit model            #######################
+################################################################################
+#
+buildModel_TU_logit <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
 {
   dims = dim(phi_xyk)
   nbX = dims[1]
@@ -55,12 +116,12 @@ buildModel_affinity <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
              n=n, m=m,
              neededNorm = neededNorm,
              isLinear=TRUE)
-  class(ret) = "affinity"
+  class(ret) = "TU_logit"
   #
   return(ret)
 }
 #
-parametricMarket.affinity <- function(model, theta)
+parametricMarket.TU_logit<- function(model, theta)
   # the theta are the parameters for alpha, gamma and tau
 {
   phi_xyk_mat = matrix(model$phi_xyk,ncol = model$nbParams)
@@ -70,7 +131,7 @@ parametricMarket.affinity <- function(model, theta)
                                 neededNorm=model$neededNorm) )
 }
 
-dparam.affinity <- function(model, dparams=diag(model$nbParams))
+dparam.TU_logit <- function(model, dparams=diag(model$nbParams))
 {
   dparamsPsi = matrix(model$phi_xyk,ncol = model$nbParams) %*% dparams
   dparamsG = matrix(0,nrow=0,ncol=dim(dparams)[2])

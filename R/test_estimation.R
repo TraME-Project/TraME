@@ -28,7 +28,7 @@ test_loglikelihood <- function(seed=777, nbX=5, nbY=4, dX=3, dY=2)
     #
     n = rep(1,nbX)
     m = rep(1,nbY)  
-    
+    #
     xs = matrix(runif(nbX*dX),nrow=nbX)
     ys = matrix(runif(nbY*dY),nrow=nbY)
     #
