@@ -62,8 +62,8 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
         val = c(ax,by)
         
         #Solve for ax and then by
-        ax = margxInv(1:nbX,mmfs=mmfs,By=by)
-        by = margyInv(1:nbY,mmfs=mmfs,Ax=ax)
+        ax = margxInv(1:nbX,mmfs=mmfs,Bys=by)
+        by = margyInv(1:nbY,mmfs=mmfs,Axs=ax)
         
         if(noSingles){
             rescale = H(ax,by)
