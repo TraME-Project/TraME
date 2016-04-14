@@ -35,9 +35,9 @@ estimate.default = mle
 buildModel_affinity <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
 {
   dims = dim(phi_xyk)
-  nbParams = dims[1]
-  nbX = dims[2]
-  nbY = dims[3]
+  nbX = dims[1]
+  nbY = dims[2]
+  nbParams = dims[3]
   #
   if(is.null(n)){
     n = rep(1,nbX)
@@ -171,9 +171,9 @@ buildModel_TU_empirical = function(phi_xyk, n=NULL, m=NULL, arumsG, arumsH) {
   if  (class(arumsH)!="empirical" )
   {stop("arumsH provided to buildModel_TU_empirical is not of class empirical.")}
   dims = dim(phi_xyk)
-  nbParams = dims[1]
-  nbX = dims[2]
-  nbY = dims[3]
+  nbX = dims[1]
+  nbY = dims[2]
+  nbParams = dims[3]
   ret = list(  phi_xyk = phi_xyk,
                nbParams = nbParams,                         
                nbX=nbX,
@@ -282,9 +282,9 @@ mme.TU_empirical <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_lev
 #
 buildModel_TU_none = function(phi_xyk, n=NULL, m=NULL,seed=777) {
   dims = dim(phi_xyk)
-  nbParams = dims[1]
-  nbX = dims[2]
-  nbY = dims[3]
+  nbX = dims[1]
+  nbY = dims[2]
+  nbParams = dims[3]
   ret = list(  phi_xyk = phi_xyk,
                nbParams = nbParams,                         
                nbX=nbX,
