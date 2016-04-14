@@ -219,10 +219,7 @@ mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_lev
   #
   return(list(thetahat=res$solution))
 }
-
-
-
-
+#
 mme.default <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
   if(print_level>0){
