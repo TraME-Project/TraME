@@ -30,6 +30,69 @@ initparam.default <- function(model)
 estimate.default = mle
 #
 ################################################################################
+########################       TU-logit model            #######################
+################################################################################
+buildModel_affinity <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
+{
+  dims = dim(phi_xyk)
+  nbParams = dims[1]
+  nbX = dims[2]
+  nbY = dims[3]
+  #
+  if(is.null(n)){
+    n = rep(1,nbX)
+  }
+  if(is.null(m)){
+    m = rep(1,nbY)
+  }
+  #  
+  neededNorm = defaultNorm(noSingles)
+  #
+  eX = matrix(rep(1,nbX),ncol=1)
+  eY = matrix(rep(1,nbY),ncol=1)
+  #
+  diff = abs(kronecker(eY,Xvals)-kronecker(Yvals,eX))
+  #
+  if(is.null(n)){
+    n=rep(1,nbX)
+  }
+  if(is.null(m)){
+    m=rep(1,nbY)
+  }
+  #
+  ret = list(types = c("itu-rum", "mfe"),
+             phi_xyk = phi_xyk,
+             nbParams = 2*dim(t(t(diff)))[2]+1,
+             nbX = nbX, nbY = nbY,
+             n=n, m=m,
+             neededNorm = neededNorm,
+             isLinear=TRUE)
+  class(ret) = "affinity"
+  #
+  return(ret)
+}
+#
+parametricMarket.affinity <- function(model, theta)
+  # the theta are the parameters for alpha, gamma and tau
+{
+  phi_xyk_mat = matrix(model$phi_xyk,ncol = model$nbParams)
+  phi_xy_vec = apply(phi_xyk_mat,1,sum)
+  phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
+  return( build_market_TU_logit(model$n,model$m,phi_xy_mat,
+                                neededNorm=model$neededNorm) )
+}
+
+dparam.affinity <- function(model, dparams=diag(model$nbParams))
+{
+  dparamsPsi = matrix(model$phi_xyk,ncol = model$nbParams) %*% dparams
+  dparamsG = matrix(0,nrow=0,ncol=dim(dparams)[2])
+  dparamsH = matrix(0,nrow=0,ncol=dim(dparams)[2])
+  return( list(dparamsPsi=dparamsPsi,
+               dparamsG = dparamsG,
+               dparamsH = dparamsH))
+}
+#
+################################################################################
 ########################      ETU-logit model            #######################
 ################################################################################
 #
@@ -114,7 +177,7 @@ initparam.etu <- function(model)
 ########################      TU-empirical model            ####################
 ################################################################################
 #
-buildModel_TU_empirical = function(n,m,phi_xyk, arumsG, arumsH) {
+buildModel_TU_empirical = function(phi_xyk, n=NULL, m=NULL, arumsG, arumsH) {
   if  (class(arumsG)!="empirical" )
   {stop("arumsG provided to buildModel_TU_empirical is not of class empirical.")}
   if  (class(arumsH)!="empirical" )
@@ -229,7 +292,7 @@ mme.TU_empirical <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_lev
 ########################          TU-none model             ####################
 ################################################################################
 #
-buildModel_TU_none = function(n,m,phi_xyk,seed=777) {
+buildModel_TU_none = function(phi_xyk, n=NULL, m=NULL,seed=777) {
   dims = dim(phi_xyk)
   nbParams = dims[1]
   nbX = dims[2]
