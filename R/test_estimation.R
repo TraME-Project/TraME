@@ -45,7 +45,7 @@ test_loglikelihood <- function(seed=777, nbX=5, nbY=4, dX=3, dY=2)
     muhatx0  = n-apply(muhat,1,sum)
     muhat0y  = m-apply(muhat,2,sum)
     #
-    affinitymodel = buildModel_affinity(matrix( kronecker(ys,xs) , ncol = dX *dY ),n,m)
+    affinitymodel = buildModel_affinity(matrix( kronecker(xs,ys) , ncol = dX *dY ),n,m)
     theta0=initparam(affinitymodel)$param
     market = parametricMarket(affinitymodel,theta0)
     dtheta = diag(affinitymodel$nbParams)
@@ -108,8 +108,8 @@ test_mle <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     noise = matrix(1+ noiseScale*rnorm(nbX*nbY),nrow=nbX)
     muhat = ipfp(mktLogit, T, F)$mu * noise
     #
-    affinitymodel = buildModel_affinity(matrix( kronecker(ys,xs) , ncol = dX *dY ),n,m)
-    thetahat = mle(affinitymodel,muhat, print_level=0)$thetahat
+    affinitymodel = buildModel_affinity(matrix( kronecker(xs,ys) , ncol = dX *dY ),n=n,m=m)
+    thetahat = c(matrix(mle(affinitymodel,muhat, print_level=0)$thetahat,nrow = dX, byrow=T))
     #
     message("Estimator:")
     print(thetahat)
@@ -147,8 +147,8 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     noise = matrix(1 + noiseScale*rnorm(nbX*nbY),nrow=nbX)
     muhat = ipfp(mktLogit, T, F)$mu * noise
     #
-    affinitymodel = buildModel_affinity(matrix( kronecker(ys,xs) , ncol = dX *dY ),n,m)
-    thetahat = mme(affinitymodel,muhat, print_level=0)$thetahat
+    affinitymodel = buildModel_affinity(array( kronecker(xs,ys) , dims =c( nbX,nbY, dX *dY )) ,n,m)
+    thetahat = c(matrix(mle(affinitymodel,muhat, print_level=0)$thetahat,nrow = dX, byrow=T))
     #
     message("Estimator:")
     print(thetahat)  
