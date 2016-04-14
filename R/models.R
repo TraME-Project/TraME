@@ -30,7 +30,7 @@ initparam.default <- function(model)
 estimate.default = mle
 #
 ################################################################################
-########################       TU-logit model            #######################
+########################       affinity model            #######################
 ################################################################################
 buildModel_affinity <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
 {
@@ -47,18 +47,6 @@ buildModel_affinity <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
   }
   #  
   neededNorm = defaultNorm(noSingles)
-  #
-  eX = matrix(rep(1,nbX),ncol=1)
-  eY = matrix(rep(1,nbY),ncol=1)
-  #
-  diff = abs(kronecker(eY,Xvals)-kronecker(Yvals,eX))
-  #
-  if(is.null(n)){
-    n=rep(1,nbX)
-  }
-  if(is.null(m)){
-    m=rep(1,nbY)
-  }
   #
   ret = list(types = c("itu-rum", "mfe"),
              phi_xyk = phi_xyk,
