@@ -265,8 +265,8 @@ mme.default <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
       phi = kron %*% thetheta
       phimat = matrix(phi,nbX,nbY)
       #
-      resG = G(model$arumsG,theU,model$n)
-      resH = G(model$arumsH,t(phimat-theU),model$m)
+      resG = G(market$arumsG,theU,model$n)
+      resH = G(market$arumsH,t(phimat-theU),model$m)
       #
       Ehatphi = sum(thetheta * Chat)
       val = resG$val + resH$val - Ehatphi
