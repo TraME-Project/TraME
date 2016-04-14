@@ -50,7 +50,7 @@ buildModel_affinity <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
   #
   ret = list(types = c("itu-rum", "mfe"),
              phi_xyk = phi_xyk,
-             nbParams = 2*dim(t(t(diff)))[2]+1,
+             nbParams = nbParams,
              nbX = nbX, nbY = nbY,
              n=n, m=m,
              neededNorm = neededNorm,
