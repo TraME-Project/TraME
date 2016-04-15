@@ -70,13 +70,13 @@ tests_TraME <- function(nbDraws = 1e3,save_output=FALSE,output_file=NA)
     #
     if(save_output==TRUE){
         if(is.character(output_file)==TRUE){
-            output_hide <- capture.output(hash_arum <- suppressMessages(tests_arum(notifications=FALSE,nbDraws=10*nbDraws),file=output_file,append=FALSE))
-            output_hide <- capture.output(hash_equilibrium <- suppressMessages(tests_equilibrium(notifications=FALSE,nbDraws=nbDraws),file=output_file,append=TRUE))
-            output_hide <- capture.output(hash_estimation <- suppressMessages(tests_estimation(notifications=FALSE),file=output_file,append=TRUE))
+            output_hide <- capture.output(hash_arum <- suppressMessages(tests_arum(notifications=FALSE,nbDraws=10*nbDraws)),file=output_file,append=FALSE)
+            output_hide <- capture.output(hash_equilibrium <- suppressMessages(tests_equilibrium(notifications=FALSE,nbDraws=nbDraws)),file=output_file,append=TRUE)
+            output_hide <- capture.output(hash_estimation <- suppressMessages(tests_estimation(notifications=FALSE)),file=output_file,append=TRUE)
         }else{
-            output_hide <- capture.output(hash_arum <- suppressMessages(tests_arum(notifications=FALSE,nbDraws=10*nbDraws),file="TraME_test_results.txt",append=FALSE))
-            output_hide <- capture.output(hash_equilibrium <- suppressMessages(tests_equilibrium(notifications=FALSE,nbDraws=nbDraws),file="TraME_test_results.txt",append=TRUE))
-            output_hide <- capture.output(hash_estimation <- suppressMessages(tests_estimation(notifications=FALSE),file="TraME_test_results.txt",append=TRUE))
+            output_hide <- capture.output(hash_arum <- suppressMessages(tests_arum(notifications=FALSE,nbDraws=10*nbDraws)),file="TraME_test_results.txt",append=FALSE)
+            output_hide <- capture.output(hash_equilibrium <- suppressMessages(tests_equilibrium(notifications=FALSE,nbDraws=nbDraws)),file="TraME_test_results.txt",append=TRUE)
+            output_hide <- capture.output(hash_estimation <- suppressMessages(tests_estimation(notifications=FALSE)),file="TraME_test_results.txt",append=TRUE)
         }
     }else{
         hash_arum <- tests_arum(notifications=FALSE,nbDraws=10*nbDraws)
