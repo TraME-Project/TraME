@@ -30,7 +30,7 @@ build_RSC <- function(zeta, aux_cdf_eps, aux_quant_eps, aux_pot_eps=NULL, aux_pd
     # aux_pot_eps is a primitive of the quantile
 {
     if(!outsideOption){
-        stop("outsideOption=F not implemented yet on RSC heterogeneity")
+        stop("outsideOption=F not implemented yet on RSC arums")
     }
     if(is.null(aux_pdf_eps)==TRUE){
         aux_pdf_eps <- function (xs) sapply( xs, function (x) (grad(aux_cdf_eps,x) ))
@@ -110,7 +110,7 @@ build_RSCbeta <- function(zeta, alpha, beta)
 }
 
 # build_RSCnorm <- function( zeta,mean = 0,sd = 1 )
-#   # RSC normal heterogeneity; 
+#   # RSC normal arums; 
 #   # dim(zeta)=c(nbX,nbY+1) and the last column corresponds to singlehood
 #   # epsilon is a N(mean,sd) distribution
 # {
@@ -130,27 +130,27 @@ build_RSCbeta <- function(zeta, alpha, beta)
 #   }
 # }
 
-Gx.RSC <- function(het, Ux, x)
+Gx.RSC <- function(arums, Ux, x)
 {
-    M =  het$nbY + 1
+    nbAlt =  arums$nbY + 1
     #
-    muxtilde = rep(0,M)
+    muxtilde = rep(0,nbAlt)
     Uxtilde = c(Ux,0)
     #
     valx = 0
     Eepssofar = 0
     cumulmusofar = 0
     #
-    for(i in 1:M){
-        y = het$aux_ord[x,i]
-        runmax = het$aux_quant(0)
+    for(i in 1:nbAlt){
+        y = arums$aux_ord[x,i]
+        runmax = arums$aux_quant(0)
         #
         j = 1
         while(j < i){
-            z = het$aux_ord[x,j]
+            z = arums$aux_ord[x,j]
             
-            if(het$zeta[x,z] != het$zeta[x,y]){
-                runmax = max(runmax, (Uxtilde[y]-Uxtilde[z])/(het$zeta[x,z]-het$zeta[x,y]))
+            if(arums$zeta[x,z] != arums$zeta[x,y]){
+                runmax = max(runmax, (Uxtilde[y]-Uxtilde[z])/(arums$zeta[x,z]-arums$zeta[x,y]))
             }else if(Uxtilde[y] < Uxtilde[z]){
                 runmax=Inf
             }
@@ -158,16 +158,16 @@ Gx.RSC <- function(het, Ux, x)
             j = j + 1
         }
         #
-        runmin = het$aux_quant(1)
-        j = M
+        runmin = arums$aux_quant(1)
+        j = nbAlt
         while(j > i){
-            z = het$aux_ord[x,j]
-            runmin = min(runmin, (Uxtilde[y]-Uxtilde[z])/(het$zeta[x,z]-het$zeta[x,y]))
+            z = arums$aux_ord[x,j]
+            runmin = min(runmin, (Uxtilde[y]-Uxtilde[z])/(arums$zeta[x,z]-arums$zeta[x,y]))
             j = j - 1 
         }
         #print(c("y",y,"low",round(runmax,2),"high",round(runmin,2)))
         if(runmin > runmax){
-            muxtildey = max(het$aux_cdf_eps(runmin)-het$aux_cdf_eps(runmax),0)
+            muxtildey = max(arums$aux_cdf_eps(runmin)-arums$aux_cdf_eps(runmax),0)
         }else{
             muxtildey = 0
         }
@@ -176,32 +176,32 @@ Gx.RSC <- function(het, Ux, x)
         #
         if(muxtildey > 0){ 
             cumulmusofar = cumulmusofar + muxtildey
-            ey = het$aux_quant_eps(cumulmusofar)
-            EepssofarNext = ey*cumulmusofar - het$aux_pot_eps(cumulmusofar)
-            valx = valx + muxtildey*Uxtilde[y] + het$zeta[x,y]*(EepssofarNext - Eepssofar) 
+            ey = arums$aux_quant_eps(cumulmusofar)
+            EepssofarNext = ey*cumulmusofar - arums$aux_pot_eps(cumulmusofar)
+            valx = valx + muxtildey*Uxtilde[y] + arums$zeta[x,y]*(EepssofarNext - Eepssofar) 
         }
     }  
     #
-    mux = muxtilde[1:M-1]
+    mux = muxtilde[1:nbAlt-1]
     #
-    ret = list(valx = sum(mux*Ux) - Gstarx.RSC(het,mux,x)$valx,
+    ret = list(valx = sum(mux*Ux) - Gstarx.RSC(arums,mux,x)$valx,
                mux  = mux)
     #
     return(ret)
 }
 
-Gstarx.RSC <- function(het, mux, x)
+Gstarx.RSC <- function(arums, mux, x)
 {
-    tsfull = het$aux_DinvPsigma[[x]] %*% c(mux,1-sum(mux))
-    ts = tsfull[1:het$nbY]
+    tsfull = arums$aux_DinvPsigma[[x]] %*% c(mux,1-sum(mux))
+    ts = tsfull[1:arums$nbY]
     
-    pots = het$aux_pot_eps(c(0,tsfull))
-    diffpots = pots[2:(het$nbY+2)] - pots[1:(het$nbY+1)]
+    pots = arums$aux_pot_eps(c(0,tsfull))
+    diffpots = pots[2:(arums$nbY+2)] - pots[1:(arums$nbY+1)]
     #
-    valx = -sum( (het$aux_Psigma[[x]] %*% het$zeta[x,]) * diffpots )
+    valx = -sum( (arums$aux_Psigma[[x]] %*% arums$zeta[x,]) * diffpots )
     
-    e = diag( c(0,het$aux_quant_eps(ts)) )
-    Ux = -c( het$aux_Influence_lhs[[x]] %*% e %*% het$aux_Influence_rhs[[x]] %*% het$zeta[x,] )
+    e = diag( c(0,arums$aux_quant_eps(ts)) )
+    Ux = -c( arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% arums$zeta[x,] )
     #
     ret = list(valx = valx, Ux = Ux)
     #
@@ -209,23 +209,23 @@ Gstarx.RSC <- function(het, mux, x)
     
 }
 
-D2Gstar.RSC <- function(het, mu, n, xFirst=TRUE)
+D2Gstar.RSC <- function(arums, mu, n, xFirst=TRUE)
 { 
     mux0 = n - apply(mu,1,sum)
     if(xFirst){
-        ders = array(0,dim=c(het$nbX,het$nbY,het$nbX,het$nbY))
+        ders = array(0,dim=c(arums$nbX,arums$nbY,arums$nbX,arums$nbY))
     }else{
-        ders = array(0,dim=c(het$nbY,het$nbX,het$nbY,het$nbX))
+        ders = array(0,dim=c(arums$nbY,arums$nbX,arums$nbY,arums$nbX))
     }
     #
-    for(x in 1:het$nbX){
-        C = -t( (c(het$aux_Influence_rhs[[x]] %*% het$zeta[x,]) ) * t(het$aux_Influence_lhs[[x]]))
+    for(x in 1:arums$nbX){
+        C = -t( (c(arums$aux_Influence_rhs[[x]] %*% arums$zeta[x,]) ) * t(arums$aux_Influence_lhs[[x]]))
         
-        tsfull = het$aux_DinvPsigma[[x]] %*% c(mu[x,],mux0[x])/n[x] 
-        erestr = het$aux_quant_eps(tsfull)[1:het$nbY]
+        tsfull = arums$aux_DinvPsigma[[x]] %*% c(mu[x,],mux0[x])/n[x] 
+        erestr = arums$aux_quant_eps(tsfull)[1:arums$nbY]
         
-        d_mue_temp = rbind(0,diag( c(1/het$aux_pdf_eps(erestr)) ) %*% (het$aux_DinvPsigma[[x]][1:het$nbY,]))
-        d_mue = d_mue_temp[,1:het$nbY] - d_mue_temp[,het$nbY+1]
+        d_mue_temp = rbind(0,diag( c(1/arums$aux_pdf_eps(erestr)) ) %*% (arums$aux_DinvPsigma[[x]][1:arums$nbY,]))
+        d_mue = d_mue_temp[,1:arums$nbY] - d_mue_temp[,arums$nbY+1]
         #
         if(xFirst){
             ders[x,,x,] = (C %*% d_mue)/n[x]
@@ -234,55 +234,55 @@ D2Gstar.RSC <- function(het, mu, n, xFirst=TRUE)
         }
     }
     #
-    ret = array(ders,dim=c(het$nbX*het$nbY,het$nbX*het$nbY))
+    ret = array(ders,dim=c(arums$nbX*arums$nbY,arums$nbX*arums$nbY))
     return(ret)
 }
 
-dtheta_NablaGstar.RSC <- function(het, mu, n, dtheta=diag(het$nbParams), xFirst=TRUE)
+dtheta_NablaGstar.RSC <- function(arums, mu, n, dtheta=diag(arums$nbParams), xFirst=TRUE)
 {
     if(length(dtheta)==0){
-        return(matrix(0,nrow=het$nbX*het$nbY,ncol=0))
+        return(matrix(0,nrow=arums$nbX*arums$nbY,ncol=0))
     }
     #
-    nbDirs = length(dtheta) %/% (het$nbX * het$nbX * (het$nbY+1))
-    dthetamat = array(dtheta,dim=c(het$nbX,het$nbY+1,het$nbX,nbDirs))
+    nbDirs = length(dtheta) %/% (arums$nbX * arums$nbX * (arums$nbY+1))
+    dthetamat = array(dtheta,dim=c(arums$nbX,arums$nbY+1,arums$nbX,nbDirs))
     #
     mux0 = n - apply(mu,1,sum)
     if(xFirst){
-        ders = array(0,dim=c(het$nbX,het$nbY,het$nbX,nbDirs))
+        ders = array(0,dim=c(arums$nbX,arums$nbY,arums$nbX,nbDirs))
     }else{
-        ders = array(0,dim=c(het$nbY,het$nbX,het$nbX,nbDirs))
+        ders = array(0,dim=c(arums$nbY,arums$nbX,arums$nbX,nbDirs))
     }
     #
-    for (x in 1:het$nbX){
-        tsfull = het$aux_DinvPsigma[[x]] %*% c(mu[x,],n[x]-sum(mu[x,]))/n[x] 
-        e = diag( c(0,het$aux_quant_eps(tsfull[1:het$nbY])) )
+    for (x in 1:arums$nbX){
+        tsfull = arums$aux_DinvPsigma[[x]] %*% c(mu[x,],n[x]-sum(mu[x,]))/n[x] 
+        e = diag( c(0,arums$aux_quant_eps(tsfull[1:arums$nbY])) )
         
         if(xFirst){
-            ders[x,,x,] = -het$aux_Influence_lhs[[x]] %*% e %*% het$aux_Influence_rhs[[x]] %*% dthetamat[x,,x,]
+            ders[x,,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,x,]
         }else{
-            ders[,x,x,] = -het$aux_Influence_lhs[[x]] %*% e %*% het$aux_Influence_rhs[[x]] %*% dthetamat[x,,x,]
+            ders[,x,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,x,]
         }
     }
     #
-    return(array(ders,dim=c(het$nbX*het$nbY,het$nbX*nbDirs)))
+    return(array(ders,dim=c(arums$nbX*arums$nbY,arums$nbX*nbDirs)))
 }
 
-simul.RSC <- function(het, nbDraws, seed=NULL)
+simul.RSC <- function(arums, nbDraws, seed=NULL)
 {  
     set.seed(seed)
     #
-    atoms = array(0,dim=c(nbDraws,het$nbY+1,het$nbX))
-    for(x in 1:het$nbX){
-        atoms[,,x] = matrix(het$aux_quant_eps(runif(nbDraws)),ncol=1) %*% matrix(het$zeta[x,],nrow=1)
+    atoms = array(0,dim=c(nbDraws,arums$nbY+1,arums$nbX))
+    for(x in 1:arums$nbX){
+        atoms[,,x] = matrix(arums$aux_quant_eps(runif(nbDraws)),ncol=1) %*% matrix(arums$zeta[x,],nrow=1)
     }
     #
-    ret = list(nbX=het$nbX, nbY = het$nbY,
+    ret = list(nbX=arums$nbX, nbY = arums$nbY,
                nbParams=length(atoms),
                atoms=atoms,
                xHomogenous=FALSE,
                aux_nbDraws=nbDraws,
-               outsideOption=het$outsideOption)
+               outsideOption=arums$outsideOption)
     class(ret) = "empirical"
     #
     return(ret)
@@ -293,26 +293,26 @@ simul.RSC <- function(het, nbDraws, seed=NULL)
 ############################################
 #####  Alternative Gstar.RSC function ######
 ############################################
-# Gstarx.RSC <- function(het,mux,x )
+# Gstarx.RSC <- function(arums,mux,x )
 # {
 #   q = c(mux, (1-sum(mux)))
-#   aux_ord = het$aux_ord[x,]
-#   zeta = het$zeta[x,]
-#   M = het$nbY+1
-#   v = rep(0,M) 
+#   aux_ord = arums$aux_ord[x,]
+#   zeta = arums$zeta[x,]
+#   nbAlt = arums$nbY+1
+#   v = rep(0,nbAlt) 
 #   t = q[aux_ord[1]]
-#   eps = het$aux_quant_eps(t)
+#   eps = arums$aux_quant_eps(t)
 #   v[aux_ord[1]] = zeta[aux_ord[1]]*eps
-#   valx = zeta[aux_ord[1]] * het$aux_pot_eps(q[aux_ord[1]])
-#   for (j in 2:M)
+#   valx = zeta[aux_ord[1]] * arums$aux_pot_eps(q[aux_ord[1]])
+#   for (j in 2:nbAlt)
 #   {
-#     valx = valx + zeta[aux_ord[j]] * (het$aux_pot_eps(t+q[aux_ord[j]])-het$aux_pot_eps(t)) 
-#     v[aux_ord[j]] = v[aux_ord[j-1]] + het$aux_quant_eps(t)* (zeta[aux_ord[j]]-zeta[aux_ord[j-1]])
+#     valx = valx + zeta[aux_ord[j]] * (arums$aux_pot_eps(t+q[aux_ord[j]])-arums$aux_pot_eps(t)) 
+#     v[aux_ord[j]] = v[aux_ord[j-1]] + arums$aux_quant_eps(t)* (zeta[aux_ord[j]]-zeta[aux_ord[j-1]])
 #     t = t + q[aux_ord[j]]
 #   }
 #   
 #   
-#   Ux = v[M] - v[1:(M-1)]  # CHANGE HERE TO BE VERIFIED
+#   Ux = v[nbAlt] - v[1:(nbAlt-1)]  # CHANGE HERE TO BE VERIFIED
 #   
 #   return(list(valx= -valx,
 #               Ux=  Ux ))

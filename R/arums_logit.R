@@ -41,71 +41,71 @@ build_logits <- function(nbX, nbY, sigma=1, outsideOption=TRUE)
     return(ret)
 }
 
-G.logit <- function(het, U, n)
+G.logit <- function(arums, U, n)
 {
-    expU = exp(U/het$sigma)
+    expU = exp(U/arums$sigma)
     #
-    if(het$outsideOption){
+    if(arums$outsideOption){
         denom = 1 + apply(expU,1,sum)
     }else{
         denom = apply(expU,1,sum)
     }
     #
-    ret = list(val = het$sigma*sum(n*log(denom)),
+    ret = list(val = arums$sigma*sum(n*log(denom)),
                mu  = (n/denom)*expU)
     #
     return(ret)
 }
 
-Gstar.logit <- function(het, mu, n)
+Gstar.logit <- function(arums, mu, n)
 {
     mux0 <- ret <- 0
     #
-    if(het$outsideOption){
+    if(arums$outsideOption){
         mux0 = n - apply(mu,1,sum)  
-        ret = list(val = het$sigma*(sum(mu*log(mu/n)) + sum(mux0*log(mux0/n))),
-                   U   = het$sigma*log(mu/mux0))
+        ret = list(val = arums$sigma*(sum(mu*log(mu/n)) + sum(mux0*log(mux0/n))),
+                   U   = arums$sigma*log(mu/mux0))
     }else{
-        ret = list(val = het$sigma*(sum(mu*log(mu/n))),
-                   U   = het$sigma*log(mu/n))
+        ret = list(val = arums$sigma*(sum(mu*log(mu/n))),
+                   U   = arums$sigma*log(mu/n))
     }
     #
     return(ret)
 }
 
-Gstarx.logit <- function(het, mux, x)
+Gstarx.logit <- function(arums, mux, x)
 {
     mu0 <- ret <- 0
     #
-    if(het$outsideOption){
+    if(arums$outsideOption){
         mu0 = 1 - sum(mux)
-        ret = list(valx = het$sigma*(mu0*log(mu0) + sum(mux*log(mux))),
-                   Ux   = het$sigma*log(mux/mu0))
+        ret = list(valx = arums$sigma*(mu0*log(mu0) + sum(mux*log(mux))),
+                   Ux   = arums$sigma*log(mux/mu0))
     }else{
-        ret = list(valx = het$sigma*(sum(mux*log(mux))),
-                   Ux   = het$sigma*log(mux))
+        ret = list(valx = arums$sigma*(sum(mux*log(mux))),
+                   Ux   = arums$sigma*log(mux))
     }
     #
     return(ret)
 }
 
-D2G.logit <- function(het, U, n, xFirst=TRUE)
+D2G.logit <- function(arums, U, n, xFirst=TRUE)
 {
     # NOTE; the formula is the same regardless of whether outsideOption == TRUE or FALSE
-    muxy = G(het,U,n)$mu
-    H = matrix(0,het$nbX*het$nbY,het$nbX*het$nbY)
+    muxy = G(arums,U,n)$mu
+    H = matrix(0,arums$nbX*arums$nbY,arums$nbX*arums$nbY)
     #
-    for(x in 1:het$nbX){
-        for(y in 1:het$nbY){
-            for(yprime in 1:het$nbY){
+    for(x in 1:arums$nbX){
+        for(y in 1:arums$nbY){
+            for(yprime in 1:arums$nbY){
                 if(xFirst){
-                    H[x+het$nbX*(y-1),x+het$nbX*(yprime-1)] = ifelse(y==yprime,
-                                                                     muxy[x,y]*(1-muxy[x,y]/n[x])/het$sigma,
-                                                                     -muxy[x,y]*muxy[x,yprime]/(n[x]*het$sigma))
+                    H[x+arums$nbX*(y-1),x+arums$nbX*(yprime-1)] = ifelse(y==yprime,
+                                                                     muxy[x,y]*(1-muxy[x,y]/n[x])/arums$sigma,
+                                                                     -muxy[x,y]*muxy[x,yprime]/(n[x]*arums$sigma))
                 }else{
-                    H[(x-1)*het$nbY+y,(x-1)*het$nbY+yprime] = ifelse(y==yprime,
-                                                                     muxy[x,y]*(1-muxy[x,y]/n[x])/het$sigma,
-                                                                     -muxy[x,y]*muxy[x,yprime]/(n[x]*het$sigma))
+                    H[(x-1)*arums$nbY+y,(x-1)*arums$nbY+yprime] = ifelse(y==yprime,
+                                                                     muxy[x,y]*(1-muxy[x,y]/n[x])/arums$sigma,
+                                                                     -muxy[x,y]*muxy[x,yprime]/(n[x]*arums$sigma))
                 }
             }
         }
@@ -114,38 +114,38 @@ D2G.logit <- function(het, U, n, xFirst=TRUE)
     return(H)
 }
 
-D2Gstar.logit <- function(het, mu, n, xFirst=TRUE)
+D2Gstar.logit <- function(arums, mu, n, xFirst=TRUE)
 { 
     mux0 = n - apply(mu,1,sum)
     #
     oneovermux0 = 1/mux0 
     oneovermuxy = 1/mu
     #
-    #H = Diagonal(het$nbX*het$nbY,0)
-    H = matrix(0,het$nbX*het$nbY,het$nbX*het$nbY)
+    #H = Diagonal(arums$nbX*arums$nbY,0)
+    H = matrix(0,arums$nbX*arums$nbY,arums$nbX*arums$nbY)
     #
-    for(x in 1:het$nbX){
-        for(y in 1:het$nbY){
-            for(yprime in 1:het$nbY){
+    for(x in 1:arums$nbX){
+        for(y in 1:arums$nbY){
+            for(yprime in 1:arums$nbY){
                 if(xFirst){
-                    H[x+het$nbX*(y-1),x+het$nbX*(yprime-1)] = oneovermux0[x] + ifelse(y==yprime,oneovermuxy[x,y],0)
+                    H[x+arums$nbX*(y-1),x+arums$nbX*(yprime-1)] = oneovermux0[x] + ifelse(y==yprime,oneovermuxy[x,y],0)
                 }else{
-                    H[(x-1)*het$nbY+y,(x-1)*het$nbY+yprime] = oneovermux0[x] + ifelse(y==yprime,oneovermuxy[x,y],0)
+                    H[(x-1)*arums$nbY+y,(x-1)*arums$nbY+yprime] = oneovermux0[x] + ifelse(y==yprime,oneovermuxy[x,y],0)
                 }
             }
         }
     }
     #
-    return(het$sigma*H)
+    return(arums$sigma*H)
 }
 
-dtheta_NablaGstar.logit <- function(het, mu, n, dtheta=diag(1), xFirst=TRUE)
+dtheta_NablaGstar.logit <- function(arums, mu, n, dtheta=diag(1), xFirst=TRUE)
 {
     mux0 <- logmu <- ret <- 0
     #
-    if(het$outsideOption){
+    if(arums$outsideOption){
         if(length(dtheta)==0){
-            return(matrix(0,nrow=het$nbX*het$nbY,ncol=0))
+            return(matrix(0,nrow=arums$nbX*arums$nbY,ncol=0))
         }
         #
         mux0 = n - apply(mu,1,sum)
@@ -159,7 +159,7 @@ dtheta_NablaGstar.logit <- function(het, mu, n, dtheta=diag(1), xFirst=TRUE)
         ret = matrix(c(dtheta)*logmuovermux0,ncol=1)
     }else{
         if(length(dtheta)==0){
-            return(matrix(0,nrow=het$nbX*het$nbY,ncol=0))
+            return(matrix(0,nrow=arums$nbX*arums$nbY,ncol=0))
         }
         #
         if(xFirst){
@@ -174,12 +174,12 @@ dtheta_NablaGstar.logit <- function(het, mu, n, dtheta=diag(1), xFirst=TRUE)
     return(ret)
 }
 
-Gbarx.logit <- function(het, Ubarx, mubarx, x)
+Gbarx.logit <- function(arums, Ubarx, mubarx, x)
 {
-    if(het$outsideOption){
+    if(arums$outsideOption){
         TOL   = 1e-100
         #
-        sigma = het$sigma
+        sigma = arums$sigma
         expUbarx = exp(Ubarx/sigma)
         #
         differMargx <- function(z){z + sum(pmin(z*expUbarx,mubarx)) - 1}
@@ -196,23 +196,23 @@ Gbarx.logit <- function(het, Ubarx, mubarx, x)
     }
 }
 
-simul.logit <- function(het, nbDraws, seed=NULL)
+simul.logit <- function(arums, nbDraws, seed=NULL)
 {
     set.seed(seed)
     #
     epsilon_biy <- 0
-    if(het$outsideOption){
-        epsilon_biy = array(digamma(1) - het$sigma*log(-log(runif(nbDraws*het$nbX*(het$nbY+1)))), dim=c(nbDraws,het$nbY+1,het$nbX))
+    if(arums$outsideOption){
+        epsilon_biy = array(digamma(1) - arums$sigma*log(-log(runif(nbDraws*arums$nbX*(arums$nbY+1)))), dim=c(nbDraws,arums$nbY+1,arums$nbX))
     }else{
-        epsilon_biy = array(digamma(1) - het$sigma*log(-log(runif(nbDraws*het$nbX*het$nbY))), dim=c(nbDraws,het$nbY,het$nbX))
+        epsilon_biy = array(digamma(1) - arums$sigma*log(-log(runif(nbDraws*arums$nbX*arums$nbY))), dim=c(nbDraws,arums$nbY,arums$nbX))
     }
     #
-    ret = list(nbX=het$nbX, nbY=het$nbY,
+    ret = list(nbX=arums$nbX, nbY=arums$nbY,
                nbParams=length(epsilon_biy),
                atoms=epsilon_biy,
                aux_nbDraws=nbDraws, 
                xHomogenous=FALSE,
-               outsideOption=het$outsideOption)
+               outsideOption=arums$outsideOption)
     class(ret) = "empirical"
     #
     return(ret)

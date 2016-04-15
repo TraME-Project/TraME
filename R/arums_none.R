@@ -28,7 +28,7 @@ build_none <- function(nbX, nbY)
     return(ret)
 }
 
-Gx.none <- function(heterog, Ux, x)
+Gx.none <- function(arums, Ux, x)
 {
     nbY = length(Ux)
     y = which.max(c(Ux,0))
@@ -39,17 +39,17 @@ Gx.none <- function(heterog, Ux, x)
     return(list(valx = max(c(Ux,0),mux = mux)))
 }
 
-Gstar.none <- function(heterog, mu)
+Gstar.none <- function(arums, mu)
 {
-    stop("Gstar not yet defined for no heterogeneity case.")
+    stop("Gstar not yet defined for no arums case.")
 }
 
-dtheta_NablaGstar.none <- function(het, mu, n, dtheta=NULL, xFirst=TRUE)
+dtheta_NablaGstar.none <- function(arums, mu, n, dtheta=NULL, xFirst=TRUE)
 {
-    return(rep(0,het$nbX*het$nbY))
+    return(rep(0,arums$nbX*arums$nbY))
 }
 
-Gbarx.none <- function(heterog, Ubarx, mubarx, x)
+Gbarx.none <- function(arums, Ubarx, mubarx, x)
 {
     nbY0 = length(Ubarx)
     #
@@ -74,13 +74,13 @@ Gbarx.none <- function(heterog, Ubarx, mubarx, x)
                 mux=mux))
 }
 
-simul.none <- function(heterog, nbDraws, seed=NULL)
+simul.none <- function(arums, nbDraws, seed=NULL)
 {
     set.seed(seed)
     #
-    ret = list(nbX=het$nbX, nbY=het$nbY,
-               nbParams = nbDraws * (het$nbY+1) * het$nbX,
-               atoms = array(0,dim=c(nbDraws,het$nbY+1, het$nbX)),
+    ret = list(nbX=arums$nbX, nbY=arums$nbY,
+               nbParams = nbDraws * (arums$nbY+1) * arums$nbX,
+               atoms = array(0,dim=c(nbDraws,arums$nbY+1, arums$nbX)),
                aux_nbDraws=nbDraws,
                xHomogenous=FALSE)
     class(ret) = "empirical"

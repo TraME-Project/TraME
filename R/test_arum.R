@@ -261,19 +261,28 @@ tests_arum <- function(notifications=TRUE,nbDraws=1e4)
 {
     ptm = proc.time()
     #
-    res_logit  <- test_Logit(nbDraws=nbDraws)
-    res_probit <- test_Probit(nbDraws=nbDraws)
-    res_RUSC   <- test_RUSC(nbDraws=nbDraws)
-    res_RSC    <- test_RSC(nbDraws=nbDraws)
+    res_logit  <- round(test_Logit(nbDraws=nbDraws),5)
+    res_probit <- round(test_Probit(nbDraws=nbDraws),5)
+    res_RUSC   <- round(test_RUSC(nbDraws=nbDraws),5)
+    res_RSC    <- round(test_RSC(nbDraws=nbDraws),5)
+    
+    res_all <- c(res_logit,res_probit,res_RUSC,res_RSC)
     # MD5 checksum
-    res_all <- round(c(res_logit,res_probit,res_RUSC,res_RSC),5)
-    res_md5 <- digest(res_all,algo="md5")
+    res_logit_md5  <- digest(res_logit,algo="md5")
+    res_probit_md5 <- digest(res_probit,algo="md5")
+    res_RUSC_md5   <- digest(res_RUSC,algo="md5")
+    res_RSC_md5    <- digest(res_RSC,algo="md5")
+    
+    res_all_md5 <- digest(res_all,algo="md5")
     #
     time = proc.time() - ptm
     #
     if(notifications){
-        message(paste0('All tests of arum completed. Overall time elapsed = ', time["elapsed"], 's.'))
+        message(paste0('All tests of arums completed. Overall time elapsed = ', time["elapsed"], 's.'))
     }
     #
-    return(res_md5)
+    ret <- list(res_all_md5=res_all_md5,res_logit_md5=res_logit_md5,res_probit_md5=res_probit_md5,
+                res_RUSC_md5=res_RUSC_md5,res_RSC_md5=res_RSC_md5)
+    #
+    return(ret)
 }

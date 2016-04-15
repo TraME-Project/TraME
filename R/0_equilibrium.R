@@ -26,14 +26,16 @@
 # O. Bonnet, A. Galichon, and M. Shum: "Yoghurt Chooses Man: The Matching Approach to Identification of Nonadditive Random Utility Models".
 #
 
-ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, mu0ystart=market$m)
+ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, bystart=market$m)
     # Computes equilibrium in the logit case via IPFP in the all-logit case
 {
     #
-    noSingles = !is.null(market$neededNorm)
+  if (!("mfe" %in% market$types)) {stop("ipfp only defined for market whose types contains mme.")}
+  mmfs = market$mmfs
+    noSingles = !is.null(mmfs$neededNorm)
     if(noSingles){
         warning("There are known issues with the current implementation of the IPFP in the case without unassigned agents.")
-        H = market$neededNorm$H_edge_logit
+        H = mmfs$neededNorm$H_edge_logit
         if(is.null(H)){
             stop("Function H_edge not included in market$neededNorm")
         }
@@ -42,46 +44,34 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     if(notifications){
         message('Solving for equilibrium in ITU_logit problem using IPFP.') 
     }
-    if((class(market$hetG)!="logit") || (class(market$hetH)!="logit")){
-        stop("Error: Heterogeneities are not all logit.")
-    }
-    if(market$hetG$sigma != market$hetH$sigma){
-        stop("Error: scaling parameters of the logit differs on both sides of the market.")
-    }
-    #
-    sigma = market$hetG$sigma
-    
-    n = market$n
-    m = market$m
-    tr = market$transfers
-    
+    n = mmfs$n
+    m = mmfs$m
     nbX = length(n)
     nbY = length(m)
-    
     #
     # Algorithm: Loop
     #
-    mu0y = mu0ystart
-    mux0 = rep(NA,length=nbX)
-    
+    by = bystart
+    ax = rep(NA,length=nbX)
+    #
     error = 2*tol
     iter = 0
     tm = proc.time()  
     while(max(error,na.rm=TRUE)>tol){
         iter = iter+1
-        val = c(mux0,mu0y)
+        val = c(ax,by)
         
-        #Solve for mux0 and then mu0y
-        mux0 = margxInv(1:nbX,mkt=market,Mu0y=mu0y,sigma=sigma)
-        mu0y = margyInv(1:nbY,mkt=market,Mux0=mux0,sigma=sigma)
+        #Solve for ax and then by
+        ax = margxInv(1:nbX,mmfs=mmfs,Bys=by)
+        by = margyInv(1:nbY,mmfs=mmfs,Axs=ax)
         
         if(noSingles){
-            rescale = H(mux0,mu0y)
-            mux0 = mux0 * rescale
-            mu0y = mu0y / rescale
+            rescale = H(ax,by)
+            ax = ax * rescale
+            by = by / rescale
         }
         
-        error = abs(c(mux0,mu0y)-val)
+        error = abs(c(ax,by)-val)
         if(debugmode & notifications){
             message(paste0("Iter: ", iter, ". Error: ", max(error)))
         }
@@ -92,107 +82,20 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     if(notifications){
         message(paste0("IPFP converged in ", iter," iterations and ", round(time,digits=2), " seconds.\n"))
     }
-    # Construct the equilibrium outcome based on mux0 and mu0y obtained from above
-    mu = MMF(tr,mux0,mu0y, sigma=sigma)  
-    U = sigma * log(mu/mux0)
-    V = sigma * t(log(t(mu) / mu0y))
+    # Construct the equilibrium outcome based on ax and by obtained from above
+    mu = M(mmfs,ax,by)  
+    mux0 = Mx0(mmfs,ax)
+    mu0y = M0y(mmfs,by)
+    #
+    U = log(mu/ mux0)          # We'll suppress this soon
+    V = t(log(t(mu) / mu0y))  # We'll suppress this soon
     #
     outcome = list(mu = mu,
                    mux0 = mux0, mu0y = mu0y,
                    U = U, V = V,
-                   u = - sigma * log(mux0),
-                   v = - sigma * log(mu0y),
+                   u = - log(mux0), # We'll suppress this soon
+                   v = - log(mu0y), # We'll suppress this soon
                    iter=iter, time=time)
-    #
-    return(outcome)
-}
-
-PARipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, xchunks=NULL, ychunks=NULL, mu0ystart=market$m)
-    # Computes equilibrium in the logit case via IPFP in the all-logit case
-{
-    #
-    noSingles = !is.null(market$neededNorm)
-    if(noSingles){
-        warning("There are known issues with the current implementation of the IPFP in the case without unassigned agents.")
-        H = market$neededNorm$H_edge_logit
-        if(is.null(H)){
-            stop("Function H_edge not included in market$neededNorm")
-        }
-    }
-    #
-    if(notifications){
-        message('Solving for equilibrium in ITU_logit problem using IPFP.') 
-    }
-    if((class(market$hetG)!="logit") || (class(market$hetH)!="logit")){
-        stop("Error: Heterogeneities are not all logit.")
-    }
-    if(market$hetG$sigma != market$hetH$sigma){
-        stop("Error: scaling parameters of the logit differs on both sides of the market.")
-    }
-    #
-    sigma = market$hetG$sigma
-    
-    n = market$n
-    m = market$m
-    tr = market$transfers
-    
-    nbX = length(n)
-    nbY = length(m)
-    
-    # Preamble
-    if(is.null(xchunks)){
-        xchunks = sfClusterSplit(1:nbX)
-    } 
-    if(is.null(ychunks)){
-        ychunks = sfClusterSplit(1:nbY)
-    }
-    #
-    # Algorithm: Loop
-    #
-    mu0y = mu0ystart
-    mux0 = rep(NA,length=nbX)
-    
-    error = 2*tol
-    iter = 0
-    tm = proc.time()  
-    while(max(error,na.rm=TRUE)>tol){
-        iter = iter+1
-        val = c(mux0,mu0y)
-        
-        #Solve for mux0 and then mu0y
-        mux0 = unlist(sfLapply(x=xchunks,fun=margxInv,mkt=market,Mu0y=mu0y,sigma=sigma))
-        mu0y = unlist(sfLapply(x=ychunks,fun=margyInv,mkt=market,Mux0=mux0,sigma=sigma))
-        
-        if(noSingles){
-            rescale = H(mux0,mu0y)
-            mux0 = mux0 * rescale
-            mu0y = mu0y / rescale
-        }
-        
-        error = abs(c(mux0,mu0y)-val)
-        if(debugmode & notifications){
-            message(paste0("Iter: ", iter, ". Error: ", max(error)))
-        }
-    }
-    #
-    time = proc.time()-tm  
-    time = time["elapsed"] 
-    
-    
-    if(notifications){
-        message(paste0("IPFP converged in ", iter," iterations.\n"))
-    }
-    # Construct the equilibrium outcome based on mux0 and mu0y obtained from above
-    mu = MMF(tr,mux0,mu0y, sigma=sigma)  
-    U = sigma * log(mu/mux0)
-    V = sigma * t(log(t(mu) / mu0y))
-    #
-    outcome = list(mu = mu,
-                   mux0 = mux0, mu0y = mu0y,
-                   U = U, V = V,
-                   u = - sigma * log(mux0),
-                   v = - sigma * log(mu0y),
-                   time=time)
     #
     return(outcome)
 }
@@ -207,16 +110,16 @@ nodalNewton <- function(market, xFirst=TRUE, notifications=FALSE, sigma = 1E-6, 
     message('Solving for equilibrium in MFE problem using nodalNewton.')
   }
   #
-  if((class(market$hetG)!="logit") || (class(market$hetH)!="logit")){
+  if((class(market$arumsG)!="logit") || (class(market$arumsH)!="logit")){
     stop("Error: Heterogeneities are not all logit.")
   }
-  if(market$hetG$sigma != market$hetH$sigma){
+  if(market$arumsG$sigma != market$arumsH$sigma){
     stop("Error: scaling parameters of the logit differs on both sides of the market.")
   }
   #
   n = market$n
   m = market$m
-  sigma = market$hetG$sigma
+  sigma = market$arumsG$sigma
   tr = market$transfers
   #
   theus = rep(0,tr$nbX)
@@ -231,7 +134,7 @@ nodalNewton <- function(market, xFirst=TRUE, notifications=FALSE, sigma = 1E-6, 
     thevs <<- uv[(tr$nbX+1):(tr$nbX+tr$nbY)]
     themux0s <<- exp(- theus / sigma)
     themu0ys <<- exp(- thevs / sigma)
-    themu <<- MMF(tr,themux0s,themu0ys,sigma=sigma)
+    themu <<- M(market$mmfs,themux0s,themu0ys)
     return( c(themux0s + apply(themu,1,sum) - n,
               themu0ys + apply(themu,2,sum) - m ))
   }
@@ -242,7 +145,7 @@ nodalNewton <- function(market, xFirst=TRUE, notifications=FALSE, sigma = 1E-6, 
     #     thevs = uv[(tr$nbX+1):(tr$nbX+tr$nbY)] ## note -- this is redundant with the computation of Z
     #     themux0s = exp(- theus / sigma) ## note -- this is redundant with the computation of Z
     #     themu0ys = exp(- thevs / sigma)  ## note -- this is redundant with the computation of Z
-    #     themu = MMF(tr,themux0s,themu0ys,sigma=sigma) ## note -- this is redundant with the computation of Z
+    #     themu = M(market$mmfs,themux0s,themu0ys) ## note -- this is redundant with the computation of Z
     du_psis = du_Psi(tr,theus,thevs)
     dv_psis = 1 - du_psis
     Delta11 = diag(themux0s + apply(themu*du_psis,1,sum),nrow=tr$nbX)
@@ -272,7 +175,7 @@ nodalNewton <- function(market, xFirst=TRUE, notifications=FALSE, sigma = 1E-6, 
   thevs = sol$x[(tr$nbX+1):(tr$nbX+tr$nbY)]
   themux0s = exp(- theus / sigma)
   themu0ys = exp(- thevs / sigma)
-  themu = MMF(tr,themux0s,themu0ys,sigma=sigma)
+  themu = M(market$mmfs,themux0s,themu0ys)
   error = max(abs(c(themux0s + apply(themu,1,sum) - n,themu0ys + apply(themu,2,sum) - m ))) # calling this gives the right value to themu, themux0s and themu0ys
   U = sigma * log(themu/themux0s)
   V = sigma * t(log(t(themu) / themu0ys))
@@ -306,8 +209,8 @@ arcNewton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e
     n = market$n
     m = market$m
     
-    hetG = market$hetG
-    hetH = market$hetH
+    arumsG = market$arumsG
+    arumsH = market$arumsH
     tr = market$transfers
     
     nbX = length(n)
@@ -317,14 +220,14 @@ arcNewton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e
         winit =  wupperbound(market)
     }else{
         winit = wup
-        if(min(G(hetG,UW(tr,wup),n)$mu - t(G(hetH,t(VW(tr,wup)),m)$mu)) < 0){
+        if(min(G(arumsG,UW(tr,wup),n)$mu - t(G(arumsH,t(VW(tr,wup)),m)$mu)) < 0){
             stop("wup provided is not an actual upper bound")
         }
     }
     #
     ED <- function(thew){
-        term_1 = G(hetG,UW(tr,matrix(thew,nbX,nbY)),n)$mu
-        term_2 = t(G(hetH,t(VW(tr,matrix(thew,nbX,nbY))),m)$mu)
+        term_1 = G(arumsG,UW(tr,matrix(thew,nbX,nbY)),n)$mu
+        term_2 = t(G(arumsH,t(VW(tr,matrix(thew,nbX,nbY))),m)$mu)
         #
         ret = c(term_1 - term_2)
         #
@@ -332,8 +235,8 @@ arcNewton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e
     }
     
     jacED <- function(thew){
-        term_1 = c(dw_UW(tr,matrix(thew,nbX,nbY)))*D2G(hetG,UW(tr,matrix(thew,nbX,nbY)),n)
-        term_2 = c(dw_VW(tr,matrix(thew,nbX,nbY)))*D2G(hetH,t(VW(tr,matrix(thew,nbX,nbY))),m,xFirst=F)
+        term_1 = c(dw_UW(tr,matrix(thew,nbX,nbY)))*D2G(arumsG,UW(tr,matrix(thew,nbX,nbY)),n)
+        term_2 = c(dw_VW(tr,matrix(thew,nbX,nbY)))*D2G(arumsH,t(VW(tr,matrix(thew,nbX,nbY))),m,xFirst=F)
         #
         ret = term_1 - term_2
         #
@@ -351,7 +254,7 @@ arcNewton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e
     U = UW(tr,w)
     V = VW(tr,w)
     
-    mu = G(hetG,U,n)$mu
+    mu = G(arumsG,U,n)$mu
     
     mux0 = n - apply(mu,1,sum)
     mu0y = m - apply(mu,2,sum)
@@ -368,8 +271,8 @@ wupperbound <- function(market)
     n = market$n
     m = market$m
     
-    hetG = market$hetG
-    hetH = market$hetH
+    arumsG = market$arumsG
+    arumsH = market$arumsH
     tr = market$transfers
     
     nbX = length(n)
@@ -388,7 +291,7 @@ wupperbound <- function(market)
             if(typeTransfersx==1){
                 mu_condx = rep( 1 / (2^(-k)+nbY),nbY)
                 
-                U[x,] = Gstarx(hetG,mu_condx,x )$Ux
+                U[x,] = Gstarx(arumsG,mu_condx,x )$Ux
                 w[x,] = WU(tr,U[x,],xs=x)
                 V[x,] = VW(tr,w[x,],xs=x)
             }else{ # if transfers = type2
@@ -402,7 +305,7 @@ wupperbound <- function(market)
             }
         }
         #
-        Z = G(hetG,U,n)$mu - t(G(hetH,t(V),m)$mu)
+        Z = G(arumsG,U,n)$mu - t(G(arumsH,t(V),m)$mu)
         if(min(Z) < 0){
             k = 2*k
         }else{
@@ -425,8 +328,8 @@ jacobi <- function(market, xFirst=TRUE, notifications=TRUE, wlow=NULL, wup=NULL,
     n = market$n
     m = market$m
     
-    hetG = market$hetG
-    hetH = market$hetH
+    arumsG = market$arumsG
+    arumsH = market$arumsH
     tr = market$transfers
     
     nbX = length(n)
@@ -436,7 +339,7 @@ jacobi <- function(market, xFirst=TRUE, notifications=TRUE, wlow=NULL, wup=NULL,
         w = wupperbound(market)
     }else{
         w = wup
-        Z = G(hetG,UW(tr,wup),n)$mu - t(G(hetH,t(VW(tr,wup)),m)$mu)
+        Z = G(arumsG,UW(tr,wup),n)$mu - t(G(arumsH,t(VW(tr,wup)),m)$mu)
         if(min(Z) < 0 ){
             stop("wup provided not an actual upper bound")
         }
@@ -447,7 +350,7 @@ jacobi <- function(market, xFirst=TRUE, notifications=TRUE, wlow=NULL, wup=NULL,
     }
     else{
         wlow = wlow
-        Z = G(hetG,UW(tr,wlow),n)$mu - t(G(hetH,t(VW(tr,wlow)),m)$mu)
+        Z = G(arumsG,UW(tr,wlow),n)$mu - t(G(arumsH,t(VW(tr,wlow)),m)$mu)
         
         if(max(Z)>0){
             stop("wlow provided not an actual lower bound")
@@ -456,7 +359,7 @@ jacobi <- function(market, xFirst=TRUE, notifications=TRUE, wlow=NULL, wup=NULL,
     #
     U = UW(tr,w)
     V = VW(tr,w)
-    Z = G(hetG,U,n)$mu - t(G(hetH,t(V),m)$mu)
+    Z = G(arumsG,U,n)$mu - t(G(arumsH,t(V),m)$mu)
     #
     iter=0
     while(max(abs(Z / (n %*% t(m))))>1e-4){
@@ -469,7 +372,7 @@ jacobi <- function(market, xFirst=TRUE, notifications=TRUE, wlow=NULL, wup=NULL,
                 {
                     U[x,y] = UW(tr,thew,x,y)
                     V[x,y] = VW(tr,thew,x,y)
-                    ed = G(hetG,U,n)$mu - t(G(hetH,t(V),m)$mu)
+                    ed = G(arumsG,U,n)$mu - t(G(arumsH,t(V),m)$mu)
                     return(ed[x,y])
                 }
                 #
@@ -478,14 +381,14 @@ jacobi <- function(market, xFirst=TRUE, notifications=TRUE, wlow=NULL, wup=NULL,
                 V[x,y] = VW(tr,w[x,y],x,y)
             }
         }
-        Z = G(hetG,U,n)$mu - t(G(hetH,t(V),m)$mu)
+        Z = G(arumsG,U,n)$mu - t(G(arumsH,t(V),m)$mu)
     }
     #
     if(notifications){
         message(paste0("Jacobi iteration converged in ", iter," iterations.\n"))
     }
     #
-    mu = G(hetG,U,n)$mu  
+    mu = G(arumsG,U,n)$mu  
     mux0 = n - apply(mu,1,sum)
     mu0y = m - apply(mu,2,sum)
     #
@@ -516,8 +419,8 @@ maxWelfare <- function(market, xFirst=TRUE, notifications=FALSE, tol_rel=1e-8)
     eval_f <- function(theU)
     {
         theU = matrix(theU,nbX,nbY)
-        resG = G(market$hetG,theU,market$n)
-        resH = G(market$hetH,t(phi-theU),market$m)
+        resG = G(market$arumsG,theU,market$n)
+        resH = G(market$arumsH,t(phi-theU),market$m)
         val  = resG$val + resH$val
         #
         ret = list(objective = val,
@@ -534,8 +437,8 @@ maxWelfare <- function(market, xFirst=TRUE, notifications=FALSE, tol_rel=1e-8)
                                "ftol_rel"=1e-15))
     #
     U = matrix(resopt$solution,nbX,nbY)
-    resG = G(market$hetG,U,market$n)
-    resH = G(market$hetH,t(phi-U),market$m)
+    resG = G(market$arumsG,U,market$n)
+    resH = G(market$arumsH,t(phi-U),market$m)
     mu = resG$mu
     V = phi - U
     #
@@ -568,8 +471,8 @@ darum <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8)
     n = market$n
     m = market$m
     
-    hetG = market$hetG
-    hetH = market$hetH
+    arumsG = market$arumsG
+    arumsH = market$arumsH
     
     nbX = length(n)
     nbY = length(m)
@@ -582,10 +485,10 @@ darum <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8)
     while((max(error,na.rm=TRUE)>tol) & (iter<10000)){
         iter  = iter + 1
         #
-        resP  = Gbar(hetG,alpha,n,muNR)
+        resP  = Gbar(arumsG,alpha,n,muNR)
         muP   = resP$mu
         #
-        resD  = Gbar(hetH,t(gamma),m,t(muP))
+        resD  = Gbar(arumsH,t(gamma),m,t(muP))
         muD   = t(resD$mu)
         #
         muNR  = muNR - (muP - muD)
@@ -606,20 +509,20 @@ darum <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8)
     return(outcome)
 }
 
-build_disaggregate_epsilon <- function(n, nbX, nbY, het) 
-    # takes U_xy and het as input; returns U_iy as output
+build_disaggregate_epsilon <- function(n, nbX, nbY, arums) 
+    # takes U_xy and arums as input; returns U_iy as output
 {
-    nbDraws = het$aux_nbDraws
+    nbDraws = arums$aux_nbDraws
     nbI = nbX*nbDraws
     
     epsilons = matrix(0,nbI,nbY+1)
     I_ix = matrix(0,nbI,nbX)
     #
     for(x in 1:nbX){
-        if(het$xHomogenous){
-            epsilon = het$atoms
+        if(arums$xHomogenous){
+            epsilon = arums$atoms
         }else{
-            epsilon = matrix(het$atoms[,,x],nrow=het$aux_nbDraw)
+            epsilon = matrix(arums$atoms[,,x],nrow=arums$aux_nbDraw)
         }
         #
         epsilons[((x-1)*nbDraws+1):(x*nbDraws),] = epsilon
@@ -643,7 +546,7 @@ CupidsLP <- function(market, xFirst=TRUE, notifications=FALSE)
     if(!is.null(market$neededNorm)){
         stop("CupidsLP does not yet allow for the case without unmatched agents.")
     }
-    if((class(market$transfers)!="TU")||(class(market$hetG)!="empirical")||(class(market$hetH)!="empirical")){
+    if((class(market$transfers)!="TU")||(class(market$arumsG)!="empirical")||(class(market$arumsH)!="empirical")){
         stop("cupidsLP only works for TU-empirical markets.")
     }
     if(notifications){
@@ -654,8 +557,8 @@ CupidsLP <- function(market, xFirst=TRUE, notifications=FALSE)
     nbY = length (market$m)
     #
     phi = market$transfers$phi
-    res1 = build_disaggregate_epsilon(market$n,nbX,nbY,market$hetG)
-    res2 = build_disaggregate_epsilon(market$m,nbY,nbX,market$hetH)
+    res1 = build_disaggregate_epsilon(market$n,nbX,nbY,market$arumsG)
+    res2 = build_disaggregate_epsilon(market$m,nbY,nbX,market$arumsH)
     #
     epsilon_iy = res1$epsilon_iy
     epsilon0_i = c(res1$epsilon0_i)
@@ -730,13 +633,13 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
     }
     #
     phi = market$transfers$phi
-    N = dim(phi)[1]
-    M = dim(phi)[2]
+    nbX = dim(phi)[1]
+    nbY = dim(phi)[2]
     #
     obj = c(phi)
     
-    A1 = Matrix::kronecker(matrix(1,1,M),sparseMatrix(1:N,1:N))
-    A2 = Matrix::kronecker(sparseMatrix(1:M,1:M),matrix(1,1,N))
+    A1 = Matrix::kronecker(matrix(1,1,nbY),sparseMatrix(1:nbX,1:nbX))
+    A2 = Matrix::kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,1,nbX))
     A = rbind2(A1,A2)
     
     d = c(market$n,market$m)
@@ -744,9 +647,9 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
     #
     result = genericLP(obj=obj,A=A,modelsense="max",rhs=d,sense="<",start=pi_init)
     #
-    mu = matrix(result$solution,nrow=N)
-    u0 = result$pi[1:N] 
-    v0 = result$pi[(N+1):(N+M)]
+    mu = matrix(result$solution,nrow=nbX)
+    u0 = result$pi[1:nbX] 
+    v0 = result$pi[(nbX+1):(nbX+nbY)]
     val = result$objval
     #
     objBis = ifelse(xFirst==TRUE,1,-1)*c(market$n,-market$m)
@@ -754,12 +657,12 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
     dBis = c(phi,val)
     uvinit = c(u0,v0)
 
-    resultBis = genericLP(obj=objBis,A=ABis,modelsense="max",rhs=dBis,sense=c(rep(">",N*M),"="),start=uvinit)
+    resultBis = genericLP(obj=objBis,A=ABis,modelsense="max",rhs=dBis,sense=c(rep(">",nbX*nbY),"="),start=uvinit)
     #
-    u = resultBis$solution[1:N] 
-    v = resultBis$solution[(N+1):(N+M)]
+    u = resultBis$solution[1:nbX] 
+    v = resultBis$solution[(nbX+1):(nbX+nbY)]
     
-    residuals = Psi(market$transfers,matrix(u,nrow=N,ncol=M),matrix(v,nrow=N,ncol=M,byrow=T))
+    residuals = Psi(market$transfers,matrix(u,nrow=nbX,ncol=nbY),matrix(v,nrow=nbX,ncol=nbY,byrow=T))
     #
     outcome = list(success=TRUE,
                    mu=mu,
@@ -818,7 +721,29 @@ updatev <- function(market, v, xFirst)
     #
     return(vupdated)  
 }
-
+#
+ufromvs <- function(tr, v, tol=0)
+{  
+  us = Ucal(tr,v,1:tr$nbX,1:tr$nbY)
+  u = pmax(apply(us,1,max),0)
+  #
+  subdiff = matrix(0,tr$nbX,tr$nbY)
+  subdiff[which(abs(u-us) <= tol)] = 1
+  #
+  return(list(u=u,subdiff=subdiff))
+}
+#
+vfromus <- function(tr, u, tol=0)
+{
+  vs = Vcal(tr,u,1:tr$nbX,1:tr$nbY)
+  v = pmax(apply(vs,2,max),0)
+  #
+  tsubdiff = matrix(0,tr$nbY,tr$nbX)
+  tsubdiff[which(abs(v-t(vs)) <= tol)] = 1
+  #
+  return(list(v=v,subdiff=t(tsubdiff) ))
+}
+#
 eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmode=FALSE)
 {
     #

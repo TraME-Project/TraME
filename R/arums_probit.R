@@ -48,27 +48,27 @@ build_probit <- function(Covar, outsideOption=TRUE)
     return(ret)
 }
 
-simul.probit <- function(het, nbDraws, seed=NULL)
+simul.probit <- function(arums, nbDraws, seed=NULL)
 {
     set.seed(seed)
     #
-    atoms = array(0,dim=c(nbDraws,het$aux_nbOptions,het$nbX))
-    for(x in 1:het$nbX){
-        E = eigen(het$Covar[x,,])
+    atoms = array(0,dim=c(nbDraws,arums$aux_nbOptions,arums$nbX))
+    for(x in 1:arums$nbX){
+        E = eigen(arums$Covar[x,,])
         V = E$values 
         Q = E$vectors
         
         SqrtCovar = Q%*%diag(1/sqrt(V))%*%t(Q) # Keith: benefit of this vs chol?
         
-        atoms[,,x] = matrix(rnorm(nbDraws*het$aux_nbOptions),ncol=het$aux_nbOptions) %*% SqrtCovar 
+        atoms[,,x] = matrix(rnorm(nbDraws*arums$aux_nbOptions),ncol=arums$aux_nbOptions) %*% SqrtCovar 
     }
     #
-    ret = list(nbX=het$nbX, nbY=het$nbY,
+    ret = list(nbX=arums$nbX, nbY=arums$nbY,
                nbParams=length(atoms),
                atoms=atoms,
                xHomogenous=FALSE,
                aux_nbDraws=nbDraws,
-               outsideOption=het$outsideOption)
+               outsideOption=arums$outsideOption)
     class(ret) = "empirical"
     #
     return(ret)

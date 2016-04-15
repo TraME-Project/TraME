@@ -19,36 +19,46 @@
 ##
 ################################################################################
 
-# heterogeneity-related classes
-G <- function(het, ...) UseMethod("G")
+# arums-related classes
+G <- function(arums, ...) UseMethod("G")
 
-Gx <- function (het, ...) UseMethod("Gx")
+Gx <- function (arums, ...) UseMethod("Gx")
 
-Gstar <- function (het, ...) UseMethod("Gstar")
+Gstar <- function (arums, ...) UseMethod("Gstar")
 
-Gstarx <- function (het, ...) UseMethod("Gstarx")
+Gstarx <- function (arums, ...) UseMethod("Gstarx")
 
-D2Gx <- function (het, ...) UseMethod("D2Gx")
+D2Gx <- function (arums, ...) UseMethod("D2Gx")
 
-D2Gstarx <- function (het, ...) UseMethod("D2Gstarx")
+D2Gstarx <- function (arums, ...) UseMethod("D2Gstarx")
 
-D2G <- function (het, ...) UseMethod("D2G")
+D2G <- function (arums, ...) UseMethod("D2G")
 
-D2Gstar <- function (het, ...) UseMethod("D2Gstar")
+D2Gstar <- function (arums, ...) UseMethod("D2Gstar")
 
-dtheta_NablaGstar <- function (het, ...) UseMethod("dtheta_NablaGstar")
+dtheta_NablaGstar <- function (arums, ...) UseMethod("dtheta_NablaGstar")
 
-Gbar <- function(het, ...) UseMethod("Gbar")
+Gbar <- function(arums, ...) UseMethod("Gbar")
 
-Gbarx <- function(het, ...) UseMethod("Gbarx")
+Gbarx <- function(arums, ...) UseMethod("Gbarx")
 
-simul <- function (heterog, ...) UseMethod("simul")
+simul <- function (arums, ...) UseMethod("simul")
+
+# mmfs class
+
+mmfsTranspose <- function(mmfs) UseMethod("mmfsTranspose")
+
+M <- function(mmfs,...) UseMethod("M")
+
+Mx0 <- function(mmfs,...) UseMethod("Mx0")
+
+M0y <- function(mmfs,...) UseMethod("M0y")
+
+margxInv <- function(xs, mmfs, ...) UseMethod("margxInv",mmfs)
+
+margyInv <- function(ys, mmfs, ...) UseMethod("margyInv",mmfs)
 
 # market classes
-
-margxInv <- function(xs, mkt, ...) UseMethod("margxInv",mkt)
-
-margyInv <- function(ys, mkt, ...) UseMethod("margyInv",mkt)
 
 solveEquilibrium <- function(market, ...) UseMethod("solveEquilibrium")
 
@@ -66,7 +76,11 @@ estimate <- function(model, ...) UseMethod("estimate")
 
 Psi <- function(tr, ...) UseMethod("Psi")
 
+Psi_sub <- function(tr, ...) UseMethod("Psi_sub")
+
 du_Psi <- function(tr, ...) UseMethod("du_Psi")
+
+du_Psi_sub <- function(tr, ...) UseMethod("du_Psi")
 
 dtheta_Psi <- function(tr, ...) UseMethod("dtheta_Psi")
 
@@ -90,8 +104,8 @@ WU <- function(tr, ...) UseMethod("WU")
 
 WV <- function(tr, ...)  UseMethod("WV")
 
-MMF <- function(tr, ...) UseMethod("MMF")
+M <- function(mmfs, ...) UseMethod("M")
 
-ufromvs <- function(tr,...) UseMethod("ufromvs")
+# estimation classes
 
-vfromus <- function(tr,...) UseMethod("vfromus")
+mme <- function(model, ...) UseMethod("mme")
