@@ -64,40 +64,35 @@ inversePWA <- function(a, B, C, k=1.0)
     return(c(vals))
 }
 
-tests_TraME <- function(nbDraws = 1e3)
+tests_TraME <- function(nbDraws = 1e3,save_output=FALSE,output_file=NA)
 {
     ptm = proc.time()
     #
-    hash_arum <- tests_arum(notifications=FALSE,nbDraws=10*nbDraws)
-    hash_equilibrium <- tests_equilibrium(notifications=FALSE,nbDraws=nbDraws)
-    hash_estimation <- tests_estimation(notifications=FALSE)
-    #
-    time = proc.time() - ptm
-    message(paste0('All tests completed. Overall time elapsed = ', round(time["elapsed"],5), 's.'))
-    #
-    hash_vals <- list(hash_arum=hash_arum,hash_equilibrium=hash_equilibrium,hash_estimation=hash_estimation)
-    #message(compare_hashvals(hash_vals))
-    #
-    return(hash_vals)
-}
-
-verify_signature <- function(save_output=FALSE,output_file=NA)
-{
-    #
     if(save_output==TRUE){
         if(is.character(output_file)==TRUE){
-            output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()),file=output_file)
+            output_hide <- capture.output(hash_arum <- tests_arum(notifications=FALSE,nbDraws=10*nbDraws),file=output_file,append=FALSE)
+            output_hide <- capture.output(hash_equilibrium <- tests_equilibrium(notifications=FALSE,nbDraws=nbDraws),file=output_file,append=TRUE)
+            output_hide <- capture.output(hash_estimation <- tests_estimation(notifications=FALSE),file=output_file,append=TRUE)
         }else{
-            output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()),file="TraME_test_results.txt")
+            output_hide <- capture.output(hash_arum <- tests_arum(notifications=FALSE,nbDraws=10*nbDraws),file="TraME_test_results.txt",append=FALSE)
+            output_hide <- capture.output(hash_equilibrium <- tests_equilibrium(notifications=FALSE,nbDraws=nbDraws),file="TraME_test_results.txt",append=TRUE)
+            output_hide <- capture.output(hash_estimation <- tests_estimation(notifications=FALSE),file="TraME_test_results.txt",append=TRUE)
         }
     }else{
-        output_hide <- capture.output(hash_vals <- suppressMessages(tests_TraME()))
+        hash_arum <- tests_arum(notifications=FALSE,nbDraws=10*nbDraws)
+        hash_equilibrium <- tests_equilibrium(notifications=FALSE,nbDraws=nbDraws)
+        hash_estimation <- tests_estimation(notifications=FALSE)
     }
     #
-    compare_hashvals(hash_vals)
+    time = proc.time() - ptm
+    message(paste0('All tests completed. Overall time elapsed = ', round(time["elapsed"],5), 's.\n'))
+    #
+    hash_vals <- list(hash_arum=hash_arum,hash_equilibrium=hash_equilibrium,hash_estimation=hash_estimation)
+    #
+    .compare_hashvals(hash_vals)
 }
 
-compare_hashvals <- function(hash_vals)
+.compare_hashvals <- function(hash_vals)
 {
     all_hash <- .combine_hashvals(hash_vals)
     
