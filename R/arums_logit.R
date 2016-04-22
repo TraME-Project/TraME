@@ -74,7 +74,7 @@ Gstar.logit <- function(arums, mu, n)
 }
 
 Gstarx.logit <- function(arums, mux, x)
-{
+{   # Keith: where is input 'x' used?
     mu0 <- ret <- 0
     #
     if(arums$outsideOption){
@@ -91,7 +91,7 @@ Gstarx.logit <- function(arums, mux, x)
 
 D2G.logit <- function(arums, U, n, xFirst=TRUE)
 {
-    # NOTE; the formula is the same regardless of whether outsideOption == TRUE or FALSE
+    # NOTE: the formula is the same regardless of whether outsideOption == TRUE or FALSE
     muxy = G(arums,U,n)$mu
     H = matrix(0,arums$nbX*arums$nbY,arums$nbX*arums$nbY)
     #
@@ -176,8 +176,9 @@ dtheta_NablaGstar.logit <- function(arums, mu, n, dtheta=diag(1), xFirst=TRUE)
 
 Gbarx.logit <- function(arums, Ubarx, mubarx, x)
 {
+    # Keith: where is input 'x' used?
     if(arums$outsideOption){
-        TOL   = 1e-100
+        TOL   = 1e-100 # Keith: fix later
         #
         sigma = arums$sigma
         expUbarx = exp(Ubarx/sigma)
