@@ -314,7 +314,7 @@ build_market_LTU_logit <- function(n, m, lambda, phi, sigma=1, neededNorm=NULL)
   return(ret)
 }
 
-build_market_ETU_logit <- function(n, m, alpha,gamma,tau, neededNorm=NULL)
+build_market_ETU_logit <- function(n, m, alpha,gamma,tau,sigma=1, neededNorm=NULL)
 {
   if(!is.null(neededNorm) && (sum(n) != sum(m))){
     stop("Normalization asked but sum(n) does not coincide with sum(m)")
@@ -344,7 +344,7 @@ build_market_ETU_logit <- function(n, m, alpha,gamma,tau, neededNorm=NULL)
   return(ret)
 }
 #
-solveEquilibrium.ITU_logit = ipfp
+solveEquilibrium.ETU_logit = ipfp
 #
 build_market_ITU_general <- function(n, m, arumsG, arumsH, transfers, neededNorm=NULL)
 {
