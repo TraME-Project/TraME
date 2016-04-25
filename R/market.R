@@ -337,7 +337,7 @@ build_market_ETU_logit <- function(n, m, alpha,gamma,tau,sigma=1, neededNorm=NUL
              arumsG=logitM, arumsH=logitW,
              transfers=ETUs,
              #
-             mmfs = ITUmmfs
+             mmfs = ETUmmfs
   ) 
   class(ret) = "ETU_logit"
   #
