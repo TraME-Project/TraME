@@ -266,6 +266,7 @@ build_ETUmmfs <- function(n,m,C,D,kappa,neededNorm)
              kappa = kappa
   )
   class(ret)="ETUmmfs"
+  return(ret)
 }
 #
 mmfsTranspose.ETUmmfs <- function(mmfs)
