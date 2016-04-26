@@ -6,4 +6,4 @@
 struct trame_opt_data {
     arma::mat expUbarX;
     arma::mat mubarX;
-}
+};

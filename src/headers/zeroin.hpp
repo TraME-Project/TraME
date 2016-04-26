@@ -2,7 +2,7 @@
  * Slight modification of the zeroin.c file from Netlib
  */
 
-#include <cmath>
+#include <cmath> // for abs value
 
 double zeroin(double ax, double bx, double (*f)(double x, void* opt_data), void* zeroin_data, double tol, int max_iter)
 {
@@ -31,7 +31,7 @@ double zeroin(double ax, double bx, double (*f)(double x, void* opt_data), void*
 	double p, q, prev_step, new_step;
 	register double t1,cb,t2;
 	
-	new_step = (c-b)/2;
+	new_step = (c - b)/2;
 	
 	while(fabs(new_step) > tol_act && iter < max_iter){
 		iter++;

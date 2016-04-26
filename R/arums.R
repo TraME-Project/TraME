@@ -111,7 +111,7 @@ Gbar.default <- function(arums, Ubar, n, mubar)
     muopt = matrix(0,arums$nbX,arums$nbY)
     #
     for(x in 1:arums$nbX){
-        resx = Gbarx (arums, Ubar[x,],mubar[x,]/n[x],x )
+        resx = Gbarx(arums, Ubar[x,],mubar[x,]/n[x], x)
         val = val + n[x]*resx$valx
         Uopt[x,] = resx$Ux
         muopt[x,] = n[x]*resx$mux

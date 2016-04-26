@@ -170,7 +170,7 @@ simul.empirical <- function(arums, nbDraws, seed=NULL)
     set.seed(seed)
     #
     nbOptions = ifelse(arums$outsideOption,arums$nbY+1,arums$nbY)
-    if(arums$xHomogenous){ 
+    if(arums$xHomogenous){
         bootstraped_atoms = vector(0,dim=c(nbDraws,nbOptions))
         for(y in 1:nbOptions){
             bootstraped_atoms[,y] = sample(arums$atoms[,y],nbDraws,replace=TRUE)
