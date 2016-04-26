@@ -2,7 +2,6 @@
 .Rhistory
 src-i386/
 src-x64/
-src/tests/
 src/*.o
 src/*.so
 src/*.dll
