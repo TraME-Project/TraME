@@ -253,9 +253,6 @@ void logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, int
 
 double differMargX(double z, void *opt_data)
 {
-    //trame_opt_data *opt_data_temp = reinterpret_cast<trame_opt_data*>(opt_data);
-    //double scalepar = d->scalepar;
-    //arma::mat ktest = d->ktest;
     
     trame_opt_data *opt_data_temp = reinterpret_cast<trame_opt_data*>(opt_data);
     arma::mat expUbarX = opt_data_temp->expUbarX;
