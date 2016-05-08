@@ -57,17 +57,37 @@ bool generic_LP(arma::vec *obj, arma::mat* A, int modelSense, arma::vec* rhs, ch
     }
     //
     // Model objective
-    GRBLinExpr LPobj = 0;
-    
-    for(j = 0; j < n; j++){
-        LPobj += (*obj)(j)*vars[j];
+    if(Q==NULL){ // Linear programming problem
+        GRBLinExpr LPobj = 0;
+        
+        for(j = 0; j < n; j++){
+            LPobj += (*obj)(j)*vars[j];
+        }
+        
+        if(modelSense==1){
+            model.setObjective(LPobj,GRB_MAXIMIZE);
+        }else{
+            model.setObjective(LPobj,GRB_MINIMIZE);
+        }
+    }else{ // Quadratic programming problem
+        GRBQuadExpr QPobj = 0;
+        
+        for(j = 0; j < n; j++){
+            QPobj += (*obj)(j)*vars[j];
+        }
+        for(i = 0; i < n; i++){
+            for(j = 0; j < n; j++){
+                QPobj += (*A)(i,j)*vars[i]*vars[j];
+            }
+        }
+        
+        if(modelSense==1){
+            model.setObjective(QPobj,GRB_MAXIMIZE);
+        }else{
+            model.setObjective(QPobj,GRB_MINIMIZE);
+        }
     }
     
-    if(modelSense==1){
-        model.setObjective(LPobj,GRB_MAXIMIZE);
-    }else{
-        model.setObjective(LPobj,GRB_MINIMIZE);
-    }
     model.update();
     //
     // Optimize and recover relevant solution objects
