@@ -2,6 +2,7 @@
 .Rhistory
 src-i386/
 src-x64/
+src/headers/old/
 src/tests/*.exe
 src/tests/*.test
 src/*.o

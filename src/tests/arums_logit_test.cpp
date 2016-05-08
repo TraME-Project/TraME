@@ -1,6 +1,6 @@
 //
 // cd ~/Desktop/"Google Drive"/GitHub/TraME/src/tests
-// clang++ -O2 -Wall -I/opt/local/include arums_logit_test.cpp -o arums_logit_test -framework Accelerate
+// clang++ -O2 -Wall -I/opt/local/include arums_logit_test.cpp -o arums_logit.test -framework Accelerate
 //
 
 #include "armadillo"
