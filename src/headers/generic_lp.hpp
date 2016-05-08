@@ -7,7 +7,7 @@
 
 #include "gurobi_c++.h"
 
-bool generic_LP(arma::vec *obj, arma::mat* A, int modelSense, arma::vec* rhs, char* sense, arma::mat* Q, arma::vec* lb, arma::vec* ub, arma::vec* start, double& objval, arma::mat& sol_mat)
+bool generic_LP(arma::vec *obj, arma::mat* A, int modelSense, arma::vec* rhs, char* sense, arma::mat* Q, arma::vec* lb, arma::vec* ub, arma::vec* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat)
 {
     // Initialize
     bool success = false;
@@ -77,7 +77,9 @@ bool generic_LP(arma::vec *obj, arma::mat* A, int modelSense, arma::vec* rhs, ch
         }
         for(i = 0; i < n; i++){
             for(j = 0; j < n; j++){
-                QPobj += (*A)(i,j)*vars[i]*vars[j];
+                if((*Q)(i,j) != 0){
+                    QPobj += (*Q)(i,j)*vars[i]*vars[j];
+                }
             }
         }
         
@@ -97,10 +99,13 @@ bool generic_LP(arma::vec *obj, arma::mat* A, int modelSense, arma::vec* rhs, ch
     
     if (model.get(GRB_IntAttr_Status) == GRB_OPTIMAL) {
         objval = model.get(GRB_DoubleAttr_ObjVal);
-        for (i = 0; i < n; i++){
+        for(i = 0; i < n; i++){
             sol_mat(i,0) = vars[i].get(GRB_DoubleAttr_X);
             sol_mat(i,1) = vars[i].get(GRB_DoubleAttr_RC);
-            sol_mat(i,2) = mycons[i].get(GRB_DoubleAttr_Pi);
+        }
+        for(j = 0; j < k; j++){
+            dual_mat(j,0) = mycons[j].get(GRB_DoubleAttr_Pi);
+            dual_mat(j,1) = mycons[j].get(GRB_DoubleAttr_Slack);
         }
         success = true;
     }
