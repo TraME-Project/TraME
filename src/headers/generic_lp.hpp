@@ -1,5 +1,5 @@
 /*
- * Generic Linear Programming solver using Gurobi
+ * Generic Linear/Quadratic Programming solver using Gurobi
  *
  * Keith O'Hara
  * 05/08/2016
