@@ -4,8 +4,11 @@
 
 #include "gurobi_c++.h"
 
-void generic_LP(arma::vec *obj, arma::mat* A, arma::vec* rhs, char* sense, arma::mat* Q, arma::vec* lb, arma::vec* ub, arma::vec* start, double& objval, double& sol_vars, double& sol_PI, double& sol_RC)
+bool generic_LP(arma::vec *obj, arma::mat* A, int modelSense, arma::vec* rhs, char* sense, arma::mat* Q, arma::vec* lb, arma::vec* ub, arma::vec* start, double& objval, arma::mat& sol_mat)
 {
+    // Initialize
+    bool success = false;
+    
     int i,j;
     int k = A->n_rows;   // number of constraints
     int n = obj->n_elem; // number of variables
@@ -23,7 +26,7 @@ void generic_LP(arma::vec *obj, arma::mat* A, arma::vec* rhs, char* sense, arma:
     if(lb==NULL){
         *lb_grbi = NULL;
     }else{
-        for(i=0; i<n; i++){
+        for(i=0; i < n; i++){
             lb_grbi[i] = &(*lb)[i];
         }
     }
@@ -31,7 +34,7 @@ void generic_LP(arma::vec *obj, arma::mat* A, arma::vec* rhs, char* sense, arma:
     if(ub==NULL){
         *ub_grbi = NULL;
     }else{
-        for(i=0; i<n; i++){
+        for(i=0; i < n; i++){
             ub_grbi[i] = &(*ub)[i];
         }
     }
@@ -40,9 +43,9 @@ void generic_LP(arma::vec *obj, arma::mat* A, arma::vec* rhs, char* sense, arma:
     GRBVar* vars = model.addVars(*lb_grbi, *ub_grbi, NULL, NULL, NULL, n);
     model.update();
     
-    for(i=0; i<k; i++){
+    for(i=0; i < k; i++){
         GRBLinExpr lhs = 0;
-        for(j=0;j<n;j++){
+        for(j=0; j < n; j++){
             if((*A)(i,j) != 0){
                 lhs += (*A)(i,j)*vars[j];
             }
@@ -57,7 +60,11 @@ void generic_LP(arma::vec *obj, arma::mat* A, arma::vec* rhs, char* sense, arma:
         LPobj += (*obj)(j)*vars[j];
     }
     
-    model.setObjective(LPobj,GRB_MAXIMIZE);
+    if(modelSense==1){
+        model.setObjective(LPobj,GRB_MAXIMIZE);
+    }else{
+        model.setObjective(LPobj,GRB_MINIMIZE);
+    }
     model.update();
     //
     // Optimize and recover relevant solution objects
@@ -65,33 +72,18 @@ void generic_LP(arma::vec *obj, arma::mat* A, arma::vec* rhs, char* sense, arma:
     
     GRBConstr* mycons = model.getConstrs();
     
-    double objvalP = 0;
-    double* solution = new double[n];
-    double* PI = new double[n];
-    double* RC = new double[n];
-    //double* slack = new double[n];
-    
     if (model.get(GRB_IntAttr_Status) == GRB_OPTIMAL) {
-        objvalP = model.get(GRB_DoubleAttr_ObjVal);
+        objval = model.get(GRB_DoubleAttr_ObjVal);
         for (i = 0; i < n; i++){
-            solution[i] = vars[i].get(GRB_DoubleAttr_X);
-            RC[i] = vars[i].get(GRB_DoubleAttr_RC);
-            PI[i] = mycons[i].get(GRB_DoubleAttr_Pi);
-            //slack[i] = mycons[i].get(GRB_DoubleAttr_Slack);
+            sol_mat(i,0) = vars[i].get(GRB_DoubleAttr_X);
+            sol_mat(i,1) = vars[i].get(GRB_DoubleAttr_RC);
+            sol_mat(i,2) = mycons[i].get(GRB_DoubleAttr_Pi);
         }
-        //success = true;
+        success = true;
     }
-    //
-    objval = objvalP;
-    sol_vars = *solution;
-    sol_PI   = *PI;
-    sol_RC   = *RC;
     //
     delete[] lb_grbi;
     delete[] ub_grbi;
-    delete[] solution;
-    delete[] PI;
-    delete[] RC;
-    
-    //delete env;
+    //
+    return success;
 }

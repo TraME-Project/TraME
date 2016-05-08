@@ -41,16 +41,24 @@ int main()
         << 100.0 << arma::endr
         << 100.0 << arma::endr;
     
-    double objval, sol_vals, sol_PI, sol_RC;
+    bool LP_optimal;
+    int modelSense = 1; // maximize
+    double objval;
+    
+    arma::mat sol_mat(rhs.n_elem,3);
     
     try {
-        generic_LP(&obj, &A, &rhs, sense, NULL, &lb, &ub, NULL, objval, sol_vals, sol_PI, sol_RC);
+        LP_optimal = generic_LP(&obj, &A, modelSense, &rhs, sense, NULL, &lb, &ub, NULL, objval, sol_mat);
+        
+        //std::cout << "\n" << std::endl;
+        std::cout << "\nOptimal value: " << objval << ".\n" << std::endl;
+        arma::cout << "Solution: [vars, Pi, RC] \n" << sol_mat << arma::endl;
     } catch(GRBException e) {
         std::cout << "Error code = " << e.getErrorCode() << std::endl;
         std::cout << e.getMessage() << std::endl;
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }
-    
+    //  
     return 0;
 }
