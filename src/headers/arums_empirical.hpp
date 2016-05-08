@@ -28,17 +28,71 @@ class empirical
         // build_logit objects
         int nbX;
         int nbY;
+        
         int nbParams;
-        arma::cube atoms;
         int aux_nbDraws;
-        int xHomogenous;   // 1 = yes, 0 = no
-        int outsideOption; // 1 = yes, 0 = no
+        
+        bool xHomogenous;
+        bool outsideOption;
+        
+        arma::cube atoms;
         
         // equilibrium objects
+        arma::mat mux;
         
         // member functions
-        //void build(int nbX_b, int nbY_b, int nbParams_b, double sigma_b, int outsideOption_b);
-        
+        void build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous_b, bool outsideOption_b);
+        double Gx(arma::mat Ux, int x);
         
     //private:
 };
+
+void empirical::build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous_b, bool outsideOption_b)
+{   
+    nbX = nbX_b;
+    nbY = nbY_b;
+    
+    atoms = atoms_b;
+    
+    nbParams = atoms_b.n_elem;
+    aux_nbDraws = atoms.n_rows;
+    
+    xHomogenous = xHomogenous_b;
+    outsideOption = outsideOption_b;
+}
+
+double empirical::Gx(arma::mat Ux, int x)
+{   
+    arma::mat Uxs, Utilde;
+    
+    if(outsideOption){
+        Uxs = arma::join_cols(arma::vectorize(Ux));
+    }else{
+        Uxs = Ux;
+    }
+    
+    if(xHomogenous){
+        Utilde = arma::ones(aux_nbDraws,1) * Uxs.t() + atoms.slice(0);
+    }else{
+        Utilde = arma::ones(aux_nbDraws,1) * Uxs.t() + atoms.slice(x-1);
+    }
+    //
+    int tt;
+    arma::vec argmaxs = arma::max(Utilde,1);
+    arma::uvec argmax_inds = which_max(&Utilde, 1);
+    
+    double thesum = 0.0;
+    for(tt=0; tt < aux_nbDraws; tt++){
+        thesum += argmaxs(tt,0);
+    }
+    double valx = thesum/(double)(aux_nbDraws);
+    //
+    mux.set_size(nbY,1);
+    arma::uvec temp_find;
+    for(tt=0; tt < nbY; tt++){
+        temp_find = arma::find(argmax_inds==tt)
+        mux(tt,0) = (double)(temp_find.n_elem)/(double)(aux_nbDraws);
+    }
+    //
+    return valx;
+}
