@@ -1,5 +1,8 @@
 /*
  * Generic Linear Programming solver using Gurobi
+ *
+ * Keith O'Hara
+ * 05/08/2016
  */
 
 #include "gurobi_c++.h"

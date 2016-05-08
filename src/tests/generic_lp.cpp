@@ -50,7 +50,6 @@ int main()
     try {
         LP_optimal = generic_LP(&obj, &A, modelSense, &rhs, sense, NULL, &lb, &ub, NULL, objval, sol_mat);
         
-        //std::cout << "\n" << std::endl;
         std::cout << "\nOptimal value: " << objval << ".\n" << std::endl;
         arma::cout << "Solution: [vars, Pi, RC] \n" << sol_mat << arma::endl;
     } catch(GRBException e) {
