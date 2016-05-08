@@ -21,8 +21,8 @@ int main()
     mu << 1.0 << 3.0 << 1.0 << arma::endr
        << 2.0 << 1.0 << 3.0 << arma::endr;
     
-    arma::cout << U << arma::endl;
-    arma::cout << mu << arma::endl;
+    arma::cout << "U: \n" << U << arma::endl;
+    arma::cout << "mu: \n" << mu << arma::endl;
     //
     int nbX = U.n_rows;
     int nbY = U.n_cols;
@@ -34,7 +34,7 @@ int main()
     logits.nbY = nbY;
     logits.nbParams = 1;
     logits.sigma = 1.0;
-    logits.outsideOption = 1;
+    logits.outsideOption = true;
     
     logits.U = U;
     //
@@ -64,12 +64,22 @@ int main()
     
     arma::cout << Hstar << arma::endl;
     //
-    int n_draws = 100;
+    int n_draws = 1000;
     empirical emp_obj;
     
     logits.simul(emp_obj,n_draws, (int) 777);
+    //arma::cout << emp_obj.atoms << arma::endl;
     
-    arma::cout << emp_obj.atoms << arma::endl;
+    //emp_obj.nbX = nbX;
+    //emp_obj.nbY = nbY;
+    
+    emp_obj.U = U;
+    //emp_obj.nbParams = emp_obj.atoms.n_elem;
+    //emp_obj.aux_nbDraws = emp_obj.atoms.n_rows;
+    
+    emp_obj.G(n);
+    
+    arma::cout << emp_obj.mu << arma::endl;
     
     return 0;
 }

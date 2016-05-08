@@ -30,7 +30,7 @@ class logit
         int nbY;
         int nbParams;
         double sigma;
-        int outsideOption; // 1 = yes, 0 = no
+        bool outsideOption;
         
         // equilibrium objects
         arma::mat mu;
@@ -39,7 +39,7 @@ class logit
         arma::mat Ux;
         
         // member functions
-        void build(int nbX_b, int nbY_b, int nbParams_b, double sigma_b, int outsideOption_b);
+        void build(int nbX_b, int nbY_b, int nbParams_b, double sigma_b, bool outsideOption_b);
         void G(double &val, arma::vec n);
         void G(double &val, arma::mat &mu_ret, arma::vec n);
         void Gstar(double &val, arma::vec n);
@@ -57,7 +57,7 @@ class logit
 };
 
 // for convenience:
-void logit::build(int nbX_b, int nbY_b, int nbParams_b, double sigma_b, int outsideOption_b)
+void logit::build(int nbX_b, int nbY_b, int nbParams_b, double sigma_b, bool outsideOption_b)
 {   
     nbX = nbX_b;
     nbY = nbY_b;
@@ -72,7 +72,7 @@ void logit::G(double &val, arma::vec n)
     
     arma::mat expU = arma::exp(U / sigma);
     //
-    if(outsideOption==1){
+    if(outsideOption){
         denom = 1 + arma::sum(expU,1);
     }else{
         denom = arma::sum(expU,1);
@@ -88,7 +88,7 @@ void logit::G(double &val, arma::mat &mu_ret, arma::vec n)
     
     arma::mat expU = arma::exp(U / sigma);
     //
-    if(outsideOption==1){
+    if(outsideOption){
         denom = 1 + arma::sum(expU,1);
     }else{
         denom = arma::sum(expU,1);
@@ -103,7 +103,7 @@ void logit::Gstar(double &val, arma::vec n)
     arma::mat mux0;
     arma::mat n_repd = arma::repmat(n,1,nbY);
     //
-    if(outsideOption==1){
+    if(outsideOption){
         mux0 = n - arma::sum(mu,1);
         
         val = sigma * ( arma::accu(mu % arma::log(mu/n_repd)) + arma::accu(mux0 % arma::log(mux0/n)) );
@@ -119,7 +119,7 @@ void logit::Gstar(double &val, arma::mat &U_ret, arma::vec n)
     arma::mat mux0;
     arma::mat n_repd = arma::repmat(n,1,nbY);
     //
-    if(outsideOption==1){
+    if(outsideOption){
         mux0 = n - arma::sum(mu,1);
         
         val   = sigma * ( arma::accu(mu % arma::log(mu/n_repd)) + arma::accu(mux0 % arma::log(mux0/n)) );
@@ -134,7 +134,7 @@ void logit::Gstarx(double &valx, arma::mat mux)
 {
     arma::mat mu0;
     //
-    if(outsideOption==1){
+    if(outsideOption){
         mu0 = 1 - arma::accu(mux);
         
         valx = sigma * ( arma::accu(mu0 % arma::log(mu0)) + arma::accu(mux % arma::log(mux)) );
@@ -149,7 +149,7 @@ void logit::Gstarx(double &valx, arma::mat &Ux_ret, arma::mat mux)
 {
     arma::mat mu0;
     //
-    if(outsideOption==1){
+    if(outsideOption){
         mu0 = 1 - arma::accu(mux);
         
         valx   = sigma * ( arma::accu(mu0 % arma::log(mu0)) + arma::accu(mux % arma::log(mux)) );
@@ -162,7 +162,7 @@ void logit::Gstarx(double &valx, arma::mat &Ux_ret, arma::mat mux)
 
 void logit::D2G(arma::mat &H, arma::vec n, int xFirst)
 {
-    // NOTE: the formula is the same regardless of whether outsideOption == 1 or 0
+    // NOTE: the formula is the same regardless of whether outsideOption is true
     int x, y, yprime;
     
     arma::mat muxy = mu;
@@ -229,7 +229,7 @@ void logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, int
     if(dtheta.n_elem==0){
         ret.zeros(nbX*nbY,0);
     }else{
-        if(outsideOption==1){
+        if(outsideOption){
             mux0 = arma::repmat(n - arma::sum(mu,1),1,mu.n_cols);
             
             if(xFirst==1){
@@ -266,7 +266,7 @@ double differMargX(double z, void *opt_data)
 
 void logit::Gbarx(double &valx, arma::mat Ubarx, arma::mat mubarx)
 {
-    if(outsideOption==1){
+    if(outsideOption){
         double tol_zero = 1E-08;
         double max_iter = 1000;
         
@@ -290,7 +290,7 @@ void logit::simul(empirical &ret, int nbDraws, int seed_val)
     arma::arma_rng::set_seed(seed_val);
     // note: digamma(1) \approx -0.5772156649
     arma::cube epsilon_biy;
-    if(outsideOption==1){
+    if(outsideOption){
         epsilon_biy = -0.5772156649 - sigma * arma::log( - arma::log(arma::randu(nbDraws,nbY+1,nbX)) );
     }else{
         epsilon_biy = -0.5772156649 - sigma * arma::log( - arma::log(arma::randu(nbDraws,nbY,nbX)) );
@@ -301,7 +301,7 @@ void logit::simul(empirical &ret, int nbDraws, int seed_val)
     ret.nbParams = epsilon_biy.n_elem;
     ret.atoms = epsilon_biy;
     ret.aux_nbDraws = nbDraws;
-    ret.xHomogenous = 0;
+    ret.xHomogenous = false;
     ret.outsideOption = outsideOption;
     //
     arma::arma_rng::set_seed_random(); // need to reset the seed
