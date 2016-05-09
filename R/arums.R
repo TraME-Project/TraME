@@ -48,6 +48,7 @@ Gstar.default <- function(arums, mu, n)
     #
     for(x in 1:arums$nbX){
         resx = Gstarx(arums,mu[x,]/n[x],x)
+        #
         val = val + n[x]*resx$valx
         Uopt[x,] = resx$Ux
     }

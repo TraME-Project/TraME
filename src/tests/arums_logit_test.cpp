@@ -1,6 +1,6 @@
 //
 // cd ~/Desktop/"Google Drive"/GitHub/TraME/src/tests
-// clang++ -O2 -Wall -I/opt/local/include arums_logit_test.cpp -o arums_logit.test -framework Accelerate
+// clang++ -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -o arums_logit.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
 //
 
 #include "armadillo"
@@ -80,6 +80,11 @@ int main()
     emp_obj.G(n);
     
     arma::cout << emp_obj.mu << arma::endl;
+    
+    arma::mat Ustar_emp;
+    emp_obj.Gstar(n,Ustar_emp);
+    
+    arma::cout << Ustar_emp << arma::endl;
     
     return 0;
 }

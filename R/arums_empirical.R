@@ -90,7 +90,7 @@ Gstarx.empirical <- function(arums, mux, x)
     if(arums$outsideOption){
         q = c(mux, 1-sum(mux))
     }else{
-        q = mux
+        q = mux # should this be c(mux)?
     }
     #
     obj = c(Phi)
