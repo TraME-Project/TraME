@@ -1,5 +1,8 @@
 /*
  * Slight modification of the zeroin.c file from Netlib
+ *
+ * Keith O'Hara
+ * 05/10/2016
  */
 
 #include <cmath> // for abs value
