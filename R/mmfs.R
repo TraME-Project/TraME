@@ -285,10 +285,10 @@ mmfsTranspose.ETUmmfs <- function(mmfs)
 M.ETUmmfs <- function(mmfs, axs, bys, xs=1:length(mmfs$n), ys=1:length(mmfs$m))
 {
   
-  term_1 = mmfs$C[xs,ys] * (axs^mmfs$kappa)
-  term_2 = mmfs$D[xs,ys] * t(bys^t(mmfs$kappa))
+  term_1 = mmfs$C[xs,ys] * (axs^mmfs$kappa[xs,ys])
+  term_2 = mmfs$D[xs,ys] * t(bys^t(mmfs$kappa[xs,ys]))
   #
-  ret = ((term_1 + term_2)/2)^(1/mmfs$kappa)
+  ret = ((term_1 + term_2)/2)^(1/mmfs$kappa[xs,ys])
   #
   return(ret)
 }
