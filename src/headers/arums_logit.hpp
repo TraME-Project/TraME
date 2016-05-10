@@ -42,6 +42,7 @@ class logit
         void build(int nbX_b, int nbY_b, int nbParams_b, double sigma_b, bool outsideOption_b);
         void G(double &val, arma::vec n);
         void G(double &val, arma::mat &mu_ret, arma::vec n);
+        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
         void Gstar(double &val, arma::vec n);
         void Gstar(double &val, arma::mat &U_ret, arma::vec n);
         void Gstarx(double &valx, arma::mat mux);
@@ -49,9 +50,8 @@ class logit
         void D2G(arma::mat &H, arma::vec n, int xFirst);
         void D2Gstar(arma::mat &H, arma::vec n, int xFirst);
         void dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, int xFirst);
-        void Gbarx(double &valx, arma::mat Ubarx, arma::mat mubarx);
+        double Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp);
         void simul(empirical &ret, int nbDraws, int seed);
-        
         
     //private:
 };
@@ -96,6 +96,26 @@ void logit::G(double &val, arma::mat &mu_ret, arma::vec n)
     //
     val    = sigma*arma::accu(n % arma::log(denom));
     mu_ret = arma::repmat(n/denom,1,nbY) % expU;
+}
+
+double logit::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+{   
+    int i;
+    double val=0.0, val_temp;
+    
+    U_inp.set_size(nbX,nbY);
+    mu_inp.set_size(nbX,nbY);
+    arma::mat Ux_temp, mux_temp;
+    //
+    for(i=0; i<nbX; i++){
+        val_temp = logit::Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mux_temp);
+        //
+        val += n(i)*val_temp;
+        U_inp.row(i) = arma::trans(Ux_temp);
+        mu_inp.row(i) = arma::trans(n(i)*mux_temp);
+    }
+    //
+    return val;
 }
 
 void logit::Gstar(double &val, arma::vec n)
@@ -251,38 +271,73 @@ void logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, int
     }
 }
 
-double differMargX(double z, void *opt_data)
+// this generated weird assembly code...
+/*double differMargX_old(double z, void *opt_data)
 {
     
     trame_opt_data *opt_data_temp = reinterpret_cast<trame_opt_data*>(opt_data);
-    arma::mat expUbarX = opt_data_temp->expUbarX;
-    arma::mat mubarX = opt_data_temp->mubarX;
+    arma::mat* expUbarX = opt_data_temp->expUbarX;
+    arma::mat* mubarX = opt_data_temp->mubarX;
     //
-    arma::mat temp_mat = arma::min(z * expUbarX, mubarX);
+    arma::mat temp_mat = arma::min(z * (*expUbarX), (*mubarX));
+    double ret = z + arma::accu(temp_mat) - 1;
+    //
+    return ret;
+}*/
+
+double differMargX(double z, const trame_zeroin_data& opt_data)
+{
+    arma::mat temp_mat = arma::min(z * opt_data.expUbarX, opt_data.mubarX);
     double ret = z + arma::accu(temp_mat) - 1;
     //
     return ret;
 }
 
-void logit::Gbarx(double &valx, arma::mat Ubarx, arma::mat mubarx)
+// this generated weird assembly code...
+/*double logit::Gbarx_old(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp)
 {
+    double valx=0.0;
     if(outsideOption){
-        double tol_zero = 1E-08;
-        double max_iter = 1000;
+        double tol_zero = 1E-12;
+        double max_iter = 10000;
         
         arma::mat expUbarX = arma::exp(Ubarx/sigma);
         
         trame_opt_data root_data;
-        root_data.expUbarX = expUbarX;
-        root_data.mubarX = mubarx;
+        root_data.expUbarX = &expUbarX;
+        root_data.mubarX = &mubarx;
         
-        double mux0 = zeroin(0.0, 1.0, differMargX, &root_data, tol_zero, max_iter);
+        double mux0 = zeroin_old(0.0, 1.0, differMargX, &root_data, tol_zero, max_iter);
         //
-        mux = arma::min(mux0 * expUbarX, mubarx);
-        Ux  = sigma * arma::log(mux/mux0);
+        mux_inp = arma::min(mux0 * expUbarX, mubarx);
+        Ux_inp  = sigma * arma::log(mux/mux0);
         //
         valx = arma::accu(mux % Ubarx) - sigma*(mux0*std::log(mux0) + arma::accu(mux % arma::log(mux)));
     }
+    return valx;
+}*/
+
+double logit::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp)
+{
+    double valx=0.0;
+    if(outsideOption){
+        double tol_zero = 1E-12;
+        double max_iter = 10000;
+        
+        arma::mat expUbarX = arma::exp(Ubarx/sigma);
+        
+        trame_zeroin_data root_data;
+        root_data.expUbarX = expUbarX;
+        root_data.mubarX = mubarx;
+        
+        double mux0 = zeroin(0.0, 1.0, differMargX, root_data, tol_zero, max_iter);
+        //
+        mux_inp = arma::min(mux0 * expUbarX, mubarx);
+        Ux_inp  = sigma * arma::log(mux_inp/mux0);
+        //
+        valx = arma::accu(mux_inp % Ubarx) - sigma*(mux0*std::log(mux0) + arma::accu(mux_inp % arma::log(mux_inp)));
+    }
+    return valx;
 }
 
 void logit::simul(empirical &ret, int nbDraws, int seed_val)

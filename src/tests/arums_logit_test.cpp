@@ -1,6 +1,6 @@
 //
 // cd ~/Desktop/"Google Drive"/GitHub/TraME/src/tests
-// clang++ -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -o arums_logit.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
+// clang++ -O2 -Wall -std=c++11 -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -o arums_logit.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
 //
 
 #include "armadillo"
@@ -17,7 +17,6 @@ int main()
        << 2.9 << 1.0 << 3.1 << arma::endr;
     
     arma::mat mu(2,3);
-    
     mu << 1.0 << 3.0 << 1.0 << arma::endr
        << 2.0 << 1.0 << 3.0 << arma::endr;
     
@@ -49,11 +48,6 @@ int main()
     
     arma::cout << "\\nabla G*(\\nabla G(U)): \n" << U_star << arma::endl;
     //
-    //double Gx_val;
-    
-    //logits.Gstarx(Gx_val,)
-    
-    //
     arma::mat H;
     logits.D2G(H, n, (int) 1);
     
@@ -68,24 +62,30 @@ int main()
     empirical emp_obj;
     
     logits.simul(emp_obj,n_draws, (int) 777);
-    //arma::cout << emp_obj.atoms << arma::endl;
-    
-    //emp_obj.nbX = nbX;
-    //emp_obj.nbY = nbY;
-    
     emp_obj.U = U;
-    //emp_obj.nbParams = emp_obj.atoms.n_elem;
-    //emp_obj.aux_nbDraws = emp_obj.atoms.n_rows;
-    
+
     emp_obj.G(n);
-    
-    
+
     arma::cout << "G emp -> mu: \n" << emp_obj.mu << arma::endl;
     
     arma::mat Ustar_emp;
     emp_obj.Gstar(n,Ustar_emp);
     
     arma::cout << "\\nabla G*(\\nabla G(U emp)): \n" << Ustar_emp << arma::endl;
-    
+    /*
+     * Gbar test
+     */
+    arma::mat mubar(2,3);
+    mubar.fill(2);
+
+    arma::mat Ubar_temp, mubar_temp;
+    //logits.Gbarx(U.row(0).t(),(mubar.row(0).t())/n(0),Ubar_temp,mubar_temp);
+    double valGbar = logits.Gbar(U,mubar,n,Ubar_temp,mubar_temp);
+    std::cout << "Gbar val: \n" << valGbar << std::endl;
+    //
+    //emp_obj.Gbarx(U.row(0).t(),(mubar.row(0).t())/n(0),Ubar_temp,mubar_temp,0);
+    double valGbarEmp = emp_obj.Gbar(U,mubar,n,Ubar_temp,mubar_temp);
+    std::cout << "Gbar emp val: \n" << valGbarEmp << std::endl;
+    //
     return 0;
 }

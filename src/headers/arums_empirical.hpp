@@ -47,6 +47,7 @@ class empirical
         void build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous_b, bool outsideOption_b);
         
         double G(arma::vec n);
+        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
         
         double Gstar(arma::vec n, arma::mat& U_inp);
         
@@ -54,6 +55,7 @@ class empirical
         double Gx(arma::mat Ux, arma::mat& mux_inp, int x);
         
         double Gstarx(arma::mat mux, arma::mat& Ux_inp, int x);
+        double Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x);
         
     //private:
 };
@@ -85,6 +87,26 @@ double empirical::G(arma::vec n)
         //
         val += n(i)*valx_temp;
         mu.row(i) = arma::trans(n(i)*mux_temp);
+    }
+    //
+    return val;
+}
+
+double empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+{   
+    int i;
+    double val=0.0, val_temp;
+    
+    U_inp.set_size(nbX,nbY);
+    mu_inp.set_size(nbX,nbY);
+    arma::mat Ux_temp, mux_temp;
+    //
+    for(i=0; i<nbX; i++){
+        val_temp = empirical::Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mux_temp,i);
+        //
+        val += n(i)*val_temp;
+        U_inp.row(i) = arma::trans(Ux_temp);
+        mu_inp.row(i) = arma::trans(n(i)*mux_temp);
     }
     //
     return val;
@@ -244,6 +266,71 @@ double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
         }
         //
         valx = -objval;
+    } catch(GRBException e) {
+        std::cout << "Error code = " << e.getErrorCode() << std::endl;
+        std::cout << e.getMessage() << std::endl;
+    } catch(...) {
+        std::cout << "Exception during optimization" << std::endl;
+    }
+    //
+    delete[] sense_grbi;
+    //
+    return valx;
+}
+
+double empirical::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x)
+{   
+    int jj;
+    double valx=0.0;
+    arma::mat Phi, Ux_temp;
+    
+    if(!outsideOption){
+        return 0; //Gbarx not implemented for empirical with outsideOption = false
+    }
+    
+    if(xHomogenous){
+        Phi = atoms.slice(0);
+    }else{
+        Phi = atoms.slice(x);
+    }
+    //
+    arma::vec obj_grbi_1 = arma::vectorise(mubarx.t());
+    arma::vec obj_grbi_2 = - arma::ones(aux_nbDraws,1)/aux_nbDraws;
+    arma::vec obj_grbi   = arma::join_cols(obj_grbi_1,obj_grbi_2);
+    
+    arma::mat A1 = arma::eye(nbY,nbY);
+    arma::mat A2 = arma::zeros(nbY,aux_nbDraws);
+    arma::mat A3 = arma::kron(arma::eye(nbY,nbY),arma::ones(aux_nbDraws,1));
+    arma::mat A4 = - arma::kron(arma::ones(nbY,1),arma::eye(aux_nbDraws,aux_nbDraws));
+    arma::mat A5 = arma::zeros(aux_nbDraws,nbY);
+    arma::mat A6 = - arma::eye(aux_nbDraws,aux_nbDraws);
+    
+    arma::mat A_grbi = arma::join_cols(arma::join_rows(A1,A2), arma::join_cols(arma::join_rows(A3,A4),arma::join_rows(A5,A6)));
+    
+    arma::vec rhs_grbi_1 = arma::vectorise(Ubarx.t());
+    arma::vec rhs_grbi_2 = arma::vectorise(-Phi);
+    arma::vec rhs_grbi = arma::join_cols(rhs_grbi_1,rhs_grbi_2);
+    
+    char* sense_grbi = new char[A_grbi.n_rows];
+    for(jj=0;jj<A_grbi.n_rows;jj++){
+        sense_grbi[jj] = '<';
+    }
+    
+    bool LP_optimal;
+    int modelSense = 1; // maximize
+    double objval;
+    
+    arma::mat sol_mat(obj_grbi.n_elem,2);
+    arma::mat dual_mat(A_grbi.n_rows,2);
+    
+    try {
+        LP_optimal = generic_LP(&obj_grbi, &A_grbi, modelSense, &rhs_grbi, sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
+        //
+        Ux_inp = sol_mat.col(0).rows(0,nbY-1);
+        arma::vec delta_mux = dual_mat.col(0).rows(0,nbY-1);
+        mux_inp = mubarx - delta_mux;
+        //
+        valx = arma::accu(mubarx % Ubarx) - objval;
     } catch(GRBException e) {
         std::cout << "Error code = " << e.getErrorCode() << std::endl;
         std::cout << e.getMessage() << std::endl;
