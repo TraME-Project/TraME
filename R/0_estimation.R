@@ -182,7 +182,7 @@ mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y, scale=
       #
       mGradLL = - apply(term_grad,2,sum)
       term_3 = sum(c(muhat, muhatx0, muhat0y))/N * apply(mudmu$dmu,2,sum)
-      mGradLL = mGradLL + term_3
+      mGradLL = mGradLL - term_3
       
     }
 
