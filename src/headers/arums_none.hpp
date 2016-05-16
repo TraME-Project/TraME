@@ -42,7 +42,7 @@ class none
 };
 
 // for convenience:
-void none::build(int nbX_b, int nbY_b, bool outsideOption_b)
+void none::build(int nbX_b, int nbY_b)
 {   
     nbX = nbX_b;
     nbY = nbY_b;

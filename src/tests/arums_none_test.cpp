@@ -12,5 +12,24 @@
 
 int main()
 {
+    arma::mat U(2,3);
+    U  << 1.6 << 3.2 << 1.1 << arma::endr
+       << 2.9 << 1.0 << 3.1 << arma::endr;
     
+    arma::mat mu(2,3);
+    mu << 1.0 << 3.0 << 1.0 << arma::endr
+       << 2.0 << 1.0 << 3.0 << arma::endr;
+    
+    arma::cout << "\nU: \n" << U << arma::endl;
+    arma::cout << "mu: \n" << mu << arma::endl;
+    //
+    int nbX = U.n_rows;
+    int nbY = U.n_cols;
+    
+    arma::vec n = arma::sum(mu,1);
+    //
+    none none_obj;
+    none_obj.nbX = nbX;
+    none_obj.nbY = nbY;
+    none_obj.nbParams = 0;
 }
