@@ -173,14 +173,15 @@ mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y, scale=
       
       
     } else {
-      mLL = - sum(muhat * log(mudmu$mu)) - sum(muhatx0 * log(mudmu$mux0s)) - sum(muhat0y * log(mudmu$mu0ys))
+      N = sum(c(c(mudmu$mu),c(mudmu$mux0s), c(mudmu$mu0ys)))
+      mLL = - sum(muhat * log(mudmu$mu/N)) - sum(muhatx0 * log(mudmu$mux0s/N)) - sum(muhat0y * log(mudmu$mu0ys/N))
       #
       term_1 = t(muhat/matrix(mudmu$mu,nrow=model$nbX) - muhatx0/mudmu$mux0s)
       term_2 = muhat0y / mudmu$mu0ys
       term_grad = c(t(term_1 - term_2))*mudmu$dmu
       #
       mGradLL = - apply(term_grad,2,sum)
-      term_3 = sum(c(muhat, muhatx0, muhat0y))/sum(c(c(mudmu$mu),c(mudmu$mux0s), c(mudmu$mu0ys))) * apply(mudmu$dmu,2,sum)
+      term_3 = sum(c(muhat, muhatx0, muhat0y))/N * apply(mudmu$dmu,2,sum)
       mGradLL = mGradLL + term_3
       
     }
