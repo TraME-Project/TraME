@@ -83,8 +83,6 @@ unifCorrelCovMatrices <- function(nbX, nbY, rho, outsideOption=TRUE)
         Sig[,nbOptions] = 0
         Sig[nbOptions,] = 0
         Sig[nbOptions,nbOptions] = 1
-        #
-        Covar = array(0,c(nbX,nbOptions,nbOptions))
     }else{
         nbOptions = nbY
         Sig = rho * matrix(1,nbOptions,nbOptions) + (1-rho) * diag(1,nbOptions)

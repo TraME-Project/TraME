@@ -9,10 +9,10 @@
 
 double zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double tol, int max_iter)
 {
-	double a,b,c;				/* Abscissae  */
-	double fa;					/* f(a)		  */
-	double fb;					/* f(b)		  */
-	double fc;					/* f(c)		  */
+	double a,b,c;
+	double fa;
+	double fb;
+	double fc;
 		
 	a = ax;  b = bx;  fa = (*f)(a,zeroin_data);  fb = (*f)(b,zeroin_data);
 	c = a;   fc = fa;

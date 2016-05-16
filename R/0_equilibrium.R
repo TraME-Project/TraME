@@ -388,7 +388,7 @@ jacobi <- function(market, xFirst=TRUE, notifications=TRUE, wlow=NULL, wup=NULL,
         message(paste0("Jacobi iteration converged in ", iter," iterations.\n"))
     }
     #
-    mu = G(arumsG,U,n)$mu  
+    mu = G(arumsG,U,n)$mu
     mux0 = n - apply(mu,1,sum)
     mu0y = m - apply(mu,2,sum)
     #

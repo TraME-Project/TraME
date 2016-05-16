@@ -1,7 +1,7 @@
-//
-// cd ~/Desktop/"Google Drive"/GitHub/TraME/src/tests
-// clang++ -O2 -Wall -std=c++11 -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -o arums_logit.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
-//
+/*
+ * cd ~/Desktop/"Google Drive"/GitHub/TraME/src/tests
+ * clang++ -O2 -Wall -std=c++11 -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -o arums_logit.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
+ */
 
 #include "armadillo"
 
