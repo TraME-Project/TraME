@@ -159,17 +159,32 @@ mLogLikelihood <- function(theta, model, muhat, muhatx0, muhat0y, scale=1, byInd
 mLogLikelihood.default <- function(theta, model, muhat, muhatx0, muhat0y, scale=1, byIndiv=T) # to be modified
 {
   mudmu = try( dtheta_mu(model,theta),silent=T)
-  weightCouples = ifelse(byIndiv==TRUE,2,1)
   #
   ret <- 0
-  if(class(mudmu)!="try-error"){ 
-    mLL = - sum(weightCouples* muhat * log(mudmu$mu)) - sum(muhatx0 * log(mudmu$mux0s)) - sum(muhat0y * log(mudmu$mu0ys))
-    #
-    term_1 = t(weightCouples*muhat/matrix(mudmu$mu,nrow=model$nbX) - muhatx0/mudmu$mux0s)
-    term_2 = muhat0y / mudmu$mu0ys
-    term_grad = c(t(term_1 - term_2))*mudmu$dmu
-    #
-    mGradLL = - apply(term_grad,2,sum) 
+  if(class(mudmu)!="try-error"){
+    if (byIndiv==TRUE){
+      mLL = - sum(2* muhat * log(mudmu$mu)) - sum(muhatx0 * log(mudmu$mux0s)) - sum(muhat0y * log(mudmu$mu0ys))
+      #
+      term_1 = t(2*muhat/matrix(mudmu$mu,nrow=model$nbX) - muhatx0/mudmu$mux0s)
+      term_2 = muhat0y / mudmu$mu0ys
+      term_grad = c(t(term_1 - term_2))*mudmu$dmu
+      #
+      mGradLL = - apply(term_grad,2,sum) 
+      
+      
+    } else {
+      mLL = - sum(muhat * log(mudmu$mu)) - sum(muhatx0 * log(mudmu$mux0s)) - sum(muhat0y * log(mudmu$mu0ys))
+      #
+      term_1 = t(muhat/matrix(mudmu$mu,nrow=model$nbX) - muhatx0/mudmu$mux0s)
+      term_2 = muhat0y / mudmu$mu0ys
+      term_grad = c(t(term_1 - term_2))*mudmu$dmu
+      #
+      mGradLL = - apply(term_grad,2,sum)
+      term_3 = sum(c(muhat, muhatx0, muhat0y))/sum(c(c(mudmu$mu),c(mudmu$mux0s), c(mudmu$mu0ys))) * apply(mudmu$dmu,2,sum)
+      mGradLL = mGradLL + term_3
+      
+    }
+
     #
     ret = list(objective = mLL / scale, gradient = mGradLL / scale)
   }else{
