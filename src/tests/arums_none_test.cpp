@@ -32,4 +32,19 @@ int main()
     none_obj.nbX = nbX;
     none_obj.nbY = nbY;
     none_obj.nbParams = 0;
+    
+    none_obj.U = U;
+    none_obj.mu = mu;
+    //
+    double valx_Gx1 = none_obj.Gx(U.row(0).t());
+    std::cout << "G val: \n" << valx_Gx1 << std::endl;
+    //
+    arma::mat mubar(2,3);
+    mubar.fill(2);
+
+    arma::mat Ubar_temp, mubar_temp;
+    double valGbar = none_obj.Gbarx(U.row(0).t(),mubar.row(0).t(),Ubar_temp,mubar_temp);
+    std::cout << "Gbar val: \n" << valGbar << std::endl;
+    //
+    return 0;
 }

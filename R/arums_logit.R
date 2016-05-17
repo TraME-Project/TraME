@@ -176,7 +176,7 @@ dtheta_NablaGstar.logit <- function(arums, mu, n, dtheta=diag(1), xFirst=TRUE)
 
 Gbarx.logit <- function(arums, Ubarx, mubarx, x)
 {
-    # Keith: where is input 'x' used?
+    #
     if(arums$outsideOption){
         TOL   = 1e-100 # Keith: fix later
         #

@@ -36,7 +36,8 @@ class none
         // member functions
         void build(int nbX_b, int nbY_b);
         double Gx(arma::mat Ux);
-        arma::vec none::dtheta_NablaGstar(arma::mat mu, arma::vec n);
+        arma::vec dtheta_NablaGstar();
+        double Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp);
         
         void simul(empirical &ret, int nbDraws, int seed);
 };
@@ -51,22 +52,51 @@ void none::build(int nbX_b, int nbY_b)
 
 double none::Gx(arma::mat Ux_inp)
 {
-    arma::uvec y = which_max(&Ux, (int) 0);
+    arma::uvec temp_vec = which_max(&Ux_inp, (int) 0);
+    int y = temp_vec(0);
     //
-    mux.set_size(nbY,1);
+    mux.zeros(nbY,1);
     if(y < nbY){
         mux(y) = 1;
     }
     //
-    double valx = std::max(arma::as_scalar(arma::max(arma::vectorise(Ux))), (double) 0.0);
+    double valx = std::max(arma::as_scalar(arma::max(arma::vectorise(Ux_inp))), (double) 0.0);
     //
     return valx;
 }
 
-arma::vec none::dtheta_NablaGstar(arma::mat mu, arma::vec n)
+arma::vec none::dtheta_NablaGstar()
 {
     arma::vec ret = arma::zeros(nbX*nbY,1);
     return ret;
+}
+
+double none::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp)
+{
+    int count_int=0;
+    int nbY0 = Ubarx.n_elem;
+    //
+    //arma::mat srt = arma::sort(Ubarx,"descend");
+    arma::uvec srt_ind = arma::sort_index(Ubarx,"descend");
+    //
+    mux_inp.set_size(nbY0,1);
+    double cumul = arma::as_scalar(mubarx(srt_ind(count_int)));
+    //
+    while((count_int < nbY0-1) & (cumul < 1.0) & (Ubarx(srt_ind(count_int)) > 0)){
+        mux_inp(srt_ind(count_int)) = mubarx(srt_ind(count_int));
+        count_int++;
+        cumul += mubarx(srt_ind(count_int)); // Keith: is this in the correct place?
+    }
+    //
+    if(Ubarx(srt_ind(count_int)) > 0){
+        mux_inp(srt_ind(count_int)) = mubarx(srt_ind(count_int)) + 1 - cumul;
+    }
+    //
+    Ux = arma::zeros(nbY0,1);
+    //
+    double valx = arma::accu(mux % Ubarx);
+    //
+    return valx;
 }
 
 void none::simul(empirical &ret, int nbDraws, int seed_val)

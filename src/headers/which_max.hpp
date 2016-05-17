@@ -11,7 +11,7 @@ arma::uvec which_max(const arma::mat* X, int which_dim)
      
     int n = X->n_rows;
     int k = X->n_cols;
-     
+
     arma::uvec max_vec;
      
     int max_ind = 0;
