@@ -1,7 +1,10 @@
 /*
  * test which_max function
  *
- * cd ~/Desktop/"Google Drive"/GitHub/TraME/src/tests
+ * Keith O'Hara
+ * 05/17/2016
+ *
+ * cd ~/Desktop/SCM/GitHub/TraME/src/tests
  * clang++ -O2 -Wall -I/opt/local/include which_max.cpp -o which_max.test -framework Accelerate
  */
 

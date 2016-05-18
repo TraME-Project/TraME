@@ -1,5 +1,5 @@
 //
-// cd ~/Desktop/"Google Drive"/GitHub/TraME/src/tests
+// cd ~/Desktop/SCM/GitHub/TraME/src/tests
 // clang++ -O2 -Wall -I/opt/local/include zeroin_test_1.cpp -o zeroin_test_1 -framework Accelerate
 //
 

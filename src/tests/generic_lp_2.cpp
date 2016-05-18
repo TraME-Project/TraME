@@ -2,7 +2,10 @@
  * generic_LP test 2: Quadratic programming
  * Based on Gurobi's 'dense_c++.cpp' example
  *
- * cd ~/Desktop/"Google Drive"/GitHub/TraME/src/tests
+ * Keith O'Hara
+ * 05/17/2016
+ * 
+ * cd ~/Desktop/SCM/GitHub/TraME/src/tests
  * clang++ -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_2.cpp -o generic_lp_2.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
  */
 

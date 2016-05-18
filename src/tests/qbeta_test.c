@@ -1,6 +1,9 @@
 /*
  * test for qbeta.c from the Rnmath library
  *
+ * Keith O'Hara
+ * 05/17/2016
+ *
  * cd ~/Desktop/SCM/GitHub/TraME/src/tests
  * clang -I/Builds/Rnmath/include qbeta_test.c -o qbeta.test -L/Builds/Rnmath/lib -lRmath
  * then add 
@@ -21,7 +24,7 @@ int main()
     int log_p = 0;
     //
     double ret_val = qbeta(p,shape1,shape2,lwrtail,log_p);
-    printf("%lf", ret_val);
+    printf("Value: %lf\n", ret_val);
     //
     return 0;
 }
