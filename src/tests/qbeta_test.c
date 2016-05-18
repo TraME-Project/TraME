@@ -2,11 +2,15 @@
  * test for qbeta.c from the Rnmath library
  *
  * cd ~/Desktop/SCM/GitHub/TraME/src/tests
- * clang -I/Builds/R-devel/lib/R/include qbeta_test.c -o qbeta.test -L/Builds/R-devel/lib/R/lib -lRmath
+ * clang -I/Builds/Rnmath/include qbeta_test.c -o qbeta.test -L/Builds/Rnmath/lib -lRmath
+ * then add 
+ * export DYLD_FALLBACK_LIBRARY_PATH=/Builds/Rnmath/lib
+ * before running ./qbeta.test
  */
  
+#include <stdio.h>
 #define MATHLIB_STANDALONE
-#include "Rmath.h"
+#include <Rmath.h>
 
 int main()
 {
