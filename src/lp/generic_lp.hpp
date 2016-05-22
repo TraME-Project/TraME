@@ -122,6 +122,10 @@
         return success;
     }
 #else
+    #ifndef SWITCH_GRB_ROWCOL_ORDER
+        #define SWITCH_GRB_ROWCOL_ORDER
+    #endif
+
     extern "C" {
         #include "generic_lp.h"
     }
@@ -194,8 +198,8 @@
         double* dual_2_grbi = new double[n];
         //
         // 
-        solved = generic_LP_c(k, n, *obj_grbi, *A_grbi, modelSense, *rhs_grbi, sense, *Q_grbi, *lb_grbi,
-                              *ub_grbi, &objval, sol_1_grbi, sol_2_grbi, dual_1_grbi, dual_2_grbi);
+        solved = generic_LP_C_switch(k, n, *obj_grbi, *A_grbi, modelSense, *rhs_grbi, sense, *Q_grbi, *lb_grbi,
+                                     *ub_grbi, &objval, sol_1_grbi, sol_2_grbi, dual_1_grbi, dual_2_grbi);
         
         //
         // Put solution matrices together

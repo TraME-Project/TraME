@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "gurobi_c.h"
 
-static int generic_LP_c(int rows, int cols, double* obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
+static int generic_LP_C(int rows, int cols, double* obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
 {
     int i, j, optimstatus;
     int error = 0;
@@ -52,10 +52,25 @@ static int generic_LP_c(int rows, int cols, double* obj, double* A, int modelSen
     
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
+            /* IMPORTANT: when using the generic_lp.hpp version, we switch
+             * from:
+             *
+             * error = GRBchgcoeffs(model, 1, &i, &j, &A[i*rows+j]);
+             *
+             * to &A[i+j*cols] because of a weird issue where
+             * the reference would run over rows rather than columns first
+             */
+#ifdef SWITCH_GRB_ROWCOL_ORDER
+            if (A[i+j*cols] != 0) {
+                error = GRBchgcoeffs(model, 1, &i, &j, &A[i+j*cols]);
+                if (error) goto QUIT;
+            }
+#else
             if (A[i*cols+j] != 0) {
                 error = GRBchgcoeffs(model, 1, &i, &j, &A[i*cols+j]);
                 if (error) goto QUIT;
             }
+#endif
         }
     }
     

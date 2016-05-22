@@ -8,7 +8,7 @@
  * clang -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_c_2.c -o generic_lp_c_2.test -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  */
 
-#include "../headers/generic_lp_c.h"
+#include "../generic_lp_c.h"
 
 int main()
 {
@@ -27,7 +27,7 @@ int main()
 
     /* Solve the model */
 
-    solved = generic_LP_c(3, 3, obj, &A[0][0], modelSense, rhs, sense, NULL, lb,
+    solved = generic_LP_C(3, 3, obj, &A[0][0], modelSense, rhs, sense, NULL, lb,
                           NULL, &objval, sol_mat_1, sol_mat_2, dual_mat_1, dual_mat_2);
 
     if (solved) {

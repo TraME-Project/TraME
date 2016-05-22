@@ -5,13 +5,16 @@
  * Keith O'Hara
  * 05/17/2016
  * 
- * cd ~/Desktop/SCM/GitHub/TraME/src/tests
- * clang++ -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_2.cpp -o generic_lp_2.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
+ * cd ~/Desktop/SCM/GitHub/TraME/src/lp/tests
+ * clang++ -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include c_with_cpp_test_4.cpp -c -o c_with_cpp_test_4.o
+ * clang++ -O2 -Wall -o cpptest_4.test ../generic_lp.o c_with_cpp_test_4.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  */
 
 #include "armadillo"
 
-#include "../lp/generic_lp.hpp"
+#define TRAMETESTLP
+
+#include "../generic_lp.hpp"
 
 int main()
 {
@@ -54,18 +57,13 @@ int main()
     
     arma::mat sol_mat(obj.n_elem,2);
     arma::mat dual_mat(A.n_rows,2);
+    //
+    LP_optimal = generic_LP(&obj, &A, modelSense, &rhs, sense, &Q, &lb, NULL, NULL, objval, sol_mat, dual_mat);
     
-    try {
-        LP_optimal = generic_LP(&obj, &A, modelSense, &rhs, sense, &Q, &lb, &ub, NULL, objval, sol_mat, dual_mat);
-        
+    if(LP_optimal){
         std::cout << "\nOptimal value: " << objval << ".\n" << std::endl;
         arma::cout << "Solution: [vars, RC] \n" << sol_mat << arma::endl;
         arma::cout << "Dual Variables: [Pi, Slack] \n" << dual_mat << arma::endl;
-    } catch(GRBException e) {
-        std::cout << "Error code = " << e.getErrorCode() << std::endl;
-        std::cout << e.getMessage() << std::endl;
-    } catch(...) {
-        std::cout << "Exception during optimization" << std::endl;
     }
     //  
     return 0;

@@ -5,9 +5,9 @@
  * Keith O'Hara
  * 05/17/2016
  * 
- * cd ~/Desktop/SCM/GitHub/TraME/src/tests
- * clang++ -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include ktest_2.cpp -c -o ktest_2.o
- * clang++ -O2 -Wall -o cpptest_2.test ../generic_lp.o ktest_2.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
+ * cd ~/Desktop/SCM/GitHub/TraME/src/lp/tests
+ * clang++ -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include c_with_cpp_test_2.cpp -c -o c_with_cpp_test_2.o
+ * clang++ -O2 -Wall -o cpptest_2.test ../generic_lp.o c_with_cpp_test_2.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  */
 
 #include "armadillo"

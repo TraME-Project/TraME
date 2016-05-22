@@ -12,10 +12,12 @@
    already have your data in this format.
 */
 
-// cd ~/Desktop/SCM/GitHub/TraME/src/tests
-// clang -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_c.c -o generic_lp_c.test -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
+// cd ~/Desktop/SCM/GitHub/TraME/src/lp/tests
+// clang -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_c_1.c -o generic_lp_c_1.test -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
 
-#include "../headers/generic_lp_c.h"
+//#define SWITCH_GRB_ROWCOL_ORDER
+
+#include "../generic_lp_c.h"
 
 int main()
 {
@@ -35,7 +37,7 @@ int main()
 
   /* Solve the model */
 
-  solved = generic_LP_c(2, 3, c, &A[0][0], modelSense, rhs, sense, &Q[0][0], lb,
+  solved = generic_LP_C(2, 3, c, &A[0][0], modelSense, rhs, sense, &Q[0][0], lb,
                         NULL, &objval, sol_mat_1, sol_mat_2, dual_mat_1, dual_mat_2);
 
   if (solved) {
