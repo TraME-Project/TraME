@@ -12,7 +12,7 @@
 
 #include "armadillo"
 
-#define TRAMETESTLP
+#define TRAMETESTLP // switch to C-version
 
 #include "../generic_lp.hpp"
 

@@ -5,13 +5,13 @@
  * Keith O'Hara
  * 05/17/2016
  * 
- * cd ~/Desktop/SCM/GitHub/TraME/src/tests
+ * cd ~/Desktop/SCM/GitHub/TraME/src/lp/tests
  * clang++ -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_2.cpp -o generic_lp_2.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
  */
 
 #include "armadillo"
 
-#include "../lp/generic_lp.hpp"
+#include "../generic_lp.hpp"
 
 int main()
 {
