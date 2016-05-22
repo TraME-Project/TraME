@@ -5,8 +5,8 @@ src-x64/
 src/headers/old/
 *.exe
 *.test
-src/*.o
-src/*.so
-src/*.dll
+*.o
+*.so
+*.dll
 .DS_Store
 gurobi.log
