@@ -4,13 +4,13 @@
  *
  * Keith O'Hara
  * 05/08/2016
+ *
+ * clang -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp.c -c -o generic_lp.o
  */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include "gurobi_c.h"
+#include "generic_lp.h"
 
-static int generic_LP_c(int rows, int cols, double* obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
+int generic_LP_c(int rows, int cols, double* obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
 {
     int i, j, optimstatus;
     int error = 0;
@@ -50,8 +50,15 @@ static int generic_LP_c(int rows, int cols, double* obj, double* A, int modelSen
     
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
-            if (A[i*cols+j] != 0) {
-                error = GRBchgcoeffs(model, 1, &i, &j, &A[i*cols+j]);
+            if (A[i*rows+j] != 0) {
+                /* IMPORTANT: switched from
+                *
+                * error = GRBchgcoeffs(model, 1, &i, &j, &A[i*rows+j]);
+                *
+                * to &A[i+j*cols] because of a weird issue where
+                * the reference would run over rows rather than columns first
+                */
+                error = GRBchgcoeffs(model, 1, &i, &j, &A[i+j*cols]);
                 if (error) goto QUIT;
             }
         }
@@ -63,7 +70,14 @@ static int generic_LP_c(int rows, int cols, double* obj, double* A, int modelSen
         for (i = 0; i < cols; i++) {
             for (j = 0; j < cols; j++) {
                 if (Q[i*cols+j] != 0) {
-                    error = GRBaddqpterms(model, 1, &i, &j, &Q[i*cols+j]);
+                    /* IMPORTANT: switched from
+                    *
+                    * error = GRBaddqpterms(model, 1, &i, &j, &Q[i*cols+j]);
+                    *
+                    * to &Q[i+j*cols] because of a weird issue where
+                    * the reference would run over rows rather than columns first
+                    */
+                    error = GRBaddqpterms(model, 1, &i, &j, &Q[i+j*cols]);
                     if (error) goto QUIT;
                 }
             }
