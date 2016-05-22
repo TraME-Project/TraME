@@ -194,11 +194,26 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
     /* Populate Q matrix */
 
     if (Q) {
+        act_row = 0;
+        act_col = 0;
         for (i = 0; i < cols; i++) {
             for (j = 0; j < cols; j++) {
+               /* IMPORTANT: when using the generic_lp.hpp version, we switch
+                * from:
+                *
+                * error = GRBchgcoeffs(model, 1, &i, &j, &A[i*rows+j]);
+                *
+                * to &A[i+j*cols] because of a weird issue where
+                * the reference would run over rows rather than columns first
+                */  
                 if (Q[i*cols+j] != 0) {
-                    error = GRBaddqpterms(model, 1, &i, &j, &Q[i*cols+j]);
+                    error = GRBaddqpterms(model, 1, &act_row, &act_col, &Q[i*cols+j]);
                     if (error) goto QUIT;
+                }
+                ++act_row;
+                if(act_row>=cols){
+                    act_row=0;
+                    ++act_col;
                 }
             }
         }

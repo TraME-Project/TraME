@@ -79,10 +79,25 @@ static int generic_LP_C(int rows, int cols, double* obj, double* A, int modelSen
     if (Q) {
         for (i = 0; i < cols; i++) {
             for (j = 0; j < cols; j++) {
+               /* IMPORTANT: when using the generic_lp.hpp version, we switch
+                * from:
+                *
+                * error = GRBaddqpterms(model, 1, &i, &j, &Q[i*cols+j]);
+                *
+                * to &Q[i+j*cols] because of a weird issue where
+                * the reference would run over rows rather than columns first
+                */
+#ifdef SWITCH_GRB_ROWCOL_ORDER
+                if (Q[i+j*cols] != 0) {
+                    error = GRBaddqpterms(model, 1, &i, &j, &Q[i+j*cols]);
+                    if (error) goto QUIT;
+                }
+#else
                 if (Q[i*cols+j] != 0) {
                     error = GRBaddqpterms(model, 1, &i, &j, &Q[i*cols+j]);
                     if (error) goto QUIT;
                 }
+#endif
             }
         }
     }
