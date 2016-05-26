@@ -21,6 +21,7 @@
         int i,j;
         int k = A->n_rows;   // number of constraints
         int n = obj->n_elem; // number of variables
+        //
         // environment
         GRBEnv* env = 0;
         env = new GRBEnv();
@@ -197,7 +198,7 @@
         double* dual_1_grbi = new double[n];
         double* dual_2_grbi = new double[n];
         //
-        // 
+        // Call C-version of the solver
         solved = generic_LP_C_switch(k, n, *obj_grbi, *A_grbi, modelSense, *rhs_grbi, sense, *Q_grbi, *lb_grbi,
                                      *ub_grbi, &objval, sol_1_grbi, sol_2_grbi, dual_1_grbi, dual_2_grbi);
         
