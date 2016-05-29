@@ -162,10 +162,10 @@ Gx.RSC <- function(arums, Ux, x)
         j = nbAlt
         while(j > i){
             z = arums$aux_ord[x,j]
-            runmin = min(runmin, (Uxtilde[y]-Uxtilde[z])/(arums$zeta[x,z]-arums$zeta[x,y]))
+            runmin = min(runmin, (Uxtilde[y]-Uxtilde[z])/(arums$zeta[x,z]-arums$zeta[x,y])) # shouldn't this have a if(arums$zeta[x,z] != arums$zeta[x,y]) clause like above in the max case?
             j = j - 1 
         }
-        #print(c("y",y,"low",round(runmax,2),"high",round(runmin,2)))
+        #
         if(runmin > runmax){
             muxtildey = max(arums$aux_cdf_eps(runmin)-arums$aux_cdf_eps(runmax),0)
         }else{
@@ -178,11 +178,11 @@ Gx.RSC <- function(arums, Ux, x)
             cumulmusofar = cumulmusofar + muxtildey
             ey = arums$aux_quant_eps(cumulmusofar)
             EepssofarNext = ey*cumulmusofar - arums$aux_pot_eps(cumulmusofar)
-            valx = valx + muxtildey*Uxtilde[y] + arums$zeta[x,y]*(EepssofarNext - Eepssofar) 
+            valx = valx + muxtildey*Uxtilde[y] + arums$zeta[x,y]*(EepssofarNext - Eepssofar)# should Eepssofar be updated somewhere?  
         }
     }  
     #
-    mux = muxtilde[1:nbAlt-1]
+    mux = muxtilde[1:nbAlt-1] # this looks like an error: 1:(nbAlt-1)?
     #
     ret = list(valx = sum(mux*Ux) - Gstarx.RSC(arums,mux,x)$valx,
                mux  = mux)

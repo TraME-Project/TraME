@@ -32,7 +32,7 @@ double pbeta (double x, double* fn_pars)
     p = fn_pars[0];
     q = fn_pars[1];
     
-    beta_cdf_(&x, &p, &q, &res)
+    beta_cdf_(&x, &p, &q, &res);
     
     return res;
 }
@@ -43,7 +43,7 @@ double qbeta (double x, double* fn_pars)
     p = fn_pars[0];
     q = fn_pars[1];
     
-    beta_cdf_inv_(&x, &p, &q, &res)
+    beta_cdf_inv_(&x, &p, &q, &res);
     
     return res;
 }
@@ -54,7 +54,7 @@ double iqbeta (double x, double* fn_pars)
     p = fn_pars[0];
     q = fn_pars[1];
     
-    beta_cdf_inv_int_(&x, &p, &q, &res)
+    beta_cdf_inv_int_(&x, &p, &q, &res);
     
     return res;
 }
@@ -65,7 +65,7 @@ double dbeta (double x, double* fn_pars)
     p = fn_pars[0];
     q = fn_pars[1];
     
-    beta_pdf_(&x, &p, &q, &res)
+    beta_pdf_(&x, &p, &q, &res);
     
     return res;
 }
