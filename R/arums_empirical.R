@@ -25,8 +25,9 @@
 
 build_empirical <- function(nbX, nbY, atoms, outsideOption=TRUE)
     # Empirical distribution; 
-    # xHomogenous = T if all Gx are the same, in which case the empirical counterpart will be the same
-    # if xHomogenous=T, then dim(atoms)=(aux_nbDraws,nbY+1)  
+    # xHomogenous = T if all Gx are the same, in which case 
+    # the empirical counterpart will be the same if 
+    # xHomogenous=T, then dim(atoms)=(aux_nbDraws,nbY+1)
     # dim(atoms) = c(aux_nbDraws,nbY+1,nbX)
 {
     dims = dim(atoms)

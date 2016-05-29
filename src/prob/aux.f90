@@ -55,16 +55,6 @@ subroutine beta_cdf_inv_int ( x, p, q, res )
   call dqag ( beta_cdf_inv_fn, f_args, a, b, epsabs, epsrel, key, result, abserr, neval, ier, &
     limit, lenw, last, iwork, work )
 
-  write ( *, '(a)' ) ' '
-  write ( *, '(a)' ) '  Test beta_cdf_inv_int'
-  write ( *, '(a)' ) ' '
-  write ( *, '(a,g14.6)' ) '  Integral left endpoint A =    ', a
-  write ( *, '(a,g14.6)' ) '  Integral right endpoint B =   ', b
-  write ( *, '(a,g14.6)' ) '  Estimated integral is         ', result
-  write ( *, '(a,g14.6)' ) '  Estimated integral error =    ', abserr
-  write ( *, '(a,i8)' ) '  Number of function evaluations, NEVAL = ', neval
-  write ( *, '(a,i8)' ) '  Error return code IER = ', ier
-
   res = result
   
   return

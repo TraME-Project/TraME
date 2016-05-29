@@ -19,9 +19,9 @@
   ##
   ################################################################################*/
 
-#include "zeroin.hpp"
+#include "trame_aux.hpp"
 
-// logit class
+// RSC class
 class RSC
 {
     public:
@@ -29,20 +29,24 @@ class RSC
         int nbX;
         int nbY;
         int nbParams;
-        double zeta;
         bool outsideOption;
         
-        double aux_Influence_lhs;
-        double aux_Influence_rhs;
+        double* dist_pars;
         
-        double aux_DinvPsigma; 
-        double aux_Psigma;
+        arma::mat zeta;
+        arma::mat aux_ord;
         
-        double aux_cdf_eps;
-        double aux_quant_eps;
+        arma::cube aux_Influence_lhs;
+        arma::cube aux_Influence_rhs;
+        
+        arma::cube aux_DinvPsigma; 
+        arma::cube aux_Psigma;
+        
+        double   (*aux_cdf_eps)(double x, double* dist_pars);
+        double (*aux_quant_eps)(double x, double* dist_pars);
        
-        double aux_pdf_eps;
-        double aux_pot_eps;
+        double (*aux_pdf_eps)(double x, double* dist_pars);
+        double (*aux_pot_eps)(double x, double* dist_pars);
         
         // equilibrium objects
         arma::mat mu;
@@ -51,8 +55,71 @@ class RSC
         arma::mat Ux;
         
         // member functions
-        //void build(int nbX_b, int nbY_b, int nbParams_b, double sigma_b, bool outsideOption_b);
+        void build(arma::mat sigma_b, bool outsideOption_b);
         
         
     //private:
 };
+
+void RSC::build(arma::mat zeta_b, bool outsideOption_b, 
+                double   (*aux_cdf_eps_b)(double x, double* dist_pars),
+                double (*aux_quant_eps_b)(double x, double* dist_pars),
+                double   (*aux_pdf_eps_b)(double x, double* dist_pars),
+                double   (*aux_pot_eps_b)(double x, double* dist_pars))
+{
+    if (!outsideOption_b) {
+        return;
+    }
+    //
+    int i,j;
+    arma::uvec ordx_temp;
+    //
+    aux_cdf_eps   = aux_cdf_eps_b;
+    aux_quant_eps = aux_quant_eps_b;
+    aux_pdf_eps   = aux_pdf_eps_b;
+    aux_pot_eps   = aux_pot_eps_b;
+    //
+    nbX = zeta.n_rows;
+    nbX = zeta.n_cols - 1;
+    //
+    aux_ord = arma::zeros(nbX,nbY+1)
+    
+    arma::mat D =  arma::eye(nbY+1,nbY+1) + arma::join_cols(arma::zeros(1,nbY+1), arma::join_rows(arma::eye(nbY,nbY),arma::zeros(1,nbY)));
+    arma::mat D_inv = arma::inv(D);
+    
+    arma::mat neg_ones(nbY,1);
+    neg_ones.fill(-1);
+    arma::mat N_temp = arma::join_rows(arma::eye(nbY,nbY),neg_ones);
+    //
+    aux_Influence_lhs.set_size(nbY,nbY+1,nbX);
+    aux_Influence_rhs.set_size(nbY+1,nbY+1,nbX);
+    aux_Psigma.set_size(nbY+1,nbY+1,nbX);
+    aux_DinvPsigma.set_size(nbY+1,nbY+1,nbX);
+    //
+    for (i=0; i<nbX; i++) {
+        ordx_temp = arma::sort_index(zeta.row(i));
+        aux_ord.row(i) = ordx_temp;
+        
+        Psigmax.zeros()
+        for (j=0; j<nbY+1; j++) {
+            Psigmax(j,ordx_temp(j)) = 1;
+        }
+        
+        aux_Influence_lhs.slice(i) = N_temp * (Psigmax.t() * D_inv);
+        aux_Influence_rhs.slice(i) = D * Psigmax;
+        
+        aux_Psigma.slice(i) = arma::eye(nbY+1,nbY+1) * Psigmax;
+        aux_DinvPsigma.slice(i) = D_inv * Psigmax;
+    }
+    //
+    outsideOption = true;
+}
+
+void RSC::build_beta(arma::mat zeta, double alpha, double beta)
+{
+    double dist_pars[2];
+    dist_pars[0] = alpha;
+    dist_pars[1] = beta;
+    
+    RSC::build(zeta,true,pbeta,qbeta,dbeta,iqbeta);
+}

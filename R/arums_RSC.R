@@ -47,7 +47,7 @@ build_RSC <- function(zeta, aux_cdf_eps, aux_quant_eps, aux_pot_eps=NULL, aux_pd
     D    = diag(nbY+1) - rbind(rep(0,nbY+1), cbind(diag(nbY),rep(0,nbY)))
     Dinv = solve(D)
     
-    ts = array(0,c(nbX,nbY+1,nbY+1))
+    #ts = array(0,c(nbX,nbY+1,nbY+1)) # Keith: where is this used?
     N  = cbind(diag(nbY),rep(-1,nbY))
     
     aux_Influence_lhs = c()
