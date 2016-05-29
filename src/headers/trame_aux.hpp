@@ -37,6 +37,25 @@ double pbeta (double x, double* fn_pars)
     return res;
 }
 
+arma::vec pbeta (arma::vec x, double* fn_pars)
+{
+    int i;
+    int N = x.n_elem;
+    double p, q, x_i, res_temp;
+    arma::vec res(N);
+    
+    p = fn_pars[0];
+    q = fn_pars[1];
+    
+    for(i=0; i<N; i++){
+        x_i = x(i);
+        beta_cdf_(&x_i, &p, &q, &res_temp);
+        res(i) = res_temp;
+    }
+    
+    return res;
+}
+
 double qbeta (double x, double* fn_pars)
 {
     double p, q, res;
@@ -44,6 +63,25 @@ double qbeta (double x, double* fn_pars)
     q = fn_pars[1];
     
     beta_cdf_inv_(&x, &p, &q, &res);
+    
+    return res;
+}
+
+arma::vec qbeta (arma::vec x, double* fn_pars)
+{
+    int i;
+    int N = x.n_elem;
+    double p, q, x_i, res_temp;
+    arma::vec res(N);
+    
+    p = fn_pars[0];
+    q = fn_pars[1];
+    
+    for(i=0; i<N; i++){
+        x_i = x(i);
+        beta_cdf_inv_(&x_i, &p, &q, &res_temp);
+        res(i) = res_temp;
+    }
     
     return res;
 }
@@ -59,6 +97,25 @@ double iqbeta (double x, double* fn_pars)
     return res;
 }
 
+arma::vec iqbeta (arma::vec x, double* fn_pars)
+{
+    int i;
+    int N = x.n_elem;
+    double p, q, x_i, res_temp;
+    arma::vec res(N);
+    
+    p = fn_pars[0];
+    q = fn_pars[1];
+    
+    for(i=0; i<N; i++){
+        x_i = x(i);
+        beta_cdf_inv_int_(&x_i, &p, &q, &res_temp);
+        res(i) = res_temp;
+    }
+    
+    return res;
+}
+
 double dbeta (double x, double* fn_pars)
 {
     double p, q, res;
@@ -66,6 +123,25 @@ double dbeta (double x, double* fn_pars)
     q = fn_pars[1];
     
     beta_pdf_(&x, &p, &q, &res);
+    
+    return res;
+}
+
+arma::vec dbeta (arma::vec x, double* fn_pars)
+{
+    int i;
+    int N = x.n_elem;
+    double p, q, x_i, res_temp;
+    arma::vec res(N);
+    
+    p = fn_pars[0];
+    q = fn_pars[1];
+    
+    for(i=0; i<N; i++){
+        x_i = x(i);
+        beta_pdf_(&x_i, &p, &q, &res_temp);
+        res(i) = res_temp;
+    }
     
     return res;
 }
