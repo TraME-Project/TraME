@@ -48,38 +48,50 @@ class RSC
         double (*aux_pdf_eps)(double x, double* dist_pars);
         double (*aux_pot_eps)(double x, double* dist_pars);
         
+        arma::vec   (*aux_cdf_eps_vec)(arma::vec x, double* dist_pars);
+        arma::vec (*aux_quant_eps_vec)(arma::vec x, double* dist_pars);
+       
+        arma::vec (*aux_pdf_eps_vec)(arma::vec x, double* dist_pars);
+        arma::vec (*aux_pot_eps_vec)(arma::vec x, double* dist_pars);
+        
         // input objects
         arma::mat mu;
         arma::mat U;
         
         // equilibrium objects
         arma::mat mu_sol;
+        arma::mat U_sol;
         
         // member functions
-        void build(arma::mat zeta_b, bool outsideOption_b, 
-                   double   (*aux_cdf_eps_b)(double x, double* dist_pars),
-                   double (*aux_quant_eps_b)(double x, double* dist_pars),
-                   double   (*aux_pdf_eps_b)(double x, double* dist_pars),
-                   double   (*aux_pot_eps_b)(double x, double* dist_pars));
+        void build(arma::mat zeta_b, bool outsideOption_b);
 
         void build_beta(arma::mat zeta_b, double alpha, double beta);
         
         double G(arma::vec n);
         double Gx(arma::vec& mu_x, int x);
         
+        double Gstar(arma::vec n);
+        double Gstarx(arma::vec& U_x, double n_x, int x);
+        
         double cdf (double x);
+        arma::vec cdf (arma::vec x);
         double pdf (double x);
+        arma::vec pdf (arma::vec x);
         double quantile (double x);
+        arma::vec quantile (arma::vec x);
         double pot (double x);
+        arma::vec pot (arma::vec x);
         
     //private:
 };
-
+/*
 void RSC::build(arma::mat zeta_b, bool outsideOption_b, 
                 double   (*aux_cdf_eps_b)(double x, double* dist_pars),
                 double (*aux_quant_eps_b)(double x, double* dist_pars),
                 double   (*aux_pdf_eps_b)(double x, double* dist_pars),
                 double   (*aux_pot_eps_b)(double x, double* dist_pars))
+*/
+void RSC::build(arma::mat zeta_b, bool outsideOption_b)
 {
     if (!outsideOption_b) {
         return;
@@ -87,11 +99,6 @@ void RSC::build(arma::mat zeta_b, bool outsideOption_b,
     //
     int i,j;
     //
-    aux_cdf_eps   = aux_cdf_eps_b;
-    aux_quant_eps = aux_quant_eps_b;
-    aux_pdf_eps   = aux_pdf_eps_b;
-    aux_pot_eps   = aux_pot_eps_b;
-    ///
     nbX = zeta_b.n_rows;
     nbY = zeta_b.n_cols - 1;
     
@@ -99,7 +106,7 @@ void RSC::build(arma::mat zeta_b, bool outsideOption_b,
     //
     aux_ord = arma::zeros(nbX,nbY+1);
     
-    arma::mat D =  arma::eye(nbY+1,nbY+1) + arma::join_cols(arma::zeros(1,nbY+1), arma::join_rows(arma::eye(nbY,nbY),arma::zeros(nbY,1)));
+    arma::mat D =  arma::eye(nbY+1,nbY+1) - arma::join_cols(arma::zeros(1,nbY+1), arma::join_rows(arma::eye(nbY,nbY),arma::zeros(nbY,1)));
     arma::mat D_inv = arma::inv(D);
     
     arma::mat neg_ones(nbY,1);
@@ -140,7 +147,17 @@ void RSC::build_beta(arma::mat zeta_b, double alpha, double beta)
     dist_pars[0] = alpha;
     dist_pars[1] = beta;
     
-    RSC::build(zeta_b,true,pbeta,qbeta,dbeta,iqbeta);
+    aux_cdf_eps   = pbeta;
+    aux_quant_eps = qbeta;
+    aux_pdf_eps   = dbeta;
+    aux_pot_eps   = iqbeta;
+    
+    aux_cdf_eps_vec   = pbeta;
+    aux_quant_eps_vec = qbeta;
+    aux_pdf_eps_vec   = dbeta;
+    aux_pot_eps_vec   = iqbeta;
+    //
+    RSC::build(zeta_b,true);
 }
 
 double RSC::G(arma::vec n)
@@ -232,12 +249,68 @@ double RSC::Gx(arma::vec& mu_x, int x)
     return val_x;
 }
 
+double RSC::Gstar(arma::vec n)
+{   
+    int i;
+    double val=0.0, val_x_temp;
+    
+    U_sol.set_size(nbX,nbY);
+    arma::vec U_x_temp;
+    //
+    for(i=0; i<nbX; i++){
+        //val_x_temp = Gstarx((mu.row(i).t())/n(i),U_x_temp,i);
+        val_x_temp = Gstarx(U_x_temp,n(i),i);
+        //
+        val += n(i)*val_x_temp;
+        U_sol.row(i) = arma::trans(U_x_temp);
+    }
+    //
+    return val;
+}
+
+double RSC::Gstarx(arma::vec& U_x, double n_x, int x)
+{
+    double val_x = 0;
+    arma::vec mu_x = (mu_sol.row(x).t())/n_x; // we divide by n(x)
+    
+    arma::vec ts_temp(mu_x.n_elem+1);
+    ts_temp.rows(0,mu_x.n_elem-1) = mu_x;
+    ts_temp(mu_x.n_elem) = 1-arma::accu(mu_x);
+    
+    arma::vec ts_full = aux_DinvPsigma.slice(x) * ts_temp;
+    arma::vec ts = ts_full.rows(0,nbY-1);
+    //
+    arma::vec pots_inp = arma::join_cols(arma::zeros(1,1),ts_full);
+    arma::vec pots = pot(pots_inp);
+    
+    arma::vec diff_pots = pots.rows(1,nbY+1) - pots.rows(0,nbY);
+    //
+    val_x = - arma::accu( (aux_Psigma.slice(x)*zeta.row(x).t()) % diff_pots );
+    
+    arma::mat e_mat = arma::diagmat( arma::join_cols(arma::zeros(1,1),quantile(ts)) );
+    U_x = - aux_Influence_lhs.slice(x) * e_mat * aux_Influence_rhs.slice(x) * zeta.row(x).t();
+    //
+    return val_x;
+}
+
+/*
+ * Distribution-related functions
+ */
 
 double RSC::cdf(double x)
 {
     double res;
     
     res = (*aux_cdf_eps)(x, dist_pars);
+    
+    return res;
+}
+
+arma::vec RSC::cdf(arma::vec x)
+{
+    arma::vec res;
+    
+    res = (*aux_cdf_eps_vec)(x, dist_pars);
     
     return res;
 }
@@ -251,6 +324,15 @@ double RSC::pdf(double x)
     return res;
 }
 
+arma::vec RSC::pdf(arma::vec x)
+{
+    arma::vec res;
+    
+    res = (*aux_pdf_eps_vec)(x, dist_pars);
+    
+    return res;
+}
+
 double RSC::quantile(double x)
 {
     double res;
@@ -260,11 +342,29 @@ double RSC::quantile(double x)
     return res;
 }
 
+arma::vec RSC::quantile(arma::vec x)
+{
+    arma::vec res;
+    
+    res = (*aux_quant_eps_vec)(x, dist_pars);
+    
+    return res;
+}
+
 double RSC::pot(double x)
 {
     double res;
     
     res = (*aux_pot_eps)(x, dist_pars);
+    
+    return res;
+}
+
+arma::vec RSC::pot(arma::vec x)
+{
+    arma::vec res;
+    
+    res = (*aux_pot_eps_vec)(x, dist_pars);
     
     return res;
 }
