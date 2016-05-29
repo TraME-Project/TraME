@@ -198,7 +198,7 @@ Gstarx.RSC <- function(arums, mux, x)
     pots = arums$aux_pot_eps(c(0,tsfull))
     diffpots = pots[2:(arums$nbY+2)] - pots[1:(arums$nbY+1)]
     #
-    valx = -sum( (arums$aux_Psigma[[x]] %*% arums$zeta[x,]) * diffpots )
+    valx = -sum( (arums$aux_Psigma[[x]] %*% arums$zeta[x,]) * diffpots ) # Keith: should really transpose arums$zeta[x,] first, and same below too
     
     e = diag( c(0,arums$aux_quant_eps(ts)) )
     Ux = -c( arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% arums$zeta[x,] )
