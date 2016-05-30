@@ -6,13 +6,18 @@
  * 05/17/2016
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/lp/tests
+ *
  * clang++ -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include c_with_cpp_test_4.cpp -c -o c_with_cpp_test_4.o
  * clang++ -O2 -Wall -o cpptest_4.test ../generic_lp.o c_with_cpp_test_4.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
+ *
+ * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include ../generic_lp.c -c -o ../generic_lp.o
+ * g++-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include c_with_cpp_test_4.cpp -c -o c_with_cpp_test_4.o
+ * g++-mp-5 -O2 -Wall -o cpptest_4.test ../generic_lp.o c_with_cpp_test_4.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  */
 
 #include "armadillo"
 
-#define TRAMETESTLP // switch to C-version
+#define TRAME_USE_GUROBI_C // switch to C-version
 
 #include "../generic_lp.hpp"
 
