@@ -5,11 +5,11 @@
  * 05/17/2016
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/tests
- * g++-mp-5 -O2 -I/opt/local/include -fopenmp arums_rsc_test.cpp -c -o arums_rsc_test.o
+ * g++-mp-5 -Wall -O2 -std=c++11 -fopenmp -I/opt/local/include -I/Library/gurobi650/mac64/include arums_rsc_test.cpp -c -o arums_rsc_test.o
  * gfortran-mp-5 -O2 ../prob/prob.f90  -c -o ../prob/prob.o
  * gfortran-mp-5 -O2 ../math/quadpack_double.f90  -c -o ../math/quadpack_double.o
  * gfortran-mp-5 -O2 ../prob/aux.f90  -c -o ../prob/aux.o
- * g++-mp-5 -o arums_rsc_test.test ../prob/prob.o ../math/quadpack_double.o ../prob/aux.o arums_rsc_test.o -lgfortran -fopenmp -framework Accelerate
+ * g++-mp-5 -o arums_rsc_test.test ../prob/prob.o ../math/quadpack_double.o ../prob/aux.o arums_rsc_test.o -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -lgfortran -fopenmp -framework Accelerate
  */
 
 #include "armadillo"
@@ -17,7 +17,7 @@
 #include "../headers/trame_structs.hpp"
 #include "../headers/trame_aux.hpp"
 
-//#include "../headers/arums_empirical.hpp"
+#include "../headers/arums_empirical.hpp"
 #include "../headers/arums_rsc.hpp"
 
 int main()
@@ -90,7 +90,7 @@ int main()
     arma::mat nablaGstar;
     arma::mat dtheta = arma::eye(rsc_obj.nbParams,rsc_obj.nbParams);
     
-    rsc_obj.dtheta_NablaGstar(nablaGstar,n,dtheta,true);
+    rsc_obj.dtheta_NablaGstar(nablaGstar,n,&dtheta,true);
     
     arma::cout << nablaGstar << arma::endl;
     //

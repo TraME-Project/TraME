@@ -219,7 +219,7 @@ D2Gstar.RSC <- function(arums, mu, n, xFirst=TRUE)
     }
     #
     for(x in 1:arums$nbX){
-        C = -t( (c(arums$aux_Influence_rhs[[x]] %*% arums$zeta[x,]) ) * t(arums$aux_Influence_lhs[[x]]))
+        C = -t( (c(arums$aux_Influence_rhs[[x]] %*% arums$zeta[x,]) ) * t(arums$aux_Influence_lhs[[x]])) # Keith: should really transpose arums$zeta[x,] first
         
         tsfull = arums$aux_DinvPsigma[[x]] %*% c(mu[x,],mux0[x])/n[x] 
         erestr = arums$aux_quant_eps(tsfull)[1:arums$nbY]
@@ -247,7 +247,7 @@ dtheta_NablaGstar.RSC <- function(arums, mu, n, dtheta=diag(arums$nbParams), xFi
     nbDirs = length(dtheta) %/% (arums$nbX * arums$nbX * (arums$nbY+1))
     dthetamat = array(dtheta,dim=c(arums$nbX,arums$nbY+1,arums$nbX,nbDirs))
     #
-    mux0 = n - apply(mu,1,sum)
+    #mux0 = n - apply(mu,1,sum) # Keith: where is this used?
     if(xFirst){
         ders = array(0,dim=c(arums$nbX,arums$nbY,arums$nbX,nbDirs))
     }else{
@@ -261,7 +261,7 @@ dtheta_NablaGstar.RSC <- function(arums, mu, n, dtheta=diag(arums$nbParams), xFi
         if(xFirst){
             ders[x,,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,x,]
         }else{
-            ders[,x,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,x,]
+            ders[,x,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,x,] # should this be dthetamat[,x,,x] ?
         }
     }
     #

@@ -74,7 +74,9 @@ class RSC
         double Gstarx(arma::vec& U_x, double n_x, int x);
         
         void D2Gstar (arma::mat& hess, arma::vec n, bool x_first);
-        void dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat dtheta, bool x_first);
+        void dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first);
+        
+        void simul(empirical &ret, int nbDraws, int seed);
         
         double cdf (double x);
         arma::vec cdf (arma::vec x);
@@ -343,11 +345,18 @@ void RSC::D2Gstar (arma::mat& hess, arma::vec n, bool x_first)
     }
 }
 
-void RSC::dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat dtheta, bool x_first)
+void RSC::dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first)
 {
     int i,j;
+    arma::mat dtheta_mat;
     
-    int nbDirs = std::floor(dtheta.n_elem / (nbX*nbX*(nbY+1)));
+    if (dtheta==NULL) {
+        dtheta_mat = arma::eye(nbParams,nbParams);
+    } else {
+        dtheta_mat = *dtheta;
+    }
+    
+    int nbDirs = std::floor(dtheta_mat.n_elem / (nbX*nbX*(nbY+1)));
     
     ret.set_size(nbX*nbY,nbX*nbDirs);
     ret.zeros();
@@ -385,9 +394,32 @@ void RSC::dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat dtheta, bool
 
         e_mat = arma::diagmat( arma::join_cols(arma::zeros(1,1),quantile(ts)) );
         
-        ret(mat_inds_3.col(i),mat_inds_1.col(i)) = - aux_Influence_lhs.slice(i) * e_mat * aux_Influence_rhs.slice(i) * dtheta(mat_inds_2.col(i),mat_inds_2.col(i));
+        ret(mat_inds_3.col(i),mat_inds_1.col(i)) = - aux_Influence_lhs.slice(i) * e_mat * aux_Influence_rhs.slice(i) * dtheta_mat(mat_inds_2.col(i),mat_inds_2.col(i));
     }
 }
+
+void RSC::simul(empirical &ret, int nbDraws, int seed_val)
+{
+    int i;
+    arma::arma_rng::set_seed(seed_val);
+    //
+    arma::cube atoms(nbDraws,nbY+1,nbX);
+    
+    for (i=0; i<nbX; i++) {
+        atoms.slice(i) = quantile(arma::randu(nbDraws,1)) * zeta.row(i);
+    }
+    //
+    ret.nbX = nbX;
+    ret.nbY = nbY;
+    ret.nbParams = atoms.n_elem;
+    ret.atoms = atoms;
+    ret.aux_nbDraws = nbDraws;
+    ret.xHomogenous = false;
+    ret.outsideOption = outsideOption;
+    //
+    arma::arma_rng::set_seed_random(); // need to reset the seed
+}
+
 
 /*
  * Distribution-related functions
