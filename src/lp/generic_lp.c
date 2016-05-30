@@ -6,7 +6,10 @@
  * 05/08/2016
  *
  * clang -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp.c -c -o generic_lp.o
+ * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp.c -c -o generic_lp.o
  */
+ 
+#include <string.h>
 
 #include "generic_lp.h"
 
@@ -125,7 +128,8 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
     int i, j, optimstatus;
     int error = 0;
     int success = 0;
-    
+    int numremoved = 0;
+    //printf("Begin!\n");
     /* Create an empty model */
     
     GRBenv* env = NULL;
@@ -218,7 +222,7 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
     
     error = GRBupdatemodel(model);
     if (error) goto QUIT;
-
+    //printf("Setup Model!\n");
     /* Optimize model */
 
     error = GRBoptimize(model);
@@ -228,6 +232,115 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
 
     error = GRBgetintattr(model, GRB_INT_ATTR_STATUS, &optimstatus);
     if (error) goto QUIT;
+    
+    //printf("optim code: %d\n", optimstatus);
+
+    if (optimstatus==4) { // INF_OR_UNBD
+        printf("Optim status: 4 (INF_OR_UNBD). Reoptimizing... ");
+        
+        error = GRBsetintparam(GRBgetenv(model), GRB_INT_PAR_DUALREDUCTIONS, 0);
+        if (error) goto QUIT;
+        
+        error = GRBupdatemodel(model);
+        if (error) goto QUIT;
+    
+        error = GRBoptimize(model);
+        if (error) goto QUIT;
+        
+        error = GRBgetintattr(model, GRB_INT_ATTR_STATUS, &optimstatus);
+        if (error) goto QUIT;
+        
+        printf("New optim code: %d\n", optimstatus);
+        
+        if (optimstatus == GRB_UNBOUNDED) {
+            printf("The model cannot be solved because it is unbounded\n");
+            goto QUIT;
+        }
+    }
+
+    if (optimstatus==3) { // infeasible model; reduce constraints
+        int iis, numconstrs;
+        char*  cname;
+        int*   cind = NULL;
+        char** removed = NULL;
+        
+        cind = malloc(sizeof(int) * rows * cols);
+        if (!cind) goto QUIT;
+        
+        printf("Optim status: 3 (Infeasible Model). Reoptimizing by removing constraints (IIS)... \n");
+        
+        error = GRBcomputeIIS(model);
+        if (error) goto QUIT;
+        
+        /* Loop until we reduce to a model that can be solved */
+        error = GRBgetintattr(model, "NumConstrs", &numconstrs);
+        if (error) goto QUIT;
+  
+        removed = calloc(numconstrs, sizeof(char*));
+        if (!removed) goto QUIT;
+        
+        while (1) {
+            error = GRBcomputeIIS(model);
+            if (error) goto QUIT;
+            
+            //printf("\nThe following constraint cannot be satisfied:\n");
+            
+            for (i = 0; i < numconstrs; ++i) {
+                error = GRBgetintattrelement(model, "IISConstr", i, &iis);
+                if (error) goto QUIT;
+                
+                if (iis) {
+                    error = GRBgetstrattrelement(model, "ConstrName", i, &cname);
+                    if (error) goto QUIT;
+                    
+                    //printf("%s\n", cname);
+                    
+                    /* Remove a single constraint from the model */
+                    removed[numremoved] = malloc(sizeof(char) * (1+strlen(cname)));
+                    if (!removed[numremoved]) goto QUIT;
+                    
+                    strcpy(removed[numremoved++], cname);
+                    
+                    cind[0] = i;
+                    
+                    error = GRBdelconstrs(model, 1, cind);
+                    if (error) goto QUIT;
+                    
+                    break;
+                }
+            }
+            
+            //printf("\n");
+            
+            error = GRBupdatemodel(model);
+            if (error) goto QUIT;
+            
+            error = GRBoptimize(model);
+            if (error) goto QUIT;
+            
+            error = GRBgetintattr(model, "Status", &optimstatus);
+            if (error) goto QUIT;
+            
+            if (optimstatus == GRB_UNBOUNDED) {
+                printf("The model cannot be solved because it is unbounded\n");
+                goto QUIT;
+            }
+            
+            if (optimstatus == GRB_OPTIMAL) {
+                break;
+            }
+            
+            if ((optimstatus != GRB_INF_OR_UNBD) && (optimstatus != GRB_INFEASIBLE)) {
+                printf("Optimization was stopped with status %i\n", optimstatus);
+                goto QUIT;
+            }
+        }
+        //
+        printf("New optim code: %d. Number of constraints removed: %d\n", optimstatus, numremoved);
+        //
+        malloc(sizeof(int) * rows * cols);
+    }
+
 
     if (optimstatus == GRB_OPTIMAL) {
 
@@ -240,14 +353,23 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
         error = GRBgetdblattrarray(model, GRB_DBL_ATTR_RC, 0, cols, sol_mat_RC);
         if (error) goto QUIT;
         
-        error = GRBgetdblattrarray(model, GRB_DBL_ATTR_PI, 0, rows, dual_mat_PI);
+        error = GRBgetdblattrarray(model, GRB_DBL_ATTR_PI, 0, rows-numremoved, dual_mat_PI);
         if (error) goto QUIT;
         
-        error = GRBgetdblattrarray(model, GRB_DBL_ATTR_SLACK, 0, rows, dual_mat_SLACK);
+        error = GRBgetdblattrarray(model, GRB_DBL_ATTR_SLACK, 0, rows-numremoved, dual_mat_SLACK);
         if (error) goto QUIT;
 
         success = 1;
     }
+
+    //printf("Finished! Success: %d\n", success);
+
+    /* Free model */
+
+    GRBfreemodel(model);
+    GRBfreeenv(env);
+
+    return success;
 
 QUIT:
 

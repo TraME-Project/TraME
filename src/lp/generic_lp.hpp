@@ -5,11 +5,11 @@
  * 05/08/2016
  */
 
-#if defined(WIN32) || defined(_WIN32) || defined(TRAMETESTLP)
-# define PREDEF_PLATFORM_WINDOWS
+#if defined(WIN32) || defined(_WIN32) || defined(TRAME_USE_GUROBI_C)
+# define PREDEF_GUROBI_C
 #endif
 
-#if !defined(PREDEF_PLATFORM_WINDOWS)
+#if !defined(PREDEF_GUROBI_C)
 
     #include "gurobi_c++.h"
 
@@ -195,8 +195,8 @@
         
         double* sol_1_grbi  = new double[n];
         double* sol_2_grbi  = new double[n];
-        double* dual_1_grbi = new double[n];
-        double* dual_2_grbi = new double[n];
+        double* dual_1_grbi = new double[k];
+        double* dual_2_grbi = new double[k];
         //
         // Call C-version of the solver
         solved = generic_LP_C_switch(k, n, *obj_grbi, *A_grbi, modelSense, *rhs_grbi, sense, *Q_grbi, *lb_grbi,
