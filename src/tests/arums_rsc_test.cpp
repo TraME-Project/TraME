@@ -80,6 +80,19 @@ int main()
     
     arma::cout << rsc_obj.U_sol << arma::endl;
     std::cout << Gstar_val << std::endl;
+    //
+    arma::mat hess;
     
+    rsc_obj.D2Gstar(hess,n,true);
+    
+    arma::cout << hess << arma::endl;
+    //
+    arma::mat nablaGstar;
+    arma::mat dtheta = arma::eye(rsc_obj.nbParams,rsc_obj.nbParams);
+    
+    rsc_obj.dtheta_NablaGstar(nablaGstar,n,dtheta,true);
+    
+    arma::cout << nablaGstar << arma::endl;
+    //
     return 0;
 }

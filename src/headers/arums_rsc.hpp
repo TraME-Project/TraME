@@ -74,6 +74,7 @@ class RSC
         double Gstarx(arma::vec& U_x, double n_x, int x);
         
         void D2Gstar (arma::mat& hess, arma::vec n, bool x_first);
+        void dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat dtheta, bool x_first);
         
         double cdf (double x);
         arma::vec cdf (arma::vec x);
@@ -103,6 +104,7 @@ void RSC::build(arma::mat zeta_b, bool outsideOption_b)
     //
     nbX = zeta_b.n_rows;
     nbY = zeta_b.n_cols - 1;
+    nbParams = zeta_b.n_elem;
     
     zeta = zeta_b;
     //
@@ -119,9 +121,13 @@ void RSC::build(arma::mat zeta_b, bool outsideOption_b)
     arma::mat Psigmax(nbY+1,nbY+1);
     
     aux_Influence_lhs.set_size(nbY,nbY+1,nbX);
+    aux_Influence_lhs.zeros();
     aux_Influence_rhs.set_size(nbY+1,nbY+1,nbX);
+    aux_Influence_rhs.zeros();
     aux_Psigma.set_size(nbY+1,nbY+1,nbX);
+    aux_Psigma.zeros();
     aux_DinvPsigma.set_size(nbY+1,nbY+1,nbX);
+    aux_DinvPsigma.zeros();
     //
     for (i=0; i<nbX; i++) {
         ordx_temp = arma::sort_index(zeta_b.row(i));
@@ -334,6 +340,50 @@ void RSC::D2Gstar (arma::mat& hess, arma::vec n, bool x_first)
         d_mu_e = d_mu_e_temp.cols(0,nbY-1) - arma::repmat(d_mu_e_temp.col(nbY),1,nbY);
         //
         hess(mat_inds.col(i),mat_inds.col(i)) = C * d_mu_e / n(i);
+    }
+}
+
+void RSC::dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat dtheta, bool x_first)
+{
+    int i,j;
+    
+    int nbDirs = std::floor(dtheta.n_elem / (nbX*nbX*(nbY+1)));
+    
+    ret.set_size(nbX*nbY,nbX*nbDirs);
+    ret.zeros();
+    
+    arma::umat mat_inds_1(nbDirs,nbX); // indices to place the results (complicated)
+    arma::umat mat_inds_2(nbDirs,nbX); //
+    arma::umat mat_inds_3(nbDirs,nbX);
+    for (i=0; i<nbX; i++) {
+        for (j=0; j<nbDirs; j++) {
+            if (x_first) {
+                mat_inds_1(j,i) = i + j*nbX;
+                mat_inds_2(j,i) = i + j*nbX;
+                mat_inds_3(j,i) = i + j*nbX;
+            } else {
+                mat_inds_1(j,i) = i + j*nbX;
+                mat_inds_2(j,i) = i + j*nbX;
+                mat_inds_3(j,i) = i*nbY + j;
+            }
+        }
+    }
+    //arma::umat mat_inds_3 = mat_inds_1;
+    mat_inds_3.shed_row(nbDirs-1);
+    //
+    arma::mat e_mat;
+    arma::vec ts_temp(nbY+1), ts_full, ts;
+    
+    for (i=0; i<nbX; i++) {
+        ts_temp.rows(0,nbY-1) = mu.row(i).t();
+        ts_temp(nbY) = n(i) - arma::accu(mu.row(i));
+        
+        arma::vec ts_full = aux_DinvPsigma.slice(i) * ts_temp / n(i);
+        arma::vec ts = ts_full.rows(0,nbY-1);
+
+        e_mat = arma::diagmat( arma::join_cols(arma::zeros(1,1),quantile(ts)) );
+        
+        ret(mat_inds_3.col(i),mat_inds_1.col(i)) = - aux_Influence_lhs.slice(i) * e_mat * aux_Influence_rhs.slice(i) * dtheta(mat_inds_2.col(i),mat_inds_2.col(i));
     }
 }
 
