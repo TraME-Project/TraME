@@ -34,23 +34,27 @@ class logit
         
         // equilibrium objects
         arma::mat mu;
-        arma::mat mux;
         arma::mat U;
-        arma::mat Ux;
+        
+        arma::mat U_sol;
+        arma::mat mu_sol;
         
         // member functions
         void build(int nbX_b, int nbY_b, int nbParams_b, double sigma_b, bool outsideOption_b);
-        void G(double &val, arma::vec n);
-        void G(double &val, arma::mat &mu_ret, arma::vec n);
+        double G(arma::vec n);
+        double G(arma::mat &mu_ret, arma::vec n);
+        
+        double Gstar(arma::vec n);
+        double Gstar(arma::mat &U_ret, arma::vec n);
+        double Gstarx(arma::mat &Ux_ret, arma::mat mux);
+        
         double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
-        void Gstar(double &val, arma::vec n);
-        void Gstar(double &val, arma::mat &U_ret, arma::vec n);
-        void Gstarx(double &valx, arma::mat mux);
-        void Gstarx(double &valx, arma::mat &Ux_ret, arma::mat mux);
-        void D2G(arma::mat &H, arma::vec n, int xFirst);
-        void D2Gstar(arma::mat &H, arma::vec n, int xFirst);
-        void dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, int xFirst);
         double Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp);
+        
+        void D2G(arma::mat &H, arma::vec n, bool xFirst);
+        void D2Gstar(arma::mat &H, arma::vec n, bool xFirst);
+        void dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, bool xFirst);
+        
         void simul(empirical &ret, int nbDraws, int seed);
         
     //private:
@@ -66,36 +70,99 @@ void logit::build(int nbX_b, int nbY_b, int nbParams_b, double sigma_b, bool out
     outsideOption = outsideOption_b;
 }
 
-void logit::G(double &val, arma::vec n)
+double logit::G(arma::vec n)
 {   
     arma::mat denom;
     
     arma::mat expU = arma::exp(U / sigma);
     //
-    if(outsideOption){
+    if (outsideOption) {
         denom = 1 + arma::sum(expU,1);
-    }else{
+    } else {
         denom = arma::sum(expU,1);
     }
     //
-    val = sigma*arma::accu(n % arma::log(denom));
-    mu  = arma::repmat(n/denom,1,nbY) % expU;
+    double val = sigma*arma::accu(n % arma::log(denom));
+    mu_sol = arma::repmat(n/denom,1,nbY) % expU;
+    //
+    return val;
 }
 
-void logit::G(double &val, arma::mat &mu_ret, arma::vec n)
+double logit::G(arma::mat &mu_ret, arma::vec n)
 {   
     arma::mat denom;
     
     arma::mat expU = arma::exp(U / sigma);
     //
-    if(outsideOption){
+    if (outsideOption) {
         denom = 1 + arma::sum(expU,1);
-    }else{
+    } else {
         denom = arma::sum(expU,1);
     }
     //
-    val    = sigma*arma::accu(n % arma::log(denom));
+    double val = sigma*arma::accu(n % arma::log(denom));
     mu_ret = arma::repmat(n/denom,1,nbY) % expU;
+    //
+    return val;
+}
+
+double logit::Gstar(arma::vec n)
+{
+    double val=0.0;
+    
+    arma::mat mu_x_0;
+    arma::mat n_repd = arma::repmat(n,1,nbY);
+    //
+    if(outsideOption){
+        mu_x_0 = n - arma::sum(mu_sol,1);
+        
+        val = sigma * ( arma::accu(mu_sol % arma::log(mu_sol/n_repd)) + arma::accu(mu_x_0 % arma::log(mu_x_0/n)) );
+        U_sol   = sigma * arma::log(mu_sol / arma::repmat(mu_x_0,1,nbY));
+    }else{
+        val = sigma * arma::accu(mu_sol % arma::log(mu_sol/n_repd));
+        U_sol   = sigma * arma::log(mu_sol / n_repd);
+    }
+    //
+    return val;
+}
+
+double logit::Gstar(arma::mat &U_ret, arma::vec n)
+{
+    double val=0.0;
+    
+    arma::mat mu_x_0;
+    arma::mat n_repd = arma::repmat(n,1,nbY);
+    //
+    if(outsideOption){
+        mu_x_0 = n - arma::sum(mu_sol,1);
+        
+        val   = sigma * ( arma::accu(mu_sol % arma::log(mu_sol/n_repd)) + arma::accu(mu_x_0 % arma::log(mu_x_0/n)) );
+        U_ret = sigma * arma::log(mu_sol / arma::repmat(mu_x_0,1,nbY));
+    }else{
+        val   = sigma * arma::accu(mu_sol % arma::log(mu_sol/n_repd));
+        U_ret = sigma * arma::log(mu_sol / n_repd);
+    }
+    //
+    return val;
+}
+
+double logit::Gstarx(arma::mat &Ux, arma::mat mux)
+{
+    double val_x=0.0;
+    
+    arma::mat mu0;
+    //
+    if(outsideOption){
+        mu0 = 1 - arma::accu(mux);
+        
+        val_x   = sigma * ( arma::accu(mu0 % arma::log(mu0)) + arma::accu(mux % arma::log(mux)) );
+        Ux = sigma * arma::log(mux / mu0);
+    }else{
+        val_x   = sigma * arma::accu(mux % arma::log(mux));
+        Ux = sigma * arma::log(mux);
+    }
+    //
+    return val_x;
 }
 
 double logit::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
@@ -118,80 +185,49 @@ double logit::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_in
     return val;
 }
 
-void logit::Gstar(double &val, arma::vec n)
+double differMargX(double z, const trame_zeroin_data& opt_data)
 {
-    arma::mat mux0;
-    arma::mat n_repd = arma::repmat(n,1,nbY);
+    arma::mat temp_mat = arma::min(z * opt_data.expUbarX, opt_data.mubarX);
+    double ret = z + arma::accu(temp_mat) - 1;
     //
-    if(outsideOption){
-        mux0 = n - arma::sum(mu,1);
-        
-        val = sigma * ( arma::accu(mu % arma::log(mu/n_repd)) + arma::accu(mux0 % arma::log(mux0/n)) );
-        U   = sigma * arma::log(mu / arma::repmat(mux0,1,nbY));
-    }else{
-        val = sigma * arma::accu(mu % arma::log(mu/n_repd));
-        U   = sigma * arma::log(mu / n_repd);
-    }
+    return ret;
 }
 
-void logit::Gstar(double &val, arma::mat &U_ret, arma::vec n)
+double logit::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp)
 {
-    arma::mat mux0;
-    arma::mat n_repd = arma::repmat(n,1,nbY);
-    //
+    double valx=0.0;
     if(outsideOption){
-        mux0 = n - arma::sum(mu,1);
+        double tol_zero = 1E-12;
+        double max_iter = 10000;
         
-        val   = sigma * ( arma::accu(mu % arma::log(mu/n_repd)) + arma::accu(mux0 % arma::log(mux0/n)) );
-        U_ret = sigma * arma::log(mu / arma::repmat(mux0,1,nbY));
-    }else{
-        val   = sigma * arma::accu(mu % arma::log(mu/n_repd));
-        U_ret = sigma * arma::log(mu / n_repd);
+        arma::mat expUbarX = arma::exp(Ubarx/sigma);
+        
+        trame_zeroin_data root_data;
+        root_data.expUbarX = expUbarX;
+        root_data.mubarX = mubarx;
+        
+        double mu_x_0 = zeroin(0.0, 1.0, differMargX, root_data, tol_zero, max_iter);
+        //
+        mux_inp = arma::min(mu_x_0 * expUbarX, mubarx);
+        Ux_inp  = sigma * arma::log(mux_inp/mu_x_0);
+        //
+        valx = arma::accu(mux_inp % Ubarx) - sigma*(mu_x_0*std::log(mu_x_0) + arma::accu(mux_inp % arma::log(mux_inp)));
     }
+    return valx;
 }
 
-void logit::Gstarx(double &valx, arma::mat mux)
-{
-    arma::mat mu0;
-    //
-    if(outsideOption){
-        mu0 = 1 - arma::accu(mux);
-        
-        valx = sigma * ( arma::accu(mu0 % arma::log(mu0)) + arma::accu(mux % arma::log(mux)) );
-        Ux   = sigma * arma::log(mux / mu0);
-    }else{
-        valx = sigma * arma::accu(mux % arma::log(mux));
-        Ux   = sigma * arma::log(mux);
-    }
-}
-
-void logit::Gstarx(double &valx, arma::mat &Ux_ret, arma::mat mux)
-{
-    arma::mat mu0;
-    //
-    if(outsideOption){
-        mu0 = 1 - arma::accu(mux);
-        
-        valx   = sigma * ( arma::accu(mu0 % arma::log(mu0)) + arma::accu(mux % arma::log(mux)) );
-        Ux_ret = sigma * arma::log(mux / mu0);
-    }else{
-        valx   = sigma * arma::accu(mux % arma::log(mux));
-        Ux_ret = sigma * arma::log(mux);
-    }
-}
-
-void logit::D2G(arma::mat &H, arma::vec n, int xFirst)
+void logit::D2G(arma::mat &H, arma::vec n, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption is true
     int x, y, yprime;
     
-    arma::mat muxy = mu;
+    arma::mat muxy = mu_sol;
     H.zeros(nbX*nbY,nbX*nbY);
     //
     for(x = 0; x < nbX; x++){
         for(y = 0; y < nbY; y++){
             for(yprime = 0; yprime < nbY; yprime++){
-                if(xFirst==1){
+                if(xFirst){
                     if(y==yprime){
                         H(x + nbX*y, x + nbX*yprime) = muxy(x,y)*(1 - muxy(x,y)/n(x)) / sigma;
                     }else{
@@ -209,31 +245,31 @@ void logit::D2G(arma::mat &H, arma::vec n, int xFirst)
     }
 }
 
-void logit::D2Gstar(arma::mat &H, arma::vec n, int xFirst)
+void logit::D2Gstar(arma::mat &H, arma::vec n, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption == 1 or 0
     int x, y, yprime;
     
-    arma::mat mux0 = n - arma::sum(mu,1);
-    arma::mat mux0_recip = arma::ones(mux0.n_rows,mux0.n_cols) / mux0; // reciprocal of mux0
-    arma::mat muxy_recip = arma::ones(mu.n_rows,mu.n_cols) / mu;
+    arma::mat mu_x_0 = n - arma::sum(mu_sol,1);
+    arma::mat mu_x_0_recip = arma::ones(mu_x_0.n_rows,mu_x_0.n_cols) / mu_x_0; // reciprocal of mu_x_0
+    arma::mat muxy_recip = arma::ones(mu_sol.n_rows,mu_sol.n_cols) / mu_sol;
     
     H.zeros(nbX*nbY,nbX*nbY);
     //
     for(x = 0; x < nbX; x++){
         for(y = 0; y < nbY; y++){
             for(yprime = 0; yprime < nbY; yprime++){
-                if(xFirst==1){
+                if(xFirst){
                     if(y==yprime){
-                        H(x + nbX*y, x + nbX*yprime) = mux0_recip(x) + muxy_recip(x,y);
+                        H(x + nbX*y, x + nbX*yprime) = mu_x_0_recip(x) + muxy_recip(x,y);
                     }else{
-                        H(x + nbX*y, x + nbX*yprime) = mux0_recip(x);
+                        H(x + nbX*y, x + nbX*yprime) = mu_x_0_recip(x);
                     }
                 }else{
                     if(y==yprime){
-                        H(y + nbY*x, yprime + nbY*x) = mux0_recip(x) + muxy_recip(x,y);
+                        H(y + nbY*x, yprime + nbY*x) = mu_x_0_recip(x) + muxy_recip(x,y);
                     }else{
-                        H(y + nbY*x, yprime + nbY*x) = mux0_recip(x);
+                        H(y + nbY*x, yprime + nbY*x) = mu_x_0_recip(x);
                     }
                 }
             }
@@ -242,25 +278,25 @@ void logit::D2Gstar(arma::mat &H, arma::vec n, int xFirst)
     H *= sigma;
 }
 
-void logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, int xFirst)
+void logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, bool xFirst)
 {
-    arma::mat logmu_temp, mux0;
+    arma::mat logmu_temp, mu_x_0;
     
     if(dtheta.n_elem==0){
         ret.zeros(nbX*nbY,0);
     }else{
         if(outsideOption){
-            mux0 = arma::repmat(n - arma::sum(mu,1),1,mu.n_cols);
+            mu_x_0 = arma::repmat(n - arma::sum(mu,1),1,mu.n_cols);
             
-            if(xFirst==1){
-                logmu_temp = arma::vectorise(arma::log(mu/mux0));
+            if(xFirst){
+                logmu_temp = arma::vectorise(arma::log(mu/mu_x_0));
             }else{
-                logmu_temp = arma::vectorise(arma::trans(arma::log(mu/mux0)));
+                logmu_temp = arma::vectorise(arma::trans(arma::log(mu/mu_x_0)));
             }
             //
             ret = arma::vectorise(dtheta) % logmu_temp;
         }else{
-            if(xFirst==1){
+            if(xFirst){
                 logmu_temp = arma::vectorise(log(mu));
             }else{
                 logmu_temp = arma::vectorise(arma::trans(arma::log(mu)));
@@ -269,6 +305,29 @@ void logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, int
             ret = arma::vectorise(dtheta) % logmu_temp;
         }
     }
+}
+
+void logit::simul(empirical &ret, int nbDraws, int seed_val)
+{
+    arma::arma_rng::set_seed(seed_val);
+    
+    // note: digamma(1) \approx -0.5772156649
+    arma::cube atoms;
+    if(outsideOption){
+        atoms = -0.5772156649 - sigma * arma::log( - arma::log(arma::randu(nbDraws,nbY+1,nbX)) );
+    }else{
+        atoms = -0.5772156649 - sigma * arma::log( - arma::log(arma::randu(nbDraws,nbY,nbX)) );
+    }
+    //
+    ret.nbX = nbX;
+    ret.nbY = nbY;
+    ret.nbParams = atoms.n_elem;
+    ret.atoms = atoms;
+    ret.aux_nbDraws = nbDraws;
+    ret.xHomogenous = false;
+    ret.outsideOption = outsideOption;
+    //
+    arma::arma_rng::set_seed_random(); // need to reset the seed
 }
 
 // this generated weird assembly code...
@@ -285,14 +344,6 @@ void logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, int
     return ret;
 }*/
 
-double differMargX(double z, const trame_zeroin_data& opt_data)
-{
-    arma::mat temp_mat = arma::min(z * opt_data.expUbarX, opt_data.mubarX);
-    double ret = z + arma::accu(temp_mat) - 1;
-    //
-    return ret;
-}
-
 // this generated weird assembly code...
 /*double logit::Gbarx_old(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp)
 {
@@ -307,57 +358,12 @@ double differMargX(double z, const trame_zeroin_data& opt_data)
         root_data.expUbarX = &expUbarX;
         root_data.mubarX = &mubarx;
         
-        double mux0 = zeroin_old(0.0, 1.0, differMargX, &root_data, tol_zero, max_iter);
+        double mu_x_0 = zeroin_old(0.0, 1.0, differMargX, &root_data, tol_zero, max_iter);
         //
-        mux_inp = arma::min(mux0 * expUbarX, mubarx);
-        Ux_inp  = sigma * arma::log(mux/mux0);
+        mux_inp = arma::min(mu_x_0 * expUbarX, mubarx);
+        Ux_inp  = sigma * arma::log(mux/mu_x_0);
         //
-        valx = arma::accu(mux % Ubarx) - sigma*(mux0*std::log(mux0) + arma::accu(mux % arma::log(mux)));
+        valx = arma::accu(mux % Ubarx) - sigma*(mu_x_0*std::log(mu_x_0) + arma::accu(mux % arma::log(mux)));
     }
     return valx;
 }*/
-
-double logit::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp)
-{
-    double valx=0.0;
-    if(outsideOption){
-        double tol_zero = 1E-12;
-        double max_iter = 10000;
-        
-        arma::mat expUbarX = arma::exp(Ubarx/sigma);
-        
-        trame_zeroin_data root_data;
-        root_data.expUbarX = expUbarX;
-        root_data.mubarX = mubarx;
-        
-        double mux0 = zeroin(0.0, 1.0, differMargX, root_data, tol_zero, max_iter);
-        //
-        mux_inp = arma::min(mux0 * expUbarX, mubarx);
-        Ux_inp  = sigma * arma::log(mux_inp/mux0);
-        //
-        valx = arma::accu(mux_inp % Ubarx) - sigma*(mux0*std::log(mux0) + arma::accu(mux_inp % arma::log(mux_inp)));
-    }
-    return valx;
-}
-
-void logit::simul(empirical &ret, int nbDraws, int seed_val)
-{
-    arma::arma_rng::set_seed(seed_val);
-    // note: digamma(1) \approx -0.5772156649
-    arma::cube epsilon_biy;
-    if(outsideOption){
-        epsilon_biy = -0.5772156649 - sigma * arma::log( - arma::log(arma::randu(nbDraws,nbY+1,nbX)) );
-    }else{
-        epsilon_biy = -0.5772156649 - sigma * arma::log( - arma::log(arma::randu(nbDraws,nbY,nbX)) );
-    }
-    //
-    ret.nbX = nbX;
-    ret.nbY = nbY;
-    ret.nbParams = epsilon_biy.n_elem;
-    ret.atoms = epsilon_biy;
-    ret.aux_nbDraws = nbDraws;
-    ret.xHomogenous = false;
-    ret.outsideOption = outsideOption;
-    //
-    arma::arma_rng::set_seed_random(); // need to reset the seed
-}
