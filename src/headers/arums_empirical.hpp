@@ -20,7 +20,7 @@
   ################################################################################*/
 
 #include "which_max.hpp"
-#include "generic_lp.hpp"
+#include "../lp/generic_lp.hpp"
 
 // logit class
 class empirical
@@ -41,21 +41,21 @@ class empirical
         // equilibrium objects
         arma::mat U;
         arma::mat mu;
-        arma::mat mux;
+        
+        arma::mat U_sol;
+        arma::mat mu_sol;
         
         // member functions
         void build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous_b, bool outsideOption_b);
         
         double G(arma::vec n);
-        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
-        
-        double Gstar(arma::vec n, arma::mat& U_inp);
-        
-        double Gx(arma::mat Ux, int x);
         double Gx(arma::mat Ux, arma::mat& mux_inp, int x);
         
+        double Gstar(arma::vec n, arma::mat& U_inp);
         double Gstarx(arma::mat mux, arma::mat& Ux_inp, int x);
-        double Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x);
+        
+        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
+        double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x);
         
     //private:
 };
@@ -79,91 +79,17 @@ double empirical::G(arma::vec n)
     int i;
     double val=0.0, valx_temp;
     
-    mu.set_size(nbX,nbY);
+    mu_sol.set_size(nbX,nbY);
     arma::mat mux_temp;
     //
     for(i=0; i<nbX; i++){
         valx_temp = empirical::Gx(U.row(i).t(),mux_temp,i);
         //
         val += n(i)*valx_temp;
-        mu.row(i) = arma::trans(n(i)*mux_temp);
+        mu_sol.row(i) = arma::trans(n(i)*mux_temp);
     }
     //
     return val;
-}
-
-double empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
-{   
-    int i;
-    double val=0.0, val_temp;
-    
-    U_inp.set_size(nbX,nbY);
-    mu_inp.set_size(nbX,nbY);
-    arma::mat Ux_temp, mux_temp;
-    //
-    for(i=0; i<nbX; i++){
-        val_temp = empirical::Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mux_temp,i);
-        //
-        val += n(i)*val_temp;
-        U_inp.row(i) = arma::trans(Ux_temp);
-        mu_inp.row(i) = arma::trans(n(i)*mux_temp);
-    }
-    //
-    return val;
-}
-
-double empirical::Gstar(arma::vec n, arma::mat& U_inp)
-{   
-    int i;
-    double val=0.0, val_temp;
-    
-    U_inp.set_size(nbX,nbY);
-    arma::mat Ux_temp;
-    //
-    for(i=0; i<nbX; i++){
-        val_temp = empirical::Gstarx((mu.row(i).t())/n(i),Ux_temp,i);
-        //
-        val += n(i)*val_temp;
-        U_inp.row(i) = arma::trans(Ux_temp);
-    }
-    //
-    return val;
-}
-
-double empirical::Gx(arma::mat Ux, int x)
-{   
-    arma::mat Uxs, Utilde;
-    
-    if(outsideOption){
-        Uxs = arma::join_cols(arma::vectorise(Ux),arma::zeros(1,1));
-    }else{
-        Uxs = Ux;
-    }
-    
-    if(xHomogenous){
-        Utilde = arma::ones(aux_nbDraws,1) * Uxs.t() + atoms.slice(0);
-    }else{
-        Utilde = arma::ones(aux_nbDraws,1) * Uxs.t() + atoms.slice(x);
-    }
-    //
-    int tt;
-    arma::vec argmaxs = arma::max(Utilde,1);
-    arma::uvec argmax_inds = which_max(&Utilde, 1);
-    
-    double thesum = 0.0;
-    for(tt=0; tt < aux_nbDraws; tt++){
-        thesum += argmaxs(tt,0);
-    }
-    double valx = thesum/(double)(aux_nbDraws);
-    //
-    mux.set_size(nbY,1);
-    arma::uvec temp_find;
-    for(tt=0; tt < nbY; tt++){
-        temp_find = arma::find(argmax_inds==tt);
-        mux(tt,0) = (double)(temp_find.n_elem)/(double)(aux_nbDraws);
-    }
-    //
-    return valx;
 }
 
 double empirical::Gx(arma::mat Ux, arma::mat& mux_inp, int x)
@@ -194,12 +120,30 @@ double empirical::Gx(arma::mat Ux, arma::mat& mux_inp, int x)
     //
     mux_inp.set_size(nbY,1);
     arma::uvec temp_find;
-    for(tt=0; tt < nbY; tt++){
+    for (tt=0; tt<nbY; tt++) {
         temp_find = arma::find(argmax_inds==tt);
         mux_inp(tt,0) = (double)(temp_find.n_elem)/(double)(aux_nbDraws);
     }
     //
     return valx;
+}
+
+double empirical::Gstar(arma::vec n, arma::mat& U_inp)
+{   
+    int i;
+    double val=0.0, val_temp;
+    
+    U_inp.set_size(nbX,nbY);
+    arma::mat Ux_temp;
+    //
+    for(i=0; i<nbX; i++){
+        val_temp = empirical::Gstarx((mu_sol.row(i).t())/n(i),Ux_temp,i);
+        //
+        val += n(i)*val_temp;
+        U_inp.row(i) = arma::trans(Ux_temp);
+    }
+    //
+    return val;
 }
 
 double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
@@ -240,8 +184,10 @@ double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
     
     arma::vec rhs_grbi = arma::join_cols(p,q);
     
-    char* sense_grbi = new char[A_grbi.n_rows];
-    for(jj=0;jj<A_grbi.n_rows;jj++){
+    int k = A_grbi.n_rows;
+    
+    char* sense_grbi = new char[k];
+    for(jj=0;jj<k;jj++){
         sense_grbi[jj] = '=';
     }
     
@@ -251,24 +197,30 @@ double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
     
     arma::mat sol_mat(obj_grbi.n_elem,2);
     arma::mat dual_mat(A_grbi.n_rows,2);
-    
+
     try {
         LP_optimal = generic_LP(&obj_grbi, &A_grbi, modelSense, &rhs_grbi, sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
         //
-        arma::mat u = dual_mat.col(0).rows(0,aux_nbDraws-1);
-    
-        if(outsideOption){
-            Ux_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY);
-            Ux_inp = - Ux_temp.rows(0,nbY-1) + arma::as_scalar(Ux_temp.row(nbY));
-        }else{
-            Ux_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY-1);
-            Ux_inp = -Ux_temp - arma::accu(p % u);
+        if (LP_optimal) {
+            arma::mat u = dual_mat.col(0).rows(0,aux_nbDraws-1);
+        
+            if (outsideOption) {
+                Ux_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY);
+                Ux_inp = - Ux_temp.rows(0,nbY-1) + arma::as_scalar(Ux_temp.row(nbY));
+            } else { 
+                Ux_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY-1);
+                Ux_inp = -Ux_temp - arma::accu(p % u);
+            }
+            //
+            valx = -objval;
+        } else {
+            std::cout << "Non-optimal value found during optimization" << std::endl;
         }
-        //
-        valx = -objval;
+#if !defined(TRAME_USE_GUROBI_C)
     } catch(GRBException e) {
         std::cout << "Error code = " << e.getErrorCode() << std::endl;
         std::cout << e.getMessage() << std::endl;
+#endif
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }
@@ -278,23 +230,43 @@ double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
     return valx;
 }
 
-double empirical::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x)
+double empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+{   
+    int i;
+    double val=0.0, val_temp;
+    
+    U_inp.set_size(nbX,nbY);
+    mu_inp.set_size(nbX,nbY);
+    arma::mat Ux_temp, mux_temp;
+    //
+    for(i=0; i<nbX; i++){
+        val_temp = empirical::Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mux_temp,i);
+        //
+        val += n(i)*val_temp;
+        U_inp.row(i) = arma::trans(Ux_temp);
+        mu_inp.row(i) = arma::trans(n(i)*mux_temp);
+    }
+    //
+    return val;
+}
+
+double empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x)
 {   
     int jj;
     double valx=0.0;
     arma::mat Phi, Ux_temp;
     
-    if(!outsideOption){
+    if (!outsideOption) {
         return 0; //Gbarx not implemented for empirical with outsideOption = false
     }
     
-    if(xHomogenous){
+    if (xHomogenous) {
         Phi = atoms.slice(0);
-    }else{
+    } else {
         Phi = atoms.slice(x);
     }
     //
-    arma::vec obj_grbi_1 = arma::vectorise(mubarx.t());
+    arma::vec obj_grbi_1 = mubarx;
     arma::vec obj_grbi_2 = - arma::ones(aux_nbDraws,1)/aux_nbDraws;
     arma::vec obj_grbi   = arma::join_cols(obj_grbi_1,obj_grbi_2);
     
@@ -307,12 +279,14 @@ double empirical::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, ar
     
     arma::mat A_grbi = arma::join_cols(arma::join_rows(A1,A2), arma::join_cols(arma::join_rows(A3,A4),arma::join_rows(A5,A6)));
     
-    arma::vec rhs_grbi_1 = arma::vectorise(Ubarx.t());
+    arma::vec rhs_grbi_1 = Ubarx;
     arma::vec rhs_grbi_2 = arma::vectorise(-Phi);
     arma::vec rhs_grbi = arma::join_cols(rhs_grbi_1,rhs_grbi_2);
     
-    char* sense_grbi = new char[A_grbi.n_rows];
-    for(jj=0;jj<A_grbi.n_rows;jj++){
+    int k = A_grbi.n_rows;
+    
+    char* sense_grbi = new char[k];
+    for (jj=0; jj<k; jj++) {
         sense_grbi[jj] = '<';
     }
     
@@ -326,14 +300,20 @@ double empirical::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, ar
     try {
         LP_optimal = generic_LP(&obj_grbi, &A_grbi, modelSense, &rhs_grbi, sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
         //
-        Ux_inp = sol_mat.col(0).rows(0,nbY-1);
-        arma::vec delta_mux = dual_mat.col(0).rows(0,nbY-1);
-        mux_inp = mubarx - delta_mux;
-        //
-        valx = arma::accu(mubarx % Ubarx) - objval;
+        if (LP_optimal) {
+            Ux_inp = sol_mat.col(0).rows(0,nbY-1);
+            arma::vec delta_mux = dual_mat.col(0).rows(0,nbY-1);
+            mux_inp = mubarx - delta_mux;
+            //
+            valx = arma::accu(mubarx % Ubarx) - objval;
+        } else {
+            std::cout << "Non-optimal value found during optimization" << std::endl;
+        }
+#if !defined(TRAME_USE_GUROBI_C)
     } catch(GRBException e) {
         std::cout << "Error code = " << e.getErrorCode() << std::endl;
         std::cout << e.getMessage() << std::endl;
+#endif
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }
