@@ -1,12 +1,13 @@
+.DS_Store
 .Rproj.user
 .Rhistory
 src-i386/
 src-x64/
 src/headers/old/
+*.dll
 *.exe
-*.test
+*.log
+*.lp
 *.o
 *.so
-*.dll
-.DS_Store
-gurobi.log
+*.test
