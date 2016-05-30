@@ -368,8 +368,10 @@ void RSC::dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat dtheta, bool
             }
         }
     }
-    //arma::umat mat_inds_3 = mat_inds_1;
-    mat_inds_3.shed_row(nbDirs-1);
+    
+    if (nbDirs > nbY) {
+        mat_inds_3.shed_row(nbDirs-1);
+    }
     //
     arma::mat e_mat;
     arma::vec ts_temp(nbY+1), ts_full, ts;
