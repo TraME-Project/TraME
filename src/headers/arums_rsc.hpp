@@ -73,6 +73,8 @@ class RSC
         double Gstar(arma::vec n);
         double Gstarx(arma::vec& U_x, double n_x, int x);
         
+        void D2Gstar (arma::mat& hess, arma::vec n, bool x_first);
+        
         double cdf (double x);
         arma::vec cdf (arma::vec x);
         double pdf (double x);
@@ -291,6 +293,48 @@ double RSC::Gstarx(arma::vec& U_x, double n_x, int x)
     U_x = - aux_Influence_lhs.slice(x) * e_mat * aux_Influence_rhs.slice(x) * zeta.row(x).t();
     //
     return val_x;
+}
+
+void RSC::D2Gstar (arma::mat& hess, arma::vec n, bool x_first)
+{
+    int i,j;
+    
+    hess.set_size(nbX*nbY,nbX*nbY);
+    hess.zeros();
+    
+    arma::vec mu_x_0 = n - arma::sum(mu,1);
+    
+    arma::umat mat_inds(nbY,nbX); // indices to place the results (complicated)
+    for (i=0; i<nbX; i++) {
+        for (j=0; j<nbY; j++) {
+            if (x_first) {
+                mat_inds(j,i) = i + j*nbX;
+            } else {
+                mat_inds(j,i) = i*nbY + j;
+            }
+        }
+    }
+    //
+    arma::mat C, d_mu_e_temp, d_mu_e;
+    arma::vec ts_temp(nbY+1), ts_full, erestr_temp, erestr, erestr_pdf;
+    
+    for (i=0; i<nbX; i++) {
+        C = - arma::trans( arma::repmat(aux_Influence_rhs.slice(i) * zeta.row(i).t(),1,nbY) % aux_Influence_lhs.slice(i).t() );
+        
+        ts_temp.rows(0,nbY-1) = mu.row(i).t();
+        ts_temp(nbY) = mu_x_0(i);
+        
+        ts_full = aux_DinvPsigma.slice(i) * ts_temp / n(i);
+        //
+        erestr_temp = quantile(ts_full);
+        erestr = erestr_temp.rows(0,nbY-1);
+        erestr_pdf = pdf(erestr);
+        //
+        d_mu_e_temp = arma::join_cols(arma::zeros(1,nbY),arma::diagmat(1 / erestr_pdf)) * aux_DinvPsigma.slice(i).rows(0,nbY-1);
+        d_mu_e = d_mu_e_temp.cols(0,nbY-1) - arma::repmat(d_mu_e_temp.col(nbY),1,nbY);
+        //
+        hess(mat_inds.col(i),mat_inds.col(i)) = C * d_mu_e / n(i);
+    }
 }
 
 /*
