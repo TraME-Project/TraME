@@ -7,7 +7,13 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/lp/tests
  * clang++ -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_2.cpp -o generic_lp_2.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
+ *
+ * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include ../generic_lp.c -c -o ../generic_lp.o
+ * g++-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_2.cpp -c -o generic_lp_2.o
+ * g++-mp-5 -O2 -Wall -o generic_lp_2.test ../generic_lp.o generic_lp_2.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  */
+
+#define TRAME_USE_GUROBI_C
 
 #include "armadillo"
 
@@ -56,14 +62,16 @@ int main()
     arma::mat dual_mat(A.n_rows,2);
     
     try {
-        LP_optimal = generic_LP(&obj, &A, modelSense, &rhs, sense, &Q, &lb, &ub, NULL, objval, sol_mat, dual_mat);
+        LP_optimal = generic_LP((int) A.n_rows, (int) A.n_cols, obj.memptr(), A.memptr(), modelSense, rhs.memptr(), sense, Q.memptr(), lb.memptr(), ub.memptr(), NULL, objval, sol_mat, dual_mat);
         
         std::cout << "\nOptimal value: " << objval << ".\n" << std::endl;
         arma::cout << "Solution: [vars, RC] \n" << sol_mat << arma::endl;
         arma::cout << "Dual Variables: [Pi, Slack] \n" << dual_mat << arma::endl;
+#ifndef TRAME_USE_GUROBI_C
     } catch(GRBException e) {
         std::cout << "Error code = " << e.getErrorCode() << std::endl;
         std::cout << e.getMessage() << std::endl;
+#endif
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }
