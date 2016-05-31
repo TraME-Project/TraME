@@ -199,7 +199,7 @@ double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
     arma::mat dual_mat(A_grbi.n_rows,2);
 
     try {
-        LP_optimal = generic_LP(&obj_grbi, &A_grbi, modelSense, &rhs_grbi, sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
+        LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
         //
         if (LP_optimal) {
             arma::mat u = dual_mat.col(0).rows(0,aux_nbDraws-1);
@@ -298,7 +298,7 @@ double empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, ar
     arma::mat dual_mat(A_grbi.n_rows,2);
     
     try {
-        LP_optimal = generic_LP(&obj_grbi, &A_grbi, modelSense, &rhs_grbi, sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
+        LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
         //
         if (LP_optimal) {
             Ux_inp = sol_mat.col(0).rows(0,nbY-1);

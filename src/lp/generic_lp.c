@@ -171,21 +171,25 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
      * the reference would run over rows rather than columns first
      */
     
-    int act_row = 0;
-    int act_col = 0;
+    //int act_row = 0;
+    //int act_col = 0;
     
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
-            if (A[i*cols+j] != 0) {
+            /*if (A[i*cols+j] != 0) {
                 error = GRBchgcoeffs(model, 1, &act_row, &act_col, &A[i*cols+j]);
+                if (error) goto QUIT;
+            }*/
+            if (A[i+j*rows] != 0) {
+                error = GRBchgcoeffs(model, 1, &i, &j, &A[i+j*rows]);
                 if (error) goto QUIT;
             }
             
-            ++act_row;
+            /*++act_row;
             if(act_row>=rows){
                 act_row=0;
                 ++act_col;
-            }
+            }*/
         }
     }
     
@@ -201,21 +205,26 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
      */
 
     if (Q) {
-        act_row = 0;
-        act_col = 0;
+        //act_row = 0;
+        //act_col = 0;
         
         for (i = 0; i < cols; i++) {
             for (j = 0; j < cols; j++) {
-                if (Q[i*cols+j] != 0) {
+                /*if (Q[i*cols+j] != 0) {
                     error = GRBaddqpterms(model, 1, &act_row, &act_col, &Q[i*cols+j]);
+                    if (error) goto QUIT;
+                }*/
+                
+                if (Q[i+j*cols] != 0) {
+                    error = GRBaddqpterms(model, 1, &i, &j, &Q[i+j*cols]);
                     if (error) goto QUIT;
                 }
                 
-                ++act_row;
+                /*++act_row;
                 if(act_row>=cols){
                     act_row=0;
                     ++act_col;
-                }
+                }*/
             }
         }
     }
@@ -224,6 +233,9 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
     if (error) goto QUIT;
     //printf("Setup Model!\n");
     /* Optimize model */
+    
+    //error = GRBsetintparam(env, "Method", 1);
+    //if (error) goto QUIT;
 
     error = GRBoptimize(model);
     if (error) goto QUIT;
@@ -337,8 +349,6 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
         }
         //
         printf("New optim code: %d. Number of constraints removed: %d\n", optimstatus, numremoved);
-        //
-        malloc(sizeof(int) * rows * cols);
     }
 
 

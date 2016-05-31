@@ -13,14 +13,14 @@
 
     #include "gurobi_c++.h"
 
-    bool generic_LP(arma::vec *obj, arma::mat* A, int modelSense, arma::vec* rhs, char* sense, arma::mat* Q, arma::vec* lb, arma::vec* ub, arma::vec* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat)
+    bool generic_LP(int k, int n, double *obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat)
     {
         // Initialize
         bool success = false;
         
         int i,j;
-        int k = A->n_rows;   // number of constraints
-        int n = obj->n_elem; // number of variables
+        //int k = A->n_rows;   // number of constraints ('rows')
+        //int n = obj->n_elem; // number of variables ('cols')
         //
         // environment
         GRBEnv* env = 0;
@@ -29,46 +29,26 @@
         GRBModel model = GRBModel(*env);
         model.getEnv().set(GRB_IntParam_OutputFlag, 0);
         //
-        // Set bounds
-        double** lb_grbi = new double*[n];
-        double** ub_grbi = new double*[n];
-        
-        if(lb==NULL){
-            *lb_grbi = NULL;
-        }else{
-            for(i=0; i < n; i++){
-                lb_grbi[i] = &(*lb)[i];
-            }
-        }
-        
-        if(ub==NULL){
-            *ub_grbi = NULL;
-        }else{
-            for(i=0; i < n; i++){
-                ub_grbi[i] = &(*ub)[i];
-            }
-        }
-        //
         // Model variables and constraints
-        GRBVar* vars = model.addVars(*lb_grbi, *ub_grbi, NULL, NULL, NULL, n);
+        GRBVar* vars = model.addVars(lb, ub, NULL, NULL, NULL, n);
         model.update();
         
         for(i=0; i < k; i++){
             GRBLinExpr lhs = 0;
             for(j=0; j < n; j++){
-                if((*A)(i,j) != 0){
-                    lhs += (*A)(i,j)*vars[j];
+                if(A[i+j*k] != 0){
+                    lhs += A[i+j*k]*vars[j]; // need to switch order; was A[i*n+j]
                 }
             }
-            model.addConstr(lhs, sense[i], (*rhs)(i));
+            model.addConstr(lhs, sense[i], rhs[i]);
         }
         //
         // Model objective
-        if(Q==NULL){ // Linear programming problem
+        if (Q==NULL) { // Linear programming problem
             GRBLinExpr LPobj = 0;
             
             for(j = 0; j < n; j++){
-                LPobj += (*obj)(j)*vars[j];
+                LPobj += obj[j]*vars[j];
             }
             
             if(modelSense==1){
@@ -76,16 +56,16 @@
             }else{
                 model.setObjective(LPobj,GRB_MINIMIZE);
             }
-        }else{ // Quadratic programming problem
+        } else { // Quadratic programming problem
             GRBQuadExpr QPobj = 0;
             
             for(j = 0; j < n; j++){
-                QPobj += (*obj)(j)*vars[j];
+                QPobj += obj[j]*vars[j];
             }
             for(i = 0; i < n; i++){
                 for(j = 0; j < n; j++){
-                    if((*Q)(i,j) != 0){
-                        QPobj += (*Q)(i,j)*vars[i]*vars[j];
+                    if(Q[i+j*n] != 0){
+                        QPobj += Q[i+j*n]*vars[i]*vars[j];
                     }
                 }
             }
@@ -106,19 +86,16 @@
         
         if (model.get(GRB_IntAttr_Status) == GRB_OPTIMAL) {
             objval = model.get(GRB_DoubleAttr_ObjVal);
-            for(i = 0; i < n; i++){
+            for (i=0; i<n; i++) {
                 sol_mat(i,0) = vars[i].get(GRB_DoubleAttr_X);
                 sol_mat(i,1) = vars[i].get(GRB_DoubleAttr_RC);
             }
-            for(j = 0; j < k; j++){
+            for (j=0; j<k; j++) {
                 dual_mat(j,0) = mycons[j].get(GRB_DoubleAttr_Pi);
                 dual_mat(j,1) = mycons[j].get(GRB_DoubleAttr_Slack);
             }
             success = true;
         }
-        //
-        delete[] lb_grbi;
-        delete[] ub_grbi;
         //
         return success;
     }
@@ -131,77 +108,27 @@
         #include "generic_lp.h"
     }
     
-    bool generic_LP(arma::vec *obj, arma::mat* A, int modelSense, arma::vec* rhs, char* sense, arma::mat* Q, arma::vec* lb, arma::vec* ub, arma::vec* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat)
+    bool generic_LP(int k, int n, double *obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat)
     {
         // Initialize
         bool success = false;
         int solved;
         
         int i,j;
-        int k = A->n_rows;   // number of constraints ('rows')
-        int n = obj->n_elem; // number of variables ('columns')
+        //int k = A->n_rows;   // number of constraints ('rows')
+        //int n = obj->n_elem; // number of variables ('columns')
         //
-        // Switch to double arrays
-        double** obj_grbi = new double*[n];
-        double** A_grbi   = new double*[k*n];
-        double** rhs_grbi = new double*[k];
-        double** Q_grbi   = new double*[n*n];
-        double** lb_grbi  = new double*[n];
-        double** ub_grbi  = new double*[n];
-        
-        for(i=0; i < n; i++){
-            obj_grbi[i] = &(*obj)[i];
-            //std::cout << *obj_grbi[i] << std::endl;
-        }
-        
-        for(i=0; i < k; i++){
-            for(j=0; j < n; j++){
-                A_grbi[i*k+j] = &(*A)(i,j); // need to switch the order for C
-            }
-        }
-        
-        for(i=0; i < k; i++){
-            rhs_grbi[i] = &(*rhs)[i];
-            //std::cout << *rhs_grbi[i] << std::endl;
-        }
-        
-        if(Q==NULL){
-            *Q_grbi = NULL;
-        }else{
-            for(i=0; i < n; i++){
-                for(j=0; j < n; j++){
-                    Q_grbi[i*n+j] = &(*Q)(i,j);
-                }
-            }
-        }
-        
-        if(lb==NULL){
-            *lb_grbi = NULL;
-        }else{
-            for(i=0; i < n; i++){
-                lb_grbi[i] = &(*lb)[i];
-                //std::cout << *lb_grbi[i] << std::endl;
-            }
-        }
-        
-        if(ub==NULL){
-            *ub_grbi = NULL;
-        }else{
-            for(i=0; i < n; i++){
-                ub_grbi[i] = &(*ub)[i];
-                //std::cout << *ub_grbi[i] << std::endl;
-            }
-        }
-        
+        // solution objects
         double* sol_1_grbi  = new double[n];
         double* sol_2_grbi  = new double[n];
         double* dual_1_grbi = new double[k];
         double* dual_2_grbi = new double[k];
         //
         // Call C-version of the solver
-        solved = generic_LP_C_switch(k, n, *obj_grbi, *A_grbi, modelSense, *rhs_grbi, sense, *Q_grbi, *lb_grbi,
-                                     *ub_grbi, &objval, sol_1_grbi, sol_2_grbi, dual_1_grbi, dual_2_grbi);
-        
+        printf("waiting for gurobi... ");
+        solved = generic_LP_C_switch(k, n, obj, A, modelSense, rhs, sense, Q, lb, ub, 
+                                     &objval, sol_1_grbi, sol_2_grbi, dual_1_grbi, dual_2_grbi);
+        printf("done.\n");
         //
         // Put solution matrices together
         if (solved == 1) {
@@ -215,14 +142,7 @@
             }
             success = true;
         }
-        //
-        delete[] obj_grbi;
-        delete[] A_grbi;
-        delete[] rhs_grbi;
-        delete[] Q_grbi;
-        delete[] lb_grbi;
-        delete[] ub_grbi;
-        
+        //        
         delete[] sol_1_grbi;
         delete[] sol_2_grbi;
         delete[] dual_1_grbi;
