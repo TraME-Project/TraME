@@ -1,0 +1,80 @@
+/*
+ * Kronecker product of sparse matrices
+ *
+ * Keith O'Hara
+ * 05/30/2016
+ */
+
+arma::sp_mat kron_sp(arma::sp_mat& A, arma::sp_mat& B)
+{
+    int A_rows = A.n_rows;
+    int A_cols = A.n_cols;
+    int B_rows = B.n_rows;
+    int B_cols = B.n_cols;
+    
+    arma::sp_mat ret_mat(A_rows*B_rows, A_cols*B_cols);
+    
+    int i,j;
+    double A_val;
+    
+    arma::sp_mat::iterator it     = A.begin();
+    arma::sp_mat::iterator it_end = A.end();
+
+    for (; it != it_end; ++it) {
+        i = it.row();
+        j = it.col();
+        
+        A_val = (*it);
+        
+        ret_mat.submat(i*B_rows, j*B_cols, (i+1)*B_rows-1, (j+1)*B_cols-1) = A_val * B;
+    }
+    
+    return ret_mat;
+}
+
+arma::sp_mat kron_sp(arma::mat& A, arma::sp_mat& B)
+{
+    int A_rows = A.n_rows;
+    int A_cols = A.n_cols;
+    int B_rows = B.n_rows;
+    int B_cols = B.n_cols;
+    
+    arma::sp_mat ret_mat(A_rows*B_rows, A_cols*B_cols);
+    
+    int i,j;
+
+    for (j = 0; j<A_cols; j++) {
+        for (i = 0; i < A_rows; i++) {
+            ret_mat.submat(i*B_rows, j*B_cols, (i+1)*B_rows-1, (j+1)*B_cols-1) = A.at(i,j) * B;
+        }
+    }
+    
+    return ret_mat;
+}
+
+arma::sp_mat kron_sp(arma::sp_mat& A, arma::mat& B)
+{
+    int A_rows = A.n_rows;
+    int A_cols = A.n_cols;
+    int B_rows = B.n_rows;
+    int B_cols = B.n_cols;
+    
+    arma::sp_mat ret_mat(A_rows*B_rows, A_cols*B_cols);
+    
+    int i,j;
+    double A_val;
+    
+    arma::sp_mat::iterator it     = A.begin();
+    arma::sp_mat::iterator it_end = A.end();
+
+    for (; it != it_end; ++it) {
+        i = it.row();
+        j = it.col();
+        
+        A_val = (*it);
+        
+        ret_mat.submat(i*B_rows, j*B_cols, (i+1)*B_rows-1, (j+1)*B_cols-1) = A_val * B;
+    }
+    
+    return ret_mat;
+}
