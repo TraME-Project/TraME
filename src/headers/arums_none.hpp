@@ -28,10 +28,11 @@ class none
         int nbParams;
         
         // equilibrium objects
-        arma::mat mu;
-        arma::mat mux;
         arma::mat U;
-        arma::mat Ux;
+        arma::mat mu;
+        
+        arma::mat U_sol;
+        arma::mat mu_sol;
         
         // member functions
         void build(int nbX_b, int nbY_b);
@@ -50,19 +51,39 @@ void none::build(int nbX_b, int nbY_b)
     nbParams = 0;
 }
 
-double none::Gx(arma::mat Ux_inp)
+double none::G(arma::vec n)
+{   
+    int i;
+    double val=0.0, val_x;
+    
+    mu_sol.set_size(nbX,nbY);
+    arma::mat mux_temp;
+    //
+    for(i=0; i<nbX; i++){
+        val_x = none::Gx(U.row(i).t(),mux_temp);
+        //
+        val += n(i)*val_x;
+        mu_sol.row(i) = arma::trans(n(i)*mux_temp);
+    }
+    //
+    return val;
+}
+
+double none::Gx(arma::mat Ux, arma::mat& mux_inp)
 {
-    arma::uvec temp_vec = which_max(&Ux_inp, (int) 0);
+    arma::uvec temp_vec = which_max(&Ux, (int) 0);
     int y = temp_vec(0);
     //
-    mux.zeros(nbY,1);
-    if(y < nbY){
+    mux_inp.set_size(nbY,1);
+    mux_inp.zeros();
+    
+    if (y < nbY) {
         mux(y) = 1;
     }
     //
-    double valx = std::max(arma::as_scalar(arma::max(arma::vectorise(Ux_inp))), (double) 0.0);
+    double val_x = std::max(arma::as_scalar(arma::max(arma::vectorise(Ux))), (double) 0.0);
     //
-    return valx;
+    return val_x;
 }
 
 arma::vec none::dtheta_NablaGstar()

@@ -6,6 +6,10 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/tests
  * clang++ -O2 -Wall -std=c++11 -I/opt/local/include -I/Library/gurobi650/mac64/include arums_none_test.cpp -o arums_none.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
+ *
+ * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include ../lp/generic_lp.c -c -o ../lp/generic_lp.o
+ * g++-mp-5 -O2 -Wall -std=c++11 -fopenmp -I/opt/local/include -I/Library/gurobi650/mac64/include arums_none_test.cpp -c -o arums_none_test.o
+ * g++-mp-5 -O2 -Wall -fopenmp -o arums_none.test ../lp/generic_lp.o arums_none_test.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  */
  
 #include "armadillo"
