@@ -92,6 +92,14 @@ void empirical::build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous
 
 void empirical::presolve_LP()
 {   
+    /*
+     * Here we build and store the 'A' matricies that get passed to 
+     * the linear programming solver(s) in Gstarx and Gbarx. For this
+     * we use batch allocation of numbers to sparse matrices. This
+     * is much, much faster than first allocating the sparse matrix
+     * A_sp_* then consecutively additing elements.
+     */
+    
     int jj, kk, count_val=0;
     //
     // Gstar
@@ -111,12 +119,10 @@ void empirical::presolve_LP()
     arma::rowvec vals_mat(aux_nbDraws*nbOptions*2);
     vals_mat.fill(1);
     
-    arma::sp_mat A_sp_Gstar_t(location_mat,vals_mat); // actually the transpose of this
+    arma::sp_mat A_sp_Gstar_t(location_mat,vals_mat); // this is the transpose of A_sp_Gstar
     
     k_Gstar = A_sp_Gstar_t.n_cols; // cols as we're working with the transpose
     n_Gstar = A_sp_Gstar_t.n_rows; // rows as we're working with the transpose
-    
-    //arma::sp_mat A_sp_Gstar_t = arma::trans(A_sp_Gstar); // need to transpose to get data into CSR format (not CSC)
     
     numnz_Gstar = aux_nbDraws*nbOptions*2;
 
@@ -171,17 +177,6 @@ void empirical::presolve_LP()
             ++count_val;
         }
     }
-    
-    /*arma::sp_mat A_sp_Gbar(aux_nbDraws*nbOptions+nbY,aux_nbDraws+nbY);
-    A_sp_Gbar.submat(0, 0, nbY - 1, nbY - 1) = arma::speye(nbY,nbY);
-    for (jj=0; jj<nbOptions; jj++) {
-        //std::cout << jj << std::endl;
-        A_sp_Gbar.submat(nbY + jj*aux_nbDraws, nbY, nbY + (jj+1)*aux_nbDraws - 1, nbY + aux_nbDraws - 1) = -arma::eye(aux_nbDraws,aux_nbDraws);
-        
-        if(jj < nbOptions-1){
-            A_sp_Gbar.submat(nbY + jj*aux_nbDraws, jj, nbY + (jj+1)*aux_nbDraws - 1, jj) = arma::ones(aux_nbDraws,1);
-        }
-    }*/
     
     arma::sp_mat A_sp_Gbar_t(location_mat_2,vals_mat_2);
     
