@@ -27,6 +27,7 @@ class probit
         int nbY;
         int nbParams;
         int aux_nbOptions;
+        
         bool outsideOption;
         
         double rho;
@@ -78,6 +79,11 @@ void probit::simul(empirical &ret, int nbDraws, int seed_val)
     ret.aux_nbDraws = nbDraws;
     ret.xHomogenous = false;
     ret.outsideOption = outsideOption;
+    if(outsideOption){
+        ret.nbOptions = nbY + 1;
+    }else{
+        ret.nbOptions = nbY;
+    }
     //
     arma::arma_rng::set_seed_random(); // need to reset the seed
 }
