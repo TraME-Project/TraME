@@ -92,17 +92,33 @@ void empirical::build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous
 
 void empirical::presolve_LP()
 {   
-    int jj;
+    int jj, kk, count_val=0;
     //
     // Gstar
-    arma::sp_mat A_sp_Gstar = arma::join_cols(kron_sp(arma::ones(1,nbOptions),arma::speye(aux_nbDraws,aux_nbDraws)),kron_sp(arma::speye(nbOptions,nbOptions),arma::ones(1,aux_nbDraws)));
+    arma::umat location_mat(2,aux_nbDraws*nbOptions*2);
+    for (kk=0; kk<nbOptions; kk++) {
+        for (jj=0; jj<aux_nbDraws; jj++) {
+            location_mat(0,count_val) = jj + kk*aux_nbDraws;
+            location_mat(1,count_val) = jj;
+            ++count_val;
+        }
+        for (jj=0; jj<aux_nbDraws; jj++) {
+            location_mat(0,count_val) = jj + kk*aux_nbDraws;
+            location_mat(1,count_val) = kk + aux_nbDraws;
+            ++count_val;
+        }
+    }
+    arma::rowvec vals_mat(aux_nbDraws*nbOptions*2);
+    vals_mat.fill(1);
     
-    k_Gstar = A_sp_Gstar.n_rows;
-    n_Gstar = A_sp_Gstar.n_cols;
+    arma::sp_mat A_sp_Gstar_t(location_mat,vals_mat); // actually the transpose of this
     
-    arma::sp_mat A_sp_Gstar_t = arma::trans(A_sp_Gstar); // need to transpose to get data into CSR format (not CSC)
+    k_Gstar = A_sp_Gstar_t.n_cols; // cols as we're working with the transpose
+    n_Gstar = A_sp_Gstar_t.n_rows; // rows as we're working with the transpose
     
-    numnz_Gstar = nonzeros(A_sp_Gstar).n_elem;
+    //arma::sp_mat A_sp_Gstar_t = arma::trans(A_sp_Gstar); // need to transpose to get data into CSR format (not CSC)
+    
+    numnz_Gstar = aux_nbDraws*nbOptions*2;
 
     const arma::uword* row_vals = &(*A_sp_Gstar_t.row_indices);
     const arma::uword* col_vals = &(*A_sp_Gstar_t.col_ptrs);
@@ -121,22 +137,58 @@ void empirical::presolve_LP()
     }
     //
     // Gbar
-
-    arma::sp_mat A1 = arma::speye(nbY,nbY);
-    arma::sp_mat A2(nbY,aux_nbDraws);
-    arma::sp_mat A3 = kron_sp(arma::speye(nbY,nbY),arma::ones(aux_nbDraws,1));
-    arma::sp_mat A4 = - kron_sp(arma::ones(nbY,1),arma::speye(aux_nbDraws,aux_nbDraws));
-    arma::sp_mat A5(aux_nbDraws,nbY);
-    arma::sp_mat A6 = -arma::speye(aux_nbDraws,aux_nbDraws);
-
-    arma::sp_mat A_sp_Gbar = arma::join_cols(arma::join_rows(A1,A2), arma::join_cols(arma::join_rows(A3,A4),arma::join_rows(A5,A6)));
-
-    k_Gbar = A_sp_Gbar.n_rows;
-    n_Gbar = A_sp_Gbar.n_cols;
+    count_val=0;
+    arma::umat location_mat_2(2,nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
+    arma::rowvec vals_mat_2(nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
     
-    arma::sp_mat A_sp_Gbar_t = arma::trans(A_sp_Gbar); // need to transpose to get data into CSR format (not CSC)
+    for(jj=0; jj<nbY; jj++){
+        location_mat_2(0,count_val) = jj;
+        location_mat_2(1,count_val) = jj;
+        
+        vals_mat_2(count_val) = 1;
+        
+        ++count_val;
+    }
     
-    numnz_Gbar = nonzeros(A_sp_Gbar).n_elem;
+    for (kk=0; kk<nbOptions; kk++) {
+        if(kk < nbOptions-1){
+            for (jj=0; jj<aux_nbDraws; jj++) {
+                location_mat_2(0,count_val) = kk;
+                location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
+                
+                vals_mat_2(count_val) = 1;
+                
+                ++count_val;
+            }
+        }
+        
+        for (jj=0; jj<aux_nbDraws; jj++) { // diagonal terms
+            location_mat_2(0,count_val) = nbY + jj;
+            location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
+            
+            vals_mat_2(count_val) = -1;
+            
+            ++count_val;
+        }
+    }
+    
+    /*arma::sp_mat A_sp_Gbar(aux_nbDraws*nbOptions+nbY,aux_nbDraws+nbY);
+    A_sp_Gbar.submat(0, 0, nbY - 1, nbY - 1) = arma::speye(nbY,nbY);
+    for (jj=0; jj<nbOptions; jj++) {
+        //std::cout << jj << std::endl;
+        A_sp_Gbar.submat(nbY + jj*aux_nbDraws, nbY, nbY + (jj+1)*aux_nbDraws - 1, nbY + aux_nbDraws - 1) = -arma::eye(aux_nbDraws,aux_nbDraws);
+        
+        if(jj < nbOptions-1){
+            A_sp_Gbar.submat(nbY + jj*aux_nbDraws, jj, nbY + (jj+1)*aux_nbDraws - 1, jj) = arma::ones(aux_nbDraws,1);
+        }
+    }*/
+    
+    arma::sp_mat A_sp_Gbar_t(location_mat_2,vals_mat_2);
+    
+    k_Gbar = A_sp_Gbar_t.n_cols; // cols as we're working with the transpose
+    n_Gbar = A_sp_Gbar_t.n_rows; // rows as we're working with the transpose
+    
+    numnz_Gbar = nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws;
     
     const arma::uword* row_vals_2 = &(*A_sp_Gbar_t.row_indices);
     const arma::uword* col_vals_2 = &(*A_sp_Gbar_t.col_ptrs);
@@ -381,3 +433,69 @@ double empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, ar
     //
     return valx;
 }
+
+/*
+void empirical::presolve_LP()
+{   
+    int jj;
+    //
+    // Gstar
+    arma::sp_mat A_sp_Gstar = arma::join_cols(kron_sp(arma::ones(1,nbOptions),arma::speye(aux_nbDraws,aux_nbDraws)),kron_sp(arma::speye(nbOptions,nbOptions),arma::ones(1,aux_nbDraws)));
+    
+    k_Gstar = A_sp_Gstar.n_rows;
+    n_Gstar = A_sp_Gstar.n_cols;
+    
+    arma::sp_mat A_sp_Gstar_t = arma::trans(A_sp_Gstar); // need to transpose to get data into CSR format (not CSC)
+    
+    numnz_Gstar = nonzeros(A_sp_Gstar).n_elem;
+
+    const arma::uword* row_vals = &(*A_sp_Gstar_t.row_indices);
+    const arma::uword* col_vals = &(*A_sp_Gstar_t.col_ptrs);
+    
+    vind_Gstar = new int[numnz_Gstar];
+    vbeg_Gstar = new int[k_Gstar+1];
+    vval_Gstar = new double[numnz_Gstar];
+    
+    for(jj=0; jj<numnz_Gstar; jj++){
+        vind_Gstar[jj] = row_vals[jj];
+        vval_Gstar[jj] = A_sp_Gstar_t.values[jj];
+    }
+    
+    for(jj=0; jj<k_Gstar+1; jj++){
+        vbeg_Gstar[jj] = col_vals[jj];
+    }
+    //
+    // Gbar
+
+    arma::sp_mat A1 = arma::speye(nbY,nbY);
+    arma::sp_mat A2(nbY,aux_nbDraws);
+    arma::sp_mat A3 = kron_sp(arma::speye(nbY,nbY),arma::ones(aux_nbDraws,1));
+    arma::sp_mat A4 = - kron_sp(arma::ones(nbY,1),arma::speye(aux_nbDraws,aux_nbDraws));
+    arma::sp_mat A5(aux_nbDraws,nbY);
+    arma::sp_mat A6 = -arma::speye(aux_nbDraws,aux_nbDraws);
+
+    arma::sp_mat A_sp_Gbar = arma::join_cols(arma::join_rows(A1,A2), arma::join_cols(arma::join_rows(A3,A4),arma::join_rows(A5,A6)));
+
+    k_Gbar = A_sp_Gbar.n_rows;
+    n_Gbar = A_sp_Gbar.n_cols;
+    
+    arma::sp_mat A_sp_Gbar_t = arma::trans(A_sp_Gbar); // need to transpose to get data into CSR format (not CSC)
+    
+    numnz_Gbar = nonzeros(A_sp_Gbar).n_elem;
+    
+    const arma::uword* row_vals_2 = &(*A_sp_Gbar_t.row_indices);
+    const arma::uword* col_vals_2 = &(*A_sp_Gbar_t.col_ptrs);
+    
+    vind_Gbar = new int[numnz_Gbar];
+    vbeg_Gbar = new int[k_Gbar+1];
+    vval_Gbar = new double[numnz_Gbar];
+    
+    for(jj=0; jj<numnz_Gbar; jj++){
+        vind_Gbar[jj] = row_vals_2[jj];
+        vval_Gbar[jj] = A_sp_Gbar_t.values[jj];
+    }
+    
+    for(jj=0; jj<k_Gbar+1; jj++){
+        vbeg_Gbar[jj] = col_vals_2[jj];
+    }
+}*/
