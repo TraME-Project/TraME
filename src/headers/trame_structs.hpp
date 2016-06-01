@@ -22,16 +22,16 @@
  
 // for use in zeroin()
 struct trame_opt_data {
-    arma::mat* expUbarX;
-    arma::mat* mubarX;
+    arma::mat* exp_U_bar_X;
+    arma::mat* mu_bar_X;
 };
 
 class trame_zeroin_data
 {
     public:
         //
-        arma::mat expUbarX;
-        arma::mat mubarX;
+        arma::mat exp_U_bar_X;
+        arma::mat mu_bar_X;
         
     //private:
 };

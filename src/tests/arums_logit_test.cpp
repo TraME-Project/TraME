@@ -44,19 +44,18 @@ int main()
     
     //
     // results
-    printf("\n*===================   Start of testLogit   ===================*\n");
+    printf("\n*===================   Start of Logit Test   ===================*\n");
     printf("\n");
     printf("Inputs: \n");
     arma::cout << "\nU: \n" << U << arma::endl;
     arma::cout << "mu: \n" << mu << arma::endl;
     //
-    // setup logit class objects
+    // setup logit class object
     int nbX = U.n_rows;
     int nbY = U.n_cols;
     
     arma::vec n = arma::sum(mu,1);
-    
-    // logit object
+
     logit logits;
     logits.nbX = nbX;
     logits.nbY = nbY;
@@ -66,6 +65,7 @@ int main()
     
     logits.U = U;
     logits.mu = mu;
+    //
     // empirical object:
     int n_draws = 10000;
     empirical logit_sim;
@@ -118,7 +118,7 @@ int main()
     arma::cout << "\nD2G: \n" << H << arma::endl;
     arma::cout << "D2G*: \n" << Hstar << arma::endl;*/
     //
-    printf("\n*===================   End of testLogit   ===================*\n");
+    printf("\n*===================   End of Logit Test   ===================*\n");
     printf("\n");
 //#ifdef __clang__
     //#if __has_feature(cxx_rvalue_references)
