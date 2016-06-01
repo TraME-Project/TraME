@@ -20,6 +20,7 @@
   ################################################################################*/
 
 #include "which_max.hpp"
+#include "sparse_kron.hpp"
 #include "../lp/generic_lp.hpp"
 
 // logit class
@@ -32,6 +33,7 @@ class empirical
         
         int nbParams;
         int aux_nbDraws;
+        int nbOptions;
         
         bool xHomogenous;
         bool outsideOption;
@@ -47,17 +49,31 @@ class empirical
         
         // member functions
         void build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous_b, bool outsideOption_b);
+        void presolve_LP();
         
         double G(arma::vec n);
         double Gx(arma::mat Ux, arma::mat& mux_inp, int x);
         
-        double Gstar(arma::vec n, arma::mat& U_inp);
+        double Gstar(arma::mat& U_inp, arma::vec n);
         double Gstarx(arma::mat mux, arma::mat& Ux_inp, int x);
         
         double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
         double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x);
         
-    //private:
+    private:
+        int k_Gstar;
+        int n_Gstar;
+        int numnz_Gstar;
+        int* vind_Gstar;
+        int* vbeg_Gstar;
+        double* vval_Gstar;
+        
+        int k_Gbar;
+        int n_Gbar;
+        int numnz_Gbar;
+        int* vind_Gbar;
+        int* vbeg_Gbar;
+        double* vval_Gbar;
 };
 
 void empirical::build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous_b, bool outsideOption_b)
@@ -72,6 +88,71 @@ void empirical::build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous
     
     xHomogenous = xHomogenous_b;
     outsideOption = outsideOption_b;
+}
+
+void empirical::presolve_LP()
+{   
+    int jj;
+    //
+    // Gstar
+    arma::sp_mat A_sp_Gstar = arma::join_cols(kron_sp(arma::ones(1,nbOptions),arma::speye(aux_nbDraws,aux_nbDraws)),kron_sp(arma::speye(nbOptions,nbOptions),arma::ones(1,aux_nbDraws)));
+    
+    k_Gstar = A_sp_Gstar.n_rows;
+    n_Gstar = A_sp_Gstar.n_cols;
+    
+    arma::sp_mat A_sp_Gstar_t = arma::trans(A_sp_Gstar); // need to transpose to get data into CSR format (not CSC)
+    
+    numnz_Gstar = nonzeros(A_sp_Gstar).n_elem;
+
+    const arma::uword* row_vals = &(*A_sp_Gstar_t.row_indices);
+    const arma::uword* col_vals = &(*A_sp_Gstar_t.col_ptrs);
+    
+    vind_Gstar = new int[numnz_Gstar];
+    vbeg_Gstar = new int[k_Gstar+1];
+    vval_Gstar = new double[numnz_Gstar];
+    
+    for(jj=0; jj<numnz_Gstar; jj++){
+        vind_Gstar[jj] = row_vals[jj];
+        vval_Gstar[jj] = A_sp_Gstar_t.values[jj];
+    }
+    
+    for(jj=0; jj<k_Gstar+1; jj++){
+        vbeg_Gstar[jj] = col_vals[jj];
+    }
+    //
+    // Gbar
+
+    arma::sp_mat A1 = arma::speye(nbY,nbY);
+    arma::sp_mat A2(nbY,aux_nbDraws);
+    arma::sp_mat A3 = kron_sp(arma::speye(nbY,nbY),arma::ones(aux_nbDraws,1));
+    arma::sp_mat A4 = - kron_sp(arma::ones(nbY,1),arma::speye(aux_nbDraws,aux_nbDraws));
+    arma::sp_mat A5(aux_nbDraws,nbY);
+    arma::sp_mat A6 = -arma::speye(aux_nbDraws,aux_nbDraws);
+
+    arma::sp_mat A_sp_Gbar = arma::join_cols(arma::join_rows(A1,A2), arma::join_cols(arma::join_rows(A3,A4),arma::join_rows(A5,A6)));
+
+    k_Gbar = A_sp_Gbar.n_rows;
+    n_Gbar = A_sp_Gbar.n_cols;
+    
+    arma::sp_mat A_sp_Gbar_t = arma::trans(A_sp_Gbar); // need to transpose to get data into CSR format (not CSC)
+    
+    numnz_Gbar = nonzeros(A_sp_Gbar).n_elem;
+    
+    const arma::uword* row_vals_2 = &(*A_sp_Gbar_t.row_indices);
+    const arma::uword* col_vals_2 = &(*A_sp_Gbar_t.col_ptrs);
+    
+    vind_Gbar = new int[numnz_Gbar];
+    vbeg_Gbar = new int[k_Gbar+1];
+    vval_Gbar = new double[numnz_Gbar];
+    
+    for(jj=0; jj<numnz_Gbar; jj++){
+        vind_Gbar[jj] = row_vals_2[jj];
+        vval_Gbar[jj] = A_sp_Gbar_t.values[jj];
+    }
+    
+    for(jj=0; jj<k_Gbar+1; jj++){
+        vbeg_Gbar[jj] = col_vals_2[jj];
+    }
 }
 
 double empirical::G(arma::vec n)
@@ -128,7 +209,7 @@ double empirical::Gx(arma::mat Ux, arma::mat& mux_inp, int x)
     return valx;
 }
 
-double empirical::Gstar(arma::vec n, arma::mat& U_inp)
+double empirical::Gstar(arma::mat& U_inp, arma::vec n)
 {   
     int i;
     double val=0.0, val_temp;
@@ -148,15 +229,9 @@ double empirical::Gstar(arma::vec n, arma::mat& U_inp)
 
 double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
 {   
-    int nbOptions, jj;
+    int jj;
     double valx=0.0;
     arma::mat Phi, Ux_temp;
-    
-    if(outsideOption){
-        nbOptions = nbY + 1;
-    }else{
-        nbOptions = nbY;
-    }
     
     if(xHomogenous){
         Phi = atoms.slice(0);
@@ -176,18 +251,11 @@ double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
     }
     //
     arma::vec obj_grbi = arma::vectorise(Phi);
-    
-    arma::mat A1 = arma::kron(arma::ones(1,nbOptions),arma::eye(aux_nbDraws,aux_nbDraws));
-    arma::mat A2 = arma::kron(arma::eye(nbOptions,nbOptions),arma::ones(1,aux_nbDraws));
-    
-    arma::mat A_grbi = arma::join_cols(A1,A2);
-    
+   
     arma::vec rhs_grbi = arma::join_cols(p,q);
     
-    int k = A_grbi.n_rows;
-    
-    char* sense_grbi = new char[k];
-    for(jj=0;jj<k;jj++){
+    char* sense_grbi = new char[k_Gstar];
+    for(jj=0;jj<k_Gstar;jj++){
         sense_grbi[jj] = '=';
     }
     
@@ -196,10 +264,10 @@ double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
     double objval;
     
     arma::mat sol_mat(obj_grbi.n_elem,2);
-    arma::mat dual_mat(A_grbi.n_rows,2);
-
+    arma::mat dual_mat(k_Gstar, 2);    
     try {
-        LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
+        //LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
+        LP_optimal = generic_LP(k_Gstar, n_Gstar, obj_grbi.memptr(), numnz_Gstar, vbeg_Gstar, vind_Gstar, vval_Gstar, modelSense, rhs_grbi.memptr(), sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
         //
         if (LP_optimal) {
             arma::mat u = dual_mat.col(0).rows(0,aux_nbDraws-1);
@@ -257,6 +325,7 @@ double empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, ar
     arma::mat Phi, Ux_temp;
     
     if (!outsideOption) {
+        printf("Gbarx not implemented for empirical with outsideOption = false\n");
         return 0; //Gbarx not implemented for empirical with outsideOption = false
     }
     
@@ -269,24 +338,13 @@ double empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, ar
     arma::vec obj_grbi_1 = mubarx;
     arma::vec obj_grbi_2 = - arma::ones(aux_nbDraws,1)/aux_nbDraws;
     arma::vec obj_grbi   = arma::join_cols(obj_grbi_1,obj_grbi_2);
-    
-    arma::mat A1 = arma::eye(nbY,nbY);
-    arma::mat A2 = arma::zeros(nbY,aux_nbDraws);
-    arma::mat A3 = arma::kron(arma::eye(nbY,nbY),arma::ones(aux_nbDraws,1));
-    arma::mat A4 = - arma::kron(arma::ones(nbY,1),arma::eye(aux_nbDraws,aux_nbDraws));
-    arma::mat A5 = arma::zeros(aux_nbDraws,nbY);
-    arma::mat A6 = - arma::eye(aux_nbDraws,aux_nbDraws);
-    
-    arma::mat A_grbi = arma::join_cols(arma::join_rows(A1,A2), arma::join_cols(arma::join_rows(A3,A4),arma::join_rows(A5,A6)));
-    
+ 
     arma::vec rhs_grbi_1 = Ubarx;
     arma::vec rhs_grbi_2 = arma::vectorise(-Phi);
     arma::vec rhs_grbi = arma::join_cols(rhs_grbi_1,rhs_grbi_2);
     
-    int k = A_grbi.n_rows;
-    
-    char* sense_grbi = new char[k];
-    for (jj=0; jj<k; jj++) {
+    char* sense_grbi = new char[k_Gbar];
+    for (jj=0; jj<k_Gbar; jj++) {
         sense_grbi[jj] = '<';
     }
     
@@ -295,10 +353,11 @@ double empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, ar
     double objval;
     
     arma::mat sol_mat(obj_grbi.n_elem,2);
-    arma::mat dual_mat(A_grbi.n_rows,2);
+    arma::mat dual_mat(k_Gbar,2);
     
     try {
-        LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
+        //LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
+        LP_optimal = generic_LP(k_Gbar, n_Gbar, obj_grbi.memptr(), numnz_Gbar, vbeg_Gbar, vind_Gbar, vval_Gbar, modelSense, rhs_grbi.memptr(), sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat, dual_mat);
         //
         if (LP_optimal) {
             Ux_inp = sol_mat.col(0).rows(0,nbY-1);

@@ -150,4 +150,45 @@
         //
         return success;
     }
+    
+    bool generic_LP(int k, int n, double *obj, int numnz, int* vbeg, int* vind, double* vval, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat)
+    {
+        // Initialize
+        bool success = false;
+        int solved;
+        
+        int i,j;
+        //
+        // solution objects
+        double* sol_1_grbi  = new double[n];
+        double* sol_2_grbi  = new double[n];
+        double* dual_1_grbi = new double[k];
+        double* dual_2_grbi = new double[k];
+        //
+        // Call C-version of the solver
+        //printf("waiting for gurobi... ");
+        solved = generic_LP_C_sparse(k, n, obj, numnz, vbeg, vind, vval, modelSense, rhs, sense, Q, lb, ub, 
+                                     &objval, sol_1_grbi, sol_2_grbi, dual_1_grbi, dual_2_grbi);
+        //printf("done.\n");
+        //
+        // Put solution matrices together
+        if (solved == 1) {
+            for(i = 0; i < n; i++){
+                sol_mat(i,0) = sol_1_grbi[i];
+                sol_mat(i,1) = sol_2_grbi[i];
+            }
+            for(j = 0; j < k; j++){
+                dual_mat(j,0) = dual_1_grbi[j];
+                dual_mat(j,1) = dual_2_grbi[j];
+            }
+            success = true;
+        }
+        //        
+        delete[] sol_1_grbi;
+        delete[] sol_2_grbi;
+        delete[] dual_1_grbi;
+        delete[] dual_2_grbi;
+        //
+        return success;
+    }
 #endif
