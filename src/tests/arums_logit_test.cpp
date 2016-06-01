@@ -9,8 +9,8 @@
  * clang++ -O2 -Wall -static-libgcc -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -o arums_logit.test -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  *
  * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include ../lp/generic_lp.c -c -o ../lp/generic_lp.o
- * g++-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -c -o arums_logit_test.o
- * g++-mp-5 -O2 -Wall -o arums_logit.test ../lp/generic_lp.o arums_logit_test.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
+ * g++-mp-5 -O2 -Wall -fopenmp -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -c -o arums_logit_test.o
+ * g++-mp-5 -O2 -Wall -fopenmp -o arums_logit.test ../lp/generic_lp.o arums_logit_test.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  */
 
 #ifndef __clang__
@@ -67,7 +67,7 @@ int main()
     logits.U = U;
     logits.mu = mu;
     // empirical object:
-    int n_draws = 10000;
+    int n_draws = 5000;
     empirical logit_sim;
     
     logits.simul(logit_sim, n_draws, (int) 1777);
@@ -85,11 +85,13 @@ int main()
     arma::cout << "G-sim -> mu: \n" << logit_sim.mu_sol << arma::endl;
     //
     // solution to dual problem U*
+    logit_sim.presolve_LP();
+    
     arma::mat U_star;
     arma::mat U_star_sim;
     
     double Gstar_val = logits.Gstar(U_star, n);
-    double Gstar_sim_val = logit_sim.Gstar(n,U_star_sim);
+    double Gstar_sim_val = logit_sim.Gstar(U_star_sim, n);
     
     arma::cout << "G*(mu) and G*-sim(mu): \n" << Gstar_val << " and " << Gstar_sim_val << arma::endl;
     
@@ -97,7 +99,7 @@ int main()
     arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << U_star_sim << arma::endl;
     //
     // Gbar
-    /*arma::mat mu_bar(2,3);
+    arma::mat mu_bar(2,3);
     mu_bar.fill(2);
     
     arma::mat U_bar_temp, mu_bar_temp;
@@ -106,7 +108,7 @@ int main()
     double val_Gbar_sim = logit_sim.Gbar(U_star_sim,mu_bar,n,U_bar_temp,mu_bar_temp);
     
     std::cout << "Gbar val: \n" << val_Gbar << std::endl;
-    std::cout << "Gbar-sim val: \n" << val_Gbar_sim << std::endl;*/
+    std::cout << "Gbar-sim val: \n" << val_Gbar_sim << std::endl;
     //
     // Hessian tests
     /*arma::mat H;
