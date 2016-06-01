@@ -226,15 +226,15 @@ void empirical::presolve_LP_Gbar()
 double empirical::G(arma::vec n)
 {   
     int i;
-    double val=0.0, valx_temp;
+    double val=0.0, val_x;
     
     mu_sol.set_size(nbX,nbY);
     arma::mat mux_temp;
     //
     for(i=0; i<nbX; i++){
-        valx_temp = empirical::Gx(U.row(i).t(),mux_temp,i);
+        val_x = empirical::Gx(U.row(i).t(),mux_temp,i);
         //
-        val += n(i)*valx_temp;
+        val += n(i)*val_x;
         mu_sol.row(i) = arma::trans(n(i)*mux_temp);
     }
     //
