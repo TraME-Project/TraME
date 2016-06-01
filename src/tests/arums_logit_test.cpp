@@ -9,7 +9,7 @@
  * clang++ -O2 -Wall -static-libgcc -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -o arums_logit.test -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  *
  * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include ../lp/generic_lp.c -c -o ../lp/generic_lp.o
- * g++-mp-5 -O2 -Wall -fopenmp -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -c -o arums_logit_test.o
+ * g++-mp-5 -O2 -Wall -std=c++11 -fopenmp -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -c -o arums_logit_test.o
  * g++-mp-5 -O2 -Wall -fopenmp -o arums_logit.test ../lp/generic_lp.o arums_logit_test.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  */
 
@@ -26,12 +26,12 @@
 
 int main()
 {
-#ifdef __clang__
-    #if __has_feature(cxx_rvalue_references)
+//#ifdef __clang__
+    //#if __has_feature(cxx_rvalue_references)
         std::chrono::time_point<std::chrono::system_clock> start, end;
         start = std::chrono::system_clock::now();
-    #endif
-#endif
+    //#endif
+//#endif
     //
     // inputs:
     arma::mat U(2,3);
@@ -67,7 +67,7 @@ int main()
     logits.U = U;
     logits.mu = mu;
     // empirical object:
-    int n_draws = 5000;
+    int n_draws = 10000;
     empirical logit_sim;
     
     logits.simul(logit_sim, n_draws, (int) 1777);
@@ -85,8 +85,6 @@ int main()
     arma::cout << "G-sim -> mu: \n" << logit_sim.mu_sol << arma::endl;
     //
     // solution to dual problem U*
-    logit_sim.presolve_LP();
-    
     arma::mat U_star;
     arma::mat U_star_sim;
     
@@ -119,8 +117,11 @@ int main()
     
     arma::cout << "\nD2G: \n" << H << arma::endl;
     arma::cout << "D2G*: \n" << Hstar << arma::endl;*/
-#ifdef __clang__
-    #if __has_feature(cxx_rvalue_references)
+    //
+    printf("\n*===================   End of testLogit   ===================*\n");
+    printf("\n");
+//#ifdef __clang__
+    //#if __has_feature(cxx_rvalue_references)
         //
         end = std::chrono::system_clock::now();
         
@@ -129,8 +130,8 @@ int main()
         
         std::cout << "finished computation at " << std::ctime(&end_time)
                 << "elapsed time: " << elapsed_seconds.count() << "s\n";
-    #endif
-#endif
+    //#endif
+//#endif
     //
     return 0;
 }

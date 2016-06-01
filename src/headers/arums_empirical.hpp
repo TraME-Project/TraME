@@ -49,7 +49,6 @@ class empirical
         
         // member functions
         void build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous_b, bool outsideOption_b);
-        void presolve_LP();
         
         double G(arma::vec n);
         double Gx(arma::mat Ux, arma::mat& mux_inp, int x);
@@ -61,6 +60,12 @@ class empirical
         double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x);
         
     private:
+        void presolve_LP_Gstar();
+        void presolve_LP_Gbar();
+        
+        bool TRAME_PRESOLVED_GSTAR = false; // requires C++11
+        bool TRAME_PRESOLVED_GBAR  = false;
+        
         int k_Gstar;
         int n_Gstar;
         int numnz_Gstar;
@@ -90,20 +95,21 @@ void empirical::build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous
     outsideOption = outsideOption_b;
 }
 
-void empirical::presolve_LP()
+void empirical::presolve_LP_Gstar()
 {   
     /*
      * Here we build and store the 'A' matricies that get passed to 
-     * the linear programming solver(s) in Gstarx and Gbarx. For this
-     * we use batch allocation of numbers to sparse matrices. This
-     * is much, much faster than first allocating the sparse matrix
-     * A_sp_* then consecutively additing elements.
+     * the linear programming solver(s) in Gstarx. For this
+     * we use batch allocation when setting up the sparse matrices. 
+     * This is much, much faster than first allocating the sparse 
+     * matrix A_sp_* then consecutively additing elements.
      */
     
     int jj, kk, count_val=0;
-    //
-    // Gstar
+
     arma::umat location_mat(2,aux_nbDraws*nbOptions*2);
+    arma::rowvec vals_mat(aux_nbDraws*nbOptions*2);
+    
     for (kk=0; kk<nbOptions; kk++) {
         for (jj=0; jj<aux_nbDraws; jj++) {
             location_mat(0,count_val) = jj + kk*aux_nbDraws;
@@ -116,7 +122,7 @@ void empirical::presolve_LP()
             ++count_val;
         }
     }
-    arma::rowvec vals_mat(aux_nbDraws*nbOptions*2);
+
     vals_mat.fill(1);
     
     arma::sp_mat A_sp_Gstar_t(location_mat,vals_mat); // this is the transpose of A_sp_Gstar
@@ -142,8 +148,21 @@ void empirical::presolve_LP()
         vbeg_Gstar[jj] = col_vals[jj];
     }
     //
-    // Gbar
-    count_val=0;
+    TRAME_PRESOLVED_GSTAR = true;
+}
+
+void empirical::presolve_LP_Gbar()
+{   
+    /*
+     * Here we build and store the 'A' matricies that get passed to 
+     * the linear programming solver(s) in Gbarx. For this
+     * we use batch allocation when setting up the sparse matrices. 
+     * This is much, much faster than first allocating the sparse 
+     * matrix A_sp_* then consecutively additing elements.
+     */
+    
+    int jj, kk, count_val=0;
+     
     arma::umat location_mat_2(2,nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
     arma::rowvec vals_mat_2(nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
     
@@ -200,6 +219,8 @@ void empirical::presolve_LP()
     for(jj=0; jj<k_Gbar+1; jj++){
         vbeg_Gbar[jj] = col_vals_2[jj];
     }
+    //
+    TRAME_PRESOLVED_GBAR = true;
 }
 
 double empirical::G(arma::vec n)
@@ -260,6 +281,10 @@ double empirical::Gstar(arma::mat& U_inp, arma::vec n)
 {   
     int i;
     double val=0.0, val_temp;
+    
+    if (TRAME_PRESOLVED_GSTAR!=true){
+        presolve_LP_Gstar();
+    }
     
     U_inp.set_size(nbX,nbY);
     arma::mat Ux_temp;
@@ -349,6 +374,10 @@ double empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& 
 {   
     int i;
     double val=0.0, val_temp;
+    
+    if (!TRAME_PRESOLVED_GBAR){
+        presolve_LP_Gbar();
+    }
     
     U_inp.set_size(nbX,nbY);
     mu_inp.set_size(nbX,nbY);
