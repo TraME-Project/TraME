@@ -11,7 +11,11 @@
  * g++-mp-5 -O2 -Wall -std=c++11 -fopenmp -I/opt/local/include -I/Library/gurobi650/mac64/include arums_none_test.cpp -c -o arums_none_test.o
  * g++-mp-5 -O2 -Wall -fopenmp -o arums_none.test ../lp/generic_lp.o arums_none_test.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  */
- 
+
+#ifndef __clang__
+#define TRAME_USE_GUROBI_C
+#endif
+
 #include "armadillo"
 
 #include "../headers/trame_structs.hpp"
@@ -45,15 +49,15 @@ int main()
     none_obj.U = U;
     none_obj.mu = mu;
     //
-    double valx_Gx1 = none_obj.Gx(U.row(0).t());
-    std::cout << "G val: \n" << valx_Gx1 << std::endl;
+    double val_G = none_obj.G(n);
+    std::cout << "G val: \n" << val_G << std::endl;
     //
-    arma::mat mubar(2,3);
+    /*arma::mat mubar(2,3);
     mubar.fill(2);
 
     arma::mat Ubar_temp, mubar_temp;
     double valGbar = none_obj.Gbarx(U.row(0).t(),mubar.row(0).t(),Ubar_temp,mubar_temp);
-    std::cout << "Gbar val: \n" << valGbar << std::endl;
+    std::cout << "Gbar val: \n" << valGbar << std::endl;*/
     //
     return 0;
 }

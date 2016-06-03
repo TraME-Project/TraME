@@ -36,9 +36,13 @@ class none
         
         // member functions
         void build(int nbX_b, int nbY_b);
-        double Gx(arma::mat Ux);
-        arma::vec dtheta_NablaGstar();
+        double G(arma::vec n);
+        double Gx(arma::mat Ux, arma::mat& mux_inp);
+        
+        double Gbar(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp);
         double Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp);
+        
+        arma::vec dtheta_NablaGstar();
         
         void simul(empirical &ret, int nbDraws, int seed);
 };
@@ -78,7 +82,7 @@ double none::Gx(arma::mat Ux, arma::mat& mux_inp)
     mux_inp.zeros();
     
     if (y < nbY) {
-        mux(y) = 1;
+        mux_inp(y) = 1;
     }
     //
     double val_x = std::max(arma::as_scalar(arma::max(arma::vectorise(Ux))), (double) 0.0);
@@ -86,10 +90,24 @@ double none::Gx(arma::mat Ux, arma::mat& mux_inp)
     return val_x;
 }
 
-arma::vec none::dtheta_NablaGstar()
-{
-    arma::vec ret = arma::zeros(nbX*nbY,1);
-    return ret;
+double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+{   
+    int i;
+    double val=0.0, val_temp;
+    
+    U_inp.set_size(nbX,nbY);
+    mu_inp.set_size(nbX,nbY);
+    arma::mat Ux_temp, mux_temp;
+    //
+    for(i=0; i<nbX; i++){
+        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mux_temp);
+        //
+        val += n(i)*val_temp;
+        U_inp.row(i) = arma::trans(Ux_temp);
+        mu_inp.row(i) = arma::trans(n(i)*mux_temp);
+    }
+    //
+    return val;
 }
 
 double none::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp)
@@ -113,11 +131,17 @@ double none::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::m
         mux_inp(srt_ind(count_int)) = mubarx(srt_ind(count_int)) + 1 - cumul;
     }
     //
-    Ux = arma::zeros(nbY0,1);
+    Ux_inp = arma::zeros(nbY0,1);
     //
-    double valx = arma::accu(mux % Ubarx);
+    double valx = arma::accu(mux_inp % Ubarx);
     //
     return valx;
+}
+
+arma::vec none::dtheta_NablaGstar()
+{
+    arma::vec ret = arma::zeros(nbX*nbY,1);
+    return ret;
 }
 
 void none::simul(empirical &ret, int nbDraws, int seed_val)
