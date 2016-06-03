@@ -18,7 +18,6 @@
   ##   along with TraME. If not, see <http://www.gnu.org/licenses/>.
   ##
   ################################################################################*/
-
  
 // for use in zeroin()
 struct trame_opt_data {

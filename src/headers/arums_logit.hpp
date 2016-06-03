@@ -32,10 +32,11 @@ class logit
         double sigma;
         bool outsideOption;
         
-        // equilibrium objects
+        // input objects
         arma::mat mu;
         arma::mat U;
         
+        // equilibrium objects
         arma::mat U_sol;
         arma::mat mu_sol;
         
