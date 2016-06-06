@@ -40,10 +40,11 @@ class empirical
         
         arma::cube atoms;
         
-        // equilibrium objects
+        // input objects
         arma::mat U;
         arma::mat mu;
         
+        // equilibrium objects
         arma::mat U_sol;
         arma::mat mu_sol;
         
@@ -63,7 +64,7 @@ class empirical
         void presolve_LP_Gstar();
         void presolve_LP_Gbar();
         
-        bool TRAME_PRESOLVED_GSTAR = false; // requires C++11
+        bool TRAME_PRESOLVED_GSTAR = false; // initialization requires C++11
         bool TRAME_PRESOLVED_GBAR  = false;
         
         int k_Gstar;
@@ -98,11 +99,11 @@ void empirical::build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous
 void empirical::presolve_LP_Gstar()
 {   
     /*
-     * Here we build and store the 'A' matricies that get passed to 
-     * the linear programming solver(s) in Gstarx. For this
-     * we use batch allocation when setting up the sparse matrices. 
-     * This is much, much faster than first allocating the sparse 
-     * matrix A_sp_* then consecutively additing elements.
+     * Here we build and store the 'A' matrix that get passed to 
+     * a linear programming solver in Gstarx. For this
+     * we use batch allocation of the elements of sparse matrices. 
+     * This is *much* faster than first allocating the sparse 
+     * matrix A_sp_* then consecutively adding elements.
      */
     
     int jj, kk, count_val=0;
@@ -154,11 +155,11 @@ void empirical::presolve_LP_Gstar()
 void empirical::presolve_LP_Gbar()
 {   
     /*
-     * Here we build and store the 'A' matricies that get passed to 
-     * the linear programming solver(s) in Gbarx. For this
-     * we use batch allocation when setting up the sparse matrices. 
-     * This is much, much faster than first allocating the sparse 
-     * matrix A_sp_* then consecutively additing elements.
+     * Here we build and store the 'A' matrix that get passed to 
+     * a linear programming solver in Gbarx. For this
+     * we use batch allocation of the elements of sparse matrices. 
+     * This is *much* faster than first allocating the sparse 
+     * matrix A_sp_* then consecutively adding elements.
      */
     
     int jj, kk, count_val=0;

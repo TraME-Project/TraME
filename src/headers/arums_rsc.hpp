@@ -178,7 +178,7 @@ double RSC::G(arma::vec n)
     mu_sol.set_size(nbX,nbY);
     arma::vec mu_x;
     //
-    for(i=0; i<nbX; i++){
+    for (i=0; i<nbX; i++) {
         val_x_temp = Gx(mu_x,i);
         //
         val += n(i)*val_x_temp;
@@ -267,7 +267,7 @@ double RSC::Gstar(arma::vec n)
     U_sol.set_size(nbX,nbY);
     arma::vec U_x_temp;
     //
-    for(i=0; i<nbX; i++){
+    for (i=0; i<nbX; i++) {
         //val_x_temp = Gstarx((mu.row(i).t())/n(i),U_x_temp,i);
         val_x_temp = Gstarx(U_x_temp,n(i),i);
         //
