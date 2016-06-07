@@ -11,3 +11,4 @@ src/headers/old/
 *.o
 *.so
 *.test
+*.vscode
