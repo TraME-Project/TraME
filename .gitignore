@@ -4,7 +4,7 @@
 src-i386/
 src-x64/
 src/headers/old/
-src/lp/test/gurobi_ex/
+src/lp/tests/gurobi_ex/
 *.dll
 *.exe
 *.log
