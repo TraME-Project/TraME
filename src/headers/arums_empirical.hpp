@@ -233,7 +233,7 @@ double empirical::G(arma::vec n)
     arma::mat mux_temp;
     //
     for(i=0; i<nbX; i++){
-        val_x = empirical::Gx(U.row(i).t(),mux_temp,i);
+        val_x = Gx(U.row(i).t(),mux_temp,i);
         //
         val += n(i)*val_x;
         mu_sol.row(i) = arma::trans(n(i)*mux_temp);
@@ -291,7 +291,7 @@ double empirical::Gstar(arma::mat& U_inp, arma::vec n)
     arma::mat Ux_temp;
     //
     for(i=0; i<nbX; i++){
-        val_temp = empirical::Gstarx((mu_sol.row(i).t())/n(i),Ux_temp,i);
+        val_temp = Gstarx((mu_sol.row(i).t())/n(i),Ux_temp,i);
         //
         val += n(i)*val_temp;
         U_inp.row(i) = arma::trans(Ux_temp);
@@ -385,7 +385,7 @@ double empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& 
     arma::mat Ux_temp, mux_temp;
     //
     for(i=0; i<nbX; i++){
-        val_temp = empirical::Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mux_temp,i);
+        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mux_temp,i);
         //
         val += n(i)*val_temp;
         U_inp.row(i) = arma::trans(Ux_temp);
