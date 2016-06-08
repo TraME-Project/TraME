@@ -215,8 +215,8 @@ double RUSC::Gstarx(arma::vec& U_x, double n_x, int x)
     
     arma::vec A_mu = arma::trans(aux_A.slice(x) * mu_x); 
 
-    U_x = A_mu + aux_b.col(x);
-    val_x = arma::accu(mu_x % A_mu)/2 + arma::accu(mu_x % aux_b.col(x)) + aux_c(x);
+    U_x = A_mu + aux_b.row(x).t();
+    val_x = arma::accu(mu_x % A_mu)/2 + arma::accu(mu_x % aux_b.row(x).t()) + aux_c(x);
     
     return val_x;
 }
