@@ -55,8 +55,8 @@ class RUSC
         double Gstar(arma::vec n);
         double Gstarx(arma::vec& U_x, double n_x, int x);
         
-        void D2Gstar (arma::mat& hess, arma::vec n, bool x_first);
-        void dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first);
+        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
+        double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x);
         
         void simul(empirical &ret, int nbDraws, int seed);
         
@@ -217,6 +217,80 @@ double RUSC::Gstarx(arma::vec& U_x, double n_x, int x)
 
     U_x = A_mu + aux_b.row(x).t();
     val_x = arma::accu(mu_x % A_mu)/2 + arma::accu(mu_x % aux_b.row(x).t()) + aux_c(x);
+    
+    return val_x;
+}
+
+double RUSC::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+{   
+    int i;
+    double val=0.0, val_temp;
+    
+    if (!TRAME_PRESOLVED_GBAR){
+        presolve_LP_Gbar();
+    }
+    
+    U_inp.set_size(nbX,nbY);
+    mu_inp.set_size(nbX,nbY);
+    arma::mat Ux_temp, mux_temp;
+    //
+    for(i=0; i<nbX; i++){
+        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mux_temp,i);
+        //
+        val += n(i)*val_temp;
+        U_inp.row(i) = arma::trans(Ux_temp);
+        mu_inp.row(i) = arma::trans(n(i)*mux_temp);
+    }
+    //
+    return val;
+}
+
+double RUSC::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp)
+{
+    int nbAlt = nbY + 1;
+
+    arma::vec obj_grbi = arma::join_cols(aux_b.row(x).t(),arma::zeros(1,1));
+    arma::mat A_grbi = arma::ones(1,nbAlt);
+    arma::vec rhs_grbi = arma::ones(1,1);
+
+    arma::mat Q_grbi = arma::zeros(nbAlt,nbAlt);
+    Q_grbi.submat(0,0,nbAlt-2,nbAlt-2) = aux_A.slice(x) / 2;
+
+    arma::vec lb_grbi = arma::zeros(1,nbAlt);
+    arma::vec ub_grbi = arma::join_cols(mu_bar_x,arma::ones(1,1));
+    
+    char* sense_grbi = new char[1];
+    sense_grbi[0] = '=';
+    
+    bool LP_optimal;
+    int modelSense = 0; // minimize
+    double objval;
+    
+    arma::mat sol_mat(obj_grbi.n_elem,2);
+    arma::mat dual_mat(1,2);
+    
+    try {
+        LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, Q_grbi.memptr(), lb_grbi.memptr(), ub_grbi.memptr(), NULL, objval, sol_mat, dual_mat);
+        //
+        if (LP_optimal) {
+            mu_x_inp = sol_mat(arma::span(0,nbAlt-2),0);
+
+            A_mu = arma::trans(aux_A.slice(x) * mu_x_inp);
+
+            U_x_inp = A_mu + aux_b.row(x).t();
+            //
+            valx = -objval - aux_c(x);
+        } else {
+            std::cout << "Non-optimal value found during optimization" << std::endl;
+        }
+#if !defined(TRAME_USE_GUROBI_C)
+    } catch(GRBException e) {
+        std::cout << "Error code = " << e.getErrorCode() << std::endl;
+        std::cout << e.getMessage() << std::endl;
+#endif
+    } catch(...) {
+        std::cout << "Exception during optimization" << std::endl;
+    }
     
     return val_x;
 }
