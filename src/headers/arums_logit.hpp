@@ -196,8 +196,9 @@ double differMargX(double z, const trame_zeroin_data& opt_data)
 
 double logit::Gbar_x(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp)
 {
-    double valx=0.0;
-    if(outsideOption){
+    double valx = 0.0;
+
+    if (outsideOption) {
         double tol_zero = 1E-12;
         double max_iter = 10000;
         
@@ -214,6 +215,7 @@ double logit::Gbar_x(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, 
         //
         valx = arma::accu(mu_x_inp % U_bar_x) - sigma*(mu_x_0*std::log(mu_x_0) + arma::accu(mu_x_inp % arma::log(mu_x_inp)));
     }
+    //
     return valx;
 }
 
