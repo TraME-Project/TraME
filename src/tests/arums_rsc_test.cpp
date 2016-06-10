@@ -9,7 +9,7 @@
  * gfortran-mp-5 -O2 ../prob/prob.f90  -c -o ../prob/prob.o
  * gfortran-mp-5 -O2 ../math/quadpack_double.f90  -c -o ../math/quadpack_double.o
  * gfortran-mp-5 -O2 ../prob/aux.f90  -c -o ../prob/aux.o
- * g++-mp-5 -o arums_rsc_test.test ../prob/prob.o ../math/quadpack_double.o ../prob/aux.o arums_rsc_test.o -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -lgfortran -fopenmp -framework Accelerate
+ * g++-mp-5 -o arums_rsc_test.test ../prob/prob.o ../math/quadpack_double.o ../prob/aux.o arums_rsc_test.o -L/Library/gurobi650/mac64/lib -lgurobi65 -lgfortran -fopenmp -framework Accelerate
  */
 
 #ifndef __clang__
