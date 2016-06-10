@@ -82,6 +82,16 @@ int main()
     arma::cout << "G*-sim(mu): \n" << Gstar_sim_val << arma::endl;
     arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << U_star_sim << arma::endl;
     //
+    // Gbar
+    arma::mat mu_bar(2,3);
+    mu_bar.fill(2);
+    
+    arma::mat U_bar_temp, mu_bar_temp;
+
+    double val_Gbar_sim = emp_obj.Gbar(U_star_sim, mu_bar, n, U_bar_temp, mu_bar_temp);
+    
+    arma::cout << "Gbar-sim val: \n" << val_Gbar_sim << arma::endl;
+    //
     printf("\n*===================   End of Probit Test   ===================*\n");
     printf("\n");
     //

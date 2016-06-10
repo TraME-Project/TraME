@@ -12,6 +12,10 @@
  * g++-mp-5 -o arums_rsc_test.test ../prob/prob.o ../math/quadpack_double.o ../prob/aux.o arums_rsc_test.o -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -lgfortran -fopenmp -framework Accelerate
  */
 
+#ifndef __clang__
+#define TRAME_USE_GUROBI_C
+#endif
+
 #include "armadillo"
 
 #include "../headers/trame_structs.hpp"
@@ -22,6 +26,10 @@
 
 int main()
 {
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+    //
+    // inputs:
     arma::mat U(2,3);
     U  << 1.6 << 3.2 << 1.1 << arma::endr
        << 2.9 << 1.0 << 3.1 << arma::endr;
@@ -30,9 +38,15 @@ int main()
     mu << 1.0 << 3.0 << 1.0 << arma::endr
        << 2.0 << 1.0 << 3.0 << arma::endr;
     
+    //
+    // results
+    printf("\n*===================   Start of RSC Test   ===================*\n");
+    printf("\n");
+    printf("Inputs: \n");
     arma::cout << "\nU: \n" << U << arma::endl;
     arma::cout << "mu: \n" << mu << arma::endl;
     //
+    // setup RSC class object
     int nbX = U.n_rows;
     int nbY = U.n_cols;
     
@@ -93,6 +107,17 @@ int main()
     rsc_obj.dtheta_NablaGstar(nablaGstar,n,&dtheta,true);
     
     arma::cout << nablaGstar << arma::endl;
+    //
+    printf("\n*===================   End of RSC Test   ===================*\n");
+    printf("\n");
+    //
+    end = std::chrono::system_clock::now();
+        
+    std::chrono::duration<double> elapsed_seconds = end-start;
+    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+        
+    std::cout << "finished computation at " << std::ctime(&end_time)
+              << "elapsed time: " << elapsed_seconds.count() << "s\n";
     //
     return 0;
 }
