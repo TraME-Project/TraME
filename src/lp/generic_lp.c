@@ -13,7 +13,12 @@
 
 #include "generic_lp.h"
 
-int generic_LP_C(int rows, int cols, double* obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
+//
+// Dense setup; NOT to be used with Armadillo memptr based passing 
+int generic_LP_C(int rows, int cols, double* obj, double* A, int model_opt_sense, 
+                 double* rhs, char* sense, double* Q, double* lb, double* ub, 
+                 double* objval, double* sol_mat_X, double* sol_mat_RC, 
+                 double* dual_mat_PI, double* dual_mat_SLACK)
 {
     int i, j, optimstatus;
     int error = 0;
@@ -34,10 +39,13 @@ int generic_LP_C(int rows, int cols, double* obj, double* A, int modelSense, dou
     error = GRBsetintparam(GRBgetenv(model), GRB_INT_PAR_OUTPUTFLAG, 0);
     if (error) goto QUIT;
     
-    if(modelSense==0){ // minimize or maximize, resp.
+    if (model_opt_sense==0) { // minimize
         error = GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, 1);
-    }else{
+    } else if (model_opt_sense==1) { // maximize
         error = GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, -1);
+    } else {
+        printf("unrecognized input for model_opt_sense; should be 0 or 1.\n");
+        goto QUIT;
     }
     if (error) goto QUIT;
 
@@ -123,13 +131,18 @@ QUIT:
     return success;
 }
 
-int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
+//
+// Dense setup; should be used with Armadillo memptr based passing 
+int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int model_opt_sense, 
+                        double* rhs, char* sense, double* Q, double* lb, double* ub, 
+                        double* objval, double* sol_mat_X, double* sol_mat_RC, 
+                        double* dual_mat_PI, double* dual_mat_SLACK)
 {
     int i, j, optimstatus;
     int error = 0;
     int success = 0;
     int numremoved = 0;
-    //printf("Begin!\n");
+
     /* Create an empty model */
     
     GRBenv* env = NULL;
@@ -145,10 +158,13 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
     error = GRBsetintparam(GRBgetenv(model), GRB_INT_PAR_OUTPUTFLAG, 0);
     if (error) goto QUIT;
     
-    if(modelSense==0){ // minimize or maximize, resp.
+    if (model_opt_sense==0) { // minimize
         error = GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, 1);
-    }else{
+    } else if (model_opt_sense==1) { // maximize
         error = GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, -1);
+    } else {
+        printf("unrecognized input for model_opt_sense; should be 0 or 1.\n");
+        goto QUIT;
     }
     if (error) goto QUIT;
 
@@ -171,25 +187,13 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
      * the reference would run over rows rather than columns first
      */
     
-    //int act_row = 0;
-    //int act_col = 0;
     
     for (i = 0; i < rows; i++) {
         for (j = 0; j < cols; j++) {
-            /*if (A[i*cols+j] != 0) {
-                error = GRBchgcoeffs(model, 1, &act_row, &act_col, &A[i*cols+j]);
-                if (error) goto QUIT;
-            }*/
             if (A[i+j*rows] != 0) {
                 error = GRBchgcoeffs(model, 1, &i, &j, &A[i+j*rows]);
                 if (error) goto QUIT;
             }
-            
-            /*++act_row;
-            if(act_row>=rows){
-                act_row=0;
-                ++act_col;
-            }*/
         }
     }
     
@@ -205,36 +209,22 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
      */
 
     if (Q) {
-        //act_row = 0;
-        //act_col = 0;
-        
         for (i = 0; i < cols; i++) {
             for (j = 0; j < cols; j++) {
-                /*if (Q[i*cols+j] != 0) {
-                    error = GRBaddqpterms(model, 1, &act_row, &act_col, &Q[i*cols+j]);
-                    if (error) goto QUIT;
-                }*/
-                
                 if (Q[i+j*cols] != 0) {
                     error = GRBaddqpterms(model, 1, &i, &j, &Q[i+j*cols]);
                     if (error) goto QUIT;
                 }
-                
-                /*++act_row;
-                if(act_row>=cols){
-                    act_row=0;
-                    ++act_col;
-                }*/
             }
         }
     }
     
     error = GRBupdatemodel(model);
     if (error) goto QUIT;
-    //printf("Setup Model!\n");
+
     /* Optimize model */
     
-    //error = GRBsetintparam(env, "Method", 1);
+    //error = GRBsetintparam(env, "Method", 1); // set optimize method here
     //if (error) goto QUIT;
 
     error = GRBoptimize(model);
@@ -244,8 +234,6 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
 
     error = GRBgetintattr(model, GRB_INT_ATTR_STATUS, &optimstatus);
     if (error) goto QUIT;
-    
-    //printf("optim code: %d\n", optimstatus);
 
     if (optimstatus==4) { // INF_OR_UNBD
         printf("Optim status: 4 (INF_OR_UNBD). Reoptimizing... ");
@@ -295,8 +283,6 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
             error = GRBcomputeIIS(model);
             if (error) goto QUIT;
             
-            //printf("\nThe following constraint cannot be satisfied:\n");
-            
             for (i = 0; i < numconstrs; ++i) {
                 error = GRBgetintattrelement(model, "IISConstr", i, &iis);
                 if (error) goto QUIT;
@@ -304,9 +290,7 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
                 if (iis) {
                     error = GRBgetstrattrelement(model, "ConstrName", i, &cname);
                     if (error) goto QUIT;
-                    
-                    //printf("%s\n", cname);
-                    
+
                     /* Remove a single constraint from the model */
                     removed[numremoved] = malloc(sizeof(char) * (1+strlen(cname)));
                     if (!removed[numremoved]) goto QUIT;
@@ -321,9 +305,7 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
                     break;
                 }
             }
-            
-            //printf("\n");
-            
+
             error = GRBupdatemodel(model);
             if (error) goto QUIT;
             
@@ -372,8 +354,6 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int modelSen
         success = 1;
     }
 
-    //printf("Finished! Success: %d\n", success);
-
     /* Free model */
 
     GRBfreemodel(model);
@@ -398,13 +378,17 @@ QUIT:
     return success;
 }
 
-int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, int* vind, double* vval, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
+//
+// for use with sparse matrix inputs; sparse A, dense (or empty) Q
+int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, int* vind, double* vval, 
+                        int model_opt_sense, double* rhs, char* sense, double* Q, double* lb, double* ub, 
+                        double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
 {
     int i, j, optimstatus;
     int error = 0;
     int success = 0;
     int numremoved = 0;
-    //printf("Begin!\n");
+
     /* Create an empty model */
     
     GRBenv* env = NULL;
@@ -421,10 +405,13 @@ int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
     error = GRBsetintparam(GRBgetenv(model), GRB_INT_PAR_OUTPUTFLAG, 0);
     if (error) goto QUIT;
     
-    if(modelSense==0){ // minimize or maximize, resp.
+    if (model_opt_sense==0) { // minimize
         error = GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, 1);
-    }else{
+    } else if (model_opt_sense==1) { // maximize
         error = GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, -1);
+    } else {
+        printf("unrecognized input for model_opt_sense; should be 0 or 1.\n");
+        goto QUIT;
     }
     if (error) goto QUIT;
 
@@ -455,47 +442,29 @@ int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
      */
 
     if (Q) {
-        //act_row = 0;
-        //act_col = 0;
-        
         for (i = 0; i < cols; i++) {
-            for (j = 0; j < cols; j++) {
-                /*if (Q[i*cols+j] != 0) {
-                    error = GRBaddqpterms(model, 1, &act_row, &act_col, &Q[i*cols+j]);
-                    if (error) goto QUIT;
-                }*/
-                
+            for (j = 0; j < cols; j++) {                
                 if (Q[i+j*cols] != 0) {
                     error = GRBaddqpterms(model, 1, &i, &j, &Q[i+j*cols]);
                     if (error) goto QUIT;
                 }
-                
-                /*++act_row;
-                if(act_row>=cols){
-                    act_row=0;
-                    ++act_col;
-                }*/
             }
         }
     }
     
     error = GRBupdatemodel(model);
     if (error) goto QUIT;
-    //printf("Setup Model!\n");
+
     /* Optimize model */
     
-    //error = GRBsetintparam(env, "Method", 1);
+    //error = GRBsetintparam(env, "Method", 1); // set optimize method here
     //if (error) goto QUIT;
 
     error = GRBoptimize(model);
     if (error) goto QUIT;
 
-    /* Capture solution information */
-
     error = GRBgetintattr(model, GRB_INT_ATTR_STATUS, &optimstatus);
     if (error) goto QUIT;
-    
-    //printf("optim code: %d\n", optimstatus);
 
     if (optimstatus==4) { // INF_OR_UNBD
         printf("Optim status: 4 (INF_OR_UNBD). Reoptimizing... ");
@@ -544,9 +513,7 @@ int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
         while (1) {
             error = GRBcomputeIIS(model);
             if (error) goto QUIT;
-            
-            //printf("\nThe following constraint cannot be satisfied:\n");
-            
+
             for (i = 0; i < numconstrs; ++i) {
                 error = GRBgetintattrelement(model, "IISConstr", i, &iis);
                 if (error) goto QUIT;
@@ -554,9 +521,7 @@ int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
                 if (iis) {
                     error = GRBgetstrattrelement(model, "ConstrName", i, &cname);
                     if (error) goto QUIT;
-                    
-                    //printf("%s\n", cname);
-                    
+
                     /* Remove a single constraint from the model */
                     removed[numremoved] = malloc(sizeof(char) * (1+strlen(cname)));
                     if (!removed[numremoved]) goto QUIT;
@@ -571,8 +536,6 @@ int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
                     break;
                 }
             }
-            
-            //printf("\n");
             
             error = GRBupdatemodel(model);
             if (error) goto QUIT;
@@ -599,6 +562,12 @@ int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
         }
         //
         printf("New optim code: %d. Number of constraints removed: %d\n", optimstatus, numremoved);
+
+        free(cind);
+        for (i=0; i<numremoved; ++i) {
+            free(removed[i]);
+        }
+        free(removed);
     }
 
 
@@ -622,15 +591,6 @@ int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
         success = 1;
     }
 
-    //printf("Finished! Success: %d\n", success);
-
-    /* Free model */
-
-    GRBfreemodel(model);
-    GRBfreeenv(env);
-
-    return success;
-
 QUIT:
 
     /* Error reporting */
@@ -641,7 +601,7 @@ QUIT:
     }
 
     /* Free model */
-
+    
     GRBfreemodel(model);
     GRBfreeenv(env);
 

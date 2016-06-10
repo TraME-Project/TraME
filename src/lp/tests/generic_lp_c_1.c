@@ -15,8 +15,6 @@
 // cd ~/Desktop/SCM/GitHub/TraME/src/lp/tests
 // clang -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_c_1.c -o generic_lp_c_1.test -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
 
-//#define SWITCH_GRB_ROWCOL_ORDER
-
 #include "../generic_lp_c.h"
 
 int main()
