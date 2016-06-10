@@ -48,9 +48,9 @@ void probit::build(int nbX_b, int nbY_b, bool outsideOption_b)
     nbY = nbY_b;
     outsideOption = outsideOption_b;
     //
-    if(outsideOption_b){
+    if (outsideOption_b) {
         aux_nbOptions = nbY + 1;
-    }else{
+    } else {
         aux_nbOptions = nbY;
     }
     nbParams = (nbX_b * aux_nbOptions * (aux_nbOptions-1))/2;
@@ -65,7 +65,7 @@ void probit::simul(empirical &ret, int nbDraws, int seed_val)
     arma::mat Q, SqrtCovar;
     arma::cube atoms(nbDraws,aux_nbOptions,nbX);
     
-    for(j=0; j<nbX; j++){
+    for (j=0; j<nbX; j++) {
         eig_sym(V, Q, Covar.slice(j));
         SqrtCovar = Q * arma::diagmat(1.0/arma::sqrt(V)) * Q.t();
         //
@@ -79,9 +79,9 @@ void probit::simul(empirical &ret, int nbDraws, int seed_val)
     ret.aux_nbDraws = nbDraws;
     ret.xHomogenous = false;
     ret.outsideOption = outsideOption;
-    if(outsideOption){
+    if (outsideOption) {
         ret.nbOptions = nbY + 1;
-    }else{
+    } else {
         ret.nbOptions = nbY;
     }
     //
@@ -94,14 +94,14 @@ void probit::unifCorrelCovMatrices()
     //
     arma::mat Sig = rho * arma::ones(aux_nbOptions,aux_nbOptions) + (1-rho) * arma::eye(aux_nbOptions,aux_nbOptions);
     //
-    if(outsideOption){
+    if (outsideOption) {
         Sig.col(aux_nbOptions-1).fill(0);
         Sig.row(aux_nbOptions-1).fill(0);
         Sig(aux_nbOptions-1,aux_nbOptions-1) = 1;
     }
     //
     Covar.set_size(aux_nbOptions,aux_nbOptions,nbX); // note: this is different to the R code
-    for(i=0;i<nbX;i++){
+    for (i=0; i<nbX; i++) {
         Covar.slice(i) = Sig;
     }
 }
@@ -112,14 +112,14 @@ arma::cube probit::unifCorrelCovMatrices(double rho_inp)
     //
     arma::mat Sig = rho_inp * arma::ones(aux_nbOptions,aux_nbOptions) + (1-rho_inp) * arma::eye(aux_nbOptions,aux_nbOptions);
     //
-    if(outsideOption){
+    if (outsideOption) {
         Sig.col(aux_nbOptions-1).fill(0);
         Sig.row(aux_nbOptions-1).fill(0);
         Sig(aux_nbOptions-1,aux_nbOptions-1) = 1;
     }
     //
     arma::cube Covar_ret(aux_nbOptions,aux_nbOptions,nbX); // note: this is different to the R code
-    for(i=0;i<nbX;i++){
+    for (i=0; i<nbX; i++) {
         Covar_ret.slice(i) = Sig;
     }
     //

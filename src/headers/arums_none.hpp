@@ -39,7 +39,7 @@ class none
         double G(arma::vec n);
         double Gx(arma::mat Ux, arma::mat& mux_inp);
         
-        double Gbar(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp);
+        double Gbar(arma::mat Ubarx, arma::mat mubarx, arma::vec n, arma::mat& Ux_inp, arma::mat& mux_inp);
         double Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mux_inp);
         
         arma::vec dtheta_NablaGstar();
@@ -90,7 +90,7 @@ double none::Gx(arma::mat Ux, arma::mat& mux_inp)
     return val_x;
 }
 
-double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+double none::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
 {   
     int i;
     double val=0.0, val_temp;

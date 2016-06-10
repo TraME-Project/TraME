@@ -140,12 +140,12 @@ void empirical::presolve_LP_Gstar()
     vbeg_Gstar = new int[k_Gstar+1];
     vval_Gstar = new double[numnz_Gstar];
     
-    for(jj=0; jj<numnz_Gstar; jj++){
+    for (jj=0; jj<numnz_Gstar; jj++) {
         vind_Gstar[jj] = row_vals[jj];
         vval_Gstar[jj] = A_sp_Gstar_t.values[jj];
     }
     
-    for(jj=0; jj<k_Gstar+1; jj++){
+    for (jj=0; jj<k_Gstar+1; jj++) {
         vbeg_Gstar[jj] = col_vals[jj];
     }
     //
@@ -167,7 +167,7 @@ void empirical::presolve_LP_Gbar()
     arma::umat location_mat_2(2,nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
     arma::rowvec vals_mat_2(nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
     
-    for(jj=0; jj<nbY; jj++){
+    for (jj=0; jj<nbY; jj++) {
         location_mat_2(0,count_val) = jj;
         location_mat_2(1,count_val) = jj;
         
@@ -177,7 +177,7 @@ void empirical::presolve_LP_Gbar()
     }
     
     for (kk=0; kk<nbOptions; kk++) {
-        if(kk < nbOptions-1){
+        if (kk < nbOptions-1) {
             for (jj=0; jj<aux_nbDraws; jj++) {
                 location_mat_2(0,count_val) = kk;
                 location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
@@ -212,12 +212,12 @@ void empirical::presolve_LP_Gbar()
     vbeg_Gbar = new int[k_Gbar+1];
     vval_Gbar = new double[numnz_Gbar];
     
-    for(jj=0; jj<numnz_Gbar; jj++){
+    for (jj=0; jj<numnz_Gbar; jj++) {
         vind_Gbar[jj] = row_vals_2[jj];
         vval_Gbar[jj] = A_sp_Gbar_t.values[jj];
     }
     
-    for(jj=0; jj<k_Gbar+1; jj++){
+    for (jj=0; jj<k_Gbar+1; jj++) {
         vbeg_Gbar[jj] = col_vals_2[jj];
     }
     //
@@ -232,9 +232,9 @@ double empirical::G(arma::vec n)
     mu_sol.set_size(nbX,nbY);
     arma::mat mux_temp;
     //
-    for(i=0; i<nbX; i++){
+    for (i=0; i<nbX; i++) {
         val_x = Gx(U.row(i).t(),mux_temp,i);
-        //
+        
         val += n(i)*val_x;
         mu_sol.row(i) = arma::trans(n(i)*mux_temp);
     }
@@ -246,15 +246,15 @@ double empirical::Gx(arma::mat Ux, arma::mat& mux_inp, int x)
 {   
     arma::mat Uxs, Utilde;
     
-    if(outsideOption){
+    if (outsideOption) {
         Uxs = arma::join_cols(arma::vectorise(Ux),arma::zeros(1,1));
-    }else{
+    } else {
         Uxs = Ux;
     }
     
-    if(xHomogenous){
+    if (xHomogenous) {
         Utilde = arma::ones(aux_nbDraws,1) * Uxs.t() + atoms.slice(0);
-    }else{
+    } else {
         Utilde = arma::ones(aux_nbDraws,1) * Uxs.t() + atoms.slice(x);
     }
     //
@@ -263,13 +263,15 @@ double empirical::Gx(arma::mat Ux, arma::mat& mux_inp, int x)
     arma::uvec argmax_inds = which_max(&Utilde, 1);
     
     double thesum = 0.0;
-    for(tt=0; tt < aux_nbDraws; tt++){
+    for (tt=0; tt < aux_nbDraws; tt++) {
         thesum += argmaxs(tt,0);
     }
+
     double valx = thesum/(double)(aux_nbDraws);
     //
     mux_inp.set_size(nbY,1);
     arma::uvec temp_find;
+    
     for (tt=0; tt<nbY; tt++) {
         temp_find = arma::find(argmax_inds==tt);
         mux_inp(tt,0) = (double)(temp_find.n_elem)/(double)(aux_nbDraws);
@@ -283,16 +285,16 @@ double empirical::Gstar(arma::mat& U_inp, arma::vec n)
     int i;
     double val=0.0, val_temp;
     
-    if (TRAME_PRESOLVED_GSTAR!=true){
+    if (TRAME_PRESOLVED_GSTAR!=true) {
         presolve_LP_Gstar();
     }
     
     U_inp.set_size(nbX,nbY);
     arma::mat Ux_temp;
     //
-    for(i=0; i<nbX; i++){
+    for (i=0; i<nbX; i++) {
         val_temp = Gstarx((mu_sol.row(i).t())/n(i),Ux_temp,i);
-        //
+        
         val += n(i)*val_temp;
         U_inp.row(i) = arma::trans(Ux_temp);
     }
@@ -306,20 +308,20 @@ double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
     double valx=0.0;
     arma::mat Phi, Ux_temp;
     
-    if(xHomogenous){
+    if (xHomogenous) {
         Phi = atoms.slice(0);
-    }else{
+    } else {
         Phi = atoms.slice(x);
     }
     //
     arma::vec p = arma::ones(aux_nbDraws,1)/aux_nbDraws;
     arma::mat q;
     
-    if(outsideOption){
+    if (outsideOption) {
         arma::mat temp_q(1,1); 
         temp_q(0,0) = 1 - arma::accu(mux);
         q = arma::join_cols(arma::vectorise(mux),temp_q);
-    }else{
+    } else {
         q = arma::vectorise(mux);
     }
     //
@@ -328,7 +330,7 @@ double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
     arma::vec rhs_grbi = arma::join_cols(p,q);
     
     char* sense_grbi = new char[k_Gstar];
-    for(jj=0;jj<k_Gstar;jj++){
+    for (jj=0; jj<k_Gstar; jj++) {
         sense_grbi[jj] = '=';
     }
     
@@ -376,7 +378,7 @@ double empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& 
     int i;
     double val=0.0, val_temp;
     
-    if (!TRAME_PRESOLVED_GBAR){
+    if (!TRAME_PRESOLVED_GBAR) {
         presolve_LP_Gbar();
     }
     
@@ -384,9 +386,9 @@ double empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& 
     mu_inp.set_size(nbX,nbY);
     arma::mat Ux_temp, mux_temp;
     //
-    for(i=0; i<nbX; i++){
+    for (i=0; i<nbX; i++) {
         val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mux_temp,i);
-        //
+        
         val += n(i)*val_temp;
         U_inp.row(i) = arma::trans(Ux_temp);
         mu_inp.row(i) = arma::trans(n(i)*mux_temp);
