@@ -5,6 +5,7 @@
  * 05/17/2016
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/tests
+ *
  * clang++ -O2 -Wall -std=c++11 -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -o arums_logit.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
  * clang++ -O2 -Wall -static-libgcc -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -o arums_logit.test -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
  *
@@ -26,12 +27,8 @@
 
 int main()
 {
-//#ifdef __clang__
-    //#if __has_feature(cxx_rvalue_references)
-        std::chrono::time_point<std::chrono::system_clock> start, end;
-        start = std::chrono::system_clock::now();
-    //#endif
-//#endif
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
     //
     // inputs:
     arma::mat U(2,3);
@@ -67,7 +64,7 @@ int main()
     logits.mu = mu;
     //
     // empirical object:
-    int n_draws = 10000;
+    int n_draws = 1000;
     empirical logit_sim;
     
     logits.simul(logit_sim, n_draws, (int) 1777);
@@ -120,18 +117,14 @@ int main()
     //
     printf("\n*===================   End of Logit Test   ===================*\n");
     printf("\n");
-//#ifdef __clang__
-    //#if __has_feature(cxx_rvalue_references)
-        //
-        end = std::chrono::system_clock::now();
+    //
+    end = std::chrono::system_clock::now();
         
-        std::chrono::duration<double> elapsed_seconds = end-start;
-        std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+    std::chrono::duration<double> elapsed_seconds = end-start;
+    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
         
-        std::cout << "finished computation at " << std::ctime(&end_time)
-                << "elapsed time: " << elapsed_seconds.count() << "s\n";
-    //#endif
-//#endif
+    std::cout << "finished computation at " << std::ctime(&end_time)
+              << "elapsed time: " << elapsed_seconds.count() << "s\n";
     //
     return 0;
 }

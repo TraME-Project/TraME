@@ -5,6 +5,7 @@
  * 05/17/2016
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/tests
+ *
  * clang++ -O2 -Wall -std=c++11 -I/opt/local/include -I/Library/gurobi650/mac64/include arums_none_test.cpp -o arums_none.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
  *
  * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include ../lp/generic_lp.c -c -o ../lp/generic_lp.o
@@ -25,6 +26,10 @@
 
 int main()
 {
+    std::chrono::time_point<std::chrono::system_clock> start, end;
+    start = std::chrono::system_clock::now();
+    //
+    // inputs:
     arma::mat U(2,3);
     U  << 1.6 << 3.2 << 1.1 << arma::endr
        << 2.9 << 1.0 << 3.1 << arma::endr;
@@ -33,9 +38,15 @@ int main()
     mu << 1.0 << 3.0 << 1.0 << arma::endr
        << 2.0 << 1.0 << 3.0 << arma::endr;
     
+    //
+    // results
+    printf("\n*===================   Start of None Test   ===================*\n");
+    printf("\n");
+    printf("Inputs: \n");
     arma::cout << "\nU: \n" << U << arma::endl;
     arma::cout << "mu: \n" << mu << arma::endl;
     //
+    // setup none class object
     int nbX = U.n_rows;
     int nbY = U.n_cols;
     
@@ -52,12 +63,24 @@ int main()
     double val_G = none_obj.G(n);
     std::cout << "G val: \n" << val_G << std::endl;
     //
-    /*arma::mat mubar(2,3);
+    arma::mat mubar(2,3);
     mubar.fill(2);
 
     arma::mat Ubar_temp, mubar_temp;
-    double valGbar = none_obj.Gbarx(U.row(0).t(),mubar.row(0).t(),Ubar_temp,mubar_temp);
-    std::cout << "Gbar val: \n" << valGbar << std::endl;*/
+    double valGbar = none_obj.Gbar(U,mubar,n,Ubar_temp,mubar_temp);
+    
+    std::cout << "Gbar val: \n" << valGbar << std::endl;
+    //
+    printf("\n*===================   End of None Test   ===================*\n");
+    printf("\n");
+    //
+    end = std::chrono::system_clock::now();
+        
+    std::chrono::duration<double> elapsed_seconds = end-start;
+    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+        
+    std::cout << "finished computation at " << std::ctime(&end_time)
+              << "elapsed time: " << elapsed_seconds.count() << "s\n";
     //
     return 0;
 }
