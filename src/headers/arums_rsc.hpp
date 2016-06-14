@@ -362,8 +362,9 @@ void RSC::dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, boo
     ret.zeros();
     
     arma::umat mat_inds_1(nbDirs,nbX); // indices to place the results (complicated)
-    arma::umat mat_inds_2(nbDirs,nbX); //
+    arma::umat mat_inds_2(nbDirs,nbX);
     arma::umat mat_inds_3(nbDirs,nbX);
+    
     for (i=0; i<nbX; i++) {
         for (j=0; j<nbDirs; j++) {
             if (x_first) {
