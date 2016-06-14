@@ -100,6 +100,98 @@ ipfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-1
     return(outcome)
 }
 
+parIpfp <- function(market, xFirst=T, notifications=TRUE, debugmode=FALSE, tol=1e-12, bystart=market$m, clSplit = TRUE)
+  # Computes equilibrium in the logit case via IPFP in the all-logit case
+{
+  #
+  
+  market = m
+  bystart=market$m
+  
+  
+  if (!("mfe" %in% market$types)) {stop("ipfp only defined for market whose types contains mme.")}
+  mmfs = market$mmfs
+  noSingles = !is.null(mmfs$neededNorm)
+  if(noSingles){
+    warning("There are known issues with the current implementation of the IPFP in the case without unassigned agents.")
+    H = mmfs$neededNorm$H_edge_logit
+    if(is.null(H)){
+      stop("Function H_edge not included in market$neededNorm")
+    }
+  }
+  #
+  if(notifications){
+    message('Solving for equilibrium in ITU_logit problem using IPFP.') 
+  }
+  n = mmfs$n
+  m = mmfs$m
+  nbX = length(n)
+  nbY = length(m)
+  
+  if (clSplit==TRUE){
+    seqX = clusterSplit(cl, 1:nbX)
+    seqY = clusterSplit(cl, 1:nbY)
+  } else {
+    seqX = 1:nbX
+    seqY = 1:nbY
+  }
+  #
+  # Algorithm: Loop
+  #
+  by = bystart
+  ax = rep(NA,length=nbX)
+  #
+  error = 2*tol
+  iter = 0
+  tm = proc.time()  
+
+  while(max(error,na.rm=TRUE)>tol){
+    iter = iter+1
+    val = c(ax,by)
+    
+    #Solve for ax and then by
+    ax = unlist(parLapply(cl=cl, X = seqX, margxInv, mmfs=mmfs,Bys=by))
+    by = unlist(parLapply(cl=cl, X = seqY, margyInv, mmfs=mmfs,Axs=ax))
+   
+    
+    # ax = unlist(margxInv(1:nbX,mmfs=mmfs,Bys=by))
+    # by = unlist(margyInv(1:nbY,mmfs=mmfs,Axs=ax))
+    
+    if(noSingles){
+      rescale = H(ax,by)
+      ax = ax * rescale
+      by = by / rescale
+    }
+    
+    error = abs(c(ax,by)-val)
+    if(debugmode & notifications){
+      message(paste0("Iter: ", iter, ". Error: ", max(error)))
+    }
+  }
+  #
+  time = proc.time()-tm  
+  time = time["elapsed"] 
+
+  if(notifications){
+    message(paste0("IPFP converged in ", iter," iterations and ", round(time,digits=2), " seconds.\n"))
+  }
+  # Construct the equilibrium outcome based on ax and by obtained from above
+  mu = M(mmfs,ax,by)  
+  mux0 = Mx0(mmfs,ax)
+  mu0y = M0y(mmfs,by)
+  #
+  U = log(mu/ mux0)          # We'll suppress this soon
+  V = t(log(t(mu) / mu0y))  # We'll suppress this soon
+  #
+  outcome = list(mu = mu,
+                 mux0 = mux0, mu0y = mu0y,
+                 U = U, V = V,
+                 u = - log(mux0), # We'll suppress this soon
+                 v = - log(mu0y), # We'll suppress this soon
+                 iter=iter, time=time)
+  #
+  return(outcome)
+}
 
 nodalNewton <- function(market, xFirst=TRUE, notifications=FALSE, sigma = 1E-6, maxiter = 100, tol = 1e-3, xtol = 1e-3)
 {
