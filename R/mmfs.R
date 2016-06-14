@@ -50,9 +50,11 @@ margxInv.default <- function(xs, mmfs, Bys)
   }
   theaxs = rep(0,length(xs))
   #
+  i = 0
   for(x in xs){
+    i = i+1
     root_fn <- function(z) (ifelse(coeff,Mx0(mmfs,z),0) - mmfs$n[x] + sum(M(mmfs,z,Bys,xs=x)))
-    theaxs[x] = uniroot(root_fn, c(0,ubs[x]), tol = 1e-300)$root # Keith: fix tolerence   
+    theaxs[i] = uniroot(root_fn, c(0,ubs[x]), tol = 1e-300)$root # Keith: fix tolerence   
   }
   #
   return(theaxs)
@@ -77,9 +79,11 @@ margyInv.default <- function(ys, mmfs, Axs)
   }
   thebys = rep(0,nbY)
   #
+  j = 0
   for(y in ys){
+    j = j+1
     root_fn <- function(z) (ifelse(coeff,M0y(mmfs,z),0) - mmfs$m[y] + sum(M(mmfs,Axs,z,ys=y)))
-    thebys[y] = uniroot(root_fn, c(0,ubs[y]), tol=1e-300)$root
+    thebys[j] = uniroot(root_fn, c(0,ubs[y]), tol=1e-300)$root
   }
   #
   return(thebys)
