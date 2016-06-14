@@ -77,7 +77,7 @@ margyInv.default <- function(ys, mmfs, Axs)
   if(is.null(ys)){
     ys = 1:nbY
   }
-  thebys = rep(0,nbY)
+  thebys = rep(0,length(ys))
   #
   j = 0
   for(y in ys){
