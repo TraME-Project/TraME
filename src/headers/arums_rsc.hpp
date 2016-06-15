@@ -72,6 +72,9 @@ class RSC
         
         double Gstar(arma::vec n);
         double Gstarx(arma::vec& U_x, double n_x, int x);
+
+        double Gbar();
+        double Gbarx();
         
         void D2Gstar (arma::mat& hess, arma::vec n, bool x_first);
         void dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first);
@@ -301,6 +304,36 @@ double RSC::Gstarx(arma::vec& U_x, double n_x, int x)
     U_x = - aux_Influence_lhs.slice(x) * e_mat * aux_Influence_rhs.slice(x) * zeta.row(x).t();
     //
     return val_x;
+}
+
+double RSC::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+{   
+    int i;
+    double val=0.0, val_temp;
+
+    U_inp.set_size(nbX,nbY);
+    mu_inp.set_size(nbX,nbY);
+    arma::mat Ux_temp, mu_x_temp;
+    //
+    for (i=0; i<nbX; i++) {
+        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mu_x_temp,i);
+        
+        val += n(i)*val_temp;
+        U_inp.row(i) = arma::trans(Ux_temp);
+        mu_inp.row(i) = arma::trans(n(i)*mu_x_temp);
+    }
+    //
+    return val;
+}
+
+double RSC::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x)
+{
+    if (!outsideOption) {
+        printf("Gbarx not implemented yet when outsideOption==false");
+        return 0.0;
+    }
+
+    arma::vec lb    
 }
 
 void RSC::D2Gstar (arma::mat& hess, arma::vec n, bool x_first)
