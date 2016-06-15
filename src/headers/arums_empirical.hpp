@@ -52,13 +52,13 @@ class empirical
         void build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous_b, bool outsideOption_b);
         
         double G(arma::vec n);
-        double Gx(arma::mat Ux, arma::mat& mux_inp, int x);
+        double Gx(arma::mat Ux, arma::mat& mu_x_inp, int x);
         
         double Gstar(arma::mat& U_inp, arma::vec n);
-        double Gstarx(arma::mat mux, arma::mat& Ux_inp, int x);
+        double Gstarx(arma::mat mu_x, arma::mat& Ux_inp, int x);
         
         double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
-        double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x);
+        double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x);
         
     private:
         void presolve_LP_Gstar();
@@ -230,19 +230,19 @@ double empirical::G(arma::vec n)
     double val=0.0, val_x;
     
     mu_sol.set_size(nbX,nbY);
-    arma::mat mux_temp;
+    arma::mat mu_x_temp;
     //
     for (i=0; i<nbX; i++) {
-        val_x = Gx(U.row(i).t(),mux_temp,i);
+        val_x = Gx(U.row(i).t(),mu_x_temp,i);
         
         val += n(i)*val_x;
-        mu_sol.row(i) = arma::trans(n(i)*mux_temp);
+        mu_sol.row(i) = arma::trans(n(i)*mu_x_temp);
     }
     //
     return val;
 }
 
-double empirical::Gx(arma::mat Ux, arma::mat& mux_inp, int x)
+double empirical::Gx(arma::mat Ux, arma::mat& mu_x_inp, int x)
 {   
     arma::mat Uxs, Utilde;
     
@@ -269,12 +269,12 @@ double empirical::Gx(arma::mat Ux, arma::mat& mux_inp, int x)
 
     double valx = thesum/(double)(aux_nbDraws);
     //
-    mux_inp.set_size(nbY,1);
+    mu_x_inp.set_size(nbY,1);
     arma::uvec temp_find;
     
     for (tt=0; tt<nbY; tt++) {
         temp_find = arma::find(argmax_inds==tt);
-        mux_inp(tt,0) = (double)(temp_find.n_elem)/(double)(aux_nbDraws);
+        mu_x_inp(tt,0) = (double)(temp_find.n_elem)/(double)(aux_nbDraws);
     }
     //
     return valx;
@@ -302,7 +302,7 @@ double empirical::Gstar(arma::mat& U_inp, arma::vec n)
     return val;
 }
 
-double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
+double empirical::Gstarx(arma::mat mu_x, arma::mat& Ux_inp, int x)
 {   
     int jj;
     double valx=0.0;
@@ -319,10 +319,10 @@ double empirical::Gstarx(arma::mat mux, arma::mat& Ux_inp, int x)
     
     if (outsideOption) {
         arma::mat temp_q(1,1); 
-        temp_q(0,0) = 1 - arma::accu(mux);
-        q = arma::join_cols(arma::vectorise(mux),temp_q);
+        temp_q(0,0) = 1 - arma::accu(mu_x);
+        q = arma::join_cols(arma::vectorise(mu_x),temp_q);
     } else {
-        q = arma::vectorise(mux);
+        q = arma::vectorise(mu_x);
     }
     //
     arma::vec obj_grbi = arma::vectorise(Phi);
@@ -384,20 +384,20 @@ double empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& 
     
     U_inp.set_size(nbX,nbY);
     mu_inp.set_size(nbX,nbY);
-    arma::mat Ux_temp, mux_temp;
+    arma::mat Ux_temp, mu_x_temp;
     //
     for (i=0; i<nbX; i++) {
-        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mux_temp,i);
+        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mu_x_temp,i);
         
         val += n(i)*val_temp;
         U_inp.row(i) = arma::trans(Ux_temp);
-        mu_inp.row(i) = arma::trans(n(i)*mux_temp);
+        mu_inp.row(i) = arma::trans(n(i)*mu_x_temp);
     }
     //
     return val;
 }
 
-double empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x)
+double empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x)
 {   
     int jj;
     double valx=0.0;
@@ -440,8 +440,8 @@ double empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, ar
         //
         if (LP_optimal) {
             Ux_inp = sol_mat.col(0).rows(0,nbY-1);
-            arma::vec delta_mux = dual_mat.col(0).rows(0,nbY-1);
-            mux_inp = mubarx - delta_mux;
+            arma::vec delta_mu_x = dual_mat.col(0).rows(0,nbY-1);
+            mu_x_inp = mubarx - delta_mu_x;
             //
             valx = arma::accu(mubarx % Ubarx) - objval;
         } else {
