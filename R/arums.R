@@ -71,34 +71,7 @@ Gstarx.default <- function(arums, mux, x)
     resopt = nloptr(x0= rep(0,arums$nbY), eval_f = thef,
                     opt = list(algorithm = 'NLOPT_LD_LBFGS', xtol_rel = xtol_rel, "ftol_rel"=1e-15))
     #
-    return(list(valx = -resopt$objective, mux = resopt$solution))
-}
-
-D2Gstarx.default <- function (arums, mux, x)
-{
-    nablaGstar <- function(themux) (Gstarx(arums,themux,x)$Ux)
-    return(jacobian(nablaGstar,mux))
-}
-
-D2Gstar.default <- function (arums, mu,n, xFirst=T)
-{
-    if(!arums$outsideOption){
-        stop("Method D2Gstar.default not implemented yet when outsideOption==F")
-    }
-    #
-    Hess = Diagonal(arums$nbX*arums$nbY,0)
-    #
-    for(x in 1:arums$nbX){
-        if(xFirst){
-            inds=x+arums$nbX*(0:(arums$nbY-1))
-            Hess[inds,inds] = D2Gstarx(arums,mu[x,]/n[x],x) / n[x]
-        }else{
-            inds= (1:arums$nbY) + (x-1)*arums$nbY
-            Hess[inds,inds] = D2Gstarx(arums,mu[x,]/n[x],x) / n[x]
-        }
-    }
-    #
-    return(Hess)
+    return(list(valx = -resopt$objective, Ux = resopt$solution))
 }
 
 Gbar.default <- function(arums, Ubar, n, mubar)
@@ -149,4 +122,31 @@ Gbarx.default <- function(arums, Ubarx, mubarx, x)
                                "xtol_rel"=1e-7))
     #
     return(list(valx = -resopt$objective, Ux = Gstarx(arums,resopt$solution,x)$Ux, mux = resopt$solution))
+}
+
+D2Gstarx.default <- function (arums, mux, x)
+{
+    nablaGstar <- function(themux) (Gstarx(arums,themux,x)$Ux)
+    return(jacobian(nablaGstar,mux))
+}
+
+D2Gstar.default <- function (arums, mu,n, xFirst=T)
+{
+    if(!arums$outsideOption){
+        stop("Method D2Gstar.default not implemented yet when outsideOption==F")
+    }
+    #
+    Hess = Diagonal(arums$nbX*arums$nbY,0)
+    #
+    for(x in 1:arums$nbX){
+        if(xFirst){
+            inds=x+arums$nbX*(0:(arums$nbY-1))
+            Hess[inds,inds] = D2Gstarx(arums,mu[x,]/n[x],x) / n[x]
+        }else{
+            inds= (1:arums$nbY) + (x-1)*arums$nbY
+            Hess[inds,inds] = D2Gstarx(arums,mu[x,]/n[x],x) / n[x]
+        }
+    }
+    #
+    return(Hess)
 }
