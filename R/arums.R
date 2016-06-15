@@ -121,7 +121,7 @@ Gbar.default <- function(arums, Ubar, n, mubar)
     return(list(val=val,U=Uopt,mu=muopt))
 }
 
-Gbarx.default <- function (arums, Ubarx, mubarx, x)
+Gbarx.default <- function(arums, Ubarx, mubarx, x)
 { 
     if(!arums$outsideOption){
         stop("Method Gbarx.default not implemented yet when outsideOption==F")
