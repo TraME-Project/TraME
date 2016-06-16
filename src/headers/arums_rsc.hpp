@@ -72,9 +72,15 @@ class RSC
         
         double Gstar(arma::vec n);
         double Gstarx(arma::vec& U_x, double n_x, int x);
+        static double Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta, 
+                             arma::mat aux_DinvPsigma, arma::mat aux_Psigma, 
+                             arma::mat aux_Influence_lhs, arma::mat aux_Influence_rhs,
+                             arma::vec (*pot_eps_vec)(arma::vec pot_inp, double* dist_pars),
+                             arma::vec (*quantile_eps_vec)(arma::vec quant_inp, double* dist_pars),
+                             double* dist_pars, int nbY, int x);
 
-        double Gbar();
-        double Gbarx();
+        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
+        double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x);
         
         void D2Gstar (arma::mat& hess, arma::vec n, bool x_first);
         void dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first);
@@ -90,7 +96,9 @@ class RSC
         double pot (double x);
         arma::vec pot (arma::vec x);
         
-    //private:
+    private:
+        static double Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
+        static double Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data);
 };
 /*
 void RSC::build(arma::mat zeta_b, bool outsideOption_b, 
@@ -306,6 +314,35 @@ double RSC::Gstarx(arma::vec& U_x, double n_x, int x)
     return val_x;
 }
 
+double RSC::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta, 
+                   arma::mat aux_DinvPsigma, arma::mat aux_Psigma, 
+                   arma::mat aux_Influence_lhs, arma::mat aux_Influence_rhs,
+                   arma::vec (*pot_eps_vec)(arma::vec pot_inp, double* dist_pars),
+                   arma::vec (*quantile_eps_vec)(arma::vec quant_inp, double* dist_pars),
+                   double* dist_pars, int nbY, int x)
+{
+    double val_x = 0;
+    
+    arma::vec ts_temp(mu_x_inp.n_elem+1);
+    ts_temp.rows(0,mu_x_inp.n_elem-1) = mu_x_inp;
+    ts_temp(mu_x_inp.n_elem) = 1-arma::accu(mu_x_inp);
+    
+    arma::vec ts_full = aux_DinvPsigma * ts_temp;
+    arma::vec ts = ts_full.rows(0,nbY-1);
+    //
+    arma::vec pots_inp = arma::join_cols(arma::zeros(1,1),ts_full);
+    arma::vec pots = (*pot_eps_vec)(pots_inp, dist_pars);
+    
+    arma::vec diff_pots = pots.rows(1,nbY+1) - pots.rows(0,nbY);
+    //
+    val_x = - arma::accu( (aux_Psigma*zeta.row(x).t()) % diff_pots );
+    
+    arma::mat e_mat = arma::diagmat( arma::join_cols(arma::zeros(1,1),(*quantile_eps_vec)(ts,dist_pars)) );
+    U_x = - aux_Influence_lhs * e_mat * aux_Influence_rhs * zeta.row(x).t();
+    //
+    return val_x;
+}
+
 double RSC::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
 {   
     int i;
@@ -332,8 +369,43 @@ double RSC::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::ma
         printf("Gbarx not implemented yet when outsideOption==false");
         return 0.0;
     }
+    //
+    arma::vec lb = arma::zeros(nbY,1);
+    arma::vec ub = mubarx;
 
-    arma::vec lb    
+    std::vector<double> sol_vec = arma::conv_to< std::vector<double> >::from(mubarx/2.0);
+    double ret = 0;
+    //
+    // opt data
+    trame_nlopt_opt_data opt_data;
+
+    opt_data.x = x;
+    opt_data.nbY = nbY;
+    opt_data.Ubar_x = Ubarx;
+    opt_data.zeta = zeta;
+
+    opt_data.aux_DinvPsigma = aux_DinvPsigma.slice(x);
+    opt_data.aux_Psigma = aux_Psigma.slice(x);
+    opt_data.aux_Influence_lhs = aux_Influence_lhs.slice(x);
+    opt_data.aux_Influence_rhs = aux_Influence_rhs.slice(x);
+
+    opt_data.pot_eps_vec = aux_pot_eps_vec;
+    opt_data.quantile_eps_vec = aux_quant_eps_vec;
+
+    opt_data.dist_pars = dist_pars;
+
+    //
+    // constr data
+    trame_nlopt_constr_data constr_data;
+    constr_data.nbY = nbY;
+    //
+    bool success = generic_nlopt(nbY,sol_vec,ret,lb.memptr(),ub.memptr(),RSC::Gbar_opt_objfn,RSC::Gbar_opt_constr,opt_data,constr_data);
+    //
+    if (success) {
+        Ux_inp = arma::conv_to<arma::vec>::from(sol_vec);
+    }
+    //
+    return ret;
 }
 
 void RSC::D2Gstar (arma::mat& hess, arma::vec n, bool x_first)
@@ -454,6 +526,60 @@ void RSC::simul(empirical &ret, int nbDraws, int seed_val)
     arma::arma_rng::set_seed_random(); // need to reset the seed
 }
 
+/*
+ * optimization-related functions
+ */
+
+double RSC::Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data)
+{
+    trame_nlopt_opt_data *d = reinterpret_cast<trame_nlopt_opt_data*>(opt_data);
+
+    int x = d->x;
+    arma::mat Ubar_x = d->Ubar_x;
+    arma::mat zeta = d->zeta;
+    arma::mat aux_DinvPsigma = d->aux_DinvPsigma;
+    arma::mat aux_Psigma = d->aux_Psigma;
+    arma::mat aux_Influence_lhs = d->aux_Influence_lhs;
+    arma::mat aux_Influence_rhs = d->aux_Influence_rhs;
+
+    double* dist_pars = d->dist_pars;
+
+    int nbY = d->nbY;
+
+    arma::vec U_x_temp;
+    arma::vec mu_x_inp = arma::conv_to<arma::vec>::from(x_inp);
+
+	double val_x = Gstarx(U_x_temp, mu_x_inp, zeta,
+                          aux_DinvPsigma,aux_Psigma,
+                          aux_Influence_lhs,aux_Influence_rhs,
+                          d->pot_eps_vec,d->quantile_eps_vec,
+                          dist_pars,nbY,x);
+	
+    double ret = val_x - arma::accu(mu_x_inp % Ubar_x);
+    //
+    if (!grad.empty()) {
+        grad = arma::conv_to< std::vector<double> >::from(U_x_temp - Ubar_x);
+    }
+    //
+    return ret;
+}
+
+double RSC::Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data)
+{
+    trame_nlopt_constr_data *d = reinterpret_cast<trame_nlopt_constr_data*>(constr_data);
+
+    int nbY = d->nbY;
+
+    arma::vec mu_x_inp = arma::conv_to<arma::vec>::from(x_inp);
+
+    double ret = arma::accu(mu_x_inp) - 1;
+    //
+    if (!grad.empty()) {
+        grad = arma::conv_to< std::vector<double> >::from(arma::ones<arma::vec>(nbY,1));
+    }
+    //
+    return ret;
+}
 
 /*
  * Distribution-related functions

@@ -19,6 +19,7 @@
   ##
   ################################################################################*/
  
+//
 // for use in zeroin()
 struct trame_opt_data {
     arma::mat* exp_U_bar_X;
@@ -34,3 +35,24 @@ class trame_zeroin_data
         
     //private:
 };
+
+//
+// nlopt structures
+
+typedef struct {
+    int x;
+    int nbY;
+    arma::vec Ubar_x;
+    arma::mat zeta;
+    arma::mat aux_DinvPsigma;
+    arma::mat aux_Psigma;
+    arma::mat aux_Influence_lhs;
+    arma::mat aux_Influence_rhs;
+    arma::vec (*pot_eps_vec)(arma::vec x, double* dist_pars);
+    arma::vec (*quantile_eps_vec)(arma::vec x, double* dist_pars);
+    double* dist_pars;
+} trame_nlopt_opt_data;
+
+typedef struct {
+    int nbY;
+} trame_nlopt_constr_data;
