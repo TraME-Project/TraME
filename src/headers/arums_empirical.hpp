@@ -54,6 +54,7 @@ class empirical
         double G(arma::vec n);
         double Gx(arma::mat Ux, arma::mat& mu_x_inp, int x);
         
+        double Gstar(arma::vec n);
         double Gstar(arma::mat& U_inp, arma::vec n);
         double Gstarx(arma::mat mu_x, arma::mat& Ux_inp, int x);
         
@@ -61,6 +62,9 @@ class empirical
         double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x);
         
     private:
+        /*
+         * these private member objects are mostly for use with Gurobi
+         */
         void presolve_LP_Gstar();
         void presolve_LP_Gbar();
         
@@ -278,6 +282,28 @@ double empirical::Gx(arma::mat Ux, arma::mat& mu_x_inp, int x)
     }
     //
     return valx;
+}
+
+double empirical::Gstar(arma::vec n)
+{   
+    int i;
+    double val=0.0, val_temp;
+    
+    if (TRAME_PRESOLVED_GSTAR!=true) {
+        presolve_LP_Gstar();
+    }
+    
+    U_sol.set_size(nbX,nbY);
+    arma::mat Ux_temp;
+    //
+    for (i=0; i<nbX; i++) {
+        val_temp = Gstarx((mu_sol.row(i).t())/n(i),Ux_temp,i);
+        
+        val += n(i)*val_temp;
+        U_sol.row(i) = arma::trans(Ux_temp);
+    }
+    //
+    return val;
 }
 
 double empirical::Gstar(arma::mat& U_inp, arma::vec n)
