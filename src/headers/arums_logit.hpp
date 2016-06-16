@@ -316,9 +316,9 @@ void logit::simul(empirical &ret, int nbDraws, int seed_val)
     
     // note: digamma(1) \approx -0.5772156649
     arma::cube atoms;
-    if(outsideOption){
+    if (outsideOption) {
         atoms = -0.5772156649 - sigma * arma::log( - arma::log(arma::randu(nbDraws,nbY+1,nbX)) );
-    }else{
+    } else {
         atoms = -0.5772156649 - sigma * arma::log( - arma::log(arma::randu(nbDraws,nbY,nbX)) );
     }
     //
@@ -329,9 +329,9 @@ void logit::simul(empirical &ret, int nbDraws, int seed_val)
     ret.aux_nbDraws = nbDraws;
     ret.xHomogenous = false;
     ret.outsideOption = outsideOption;
-    if(outsideOption){
+    if (outsideOption) {
         ret.nbOptions = nbY + 1;
-    }else{
+    } else {
         ret.nbOptions = nbY;
     }
     //
