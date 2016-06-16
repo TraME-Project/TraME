@@ -5,8 +5,8 @@
  * gcc-mp-5 -O2 test_prob_2.c -c -o test_prob_2.o
  * gfortran-mp-5 -O2 ../prob.f90  -c -o ../prob.o
  * gfortran-mp-5 -O2 ../../math/quadpack_double.f90  -c -o ../../math/quadpack_double.o
- * gfortran-mp-5 -O2 ../aux.f90  -c -o ../aux.o
- * gcc-mp-5 -o test_prob_2.test ../prob.o ../../math/quadpack_double.o ../aux.o test_prob_2.o -lgfortran
+ * gfortran-mp-5 -O2 ../aux.f90  -c -o ../trame_aux.o
+ * gcc-mp-5 -o test_prob_2.test ../prob.o ../../math/quadpack_double.o ../trame_aux.o test_prob_2.o -lgfortran
  */
 
 #include <stdio.h>

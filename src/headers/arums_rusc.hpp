@@ -35,8 +35,8 @@ class RUSC
         arma::mat aux_ord;
         
         arma::cube aux_A;
-        arma::mat aux_b;
-        arma::vec aux_c; 
+        arma::mat  aux_b;
+        arma::vec  aux_c; 
         
         // input objects
         arma::mat mu;

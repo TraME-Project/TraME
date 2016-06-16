@@ -87,7 +87,7 @@ double zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_dat
 			c = a;  fc = fa;
 		}
 	}
-	
+	//
 	return b;
 }
 
