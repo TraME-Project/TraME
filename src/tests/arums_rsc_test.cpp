@@ -70,28 +70,47 @@ int main()
 
     rsc_obj.build_beta(zeta,2.0,2.0);
     //
+    // empirical object:
+    int n_draws = 1000;
+    empirical rsc_sim;
+    
+    rsc_obj.simul(rsc_sim, n_draws, (int) 1777);
+    
+    rsc_sim.U = U;
+    rsc_sim.mu = mu;
+    //
     // first compute optimal assignment (mu)
     double G_val = rsc_obj.G(n);
+    double G_sim_val = rsc_sim.G(n);
 
-    std::cout << "G(U): \n" << G_val << std::endl;
+    std::cout << "G(U) and G-sim(U): \n" << G_val << " and " << G_sim_val << std::endl;
+
     arma::cout << "\nG -> mu: \n" << rsc_obj.mu_sol << arma::endl;
+    arma::cout << "G-sim -> mu: \n" << rsc_sim.mu_sol << arma::endl;
     //
     // solution to dual problem U*
     double Gstar_val = rsc_obj.Gstar(n);
+    double Gstar_sim_val = rsc_sim.Gstar(n);
 
-    std::cout << "G*(mu): \n" << Gstar_val << std::endl;
+    std::cout << "G*(mu) and G*-sim(mu): \n" << Gstar_val << " and " << Gstar_sim_val << std::endl;
+
     arma::cout << "\n\\nabla G*(\\nabla G(U)): \n" << rsc_obj.U_sol << arma::endl;
+    arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << rsc_sim.U_sol << arma::endl;
     //
     // Gbar
     arma::mat mu_bar(2,3);
     mu_bar.fill(2);
     
     arma::mat U_bar_temp, mu_bar_temp;
+    arma::mat U_bar_sim_temp, mu_bar_sim_temp;
     
     double val_Gbar = rsc_obj.Gbar(U,mu_bar,n,U_bar_temp,mu_bar_temp);
+    double val_Gbar_sim = rsc_sim.Gbar(U,mu_bar,n,U_bar_sim_temp,mu_bar_sim_temp);
 
     std::cout << "Gbar val: \n" << val_Gbar << std::endl;
-    arma::cout << "Ubar: \n" << U_bar_temp << arma::endl;
+    std::cout << "Gbar-sim val: \n" << val_Gbar_sim << std::endl;
+
+    arma::cout << "\nUbar: \n" << U_bar_temp << arma::endl;
     arma::cout << "mubar: \n" << mu_bar_temp << arma::endl;
     //
     // hessian objects
@@ -99,14 +118,14 @@ int main()
 
     rsc_obj.D2Gstar(hess,n,true);
 
-    arma::cout << hess << arma::endl;
+    arma::cout << "\nD2Gstar: \n" << hess << arma::endl;
     //
     arma::mat nablaGstar;
     arma::mat dtheta = arma::eye(rsc_obj.nbParams,rsc_obj.nbParams);
 
     rsc_obj.dtheta_NablaGstar(nablaGstar,n,&dtheta,true);
 
-    arma::cout << nablaGstar << arma::endl;
+    arma::cout << "\ndtheta_NablaGstar: \n" << nablaGstar << arma::endl;
     //
     printf("\n*===================   End of RSC Test   ===================*\n");
     printf("\n");

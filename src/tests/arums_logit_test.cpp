@@ -98,9 +98,10 @@ int main()
     mu_bar.fill(2);
     
     arma::mat U_bar_temp, mu_bar_temp;
+    arma::mat U_bar_sim_temp, mu_bar_sim_temp;
     
     double val_Gbar     = logits.Gbar(U_star,mu_bar,n,U_bar_temp,mu_bar_temp);
-    double val_Gbar_sim = logit_sim.Gbar(U_star_sim,mu_bar,n,U_bar_temp,mu_bar_temp);
+    double val_Gbar_sim = logit_sim.Gbar(U_star_sim,mu_bar,n,U_bar_sim_temp,mu_bar_sim_temp);
     
     std::cout << "Gbar val: \n" << val_Gbar << std::endl;
     std::cout << "Gbar-sim val: \n" << val_Gbar_sim << std::endl;
