@@ -72,6 +72,7 @@ class RSC
         
         double Gstar(arma::vec n);
         double Gstarx(arma::vec& U_x, double n_x, int x);
+        double Gstarx(arma::vec& U_x, arma::vec mu_x_inp, int x);
         static double Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta, 
                              arma::mat aux_DinvPsigma, arma::mat aux_Psigma, 
                              arma::mat aux_Influence_lhs, arma::mat aux_Influence_rhs,
@@ -314,6 +315,30 @@ double RSC::Gstarx(arma::vec& U_x, double n_x, int x)
     return val_x;
 }
 
+double RSC::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, int x)
+{
+    double val_x = 0;
+    
+    arma::vec ts_temp(mu_x_inp.n_elem+1);
+    ts_temp.rows(0,mu_x_inp.n_elem-1) = mu_x_inp;
+    ts_temp(mu_x_inp.n_elem) = 1-arma::accu(mu_x_inp);
+    
+    arma::vec ts_full = aux_DinvPsigma.slice(x) * ts_temp;
+    arma::vec ts = ts_full.rows(0,nbY-1);
+    //
+    arma::vec pots_inp = arma::join_cols(arma::zeros(1,1),ts_full);
+    arma::vec pots = pot(pots_inp);
+    
+    arma::vec diff_pots = pots.rows(1,nbY+1) - pots.rows(0,nbY);
+    //
+    val_x = - arma::accu( (aux_Psigma.slice(x)*zeta.row(x).t()) % diff_pots );
+    
+    arma::mat e_mat = arma::diagmat( arma::join_cols(arma::zeros(1,1),quantile(ts)) );
+    U_x = - aux_Influence_lhs.slice(x) * e_mat * aux_Influence_rhs.slice(x) * zeta.row(x).t();
+    //
+    return val_x;
+}
+
 double RSC::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta, 
                    arma::mat aux_DinvPsigma, arma::mat aux_Psigma, 
                    arma::mat aux_Influence_lhs, arma::mat aux_Influence_rhs,
@@ -374,6 +399,7 @@ double RSC::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::ma
     arma::vec ub = mubarx;
 
     std::vector<double> sol_vec = arma::conv_to< std::vector<double> >::from(mubarx/2.0);
+    double obj_val = 0;
     double ret = 0;
     //
     // opt data
@@ -399,12 +425,17 @@ double RSC::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::ma
     trame_nlopt_constr_data constr_data;
     constr_data.nbY = nbY;
     //
-    bool success = generic_nlopt(nbY,sol_vec,ret,lb.memptr(),ub.memptr(),RSC::Gbar_opt_objfn,RSC::Gbar_opt_constr,opt_data,constr_data);
+    bool success = generic_nlopt(nbY,sol_vec,obj_val,lb.memptr(),ub.memptr(),RSC::Gbar_opt_objfn,RSC::Gbar_opt_constr,opt_data,constr_data);
     //
+    arma::vec Ux_temp;
+    arma::vec sol_temp = arma::conv_to<arma::vec>::from(sol_vec);
+    printf("done\n");
     if (success) {
-        Ux_inp = arma::conv_to<arma::vec>::from(sol_vec);
+        mu_x_inp = sol_temp;
+        Gstarx(Ux_temp,sol_temp,x);
+        Ux_inp = Ux_temp;
+        ret = -obj_val;
     }
-    //
     return ret;
 }
 

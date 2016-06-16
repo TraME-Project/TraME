@@ -5,11 +5,13 @@
  * 05/17/2016
  *
  * cd ~/Desktop/SCM/GitHub/TraME/src/tests
- * g++-mp-5 -Wall -O2 -std=c++11 -fopenmp -I/opt/local/include -I/usr/local/include -I/Library/gurobi650/mac64/include arums_rsc_test.cpp -c -o arums_rsc_test.o
+ *
+ * g++-mp-5 -Wall -O2 -std=c++11 -I/opt/local/include -I/usr/local/include -I/Library/gurobi650/mac64/include arums_rsc_test.cpp -c -o arums_rsc_test.o
+ * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include ../lp/generic_lp.c -c -o ../lp/generic_lp.o
  * gfortran-mp-5 -O2 ../prob/prob.f90  -c -o ../prob/prob.o
  * gfortran-mp-5 -O2 ../math/quadpack_double.f90  -c -o ../math/quadpack_double.o
  * gfortran-mp-5 -O2 ../prob/aux.f90  -c -o ../prob/aux.o
- * g++-mp-5 -o arums_rsc_test.test ../prob/prob.o ../math/quadpack_double.o ../prob/aux.o arums_rsc_test.o -L/Library/gurobi650/mac64/lib -lgurobi65 -lgfortran -fopenmp -framework Accelerate
+ * g++-mp-5 -o arums_rsc_test.test ../lp/generic_lp.o ../prob/prob.o ../math/quadpack_double.o ../prob/aux.o arums_rsc_test.o -L/Library/gurobi650/mac64/lib -L/usr/local/lib -lgurobi65 -lnlopt -lgfortran -framework Accelerate
  */
 
 #ifndef __clang__
@@ -61,42 +63,38 @@ int main()
 
     arma::cout << "zeta: \n" << zeta << arma::endl;
     //
+    // RSC object
     RSC rsc_obj;
     rsc_obj.U = U;
     rsc_obj.mu = mu;
 
     rsc_obj.build_beta(zeta,2.0,2.0);
     //
-    arma::cout << rsc_obj.aux_Influence_lhs << arma::endl;
-    arma::cout << rsc_obj.aux_Influence_rhs << arma::endl;
-    arma::cout << rsc_obj.aux_DinvPsigma << arma::endl;
-    arma::cout << rsc_obj.aux_Psigma << arma::endl;
+    // first compute optimal assignment (mu)
+    double G_val = rsc_obj.G(n);
+
+    std::cout << "G(U): \n" << G_val << std::endl;
+    arma::cout << "\nG -> mu: \n" << rsc_obj.mu_sol << arma::endl;
     //
-    std::cout << rsc_obj.cdf(0.5) << std::endl;
-    std::cout << rsc_obj.pdf(0.5) << std::endl;
-    std::cout << rsc_obj.quantile(0.5) << std::endl;
-    std::cout << rsc_obj.pot(0.5) << std::endl;
+    // solution to dual problem U*
+    double Gstar_val = rsc_obj.Gstar(n);
+
+    std::cout << "G*(mu): \n" << Gstar_val << std::endl;
+    arma::cout << "\n\\nabla G*(\\nabla G(U)): \n" << rsc_obj.U_sol << arma::endl;
     //
-    arma::vec mu_x;
+    // Gbar
+    arma::mat mu_bar(2,3);
+    mu_bar.fill(2);
+    
+    arma::mat U_bar_temp, mu_bar_temp;
+    
+    double val_Gbar = rsc_obj.Gbar(U,mu_bar,n,U_bar_temp,mu_bar_temp);
 
-    rsc_obj.Gx(mu_x,(int) 0);
-
-    double G_val;
-    G_val = rsc_obj.G(n);
-
-    arma::cout << rsc_obj.mu_sol << arma::endl;
-    std::cout << G_val << std::endl;
+    std::cout << "Gbar val: \n" << val_Gbar << std::endl;
+    arma::cout << "Ubar: \n" << U_bar_temp << arma::endl;
+    arma::cout << "mubar: \n" << mu_bar_temp << arma::endl;
     //
-    arma::vec U_x;
-
-    rsc_obj.Gstarx(U_x,n(0,0),(int) 0);
-
-    double Gstar_val;
-    Gstar_val = rsc_obj.Gstar(n);
-
-    arma::cout << rsc_obj.U_sol << arma::endl;
-    std::cout << Gstar_val << std::endl;
-    //
+    // hessian objects
     arma::mat hess;
 
     rsc_obj.D2Gstar(hess,n,true);
