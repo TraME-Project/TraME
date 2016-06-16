@@ -1,6 +1,5 @@
 /*
- * Generic Linear/Quadratic Programming solver using Gurobi
- * Based on Gurobi's 'dense_c.c' example
+ * Generic NLopt function
  *
  * Keith O'Hara
  * 05/08/2016
@@ -16,7 +15,7 @@
 //
 // Dense setup; should be used with Armadillo memptr based passing 
 int generic_nlopt_C(int n_pars, double* io_val, double* lb, double* ub,
-                    double* c_data,)
+                    double* c_data)
 {
     bool success = false;
     nlopt_opt opt_trame; 
@@ -29,6 +28,10 @@ int generic_nlopt_C(int n_pars, double* io_val, double* lb, double* ub,
 
     if (ub) {
         nlopt_set_upper_bounds(opt_trame, ub);
+    }
+
+    if (c_data) {
+        nlopt_add_inequality_constraint(opt, trame_gbar_cons_func, c_data, 1e-8);
     }
 
     nlopt_set_min_objective(opt_trame, trame_gbar_obj_func, NULL);
