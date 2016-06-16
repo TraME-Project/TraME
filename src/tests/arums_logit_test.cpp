@@ -76,7 +76,7 @@ int main()
     double G_val = logits.G(n);
     double G_sim_val = logit_sim.G(n);
     
-    arma::cout << "G(U) and G-sim(U): \n" << G_val << " and " << G_sim_val << arma::endl;
+    std::cout << "G(U) and G-sim(U): \n" << G_val << " and " << G_sim_val << std::endl;
     
     arma::cout << "\nG -> mu: \n" << logits.mu_sol << arma::endl;
     arma::cout << "G-sim -> mu: \n" << logit_sim.mu_sol << arma::endl;
@@ -88,7 +88,7 @@ int main()
     double Gstar_val = logits.Gstar(U_star, n);
     double Gstar_sim_val = logit_sim.Gstar(U_star_sim, n);
     
-    arma::cout << "G*(mu) and G*-sim(mu): \n" << Gstar_val << " and " << Gstar_sim_val << arma::endl;
+    std::cout << "G*(mu) and G*-sim(mu): \n" << Gstar_val << " and " << Gstar_sim_val << std::endl;
     
     arma::cout << "\n\\nabla G*(\\nabla G(U)): \n" << U_star << arma::endl;
     arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << U_star_sim << arma::endl;
