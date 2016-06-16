@@ -71,6 +71,7 @@ class RSC
         double Gx(arma::vec& mu_x, int x);
         
         double Gstar(arma::vec n);
+        double Gstar(arma::mat& U_inp, arma::vec n);
         double Gstarx(arma::vec& U_x, double n_x, int x);
         double Gstarx(arma::vec& U_x, arma::vec mu_x_inp, int x);
         static double Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta, 
@@ -290,6 +291,25 @@ double RSC::Gstar(arma::vec n)
     return val;
 }
 
+double RSC::Gstar(arma::mat& U_inp, arma::vec n)
+{   
+    int i;
+    double val=0.0, val_x_temp;
+    
+    U_inp.set_size(nbX,nbY);
+    arma::vec U_x_temp;
+    //
+    for (i=0; i<nbX; i++) {
+        //val_x_temp = Gstarx((mu.row(i).t())/n(i),U_x_temp,i);
+        val_x_temp = Gstarx(U_x_temp,n(i),i);
+        //
+        val += n(i)*val_x_temp;
+        U_inp.row(i) = arma::trans(U_x_temp);
+    }
+    //
+    return val;
+}
+
 double RSC::Gstarx(arma::vec& U_x, double n_x, int x)
 {
     double val_x = 0;
@@ -429,7 +449,7 @@ double RSC::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::ma
     //
     arma::vec Ux_temp;
     arma::vec sol_temp = arma::conv_to<arma::vec>::from(sol_vec);
-    printf("done\n");
+    
     if (success) {
         mu_x_inp = sol_temp;
         Gstarx(Ux_temp,sol_temp,x);
@@ -553,6 +573,11 @@ void RSC::simul(empirical &ret, int nbDraws, int seed_val)
     ret.aux_nbDraws = nbDraws;
     ret.xHomogenous = false;
     ret.outsideOption = outsideOption;
+    if (outsideOption) {
+        ret.nbOptions = nbY + 1;
+    } else {
+        ret.nbOptions = nbY;
+    }
     //
     arma::arma_rng::set_seed_random(); // need to reset the seed
 }
