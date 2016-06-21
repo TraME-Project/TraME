@@ -86,6 +86,9 @@ int generic_LP_C(int rows, int cols, double* obj, double* A, int model_opt_sense
 
     /* Optimize model */
 
+    error = GRBsetintparam(env, "Method", 1); // set optimization method here
+    if (error) goto QUIT;
+
     error = GRBoptimize(model);
     if (error) goto QUIT;
 
@@ -224,8 +227,8 @@ int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int model_op
 
     /* Optimize model */
     
-    //error = GRBsetintparam(env, "Method", 1); // set optimize method here
-    //if (error) goto QUIT;
+    error = GRBsetintparam(env, "Method", 1); // set optimization method here
+    if (error) goto QUIT;
 
     error = GRBoptimize(model);
     if (error) goto QUIT;
@@ -457,8 +460,8 @@ int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
 
     /* Optimize model */
     
-    //error = GRBsetintparam(env, "Method", 1); // set optimize method here
-    //if (error) goto QUIT;
+    error = GRBsetintparam(env, "Method", 1); // set optimization method here
+    if (error) goto QUIT;
 
     error = GRBoptimize(model);
     if (error) goto QUIT;
