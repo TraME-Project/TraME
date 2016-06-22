@@ -21,6 +21,8 @@
 
 //#include "trame_aux.hpp"
 
+#include "omp.h" //  OpenMP
+
 // RSC class
 class RSC
 {
@@ -191,12 +193,13 @@ double RSC::G(arma::vec n)
     mu_sol.set_size(nbX,nbY);
     arma::vec mu_x;
     //
-    for (i=0; i<nbX; i++) {
-        val_x_temp = Gx(mu_x,i);
-        //
-        val += n(i)*val_x_temp;
-        mu_sol.row(i) = arma::trans(n(i)*mu_x);
-    }
+    //#pragma omp parallel for private(mu_x,val_x_temp)
+        for (i=0; i<nbX; i++) {
+            val_x_temp = Gx(mu_x,i);
+            //
+            val += n(i)*val_x_temp;
+            mu_sol.row(i) = arma::trans(n(i)*mu_x);
+        }
     //
     return val;
 }
