@@ -110,19 +110,30 @@ arma::mat MMF::M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys)
         arma::mat term_1 = arma::exp(aux_log_C(xs,ys) + kappa(xs,ys) % arma::log(a_xs));
         arma::mat term_2 = arma::exp(aux_log_D(xs,ys) + arma::trans(arma::trans(kappa(xs,ys)) % arma::log(b_ys)));
 
-        return ret = arma::exp((1/kappa(xs,ys)) % arma::log((term_1+term_2)/2)); 
+        arma::mat ret = arma::exp((1/kappa(xs,ys)) % arma::log((term_1+term_2)/2)); 
     }
     //
     if (LTU) {
         arma::mat term_1 = arma::exp(lambda(xs,ys) % arma::log(a_xs));
         arma::mat term_2 = arma::exp(arma::trans(aux_zeta(xs,ys)) % arma::log(b_ys));
+        arma::mat term_3 = K(xs,ys);
+
+        arma::mat ret = term_1 % term_2 % term_3;
     }
     //
     if (NTU) {
+        arma::mat term_1 = a_xs % A(xs,ys);
+        arma::mat term_2 = arma::trans(b_ys % arma::trans(A(xs,ys)));
 
+        arma::mat ret = arma::min(term_1, term_2);
     }
     //
     if (TU) {
+        arma::mat term_1 = K(xs,ys);
+        arma::mat term_2 = arma::sqrt(a_xs * b_ys.t());
 
+        arma::mat ret = term_1 % term_2;
     }
+    //
+    return ret;
 }
