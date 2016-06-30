@@ -19,6 +19,21 @@
   ##
   ################################################################################*/
 
+// Generate an equally-spaced grid of integers
+arma::uvec uvec_linspace(int a, int b)
+{
+    int i;
+    int n_points = b - a + 1;
+    
+    arma::uvec ret(n_points);
+    //
+    for (i = 0; i<n_points; i++) {
+        ret(i) = a + i;
+    }
+    //
+    return ret;
+}
+
 extern "C" {
     void beta_cdf_(double* x, double* p, double* q, double* result);
 	void beta_cdf_inv_(double* x, double* p, double* q, double* result);
