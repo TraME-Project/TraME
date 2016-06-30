@@ -30,8 +30,19 @@ class trame_zeroin_data
 {
     public:
         //
+        // for logit class
         arma::mat exp_U_bar_X;
         arma::mat mu_bar_X;
+        //
+        // for mmf class
+        arma::mat A_xs;
+        arma::mat B_ys;
+
+        int x_ind;
+        int y_ind;
+
+        bool coeff;
+        //
         
     //private:
 };

@@ -35,8 +35,8 @@ class MMF
         arma::vec n;
         arma::vec m;
 
-        double kappa;
-        double lambda;
+        arma::mat kappa;
+        arma::mat lambda;
 
         arma::mat A;
         arma::mat B;
@@ -51,7 +51,7 @@ class MMF
         arma::mat aux_log_D;
 }
 
-void MMF::build(int n_ETU, int m_ETU, arma::mat C_ETU, arma::mat D_ETU, double kappa_ETU, bool need_norm_ETU)
+void MMF::build_ETU(arma::vec n_ETU, arma::vec m_ETU, arma::mat C_ETU, arma::mat D_ETU, arma::mat kappa_ETU, bool need_norm_ETU)
 {
     n = n_ETU;
     m = m_ETU;
@@ -69,7 +69,7 @@ void MMF::build(int n_ETU, int m_ETU, arma::mat C_ETU, arma::mat D_ETU, double k
     ETU = true;
 }
 
-void MMF::build(int n_LTU, int m_LTU, arma::mat K_LTU, double lambda_LTU, bool need_norm_LTU)
+void MMF::build_LTU(arma::vec n_LTU, arma::vec m_LTU, arma::mat K_LTU, arma::mat lambda_LTU, bool need_norm_LTU)
 {
     n = n_LTU;
     m = m_LTU;
@@ -82,7 +82,7 @@ void MMF::build(int n_LTU, int m_LTU, arma::mat K_LTU, double lambda_LTU, bool n
     LTU = true;
 }
 
-void MMF::build(int n_NTU, int m_NTU, arma::mat A_NTU, arma::mat B_NTU, bool need_norm_NTU)
+void MMF::build_NTU(arma::vec n_NTU, arma::vec m_NTU, arma::mat A_NTU, arma::mat B_NTU, bool need_norm_NTU)
 {
     n = n_NTU;
     m = m_NTU;
@@ -95,7 +95,7 @@ void MMF::build(int n_NTU, int m_NTU, arma::mat A_NTU, arma::mat B_NTU, bool nee
     NTU = true;
 }
 
-void MMF::build(int n_TU, int m_TU, arma::mat K_TU, bool need_norm_TU)
+void MMF::build_TU(arma::vec n_TU, arma::vec m_TU, arma::mat K_TU, bool need_norm_TU)
 {
     n = n_TU;
     m = m_TU;
@@ -229,6 +229,23 @@ arma::mat MMF::M(arma::mat a_xs, double b_ys, arma::uvec* xs, arma::uvec* ys)
     return ret;
 }
 
+double MMF::marg_x_inv_fn(double z, const trame_zeroin_data& opt_data)
+{
+    double term_1;
+    if (coeff) {
+        term_1 = z;
+    } else {
+        term_1 = 0;
+    }
+
+    arma::uvec x_ind_temp(1);
+    x_ind_temp(0) = x_ind;
+    //
+    double ret = term_1 + n(x_ind) + arma::accu(M(z,B_ys,x_ind_temp,NULL));
+    //
+    return ret;
+}
+
 arma::vec MMF::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
 {
     if (!xs) {
@@ -242,13 +259,17 @@ arma::vec MMF::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
 
 double MMF::marg_y_inv_fn(double z, const trame_zeroin_data& opt_data)
 {
+    double term_1;
     if (coeff) {
         term_1 = z;
     } else {
         term_1 = 0;
     }
 
-    double ret = term_1 + m_y + arma::accu(M(A_xs,z,));
+    arma::uvec y_ind_temp(1);
+    y_ind_temp(0) = y_ind;
+    //
+    double ret = term_1 + m(y_ind) + arma::accu(M(A_xs,z,NULL,y_ind_temp));
     //
     return ret;
 }
@@ -260,20 +281,20 @@ arma::vec MMF::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
             *ys = uvec_linspace(0,m.n_elem);
         }
         //
-        arma::vec the_a_xs = invPWA(m.elem(ys),arma::trans(arma::trans(A.cols(ys)/B.cols(ys)) % A_xs),B.cols(ys),1);
+        arma::vec the_a_xs = invPWA(m.elem(ys),arma::trans(arma::trans(A.cols(ys)/B.cols(ys)) % A_xs),B.cols(ys),1.0);
         //
         return the_a_xs;
-    } else {
+    } else { // 'default'
         int nb_Y = m.n_elem;
 
-        double coeff;
+        bool coeff;
         arma::vec ubs(nb_Y);
 
         if (need_norm) {
-            coeff = 0.0;
+            coeff = false;
             ubs.fill(1E10);
         } else {
-            coeff = 1.0;
+            coeff = true;
             ubs = m;
         }
         //
@@ -286,12 +307,12 @@ arma::vec MMF::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
         int j, y;
         for (j=0; j < ys.n_elem; j++) {
             y = ys(j);
-            the_b_ys(j) = zeroin(0.0, ubs(y), marg_y_inv_fn, root_data, tol_zero, max_iter);
+            the_b_ys(j) = zeroin_mmf(0.0, ubs(y), marg_y_inv_fn, root_data, tol_zero, max_iter);
         }
     }
 }
 
-double MMF::zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double tol, int max_iter)
+double MMF::zeroin_mmf(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double tol, int max_iter)
 {
 	double a,b,c;
 	double fa;
