@@ -204,7 +204,7 @@ M.NTUmmfs <- function(mmfs, axs, bys, xs=1:length(mmfs$n), ys=1:length(mmfs$m))
   return(ret)
 }
 #
-margxInv.NTUmmfs = function(xs,mmfs,Bys)
+margxInv.NTUmmfs <- function(xs,mmfs,Bys) # Keith: shouldn't this have mmfs first?
 {
   if (is.null(xs)) {xs = 1:length(mmfs$n)}
   if (!is.null(mmfs$neededNorm)) {stop('not supported yet')}
@@ -212,7 +212,7 @@ margxInv.NTUmmfs = function(xs,mmfs,Bys)
   return(theaxs)
 }
 #
-margyInv.NTUmmfs = function(ys,mmfs,Axs)
+margyInv.NTUmmfs <- function(ys,mmfs,Axs) # Keith: shouldn't this have mmfs first?
 {
   if (is.null(ys)) {ys = 1:length(mmfs$m)}
   if (!is.null(mmfs$neededNorm)) {stop('not supported yet')}
