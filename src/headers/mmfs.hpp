@@ -252,9 +252,41 @@ arma::vec MMF::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
         *xs = uvec_linspace(0,n.n_elem);
     }
     //
-    arma::vec the_a_xs = invPWA(n.elem(xs),arma::trans(arma::trans(B.rows(xs)/A.rows(xs)) % B_ys),A.rows(xs),1);
-    //
-    return the_a_xs;
+    if (NTU) {
+        arma::vec the_a_xs = invPWA(n.elem(xs),arma::trans(arma::trans(B.rows(xs)/A.rows(xs)) % B_ys),A.rows(xs),1);
+        //
+        return the_a_xs;
+    } else { // 'default'
+        int j, y;
+        int nb_X = n.n_elem;
+
+        bool coeff;
+        arma::vec ubs(nb_X);
+
+        if (need_norm) {
+            coeff = false;
+            ubs.fill(1E10);
+        } else {
+            coeff = true;
+            ubs = n;
+        }
+        //
+        trame_zeroin_data root_data;
+
+        root_data.coeff = coeff;
+        root_data.B_ys  = B_ys;
+        //
+        the_a_xs(xs.n_elem);
+        
+        for (j=0; j < xs.n_elem; j++) {
+            x = xs(j);
+            root_data.x_ind = x;
+
+            the_a_xs(j) = zeroin_mmf(0.0, ubs(x), marg_x_inv_fn, root_data, tol_zero, max_iter);
+        }
+        //
+        return the_a_xs;
+    }
 }
 
 double MMF::marg_y_inv_fn(double z, const trame_zeroin_data& opt_data)
@@ -276,15 +308,16 @@ double MMF::marg_y_inv_fn(double z, const trame_zeroin_data& opt_data)
 
 arma::vec MMF::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
 {
+    if (!ys) {
+        *ys = uvec_linspace(0,m.n_elem);
+    }
+    //
     if (NTU) {
-        if (!ys) {
-            *ys = uvec_linspace(0,m.n_elem);
-        }
+        arma::vec the_b_ys = invPWA(m.elem(ys),arma::trans(arma::trans(A.cols(ys)/B.cols(ys)) % A_xs),B.cols(ys),1.0);
         //
-        arma::vec the_a_xs = invPWA(m.elem(ys),arma::trans(arma::trans(A.cols(ys)/B.cols(ys)) % A_xs),B.cols(ys),1.0);
-        //
-        return the_a_xs;
+        return the_b_ys;
     } else { // 'default'
+        int j, y;
         int nb_Y = m.n_elem;
 
         bool coeff;
@@ -298,17 +331,21 @@ arma::vec MMF::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
             ubs = m;
         }
         //
-        if (!ys) {
-            *ys = uvec_linspace(0,m.n_elem);
-        }
+        trame_zeroin_data root_data;
 
-        the_b_ys(ys.n_elem);
+        root_data.coeff = coeff;
+        root_data.A_xs  = A_xs;
         //
-        int j, y;
+        the_b_ys(ys.n_elem);
+        
         for (j=0; j < ys.n_elem; j++) {
             y = ys(j);
+            root_data.y_ind = y;
+
             the_b_ys(j) = zeroin_mmf(0.0, ubs(y), marg_y_inv_fn, root_data, tol_zero, max_iter);
         }
+        //
+        return the_b_ys;
     }
 }
 
