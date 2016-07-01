@@ -45,10 +45,27 @@ class MMF
         arma::mat K;
 
         // member functions
+        void build_ETU(arma::vec n_ETU, arma::vec m_ETU, arma::mat C_ETU, arma::mat D_ETU, arma::mat kappa_ETU, bool need_norm_ETU);
+        void build_LTU(arma::vec n_LTU, arma::vec m_LTU, arma::mat K_LTU, arma::mat lambda_LTU, bool need_norm_LTU);
+        void build_NTU(arma::vec n_NTU, arma::vec m_NTU, arma::mat A_NTU, arma::mat B_NTU, bool need_norm_NTU);
+        void build_TU(arma::vec n_TU, arma::vec m_TU, arma::mat K_TU, bool need_norm_TU);
+
+        arma::mat M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys);
+        arma::mat M(double a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys);
+        arma::mat M(arma::mat a_xs, double b_ys, arma::uvec* xs, arma::uvec* ys);
+
+        arma::vec marg_x_inv(arma::uvec* xs, arma::mat B_ys);
+        arma::vec marg_y_inv(arma::uvec* ys, arma::mat A_xs);
 
     private:
         arma::mat aux_log_C;
         arma::mat aux_log_D;
+
+        // member functions
+        double marg_x_inv_fn(double z, const trame_zeroin_data& opt_data);
+        double marg_y_inv_fn(double z, const trame_zeroin_data& opt_data);
+
+        double zeroin_mmf(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double tol, int max_iter);
 }
 
 void MMF::build_ETU(arma::vec n_ETU, arma::vec m_ETU, arma::mat C_ETU, arma::mat D_ETU, arma::mat kappa_ETU, bool need_norm_ETU)
