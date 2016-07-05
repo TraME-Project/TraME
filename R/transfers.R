@@ -294,7 +294,7 @@ dtheta_Psi.ETU <- function(tr, U, V, dtheta=NULL)
   term_1 <- term_2 <- ret <- 0
   #
   if(is.null(dtheta)){
-    term_1 = (U - tr$alpha )*dupsi
+    term_1 = (U - tr$alpha )*dupsi # keith: should this be dupsi_mat?
     term_2 = (V - tr$gamma)*(1-dupsi)
     #
     dsigmapsi = c((Psi(tr,U,V) - term_1 - term_2) / tr$tau)
