@@ -106,3 +106,56 @@ void transfers::build_TU(arma::mat phi_TU)
 
     TU = true;
 }
+
+void transfers::trans()
+{
+    int nbX_temp;
+    //
+    if (ETU) {
+        nbX_temp = nbX;
+        nbX = nbY;
+        nbY = nbX_temp;
+
+        arma::mat alpha_temp = alpha;
+
+        alpha = gamma.t();
+        gamma = alpha_temp.t();
+        tau   = tau.t();
+
+        aux_exp_alphaovertau_temp = aux_exp_alphaovertau;
+
+        aux_exp_alphaovertau = aux_exp_gammaovertau.t();
+        aux_exp_gammaovertau = aux_exp_alphaovertau_temp.t();
+    }
+
+    if (LTU) {
+        nbX_temp = nbX;
+        nbX = nbY;
+        nbY = nbX_temp;
+
+        arma::mat lambda_temp = lambda;
+
+        lambda   = aux_zeta.t();
+        phi      = phi.t();
+        aux_zeta = lambda_temp.t();
+    }
+
+    if (NTU) {
+        nbX_temp = nbX;
+        nbX = nbY;
+        nbY = nbX_temp;
+
+        arma::mat alpha_temp = alpha;
+
+        alpha = gamma.t();
+        gamma = alpha_temp.t();
+    }
+
+    if (TU) {
+        nbX_temp = nbX;
+        nbX = nbY;
+        nbY = nbX_temp;
+
+        phi = phi.t();
+    }
+}
