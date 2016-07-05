@@ -134,7 +134,7 @@ Psi.NTU <- function(tr, U, V) (pmax(U - tr$alpha, V - tr$gamma))
 #
 Psi_sub.NTU <- function(tr, U, V, xs, ys) (pmax(U - tr$alpha[xs,ys], V - tr$gamma[xs,ys]))
 #
-du_Psi.NTU <- function(tr, U, V) ( ifelse(U-tr$alpha >= V - tr$gamma,1,0) )
+du_Psi.NTU <- function(tr, U, V) ( ifelse(U-tr$alpha >= V - tr$gamma,1,0) ) #keith: should this be a vector of ones or zeros?
 #
 du_Psi_sub.NTU <- function(tr, U, V, xs, ys) (ifelse(U-tr$alpha[xs,ys] >= V - tr$gamma[xs,ys],1,0))
 #
