@@ -220,4 +220,86 @@ finished:
     return ret
 }
 
+arma::mat transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dtheta)
+{
+    arma::mat ret(nbX,nbY);
+    //
+    if (ETU) {
+        dupsi_mat = du_Psi(U,V);
+        dupsi = arma::vectorise(dupsi_mat);
 
+        if (!dtheta) {
+            arma::mat term_1, term_2;
+            term_1 = (U - alpha) % dupsi;
+            term_2 = (V - gamma) % (1 - dupsi);
+
+            dsigmapsi_mat = (Psi(U,V) - term_1 - term_2)/tau;
+            dsigmapsi = arma::vectorise(dsigmapsi_mat);
+            //
+            ret = arma::join_rows(arma::diagmat(-dupsi),arma::join_rows(arma::diagmat(dupsi-1),arma::diagmat(dsigmapsi)));
+            goto finished;
+        } else {
+            arma::mat dtheta_1 = dtheta.rows(0,nbX*nbY-1);
+            arma::mat dtheta_2 = dtheta.rows(nbX*nbY,2*nbX*nbY-1);
+            arma::mat dtheta_3 = dtheta.rows(2*nbX*nbY,3*nbX*nbY-1);
+
+            if (min(dtheta_3)==0) {
+                double dsigmapsidtheta = 0.0; 
+            } else {
+                arma::mat term_1, term_2;
+                term_1 = (U - alpha) % dupsi_mat;
+                term_2 = (V - gamma) % (1 - dupsi_mat);
+
+                dsigmapsi_mat = (Psi(U,V) - term_1 - term_2)/tau;
+
+                arma::mat dsigmapsidtheta = dtheta_3 % arma::vectorise(dsigmapsi_mat);
+            }
+            //
+            ret = arma::vectorise(-dupsi % dtheta_1 - (1-dupsi) % dtheta_2 + dsigmapsidtheta);
+            goto finished;
+        }
+    }
+
+    if (LTU) {
+        arma::vec U_minus_V = arma::vectorise(U-V);
+
+        if (!dtheta) {
+            ret = arma::join_rows(arma::diagmat(U_minus_V),-arma::eye(nbX*nbY,nbX*nbY));
+            goto finished;
+        } else {
+            arma::mat dtheta_1 = dtheta.rows(0,nbX*nbY-1);
+            arma::mat dtheta_2 = dtheta.rows(nbX*nbY,2*nbX*nbY-1);
+            //
+            ret = arma::vectorise(U_minus_V % dtheta_1 - dtheta_2);
+            goto finished;
+        }
+    }
+
+    if (NTU) {
+        arma::vec dupsi = arma::vectorise(du_Psi(U,V));
+
+        if (!dtheta) {
+            ret = - arma::join_rows(arma::diagmat(dupsi),arma::diagmat(1 - dupsi));
+            goto finished;
+        } else {
+            arma::mat dtheta_1 = dtheta.rows(0,nbX*nbY-1);
+            arma::mat dtheta_2 = dtheta.rows(nbX*nbY,2*nbX*nbY-1);
+
+            ret = - arma::vectorise(dupsi % dtheta_1 + (1 - dupsi) % dtheta_2);
+            goto finished;
+        }
+    }
+
+    if (TU) {
+        if (!dtheta) {
+            ret = - 0.5*arma::eye(nbX*nbY,nbX*nbY);
+            goto finished;
+        } else {
+            ret = - dtheta/2;
+            goto finished;
+        }
+    }
+    //
+finished:
+    return ret
+}
