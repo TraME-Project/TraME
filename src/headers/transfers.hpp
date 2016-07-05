@@ -159,3 +159,65 @@ void transfers::trans()
         phi = phi.t();
     }
 }
+
+arma::mat transfers::Psi(arma::mat U, arma::mat V)
+{
+    arma::mat ret(nbX,nbY);
+    //
+    if (ETU) {
+        ret =  tau % arma::log(0.5 * (arma::exp(U/tau) % aux_exp_alphaovertau + arma::exp(V/tau) % aux_exp_gammaovertau));
+        goto finished;
+    }
+
+    if (LTU) {
+        ret = lambda % U + aux_zeta % V - phi;
+        goto finished;
+    }
+
+    if (NTU) {
+        ret = arma::max(U - alpha, V - gamma);
+        goto finished;
+    }
+
+    if (TU) {
+        ret = (U + V - phi) / 2;
+        goto finished;
+    }
+    //
+finished:
+    return ret
+}
+
+arma::mat transfers::du_Psi(arma::mat U, arma::mat V)
+{
+    arma::mat ret(nbX,nbY);
+    //
+    if (ETU) {
+        ret =  1 / (1 + arma::exp((V - U + alpha - gamma)/tau));
+        goto finished;
+    }
+
+    if (LTU) {
+        ret = lambda;
+        goto finished;
+    }
+
+    if (NTU) {
+        if (U - alpha >= V - gamma) {
+            ret.ones();
+        } else {
+            ret.zeros();
+        }
+        goto finished;
+    }
+
+    if (TU) {
+        ret.fill(0.5);
+        goto finished;
+    }
+    //
+finished:
+    return ret
+}
+
+
