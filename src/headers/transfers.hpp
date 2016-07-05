@@ -36,20 +36,22 @@ class transfers
 
         arma::mat alpha;
         arma::mat gamma;
+        arma::mat lambda
         arma::mat tau;
 
         arma::mat phi;
 
         // member functions
         void build_ETU(arma::mat alpha_ETU, arma::mat gamma_ETU, arma::mat tau_ETU);
-        void build_LTU(arma::vec n_LTU, arma::vec m_LTU, arma::mat K_LTU, arma::mat lambda_LTU, bool need_norm_LTU);
-        void build_NTU(arma::vec n_NTU, arma::vec m_NTU, arma::mat A_NTU, arma::mat B_NTU, bool need_norm_NTU);
-        void build_TU(arma::vec n_TU, arma::vec m_TU, arma::mat K_TU, bool need_norm_TU);
-
+        void build_LTU(arma::mat lambda_LTU, arma::mat phi_LTU);
+        void build_NTU(arma::mat alpha_NTU, arma::mat gamma_NTU);
+        void build_TU(arma::mat phi_TU);
 
     private:
-        aux_exp_alphaovertau;
-        aux_exp_gammaovertau;
+        arma::mat aux_exp_alphaovertau;
+        arma::mat aux_exp_gammaovertau;
+
+        arma::mat aux_zeta;
 }
 
 void transfers::build_ETU(arma::mat alpha_ETU, arma::mat gamma_ETU, arma::mat tau_ETU)
@@ -64,4 +66,43 @@ void transfers::build_ETU(arma::mat alpha_ETU, arma::mat gamma_ETU, arma::mat ta
 
     aux_exp_alphaovertau = arma::exp(- alpha / tau);
     aux_exp_gammaovertau = arma::exp(- gamma / tau);
+
+    ETU = true;
+}
+
+void transfers::build_LTU(arma::mat lambda_LTU, arma::mat phi_LTU)
+{
+    lambda = lambda_LTU;
+    phi    = phi_LTU;
+
+    nbX = lambda_LTU.n_rows;
+    nbY = lambda_LTU.n_cols;
+    nbParams = 2*nbX*nbY;
+
+    aux_zeta = 1 - lambda;
+
+    LTU = true;
+}
+
+void transfers::build_NTU(arma::mat alpha_NTU, arma::mat gamma_NTU)
+{
+    alpha = alpha_NTU;
+    gamma = gamma_NTU;
+
+    nbX = alpha_NTU.n_rows;
+    nbY = alpha_NTU.n_cols;
+    nbParams = 2*nbX*nbY;
+
+    NTU = true;
+}
+
+void transfers::build_TU(arma::mat phi_TU)
+{
+    phi = phi_TU;
+
+    nbX = phi_TU.n_rows;
+    nbY = phi_TU.n_cols;
+    nbParams = nbX*nbY;
+
+    TU = true;
 }
