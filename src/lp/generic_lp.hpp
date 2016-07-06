@@ -140,7 +140,8 @@
             }
             success = true;
         }
-        //        
+        //
+        // delete temp objects         
         delete[] sol_1_grbi;
         delete[] sol_2_grbi;
         delete[] dual_1_grbi;
@@ -182,7 +183,8 @@
             }
             success = true;
         }
-        //        
+        //
+        // delete temp objects     
         delete[] sol_1_grbi;
         delete[] sol_2_grbi;
         delete[] dual_1_grbi;
