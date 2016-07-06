@@ -462,7 +462,7 @@ double RSC::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::ma
     return ret;
 }
 
-void RSC::D2Gstar (arma::mat& hess, arma::vec n, bool x_first)
+void RSC::D2Gstar(arma::mat& hess, arma::vec n, bool x_first)
 {
     int i,j;
     
@@ -504,7 +504,7 @@ void RSC::D2Gstar (arma::mat& hess, arma::vec n, bool x_first)
     }
 }
 
-void RSC::dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first)
+void RSC::dtheta_NablaGstar(arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first)
 {
     int i,j;
     arma::mat dtheta_mat;

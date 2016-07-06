@@ -230,8 +230,8 @@ arma::mat transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dtheta)
 
         if (!dtheta) {
             arma::mat term_1, term_2;
-            term_1 = (U - alpha) % dupsi;
-            term_2 = (V - gamma) % (1 - dupsi);
+            term_1 = (U - alpha) % dupsi_mat;
+            term_2 = (V - gamma) % (1 - dupsi_mat);
 
             dsigmapsi_mat = (Psi(U,V) - term_1 - term_2)/tau;
             dsigmapsi = arma::vectorise(dsigmapsi_mat);
