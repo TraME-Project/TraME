@@ -536,7 +536,7 @@ finished:
     return ret
 }
 
-arma::mat transfers::Vcal(vs, arma::uvec xs, arma::uvec ys)
+arma::mat transfers::Vcal(us, arma::uvec xs, arma::uvec ys)
 {
     arma::mat ret;
     //
@@ -595,4 +595,64 @@ arma::mat transfers::du_VW(arma::mat Ws, arma::uvec xs, arma::uvec ys)
     arma::mat ret = - du_Psi(Ws,0.0,xs,ys);
 
     return ret;
+}
+
+arma::mat transfers::WU(arma::mat Us, arma::uvec xs, arma::uvec ys)
+{
+    if (ETU) {
+        arma::mat term_1 = 2 * arma::exp( (gamma(xs,ys) - Us)/tau(xs,ys) );
+        arma::mat term_2 = arma::exp( (gamma(xs,ys) - alpha(xs,ys))/tau(xs,ys) );
+        arma::mat term_log = term_1 - term_2;
+
+        ret = - tau(xs,ys) % arma::log(term_log);
+        goto finished;
+    }
+
+    if (LTU) {
+        ret = (Us - phi(xs,ys)) / aux_zeta(xs,ys);
+        goto finished;
+    }
+
+    if (NTU) {
+        ret = Us - alpha(xs,ys);
+        goto finished;
+    }
+
+    if (TU) {
+        ret = 2*Us - phi(xs,ys);
+        goto finished;
+    }
+    //
+finished:
+    return ret
+}
+
+arma::mat transfers::WV(arma::mat Vs, arma::uvec xs, arma::uvec ys)
+{
+    if (ETU) {
+        arma::mat term_1 = 2 * arma::exp( (alpha(xs,ys) - Vs)/tau(xs,ys) );
+        arma::mat term_2 = arma::exp( (alpha(xs,ys) - gamma(xs,ys))/tau(xs,ys) );
+        arma::mat term_log = term_1 - term_2;
+
+        ret = - tau(xs,ys) % arma::log(term_log);
+        goto finished;
+    }
+
+    if (LTU) {
+        ret = (phi(xs,ys) - Vs) / lambda(xs,ys);
+        goto finished;
+    }
+
+    if (NTU) {
+        ret = gamma(xs,ys) - Vs;
+        goto finished;
+    }
+
+    if (TU) {
+        ret = phi(xs,ys) - 2*Vs;
+        goto finished;
+    }
+    //
+finished:
+    return ret
 }
