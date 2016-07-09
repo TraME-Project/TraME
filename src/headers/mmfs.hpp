@@ -57,6 +57,8 @@ class MMF
         arma::vec marg_x_inv(arma::uvec* xs, arma::mat B_ys);
         arma::vec marg_y_inv(arma::uvec* ys, arma::mat A_xs);
 
+        void trans();
+
     private:
         arma::mat aux_log_C;
         arma::mat aux_log_D;
@@ -244,6 +246,41 @@ arma::mat MMF::M(arma::mat a_xs, double b_ys, arma::uvec* xs, arma::uvec* ys)
     }
     //
     return ret;
+}
+
+void MMF::trans()
+{
+    arma::vec n_temp = n;
+
+    n = m;
+    m = n_temp;
+    //
+    if (ETU) {
+        arma::mat C_temp = C;
+
+        C = D.t();
+        D = C_temp.t();
+    }
+    
+    if (LTU) {
+        arma::mat lambda_temp;
+
+        K = K.t();
+        lambda = aux_zeta.t();
+        aux_zeta = lambda_temp.t();
+    }
+    
+    if (NTU) {
+        arma::mat A_temp = A;
+
+        A = B.t();
+        B = A_temp.t();
+    }
+    
+    if (TU) {
+        K = K.t();
+    }
+    //
 }
 
 double MMF::marg_x_inv_fn(double z, const trame_zeroin_data& opt_data)
