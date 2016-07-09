@@ -280,7 +280,7 @@ mmfsTranspose.ETUmmfs <- function(mmfs)
              neededNorm = normalizationTranspose(mmfs$neededNorm),
              C = t(mmfs$D),
              D =  t(mmfs$C),
-             tauinv = t(mmfs$tauinv)
+             tauinv = t(mmfs$tauinv) # Keith where is tauinv defined ??
              )
   class(ret)="ETUmmfs"
   return(ret)
