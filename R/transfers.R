@@ -286,7 +286,7 @@ du_Psi.ETU <- function(tr, U, V) ( 1/(1 + exp((V - U + tr$alpha - tr$gamma)/(tr$
 du_Psi_sub.ETU <- function(tr, U, V, xs, ys) (1/(1 + exp((V - U + tr$alpha[xs,ys] - tr$gamma[xs,ys])
                                                          /(tr$tau[xs,ys]))))
 #
-dtheta_Psi.ETU <- function(tr, U, V, dtheta=NULL) 
+dtheta_Psi.ETU <- function(tr, U, V, dtheta=NULL)
 {
   dupsimat = du_Psi(tr,U,V)
   dupsi = c(dupsimat)
@@ -328,7 +328,7 @@ determineType.ETU <- function(tr, ...) (2)
 #
 Ucal.ETU <- function(tr, vs, xs=1:tr$nbX, ys=1:tr$nbY)
 {
-  term_1 = matrix(vs,tr$nbX,tr$nbY,byrow=TRUE) - tr$gamma[xs,ys]
+  term_1 = matrix(vs,tr$nbX,tr$nbY,byrow=TRUE) - tr$gamma[xs,ys] # Keith: will these matrices always be conformable?
   term_log = 2 - exp(term_1/tr$tau[xs,ys])
   ret = tr$alpha[xs,ys] + tr$tau[xs,ys] * log(term_log)
   return(ret)
