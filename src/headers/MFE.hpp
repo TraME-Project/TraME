@@ -48,10 +48,10 @@ class MFE
         logit arums_H;
 
         // member functions
-        void build_ETU(int n_inp, int m_inp, arma::mat lambda_inp, arma::mat phi_inp, double* sigma_inp, bool need_norm_inp);
-        void build_LTU(arma::mat lambda_LTU, arma::mat phi_LTU);
-        void build_NTU(arma::mat alpha_NTU, arma::mat gamma_NTU);
-        void build_TU(arma::mat phi_TU);
+        void build_ETU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, arma::mat tau_inp, double* sigma_inp, bool need_norm_inp);
+        void build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, double* sigma_inp, bool need_norm_inp);
+        void build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, double* sigma_inp, bool need_norm_inp);
+        void build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, double* sigma_inp, bool need_norm_inp);
 
         void trans();
 
@@ -168,4 +168,20 @@ void MFE::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, double* 
     arums_H.build(nbY,nbX,sigma,outsideOption);
 
     mmf_obj.build_TU(n,m,arma::exp(phi_inp/(2*sigma)),need_norm);
+}
+
+void MFE::trans()
+{
+    arma::vec n_temp = n;
+    n = m;
+    m = n_temp;
+    // Keith: fill in normalization later
+
+    mmf_obj.trans();
+    trans_obj.trans();
+
+    logit arums_G_temp = arums_G;
+    arums_G = arums_H;
+    arums_H = arums_G_temp;
+    //
 }
