@@ -69,7 +69,7 @@ void MFE::build_ETU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma:
     if (need_norm) {
         outsideOption = false;
     } else {
-        outsideOption = false;
+        outsideOption = true;
     }
 
     if (sigma_inp) {
@@ -97,7 +97,7 @@ void MFE::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma
     if (need_norm) {
         outsideOption = false;
     } else {
-        outsideOption = false;
+        outsideOption = true;
     }
 
     if (sigma_inp) {
@@ -125,7 +125,7 @@ void MFE::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma:
     if (need_norm) {
         outsideOption = false;
     } else {
-        outsideOption = false;
+        outsideOption = true;
     }
 
     if (sigma_inp) {
@@ -153,7 +153,7 @@ void MFE::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, double* 
     if (need_norm) {
         outsideOption = false;
     } else {
-        outsideOption = false;
+        outsideOption = true;
     }
 
     if (sigma_inp) {
