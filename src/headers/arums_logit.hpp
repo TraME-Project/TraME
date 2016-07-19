@@ -37,8 +37,8 @@ class logit
         arma::mat U;
         
         // equilibrium objects
-        arma::mat U_sol;
         arma::mat mu_sol;
+        arma::mat U_sol;
         
         // member functions
         void build(int nbX_b, int nbY_b, int nbParams_b, double sigma_b, bool outsideOption_b);
@@ -50,7 +50,7 @@ class logit
         double Gstarx(arma::mat &U_x_ret, arma::mat mu_x);
         
         double Gbar(arma::mat U_bar, arma::mat mu_bar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
-        double Gbar_x(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp);
+        double Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp);
         
         void D2G(arma::mat &H, arma::vec n, bool xFirst);
         void D2Gstar(arma::mat &H, arma::vec n, bool xFirst);
@@ -176,7 +176,7 @@ double logit::Gbar(arma::mat U_bar, arma::mat mu_bar, arma::vec n, arma::mat& U_
     arma::mat U_x_temp, mu_x_temp;
     //
     for(i=0; i<nbX; i++){
-        val_temp = logit::Gbar_x(U_bar.row(i).t(),(mu_bar.row(i).t())/n(i),U_x_temp,mu_x_temp);
+        val_temp = logit::Gbarx(U_bar.row(i).t(),(mu_bar.row(i).t())/n(i),U_x_temp,mu_x_temp);
         //
         val += n(i)*val_temp;
         U_inp.row(i) = arma::trans(U_x_temp);
@@ -194,7 +194,7 @@ double differMargX(double z, const trame_zeroin_data& opt_data)
     return ret;
 }
 
-double logit::Gbar_x(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp)
+double logit::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp)
 {
     double valx = 0.0;
 
@@ -353,7 +353,7 @@ void logit::simul(empirical &ret, int nbDraws, int seed_val)
 }*/
 
 // this generated weird assembly code...
-/*double logit::Gbar_x_old(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp)
+/*double logit::Gbarx_old(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp)
 {
     double valx=0.0;
     if(outsideOption){
