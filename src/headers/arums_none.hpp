@@ -27,12 +27,13 @@ class none
         int nbY;
         int nbParams;
         
-        // equilibrium objects
-        arma::mat U;
+        // input objects
         arma::mat mu;
+        arma::mat U;
         
-        arma::mat U_sol;
+        // equilibrium objects
         arma::mat mu_sol;
+        arma::mat U_sol;
         
         // member functions
         void build(int nbX_b, int nbY_b);
