@@ -260,6 +260,7 @@ void MMF::trans()
 
         C = D.t();
         D = C_temp.t();
+        kappa = kappa.t();
     }
     
     if (LTU) {
