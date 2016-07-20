@@ -128,36 +128,36 @@ void MMF::build_TU(arma::vec n_TU, arma::vec m_TU, arma::mat K_TU, bool need_nor
 arma::mat MMF::M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys)
 {
     if (!xs) {
-        *xs = uvec_linspace(0,n.n_elem);
+        *xs = uvec_linspace(0,n.n_elem-1);
     }
     if (!ys) {
-        *ys = uvec_linspace(0,m.n_elem);
+        *ys = uvec_linspace(0,m.n_elem-1);
     }
     //
     if (ETU) {
-        arma::mat term_1 = arma::exp(aux_log_C(xs,ys) + kappa(xs,ys) % arma::log(a_xs));
-        arma::mat term_2 = arma::exp(aux_log_D(xs,ys) + arma::trans(arma::trans(kappa(xs,ys)) % arma::log(b_ys)));
+        arma::mat term_1 = arma::exp(aux_log_C(*xs,*ys) + kappa(*xs,*ys) % arma::log(a_xs));
+        arma::mat term_2 = arma::exp(aux_log_D(*xs,*ys) + arma::trans(arma::trans(kappa(*xs,*ys)) % arma::log(b_ys)));
 
-        arma::mat ret = arma::exp((1/kappa(xs,ys)) % arma::log((term_1+term_2)/2)); 
+        arma::mat ret = arma::exp((1/kappa(*xs,*ys)) % arma::log((term_1+term_2)/2)); 
     }
     //
     if (LTU) {
-        arma::mat term_1 = arma::exp(lambda(xs,ys) % arma::log(a_xs));
-        arma::mat term_2 = arma::exp(arma::trans(aux_zeta(xs,ys)) % arma::log(b_ys));
-        arma::mat term_3 = K(xs,ys);
+        arma::mat term_1 = arma::exp(lambda(*xs,*ys) % arma::log(a_xs));
+        arma::mat term_2 = arma::exp(arma::trans(aux_zeta(*xs,*ys)) % arma::log(b_ys));
+        arma::mat term_3 = K(*xs,*ys);
 
         arma::mat ret = term_1 % term_2 % term_3;
     }
     //
     if (NTU) {
-        arma::mat term_1 = a_xs % A(xs,ys);
-        arma::mat term_2 = arma::trans(b_ys % arma::trans(A(xs,ys)));
+        arma::mat term_1 = a_xs % A(*xs,*ys);
+        arma::mat term_2 = arma::trans(b_ys % arma::trans(A(*xs,*ys)));
 
         arma::mat ret = arma::min(term_1, term_2);
     }
     //
     if (TU) {
-        arma::mat term_1 = K(xs,ys);
+        arma::mat term_1 = K(*xs,*ys);
         arma::mat term_2 = arma::sqrt(a_xs * b_ys.t());
 
         arma::mat ret = term_1 % term_2;
@@ -169,36 +169,36 @@ arma::mat MMF::M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys)
 arma::mat MMF::M(double a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys)
 {
     if (!xs) {
-        *xs = uvec_linspace(0,n.n_elem);
+        *xs = uvec_linspace(0,n.n_elem-1);
     }
     if (!ys) {
-        *ys = uvec_linspace(0,m.n_elem);
+        *ys = uvec_linspace(0,m.n_elem-1);
     }
     //
     if (ETU) {
-        arma::mat term_1 = arma::exp(aux_log_C(xs,ys) + kappa(xs,ys) * std::log(a_xs));
-        arma::mat term_2 = arma::exp(aux_log_D(xs,ys) + arma::trans(arma::trans(kappa(xs,ys)) % arma::log(b_ys)));
+        arma::mat term_1 = arma::exp(aux_log_C(*xs,*ys) + kappa(*xs,*ys) * std::log(a_xs));
+        arma::mat term_2 = arma::exp(aux_log_D(*xs,*ys) + arma::trans(arma::trans(kappa(*xs,*ys)) % arma::log(b_ys)));
 
-        arma::mat ret = arma::exp((1/kappa(xs,ys)) % arma::log((term_1+term_2)/2)); 
+        arma::mat ret = arma::exp((1/kappa(*xs,*ys)) % arma::log((term_1+term_2)/2)); 
     }
     //
     if (LTU) {
-        arma::mat term_1 = arma::exp(lambda(xs,ys) * std::log(a_xs));
-        arma::mat term_2 = arma::exp(arma::trans(aux_zeta(xs,ys)) % arma::log(b_ys));
-        arma::mat term_3 = K(xs,ys);
+        arma::mat term_1 = arma::exp(lambda(*xs,*ys) * std::log(a_xs));
+        arma::mat term_2 = arma::exp(arma::trans(aux_zeta(*xs,*ys)) % arma::log(b_ys));
+        arma::mat term_3 = K(*xs,*ys);
 
         arma::mat ret = term_1 % term_2 % term_3;
     }
     //
     if (NTU) {
-        arma::mat term_1 = a_xs * A(xs,ys);
-        arma::mat term_2 = arma::trans(b_ys % arma::trans(A(xs,ys)));
+        arma::mat term_1 = a_xs * A(*xs,*ys);
+        arma::mat term_2 = arma::trans(b_ys % arma::trans(A(*xs,*ys)));
 
         arma::mat ret = arma::min(term_1, term_2);
     }
     //
     if (TU) {
-        arma::mat term_1 = K(xs,ys);
+        arma::mat term_1 = K(*xs,*ys);
         arma::mat term_2 = arma::sqrt(a_xs * b_ys.t());
 
         arma::mat ret = term_1 % term_2;
@@ -210,36 +210,36 @@ arma::mat MMF::M(double a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys)
 arma::mat MMF::M(arma::mat a_xs, double b_ys, arma::uvec* xs, arma::uvec* ys)
 {
     if (!xs) {
-        *xs = uvec_linspace(0,n.n_elem);
+        *xs = uvec_linspace(0,n.n_elem-1);
     }
     if (!ys) {
-        *ys = uvec_linspace(0,m.n_elem);
+        *ys = uvec_linspace(0,m.n_elem-1);
     }
     //
     if (ETU) {
-        arma::mat term_1 = arma::exp(aux_log_C(xs,ys) + kappa(xs,ys) % arma::log(a_xs));
-        arma::mat term_2 = arma::exp(aux_log_D(xs,ys) + arma::trans(arma::trans(kappa(xs,ys)) % arma::log(b_ys)));
+        arma::mat term_1 = arma::exp(aux_log_C(*xs,*ys) + kappa(*xs,*ys) % arma::log(a_xs));
+        arma::mat term_2 = arma::exp(aux_log_D(*xs,*ys) + arma::trans(arma::trans(kappa(*xs,*ys)) % arma::log(b_ys)));
 
-        arma::mat ret = arma::exp((1/kappa(xs,ys)) % arma::log((term_1+term_2)/2)); 
+        arma::mat ret = arma::exp((1/kappa(*xs,*ys)) % arma::log((term_1+term_2)/2)); 
     }
     //
     if (LTU) {
-        arma::mat term_1 = arma::exp(lambda(xs,ys) % arma::log(a_xs));
-        arma::mat term_2 = arma::exp(arma::trans(aux_zeta(xs,ys)) % std::log(b_ys));
-        arma::mat term_3 = K(xs,ys);
+        arma::mat term_1 = arma::exp(lambda(*xs,*ys) % arma::log(a_xs));
+        arma::mat term_2 = arma::exp(arma::trans(aux_zeta(*xs,*ys)) % std::log(b_ys));
+        arma::mat term_3 = K(*xs,*ys);
 
         arma::mat ret = term_1 % term_2 % term_3;
     }
     //
     if (NTU) {
-        arma::mat term_1 = a_xs % A(xs,ys);
-        arma::mat term_2 = arma::trans(b_ys * arma::trans(A(xs,ys)));
+        arma::mat term_1 = a_xs % A(*xs,*ys);
+        arma::mat term_2 = arma::trans(b_ys * arma::trans(A(*xs,*ys)));
 
         arma::mat ret = arma::min(term_1, term_2);
     }
     //
     if (TU) {
-        arma::mat term_1 = K(xs,ys);
+        arma::mat term_1 = K(*xs,*ys);
         arma::mat term_2 = arma::sqrt(a_xs * b_ys);
 
         arma::mat ret = term_1 % term_2;
@@ -304,11 +304,11 @@ double MMF::marg_x_inv_fn(double z, const trame_zeroin_data& opt_data)
 arma::vec MMF::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
 {
     if (!xs) {
-        *xs = uvec_linspace(0,n.n_elem);
+        *xs = uvec_linspace(0,n.n_elem-1);
     }
     //
     if (NTU) {
-        arma::vec the_a_xs = invPWA(n.elem(xs),arma::trans(arma::trans(B.rows(xs)/A.rows(xs)) % B_ys),A.rows(xs),1);
+        arma::vec the_a_xs = invPWA(n.elem(*xs),arma::trans(arma::trans(B.rows(*xs)/A.rows(*xs)) % B_ys),A.rows(*xs),1);
         //
         return the_a_xs;
     } else { // 'default'
@@ -331,9 +331,9 @@ arma::vec MMF::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
         root_data.coeff = coeff;
         root_data.B_ys  = B_ys;
         //
-        the_a_xs(xs.n_elem);
+        the_a_xs(xs->n_elem);
         
-        for (j=0; j < xs.n_elem; j++) {
+        for (j=0; j < xs->n_elem; j++) {
             x = xs(j);
             root_data.x_ind = x;
 
@@ -364,11 +364,11 @@ double MMF::marg_y_inv_fn(double z, const trame_zeroin_data& opt_data)
 arma::vec MMF::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
 {
     if (!ys) {
-        *ys = uvec_linspace(0,m.n_elem);
+        *ys = uvec_linspace(0,m.n_elem-1);
     }
     //
     if (NTU) {
-        arma::vec the_b_ys = invPWA(m.elem(ys),arma::trans(arma::trans(A.cols(ys)/B.cols(ys)) % A_xs),B.cols(ys),1.0);
+        arma::vec the_b_ys = invPWA(m.elem(*ys),arma::trans(arma::trans(A.cols(*ys)/B.cols(*ys)) % A_xs),B.cols(*ys),1.0);
         //
         return the_b_ys;
     } else { // 'default'
@@ -391,9 +391,9 @@ arma::vec MMF::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
         root_data.coeff = coeff;
         root_data.A_xs  = A_xs;
         //
-        the_b_ys(ys.n_elem);
+        the_b_ys(ys->n_elem);
         
-        for (j=0; j < ys.n_elem; j++) {
+        for (j=0; j < ys->n_elem; j++) {
             y = ys(j);
             root_data.y_ind = y;
 
