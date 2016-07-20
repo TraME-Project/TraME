@@ -41,7 +41,7 @@ class MFE
         arma::vec n;
         arma::vec m;
 
-        mmf mmf_obj;
+        MMF mmf_obj;
         transfers trans_obj;
 
         logit arums_G;
