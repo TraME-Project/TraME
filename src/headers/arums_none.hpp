@@ -36,7 +36,7 @@ class none
         arma::mat U_sol;
         
         // member functions
-        void build(int nbX_b, int nbY_b);
+        void build(int nbX_inp, int nbY_inp);
         double G(arma::vec n);
         double Gx(arma::mat Ux, arma::mat& mu_x_inp);
 
@@ -51,10 +51,10 @@ class none
 };
 
 // for convenience:
-void none::build(int nbX_b, int nbY_b)
+void none::build(int nbX_inp, int nbY_inp)
 {   
-    nbX = nbX_b;
-    nbY = nbY_b;
+    nbX = nbX_inp;
+    nbY = nbY_inp;
     nbParams = 0;
 }
 

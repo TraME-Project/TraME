@@ -65,9 +65,9 @@ class RSC
         arma::mat U_sol;
         
         // member functions
-        void build(arma::mat zeta_b, bool outsideOption_b);
+        void build(arma::mat zeta_inp, bool outsideOption_inp);
 
-        void build_beta(arma::mat zeta_b, double alpha, double beta);
+        void build_beta(arma::mat zeta_inp, double alpha, double beta);
         
         double G(arma::vec n);
         double Gx(arma::vec& mu_x, int x);
@@ -104,26 +104,20 @@ class RSC
         static double Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
         static double Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data);
 };
-/*
-void RSC::build(arma::mat zeta_b, bool outsideOption_b, 
-                double   (*aux_cdf_eps_b)(double x, double* dist_pars),
-                double (*aux_quant_eps_b)(double x, double* dist_pars),
-                double   (*aux_pdf_eps_b)(double x, double* dist_pars),
-                double   (*aux_pot_eps_b)(double x, double* dist_pars))
-*/
-void RSC::build(arma::mat zeta_b, bool outsideOption_b)
+
+void RSC::build(arma::mat zeta_inp, bool outsideOption_inp)
 {
-    if (!outsideOption_b) {
+    if (!outsideOption_inp) {
         return;
     }
     //
     int i,j;
     //
-    nbX = zeta_b.n_rows;
-    nbY = zeta_b.n_cols - 1;
-    nbParams = zeta_b.n_elem;
+    nbX = zeta_inp.n_rows;
+    nbY = zeta_inp.n_cols - 1;
+    nbParams = zeta_inp.n_elem;
     
-    zeta = zeta_b;
+    zeta = zeta_inp;
     //
     aux_ord = arma::zeros(nbX,nbY+1);
     
@@ -147,7 +141,7 @@ void RSC::build(arma::mat zeta_b, bool outsideOption_b)
     aux_DinvPsigma.zeros();
     //
     for (i=0; i<nbX; i++) {
-        ordx_temp = arma::sort_index(zeta_b.row(i));
+        ordx_temp = arma::sort_index(zeta_inp.row(i));
         aux_ord.row(i) = arma::conv_to< arma::rowvec >::from(ordx_temp);
         
         Psigmax.zeros();
@@ -166,7 +160,7 @@ void RSC::build(arma::mat zeta_b, bool outsideOption_b)
 }
 
 // epsilon is a beta(alpha,beta) distribution
-void RSC::build_beta(arma::mat zeta_b, double alpha, double beta)
+void RSC::build_beta(arma::mat zeta_inp, double alpha, double beta)
 {
     dist_pars = new double[2];
     dist_pars[0] = alpha;
@@ -182,7 +176,7 @@ void RSC::build_beta(arma::mat zeta_b, double alpha, double beta)
     aux_pdf_eps_vec   = dbeta;
     aux_pot_eps_vec   = iqbeta;
     //
-    RSC::build(zeta_b,true);
+    RSC::build(zeta_inp,true);
 }
 
 double RSC::G(arma::vec n)

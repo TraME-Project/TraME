@@ -47,7 +47,7 @@ class RUSC
         arma::mat U_sol;
         
         // member functions
-        void build(arma::mat zeta_b, bool outsideOption_b);
+        void build(arma::mat zeta_inp, bool outsideOption_inp);
         
         double G(arma::vec n);
         double Gx(arma::vec& mu_x, int x);
@@ -63,20 +63,20 @@ class RUSC
     //private:
 };
 
-void RUSC::build(arma::mat zeta_b, bool outsideOption_b)
+void RUSC::build(arma::mat zeta_inp, bool outsideOption_inp)
 {
-    if (!outsideOption_b) {
+    if (!outsideOption_inp) {
         printf("outsideOption=F not implemented yet on RUSC arums\n");
         return;
     }
     //
     int i,j;
     //
-    nbX = zeta_b.n_rows;
-    nbY = zeta_b.n_cols - 1;
-    nbParams = zeta_b.n_elem;
+    nbX = zeta_inp.n_rows;
+    nbY = zeta_inp.n_cols - 1;
+    nbParams = zeta_inp.n_elem;
     
-    zeta = zeta_b;
+    zeta = zeta_inp;
     //
     aux_ord = arma::zeros(nbX,nbY+1);
 
@@ -107,7 +107,7 @@ void RUSC::build(arma::mat zeta_b, bool outsideOption_b)
         aux_b.row(i) = z_0 - max_z0.t();
         aux_c(i) = -z_0/2;
         
-        ordx_temp = arma::sort_index(zeta_b.row(i));
+        ordx_temp = arma::sort_index(zeta_inp.row(i));
         aux_ord.row(i) = arma::conv_to< arma::rowvec >::from(ordx_temp);
     }
     //

@@ -35,25 +35,25 @@ class probit
         arma::cube Covar;
         
         // member functions
-        void build(int nbX_b, int nbY_b, bool outsideOption_b);
+        void build(int nbX_inp, int nbY_inp, bool outsideOption_inp);
         void simul(empirical &ret, int nbDraws, int seed);
         void unifCorrelCovMatrices();
         arma::cube unifCorrelCovMatrices(double rho);
 };
 
 // for convenience:
-void probit::build(int nbX_b, int nbY_b, bool outsideOption_b)
+void probit::build(int nbX_inp, int nbY_inp, bool outsideOption_inp)
 {   
-    nbX = nbX_b;
-    nbY = nbY_b;
-    outsideOption = outsideOption_b;
+    nbX = nbX_inp;
+    nbY = nbY_inp;
+    outsideOption = outsideOption_inp;
     //
-    if (outsideOption_b) {
+    if (outsideOption_inp) {
         aux_nbOptions = nbY + 1;
     } else {
         aux_nbOptions = nbY;
     }
-    nbParams = (nbX_b * aux_nbOptions * (aux_nbOptions-1))/2;
+    nbParams = (nbX_inp * aux_nbOptions * (aux_nbOptions-1))/2;
 }
 
 void probit::simul(empirical &ret, int nbDraws, int seed_val)

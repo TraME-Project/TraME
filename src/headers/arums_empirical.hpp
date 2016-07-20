@@ -49,7 +49,7 @@ class empirical
         arma::mat mu_sol;
         
         // member functions
-        void build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous_b, bool outsideOption_b);
+        void build(int nbX_inp, int nbY_inp, arma::cube atoms_inp, bool xHomogenous_inp, bool outsideOption_inp);
         
         double G(arma::vec n);
         double Gx(arma::mat Ux, arma::mat& mu_x_inp, int x);
@@ -86,18 +86,18 @@ class empirical
         double* vval_Gbar;
 };
 
-void empirical::build(int nbX_b, int nbY_b, arma::cube atoms_b, bool xHomogenous_b, bool outsideOption_b)
+void empirical::build(int nbX_inp, int nbY_inp, arma::cube atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
 {   
-    nbX = nbX_b;
-    nbY = nbY_b;
+    nbX = nbX_inp;
+    nbY = nbY_inp;
     
-    atoms = atoms_b;
+    atoms = atoms_inp;
     
-    nbParams = atoms_b.n_elem;
+    nbParams = atoms_inp.n_elem;
     aux_nbDraws = atoms.n_rows;
     
-    xHomogenous = xHomogenous_b;
-    outsideOption = outsideOption_b;
+    xHomogenous = xHomogenous_inp;
+    outsideOption = outsideOption_inp;
 }
 
 void empirical::presolve_LP_Gstar()
