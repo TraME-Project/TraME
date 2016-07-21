@@ -27,7 +27,7 @@
 class RSC
 {
     public:
-        // build_logit objects
+        // build objects
         int nbX;
         int nbY;
         int nbParams;
