@@ -23,47 +23,69 @@
 
 #include "headers/arums_logit.hpp"
 
+// derived class to provide wrappers to some functions
+class logit_R : public logit
+{
+    public:
+        Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
+};
+
+// wrapper function as Rcpp can't handle memory pointers
+Rcpp::List logit_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
+{
+    arma::mat U_out, mu_out;
+
+    Gbar(U_bar, mu_bar, n, U_out, mu_out);
+
+    return Rcpp::List::create(Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
+}
+
 RCPP_MODULE(logit_module)
 {
     using namespace Rcpp ;
 
     // function overloading requires some trickery
-    void (logit::*G_1)(arma::vec) = &logit::G ;
-    void (logit::*G_2)(arma::mat,arma::vec) = &logit::G ;
+    double (logit::*G_1)(arma::vec) = &logit::G ;
+    double (logit::*G_2)(arma::mat,arma::vec) = &logit::G ;
 
-    void (logit::*Gstar_1)(arma::vec) = &logit::Gstar ;
-    void (logit::*Gstar_2)(arma::mat,arma::vec) = &logit::Gstar ;
+    double (logit::*Gstar_1)(arma::vec) = &logit::Gstar ;
+    double (logit::*Gstar_2)(arma::mat,arma::vec) = &logit::Gstar ;
   
     // now we can declare the class
-    class_<logit>( "R_logit" )
+    class_<logit>( "logit" )
+        .default_constructor()
 
-    .default_constructor()
+        // basic objects
+        .field( "nbX", &logit::nbX )
+        .field( "nbY", &logit::nbY )
 
-    // basic objects
-    .field( "nbX", &logit::nbX )
-    .field( "nbY", &logit::nbY )
+        .field( "nbParams", &logit::nbParams )
+        .field( "sigma", &logit::sigma )
+        .field( "outsideOption", &logit::outsideOption )
 
-    .field( "nbParams", &logit::nbParams )
-    .field( "sigma", &logit::sigma )
-    .field( "outsideOption", &logit::outsideOption )
+        .field( "mu", &logit::mu )
+        .field( "U", &logit::U )
 
-    .field( "mu", &logit::mu )
-    .field( "U", &logit::U )
+        .field( "mu_sol", &logit::mu )
+        .field( "U_sol", &logit::U )
 
-    .field( "mu_sol", &logit::mu )
-    .field( "U_sol", &logit::U )
+        // read only objects
+        //.field_readonly( "", &logit:: )
 
-    // read only objects
-    //.field_readonly( "", &logit:: )
+        // member functions
+        .method( "build", &logit::build )
+        .method( "G", G_1 )
+        .method( "G", G_2 )
+        .method( "Gstar", Gstar_1 )
+        .method( "Gstar", GStar_2 )
+        .method( "Gstarx", &logit::Gstarx )
+        .method( "Gbarx", &logit::Gbarx )
+    ;
 
-    // member functions
-    .method( "build", &logit::build )
-    .method( "G", G_1 )
-    .method( "G", G_2 )
-    .method( "Gstar", Gstar_1 )
-    .method( "Gstar", GStar_2 )
-    .method( "Gstarx", &logit::Gstarx )
-    .method( "Gbar", &logit::Gbar ) // need to put a wrapper for this later as Rcpp can't handle memory pointers
-    .method( "Gbarx", &logit::Gbarx )
+    class_<logit_R>( "logit_R" )
+        .derives<logit>( "logit" )
+        .default_constructor()
+
+        .method( "Gbar", Gbar_R )
     ;
 }
