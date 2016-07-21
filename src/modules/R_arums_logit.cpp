@@ -63,7 +63,7 @@ RCPP_MODULE(logit_module)
     .method( "Gstar", Gstar_1 )
     .method( "Gstar", GStar_2 )
     .method( "Gstarx", &logit::Gstarx )
-    .method( "Gbar", &logit::Gbar )
+    .method( "Gbar", &logit::Gbar ) // need to put a wrapper for this later as Rcpp can't handle memory pointers
     .method( "Gbarx", &logit::Gbarx )
     ;
 }
