@@ -23,6 +23,23 @@
 
 #include "headers/arums_empirical.hpp"
 
+// derived class to provide wrappers to some functions
+class empirical_R : public empirical
+{
+    public:
+        Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
+};
+
+// wrapper function as Rcpp can't handle memory pointers
+Rcpp::List empirical_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
+{
+    arma::mat U_out, mu_out;
+
+    Gbar(U_bar, mu_bar, n, U_out, mu_out);
+
+    return Rcpp::List::create(Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
+}
+
 RCPP_MODULE(empirical_module)
 {
     using namespace Rcpp ;
@@ -33,33 +50,32 @@ RCPP_MODULE(empirical_module)
   
     // now we can declare the class
     class_<empirical>( "R_empirical" )
+        .default_constructor()
 
-    .default_constructor()
+        // basic objects
+        .field( "nbX", &empirical::nbX )
+        .field( "nbY", &empirical::nbY )
 
-    // basic objects
-    .field( "nbX", &empirical::nbX )
-    .field( "nbY", &empirical::nbY )
+        .field( "nbParams", &empirical::nbParams )
+        .field( "aux_nbDraws", &empirical::aux_nbDraws )
+        .field( "nbOptions", &empirical::nbOptions )
 
-    .field( "nbParams", &empirical::nbParams )
-    .field( "aux_nbDraws", &empirical::aux_nbDraws )
-    .field( "nbOptions", &empirical::nbOptions )
+        .field( "xHomogenous", &empirical::xHomogenous )
+        .field( "outsideOption", &empirical::outsideOption )
 
-    .field( "xHomogenous", &empirical::xHomogenous )
-    .field( "outsideOption", &empirical::outsideOption )
+        .field( "atoms", &empirical::atoms )
 
-    .field( "atoms", &empirical::atoms )
+        // read only objects
+        //.field_readonly( "k_Gstar", &empirical::k_Gstar )
 
-    // read only objects
-    //.field_readonly( "k_Gstar", &empirical::k_Gstar )
-
-    // member functions
-    .method( "build", &empirical::build )
-    .method( "G", &empirical::G )
-    .method( "Gx", &empirical::Gx )
-    .method( "Gstar", Gstar_1 )
-    .method( "Gstar", GStar_2 )
-    .method( "Gstarx", &empirical::Gstarx )
-    .method( "Gbar", &empirical::Gbar )
-    .method( "Gbarx", &empirical::Gbarx )
+        // member functions
+        .method( "build", &empirical::build )
+        .method( "G", &empirical::G )
+        .method( "Gx", &empirical::Gx )
+        .method( "Gstar", Gstar_1 )
+        .method( "Gstar", GStar_2 )
+        .method( "Gstarx", &empirical::Gstarx )
+        .method( "Gbar", &empirical::Gbar )
+        .method( "Gbarx", &empirical::Gbarx )
     ;
 }
