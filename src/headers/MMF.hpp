@@ -54,6 +54,9 @@ class MMF
         arma::mat M(double a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys);
         arma::mat M(arma::mat a_xs, double b_ys, arma::uvec* xs, arma::uvec* ys);
 
+        arma::mat Mx0(arma::mat a_x);
+        arma::mat M0y(arma::mat b_y);
+
         arma::vec marg_x_inv(arma::uvec* xs, arma::mat B_ys);
         arma::vec marg_y_inv(arma::uvec* ys, arma::mat A_xs);
 
@@ -246,6 +249,16 @@ arma::mat MMF::M(arma::mat a_xs, double b_ys, arma::uvec* xs, arma::uvec* ys)
     }
     //
     return ret;
+}
+
+arma::mat MMF::Mx0(arma::mat a_x)
+{
+    return a_x;
+}
+
+arma::mat MMF::M0y(arma::mat b_y)
+{
+    return b_y;
 }
 
 void MMF::trans()

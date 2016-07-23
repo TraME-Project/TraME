@@ -70,8 +70,8 @@ bool ipfp (MFE market, bool xFirst, double* tol, arma::vec* by_start, arma::mat&
     //
     // Construct the equilibrium outcome based on ax and by obtained from above
     mu = mmf_obj.M(ax,by,NULL,NULL);
-    mux0 = ax; // this is the default 'Mx0' in the R code
-    mu0y = by; // this is the default 'M0y' in the R code
+    mux0 = mmf_obj.Mx0(ax);
+    mu0y = mmf_obj.M0y(by);
 
     U = arma::log(mu / mux0);
     V = arma::trans(arma::log(mu.t() / mu0y));
