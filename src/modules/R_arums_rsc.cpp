@@ -23,6 +23,23 @@
 
 #include "headers/arums_RSC.hpp"
 
+// derived class to provide wrappers to some functions
+class RSC_R : public RSC
+{
+    public:
+        Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
+};
+
+// wrapper function as Rcpp can't handle memory pointers
+Rcpp::List RSC_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
+{
+    arma::mat U_out, mu_out;
+
+    Gbar(U_bar, mu_bar, n, U_out, mu_out);
+
+    return Rcpp::List::create(Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
+}
+
 RCPP_MODULE(RSC_module)
 {
     using namespace Rcpp ;
@@ -31,39 +48,44 @@ RCPP_MODULE(RSC_module)
     double (RSC::*Gstar_1)(arma::vec) = &RSC::Gstar ;
   
     // now we can declare the class
-    class_<RSC>( "R_RSC" )
+    class_<RSC>( "RSC" )
+        .default_constructor()
 
-    .default_constructor()
+        // basic objects
+        .field( "nbX", &RSC::nbX )
+        .field( "nbY", &RSC::nbY )
 
-    // basic objects
-    .field( "nbX", &RSC::nbX )
-    .field( "nbY", &RSC::nbY )
+        .field( "nbParams", &RSC::nbParams )
+        .field( "outsideOption", &RSC::outsideOption )
 
-    .field( "nbParams", &RSC::nbParams )
-    .field( "outsideOption", &RSC::outsideOption )
+        .field( "mu", &RSC::mu )
+        .field( "U", &RSC::U )
 
-    .field( "mu", &RSC::mu )
-    .field( "U", &RSC::U )
+        .field( "zeta", &RSC::zeta )
 
-    .field( "zeta", &RSC::zeta )
+        .field( "mu_sol", &RSC::mu_sol )
+        .field( "U_sol", &RSC::U_sol )
 
-    .field( "mu_sol", &RSC::mu_sol )
-    .field( "U_sol", &RSC::U_sol )
+        // read only objects
+        .field_readonly( "aux_ord", &RSC::aux_ord )
 
-    // read only objects
-    .field_readonly( "aux_ord", &RSC::aux_ord )
+        .field_readonly( "aux_Influence_lhs", &RSC::aux_Influence_lhs )
+        .field_readonly( "aux_Influence_rhs", &RSC::aux_Influence_rhs )
 
-    .field_readonly( "aux_Influence_lhs", &RSC::aux_Influence_lhs )
-    .field_readonly( "aux_Influence_rhs", &RSC::aux_Influence_rhs )
+        .field_readonly( "aux_DinvPsigma", &RSC::aux_DinvPsigma )
+        .field_readonly( "aux_Psigma", &RSC::aux_Psigma )
 
-    .field_readonly( "aux_DinvPsigma", &RSC::aux_DinvPsigma )
-    .field_readonly( "aux_Psigma", &RSC::aux_Psigma )
+        // member functions
+        .method( "build", &RSC::build )
+        .method( "build_beta", &RSC::build_beta )
+        .method( "G", &RSC::G )
+        .method( "Gstar", Gstar_1 )
+    ;
 
-    // member functions
-    .method( "build", &RSC::build )
-    .method( "build_beta", &RSC::build_beta )
-    .method( "G", &RSC::G )
-    .method( "Gstar", Gstar_1 )
-    .method( "Gbar", &RSC::Gbar ) // need a wrapper for this
+    class_<RSC_R>( "RSC_R" )
+        .derives<RSC>( "RSC" )
+        .default_constructor()
+
+        .method( "Gbar", Gbar_R )
     ;
 }

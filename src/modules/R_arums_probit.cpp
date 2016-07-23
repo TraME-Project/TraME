@@ -31,28 +31,27 @@ RCPP_MODULE(probit_module)
     arma::cube (probit::*unifCorrelCovMatrices_2)(double) = &probit::unifCorrelCovMatrices ;
   
     // now we can declare the class
-    class_<probit>( "R_probit" )
+    class_<probit>( "probit" )
+        .default_constructor()
 
-    .default_constructor()
+        // basic objects
+        .field( "nbX", &probit::nbX )
+        .field( "nbY", &probit::nbY )
 
-    // basic objects
-    .field( "nbX", &probit::nbX )
-    .field( "nbY", &probit::nbY )
+        .field( "nbParams", &probit::nbParams )
+        .field( "aux_nbOptions", &probit::aux_nbOptions )
+        .field( "outsideOption", &probit::outsideOption )
 
-    .field( "nbParams", &probit::nbParams )
-    .field( "aux_nbOptions", &probit::aux_nbOptions )
-    .field( "outsideOption", &probit::outsideOption )
+        .field( "rho", &probit::rho )
 
-    .field( "rho", &probit::rho )
+        .field( "Covar", &probit::Covar )
 
-    .field( "Covar", &probit::Covar )
+        // read only objects
+        //.field_readonly( "", &probit:: )
 
-    // read only objects
-    //.field_readonly( "", &probit:: )
-
-    // member functions
-    .method( "build", &probit::build )
-    .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_1 )
-    .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_2 )
+        // member functions
+        .method( "build", &probit::build )
+        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_1 )
+        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_2 )
     ;
 }

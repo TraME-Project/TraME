@@ -21,17 +21,17 @@
 
 #include <RcppArmadillo.h>
 
-#include "headers/arums_none.hpp"
+#include "headers/arums_RUSC.hpp"
 
 // derived class to provide wrappers to some functions
-class none_R : public none
+class RUSC_R : public RUSC
 {
     public:
         Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
 };
 
 // wrapper function as Rcpp can't handle memory pointers
-Rcpp::List none_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
+Rcpp::List RUSC_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
 {
     arma::mat U_out, mu_out;
 
@@ -40,38 +40,49 @@ Rcpp::List none_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
     return Rcpp::List::create(Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
 }
 
-RCPP_MODULE(none_module)
+RCPP_MODULE(RUSC_module)
 {
     using namespace Rcpp ;
+
+    // function overloading requires some trickery
+    double (RUSC::*Gstar_1)(arma::vec) = &RUSC::Gstar ;
   
-    class_<none>( "none" )
+    // now we can declare the class
+    class_<RUSC>( "RUSC" )
         .default_constructor()
 
         // basic objects
-        .field( "nbX", &none::nbX )
-        .field( "nbY", &none::nbY )
+        .field( "nbX", &RUSC::nbX )
+        .field( "nbY", &RUSC::nbY )
 
-        .field( "nbParams", &none::nbParams )
+        .field( "nbParams", &RUSC::nbParams )
+        .field( "outsideOption", &RUSC::outsideOption )
 
-        .field( "mu", &none::mu )
-        .field( "U", &none::U )
+        .field( "mu", &RUSC::mu )
+        .field( "U", &RUSC::U )
 
-        .field( "mu_sol", &none::mu )
-        .field( "U_sol", &none::U )
+        .field( "zeta", &RUSC::zeta )
+
+        .field( "mu_sol", &RUSC::mu_sol )
+        .field( "U_sol", &RUSC::U_sol )
 
         // read only objects
-        //.field_readonly( "", &none:: )
+        .field_readonly( "aux_ord", &RUSC::aux_ord )
+
+        .field_readonly( "aux_Influence_lhs", &RUSC::aux_Influence_lhs )
+        .field_readonly( "aux_Influence_rhs", &RUSC::aux_Influence_rhs )
+
+        .field_readonly( "aux_DinvPsigma", &RUSC::aux_DinvPsigma )
+        .field_readonly( "aux_Psigma", &RUSC::aux_Psigma )
 
         // member functions
-        .method( "build", &none::build )
-        .method( "G", &none::G )
-        .method( "Gx", &none::Gx )
-        //.method( "Gstar", &none::Gstar ) // not defined
-        .method( "Gbarx", &none::Gbarx )
+        .method( "build", &RUSC::build )
+        .method( "G", &RUSC::G )
+        .method( "Gstar", Gstar_1 )
     ;
 
-    class_<none_R>( "none_R" )
-        .derives<none>( "none" )
+    class_<RUSC_R>( "RUSC_R" )
+        .derives<RUSC>( "RUSC" )
         .default_constructor()
 
         .method( "Gbar", Gbar_R )
