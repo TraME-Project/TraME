@@ -44,7 +44,7 @@ bool ipfp (MFE market, bool xFirst, double* tol, arma::vec* by_start, arma::mat&
     arma::vec ax(nbX);
     arma::vec val(nbX+nbY);
 
-    if (tol) {
+    if (!tol) {
         *tol = 1E-12;
     }
 
