@@ -45,9 +45,8 @@ RCPP_MODULE(empirical_module)
     using namespace Rcpp ;
 
     // function overloading requires some trickery
-    void (empirical::*Gstar_1)(arma::vec) = &empirical::Gstar ;
-    void (empirical::*Gstar_2)(arma::mat,arma::vec) = &empirical::Gstar ;
-  
+    double (empirical::*Gstar_1)(arma::vec) = &empirical::Gstar ;
+    
     // now we can declare the class
     class_<empirical>( "R_empirical" )
         .default_constructor()
@@ -73,7 +72,6 @@ RCPP_MODULE(empirical_module)
         .method( "G", &empirical::G )
         .method( "Gx", &empirical::Gx )
         .method( "Gstar", Gstar_1 )
-        .method( "Gstar", GStar_2 )
         .method( "Gstarx", &empirical::Gstarx )
         .method( "Gbar", &empirical::Gbar )
         .method( "Gbarx", &empirical::Gbarx )
