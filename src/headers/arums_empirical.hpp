@@ -19,8 +19,10 @@
   ##
   ################################################################################*/
 
+#define TRAME_USE_GUROBI_C
+
 #include "which_max.hpp"
-#include "sparse_kron.hpp"
+//#include "sparse_kron.hpp"
 #include "../lp/generic_lp.hpp"
 
 // logit class
