@@ -1,1 +1,4 @@
-PKG_LIBS = `$(R_HOME)/bin/Rscript -e "Rcpp:::LdFlags()"` $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+
+CXX_STD = CXX11
+PKG_CPPFLAGS= -Wall -O2 -I/Library/gurobi650/mac64/include -I/Library/gurobi651/mac64/include
+PKG_LIBS= -L/Library/gurobi651/mac64/lib -lgurobi65 -Wl,-rpath,/Library/gurobi651/mac64/lib
