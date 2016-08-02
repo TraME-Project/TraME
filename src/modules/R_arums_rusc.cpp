@@ -21,7 +21,7 @@
 
 #include <RcppArmadillo.h>
 
-#include "headers/arums_RUSC.hpp"
+#include "../headers/arums_RUSC.hpp"
 
 // derived class to provide wrappers to some functions
 class RUSC_R : public RUSC

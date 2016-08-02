@@ -21,7 +21,7 @@
 
 #include <RcppArmadillo.h>
 
-#include "headers/arums_probit.hpp"
+#include "../headers/arums_probit.hpp"
 
 RCPP_MODULE(probit_module)
 {

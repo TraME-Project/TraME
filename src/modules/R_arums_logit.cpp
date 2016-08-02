@@ -21,7 +21,7 @@
 
 #include <RcppArmadillo.h>
 
-#include "headers/arums_logit.hpp"
+#include "../headers/arums_logit.hpp"
 
 // derived class to provide wrappers to some functions
 class logit_R : public logit

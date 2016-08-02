@@ -21,7 +21,7 @@
 
 #include <RcppArmadillo.h>
 
-#include "headers/arums_RSC.hpp"
+#include "../headers/arums_RSC.hpp"
 
 // derived class to provide wrappers to some functions
 class RSC_R : public RSC

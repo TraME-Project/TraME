@@ -21,7 +21,7 @@
 
 #include <RcppArmadillo.h>
 
-#include "headers/arums_none.hpp"
+#include "../headers/arums_none.hpp"
 
 // derived class to provide wrappers to some functions
 class none_R : public none
