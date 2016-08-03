@@ -21,7 +21,7 @@
 
 //#include "trame_aux.hpp"
 
-#include "omp.h" //  OpenMP
+//#include "omp.h" //  OpenMP
 
 // RSC class
 class RSC
