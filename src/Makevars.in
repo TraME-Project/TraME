@@ -1,12 +1,21 @@
 
 CXX_STD = CXX11
+
+LP_CFLAGS= -Wall -O2 @GRB_INCLUDE_PATH@
+LP_LIBS = @GRB_LIB_PATH@ @GRB_LIBS@ @GRB_LIB_RPATH@
+SOURCES_LP= ./lp/generic_lp.c
+
 PKG_CPPFLAGS= -Wall -O2 @TRAME_INCLUDE_PATH@
 PKG_LIBS= @TRAME_LIB_PATH@ @TRAME_LIBS@ @TRAME_LIB_RPATH@
 
 SOURCES_MODULES= ./modules/R_arums_empirical.cpp ./modules/R_arums_logit.cpp ./modules/R_arums_none.cpp ./modules/R_arums_probit.cpp ./modules/R_arums_rsc.cpp ./modules/R_arums_rusc.cpp
-
 OBJECTS_MODULES= $(SOURCES_MODULES:.cpp=.o)
 
 all: $(SHLIB)
 
-$(SHLIB): $(OBJECTS_MODULES)
+$(SHLIB): ./lp/generic_lp.o $(OBJECTS_MODULES) 
+
+./lp/generic_lp.o: ./lp/generic_lp.c
+	$(CC) $(LP_CFLAGS) $^ -c -o $@
+
+

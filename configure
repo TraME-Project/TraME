@@ -5,28 +5,49 @@ if [[ $OSTYPE == darwin* ]] ; then
     if [ -d "/Library/gurobi"* ] ; then
         grb_dirs=( /Library/gurobi* )
         nmb_dirs=${#grb_dirs[@]}
-        TRAME_INCLUDE_PATH="-I${grb_dirs[$nmb_dirs-1]}/mac64/include"
-        TRAME_LIB_PATH="-L${grb_dirs[$nmb_dirs-1]}/mac64/lib"
-        TRAME_LIBS="-lgurobi65"
-        TRAME_LIB_RPATH="-Wl,-rpath,${grb_dirs[$nmb_dirs-1]}/mac64/lib"
+
+        GRB_INCLUDE_PATH="-I${grb_dirs[$nmb_dirs-1]}/mac64/include"
+        GRB_LIB_PATH="-L${grb_dirs[$nmb_dirs-1]}/mac64/lib"
+        GRB_LIBS="-lgurobi65"
+        GRB_LIB_RPATH="-Wl,-rpath,${grb_dirs[$nmb_dirs-1]}/mac64/lib"
+
+        TRAME_INCLUDE_PATH=$GRB_INCLUDE_PATH
+        TRAME_LIB_PATH=$GRB_LIB_PATH
+        TRAME_LIBS=$GRB_LIBS
+        TRAME_LIB_RPATH=$GRB_LIB_RPATH
     fi
 elif [[ $OSTYPE == *linux* ]] ; then
     if [ -d "/opt/gurobi"* ] ; then
         grb_dirs=( /opt/gurobi* )
         nmb_dirs=${#grb_dirs[@]}
-        TRAME_INCLUDE_PATH="-I${grb_dirs[$nmb_dirs-1]}/linux64/include"
-        TRAME_LIB_PATH="-L${grb_dirs[$nmb_dirs-1]}/linux64/lib"
-        TRAME_LIBS="-lgurobi65"
-        TRAME_LIB_RPATH="-Wl,-rpath,${grb_dirs[$nmb_dirs-1]}/linux64/lib"
+
+        GRB_INCLUDE_PATH="-I${grb_dirs[$nmb_dirs-1]}/linux64/include"
+        GRB_LIB_PATH="-L${grb_dirs[$nmb_dirs-1]}/linux64/lib"
+        GRB_LIBS="-lgurobi65"
+        GRB_LIB_RPATH="-Wl,-rpath,${grb_dirs[$nmb_dirs-1]}/linux64/lib"
+
+        TRAME_INCLUDE_PATH=$GRB_INCLUDE_PATH
+        TRAME_LIB_PATH=$GRB_LIB_PATH
+        TRAME_LIBS=$GRB_LIBS
+        TRAME_LIB_RPATH=$GRB_LIB_RPATH
     fi
 else
+    GRB_INCLUDE_PATH=
+    GRB_LIB_PATH=
+    GRB_LIBS=
+    GRB_LIB_RPATH=
+
     TRAME_INCLUDE_PATH=
     TRAME_LIB_PATH=
     TRAME_LIBS=
     TRAME_LIB_RPATH=
 fi
 
-sed -e "s|@TRAME_INCLUDE_PATH@|${TRAME_INCLUDE_PATH}|" \
+sed -e "s|@GRB_INCLUDE_PATH@|${GRB_INCLUDE_PATH}|" \
+    -e "s|@GRB_LIB_PATH@|${GRB_LIB_PATH}|" \
+    -e "s|@GRB_LIBS@|${GRB_LIBS}|" \
+    -e "s|@GRB_LIB_RPATH@|${GRB_LIB_RPATH}|" \
+    -e "s|@TRAME_INCLUDE_PATH@|${TRAME_INCLUDE_PATH}|" \
     -e "s|@TRAME_LIB_PATH@|${TRAME_LIB_PATH}|" \
     -e "s|@TRAME_LIBS@|${TRAME_LIBS}|" \
     -e "s|@TRAME_LIB_RPATH@|${TRAME_LIB_RPATH}|" \
