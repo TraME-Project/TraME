@@ -21,6 +21,11 @@
 
 #include <RcppArmadillo.h>
 
+#include "../aux/trame_aux.hpp"
+#include "../aux/trame_structs.hpp"
+
+#include "../headers/arums_empirical.hpp"
+
 #include "../headers/arums_RSC.hpp"
 
 // derived class to provide wrappers to some functions
@@ -86,6 +91,6 @@ RCPP_MODULE(RSC_module)
         .derives<RSC>( "RSC" )
         .default_constructor()
 
-        .method( "Gbar", Gbar_R )
+        .method( "Gbar", &RSC_R::Gbar_R )
     ;
 }

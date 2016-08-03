@@ -21,6 +21,11 @@
 
 #include <RcppArmadillo.h>
 
+#include "../aux/trame_aux.hpp"
+#include "../aux/trame_structs.hpp"
+
+#include "../headers/arums_empirical.hpp"
+
 #include "../headers/arums_logit.hpp"
 
 // derived class to provide wrappers to some functions
@@ -46,10 +51,8 @@ RCPP_MODULE(logit_module)
 
     // function overloading requires some trickery
     double (logit::*G_1)(arma::vec) = &logit::G ;
-    double (logit::*G_2)(arma::mat,arma::vec) = &logit::G ;
 
     double (logit::*Gstar_1)(arma::vec) = &logit::Gstar ;
-    double (logit::*Gstar_2)(arma::mat,arma::vec) = &logit::Gstar ;
   
     // now we can declare the class
     class_<logit>( "logit" )
@@ -75,9 +78,7 @@ RCPP_MODULE(logit_module)
         // member functions
         .method( "build", &logit::build )
         .method( "G", G_1 )
-        .method( "G", G_2 )
         .method( "Gstar", Gstar_1 )
-        .method( "Gstar", GStar_2 )
         .method( "Gstarx", &logit::Gstarx )
         .method( "Gbarx", &logit::Gbarx )
     ;
@@ -86,6 +87,6 @@ RCPP_MODULE(logit_module)
         .derives<logit>( "logit" )
         .default_constructor()
 
-        .method( "Gbar", Gbar_R )
+        .method( "Gbar", &logit_R::Gbar_R )
     ;
 }

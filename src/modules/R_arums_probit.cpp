@@ -21,6 +21,11 @@
 
 #include <RcppArmadillo.h>
 
+#include "../aux/trame_aux.hpp"
+#include "../aux/trame_structs.hpp"
+
+#include "../headers/arums_empirical.hpp"
+
 #include "../headers/arums_probit.hpp"
 
 RCPP_MODULE(probit_module)

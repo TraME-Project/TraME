@@ -21,6 +21,9 @@
 
 #include <RcppArmadillo.h>
 
+#include "../aux/trame_aux.hpp"
+#include "../aux/trame_structs.hpp"
+
 #include "../headers/arums_empirical.hpp"
 
 // derived class to provide wrappers to some functions
@@ -75,5 +78,12 @@ RCPP_MODULE(empirical_module)
         .method( "Gstarx", &empirical::Gstarx )
         .method( "Gbar", &empirical::Gbar )
         .method( "Gbarx", &empirical::Gbarx )
+    ;
+
+    class_<empirical_R>( "empirical_R" )
+        .derives<empirical>( "empirical" )
+        .default_constructor()
+
+        .method( "Gbar", &empirical_R::Gbar_R )
     ;
 }

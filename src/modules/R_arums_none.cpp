@@ -21,6 +21,11 @@
 
 #include <RcppArmadillo.h>
 
+#include "../aux/trame_aux.hpp"
+#include "../aux/trame_structs.hpp"
+
+#include "../headers/arums_empirical.hpp"
+
 #include "../headers/arums_none.hpp"
 
 // derived class to provide wrappers to some functions
@@ -74,6 +79,6 @@ RCPP_MODULE(none_module)
         .derives<none>( "none" )
         .default_constructor()
 
-        .method( "Gbar", Gbar_R )
+        .method( "Gbar", &none_R::Gbar_R )
     ;
 }
