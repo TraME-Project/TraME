@@ -17,5 +17,3 @@ $(SHLIB): ./lp/generic_lp.o $(OBJECTS_MODULES)
 
 ./lp/generic_lp.o: ./lp/generic_lp.c
 	$(CC) $(LP_CFLAGS) $^ -c -o $@
-
-
