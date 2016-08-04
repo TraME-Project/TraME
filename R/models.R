@@ -233,6 +233,14 @@ buildModel_TU_empirical = function(phi_xyk, n=NULL, m=NULL, arumsG, arumsH) {
   dims = dim(phi_xyk)
   nbX = dims[1]
   nbY = dims[2]
+  #
+  if(is.null(n)){
+    n = rep(1,nbX)
+  }
+  if(is.null(m)){
+    m = rep(1,nbY)
+  }
+  #
   nbParams = dims[3]
   ret = list(  phi_xyk = phi_xyk,
                nbParams = nbParams,                         
