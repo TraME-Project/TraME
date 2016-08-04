@@ -1,6 +1,10 @@
 #! /bin/sh
 ## TraME config script
 
+NLOPT_INCLUDE_PATH="-I${R_HOME}/include -I${R_HOME}/library/Rcpp/include -I${R_HOME}/library/RcppArmadillo/include -I/usr/local/include"
+NLOPT_LIB_PATH="-I/usr/local/lib"
+NLOPT_LIBS="-lnlopt"
+
 if [[ $OSTYPE == darwin* ]] ; then
     if [ -d "/Library/gurobi"* ] ; then
         grb_dirs=( /Library/gurobi* )
@@ -10,12 +14,17 @@ if [[ $OSTYPE == darwin* ]] ; then
         GRB_LIB_PATH="-L${grb_dirs[$nmb_dirs-1]}/mac64/lib"
         GRB_LIBS="-lgurobi65"
         GRB_LIB_RPATH="-Wl,-rpath,${grb_dirs[$nmb_dirs-1]}/mac64/lib"
-
-        TRAME_INCLUDE_PATH=$GRB_INCLUDE_PATH
-        TRAME_LIB_PATH=$GRB_LIB_PATH
-        TRAME_LIBS=$GRB_LIBS
-        TRAME_LIB_RPATH=$GRB_LIB_RPATH
+    else
+        GRB_INCLUDE_PATH=
+        GRB_LIB_PATH=
+        GRB_LIBS=
+        GRB_LIB_RPATH=
     fi
+
+    TRAME_INCLUDE_PATH="$GRB_INCLUDE_PATH $NLOPT_INCLUDE_PATH"
+    TRAME_LIB_PATH="$GRB_LIB_PATH $NLOPT_LIB_PATH"
+    TRAME_LIBS="$GRB_LIBS $NLOPT_LIBS"
+    TRAME_LIB_RPATH=$GRB_LIB_RPATH
 elif [[ $OSTYPE == *linux* ]] ; then
     if [ -d "/opt/gurobi"* ] ; then
         grb_dirs=( /opt/gurobi* )
@@ -25,12 +34,17 @@ elif [[ $OSTYPE == *linux* ]] ; then
         GRB_LIB_PATH="-L${grb_dirs[$nmb_dirs-1]}/linux64/lib"
         GRB_LIBS="-lgurobi65"
         GRB_LIB_RPATH="-Wl,-rpath,${grb_dirs[$nmb_dirs-1]}/linux64/lib"
-
-        TRAME_INCLUDE_PATH=$GRB_INCLUDE_PATH
-        TRAME_LIB_PATH=$GRB_LIB_PATH
-        TRAME_LIBS=$GRB_LIBS
-        TRAME_LIB_RPATH=$GRB_LIB_RPATH
+    else
+        GRB_INCLUDE_PATH=
+        GRB_LIB_PATH=
+        GRB_LIBS=
+        GRB_LIB_RPATH=
     fi
+
+    TRAME_INCLUDE_PATH="$GRB_INCLUDE_PATH $NLOPT_INCLUDE_PATH"
+    TRAME_LIB_PATH="$GRB_LIB_PATH $NLOPT_LIB_PATH"
+    TRAME_LIBS="$GRB_LIBS $NLOPT_LIBS"
+    TRAME_LIB_RPATH=$GRB_LIB_RPATH
 else
     GRB_INCLUDE_PATH=
     GRB_LIB_PATH=
@@ -43,7 +57,10 @@ else
     TRAME_LIB_RPATH=
 fi
 
-sed -e "s|@GRB_INCLUDE_PATH@|${GRB_INCLUDE_PATH}|" \
+sed -e "s|@NLOPT_INCLUDE_PATH@|${NLOPT_INCLUDE_PATH}|" \
+    -e "s|@NLOPT_LIB_PATH@|${NLOPT_LIB_PATH}|" \
+    -e "s|@NLOPT_LIBS@|${NLOPT_LIBS}|" \
+    -e "s|@GRB_INCLUDE_PATH@|${GRB_INCLUDE_PATH}|" \
     -e "s|@GRB_LIB_PATH@|${GRB_LIB_PATH}|" \
     -e "s|@GRB_LIBS@|${GRB_LIBS}|" \
     -e "s|@GRB_LIB_RPATH@|${GRB_LIB_RPATH}|" \
