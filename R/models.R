@@ -122,10 +122,9 @@ buildModel_TU_logit <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
 }
 #
 parametricMarket.TU_logit<- function(model, theta)
-  # the theta are the parameters for alpha, gamma and tau
+  # theta is the parameter vector for phi
 {
-  phi_xyk_mat = matrix(model$phi_xyk,ncol = model$nbParams)
-  phi_xy_vec = apply(phi_xyk_mat,1,sum)
+  phi_xy_vec = matrix(model$phi_xyk,ncol = model$nbParams) %*% theta
   phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
   return( build_market_TU_logit(model$n,model$m,phi_xy_mat,
                                 neededNorm=model$neededNorm) )
