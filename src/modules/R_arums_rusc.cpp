@@ -71,12 +71,6 @@ RCPP_MODULE(RUSC_module)
         // read only objects
         .field_readonly( "aux_ord", &RUSC::aux_ord )
 
-        .field_readonly( "aux_Influence_lhs", &RUSC::aux_Influence_lhs )
-        .field_readonly( "aux_Influence_rhs", &RUSC::aux_Influence_rhs )
-
-        .field_readonly( "aux_DinvPsigma", &RUSC::aux_DinvPsigma )
-        .field_readonly( "aux_Psigma", &RUSC::aux_Psigma )
-
         // member functions
         .method( "build", &RUSC::build )
         .method( "G", &RUSC::G )
@@ -87,6 +81,6 @@ RCPP_MODULE(RUSC_module)
         .derives<RUSC>( "RUSC" )
         .default_constructor()
 
-        .method( "Gbar", Gbar_R )
+        .method( "Gbar", &RUSC_R::Gbar_R )
     ;
 }
