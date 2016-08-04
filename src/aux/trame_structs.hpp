@@ -45,9 +45,6 @@ class trame_zeroin_data
         int y_ind;
 
         bool coeff;
-        //
-        
-    //private:
 };
 
 //
