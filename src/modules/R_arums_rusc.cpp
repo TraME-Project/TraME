@@ -21,6 +21,8 @@
 
 #include <RcppArmadillo.h>
 
+#include "../headers/arums_empirical.hpp"
+
 #include "../headers/arums_RUSC.hpp"
 
 // derived class to provide wrappers to some functions

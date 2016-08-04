@@ -19,10 +19,10 @@
   ##
   ################################################################################*/
 
-#include <RcppArmadillo.h>
+#include "../nlopt/generic_nlopt.hpp"
 
 #include "../aux/trame_aux.hpp"
-#include "../aux/trame_structs.hpp"
+//#include "../aux/trame_structs.hpp"
 
 #include "../headers/arums_empirical.hpp"
 
