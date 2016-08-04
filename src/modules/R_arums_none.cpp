@@ -21,10 +21,7 @@
 
 #include <RcppArmadillo.h>
 
-#include "../aux/trame_aux.hpp"
-#include "../aux/trame_structs.hpp"
-
-#include "../headers/arums_empirical.hpp"
+#include "../headers/arums_empirical_class.hpp"
 
 #include "../headers/arums_none.hpp"
 

@@ -21,9 +21,6 @@
 
 #include <RcppArmadillo.h>
 
-#include "../aux/trame_aux.hpp"
-#include "../aux/trame_structs.hpp"
-
 #include "../headers/arums_empirical.hpp"
 
 // derived class to provide wrappers to some functions

@@ -21,7 +21,7 @@
 
 #include <RcppArmadillo.h>
 
-#include "../headers/arums_empirical.hpp"
+#include "../headers/arums_empirical_class.hpp"
 
 #include "../headers/arums_RUSC.hpp"
 
