@@ -19,6 +19,9 @@
   ##
   ################################################################################*/
 
+#include "../aux/trame_aux.hpp"
+#include "../aux/trame_structs.hpp"
+
 #include "zeroin.hpp"
 
 // logit class

@@ -19,6 +19,9 @@
   ##
   ################################################################################*/
 
+#include "../aux/trame_aux.hpp"
+#include "../aux/trame_structs.hpp"
+
 class probit
 {
     public:
