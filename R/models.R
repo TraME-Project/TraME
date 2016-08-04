@@ -258,8 +258,7 @@ buildModel_TU_empirical = function(phi_xyk, n=NULL, m=NULL, arumsG, arumsH) {
 #
 parametricMarket.TU_empirical <- function(model, theta)
 {
-  phi_xyk_mat = matrix(model$phi_xyk,ncol = model$nbParams)
-  phi_xy_vec = apply(phi_xyk_mat,1,sum)
+  phi_xy_vec = matrix(model$phi_xyk,ncol = model$nbParams) %*% theta
   phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
 return(  build_market_TU_general(model$n,model$m,phi_xy_mat,model$arumsG,model$arumsH))
 }
@@ -365,8 +364,7 @@ buildModel_TU_none = function(phi_xyk, n=NULL, m=NULL,seed=777) {
 #
 parametricMarket.TU_none<- function(model, theta)
 {
-  phi_xyk_mat = matrix(model$phi_xyk,ncol = model$nbParams)
-  phi_xy_vec = apply(phi_xyk_mat,1,sum)
+  phi_xy_vec = matrix(model$phi_xyk,ncol = model$nbParams) %*% theta
   phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
   return( build_market_TU_none(model$n,model$m,phi_xy_mat) )
 }
