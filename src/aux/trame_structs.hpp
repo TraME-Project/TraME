@@ -18,7 +18,10 @@
   ##   along with TraME. If not, see <http://www.gnu.org/licenses/>.
   ##
   ################################################################################*/
- 
+
+// guard against double inclusion
+#pragma once
+
 //
 // for use in zeroin()
 struct trame_opt_data {
@@ -49,7 +52,6 @@ class trame_zeroin_data
 
 //
 // nlopt structures
-
 typedef struct {
     int x;
     int nbY;
