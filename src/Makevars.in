@@ -19,11 +19,13 @@ PKG_LIBS= @TRAME_LIB_PATH@ @TRAME_LIBS@ @TRAME_LIB_RPATH@
 SOURCES_MODULES= ./modules/R_arums_empirical.cpp ./modules/R_arums_logit.cpp ./modules/R_arums_none.cpp ./modules/R_arums_probit.cpp ./modules/R_arums_rsc.cpp
 OBJECTS_MODULES= $(SOURCES_MODULES:.cpp=.o)
 
-OBJECTS=$(OBJECTS_LP) $(OBJECTS_NLOPT) $(OBJECTS_MODULES) 
+OBJECTS_AUX= ./aux/trame_aux.o ./prob/prob.o ./math/quadpack_double.o ./prob/trame_F90_aux.o
 
-all: $(SHLIB) $(OBJECTS_LP) $(OBJECTS_NLOPT) ./prob/prob.o ./math/quadpack_double.o ./prob/trame_aux.o
+OBJECTS=$(OBJECTS_LP) $(OBJECTS_NLOPT) $(OBJECTS_MODULES) $(OBJECTS_AUX)
 
-$(SHLIB): $(OBJECTS_LP) $(OBJECTS_NLOPT) ./prob/prob.o ./math/quadpack_double.o ./prob/trame_aux.o $(OBJECTS_MODULES)
+all: $(SHLIB) $(OBJECTS_LP) $(OBJECTS_NLOPT) $(OBJECTS_AUX)
+
+$(SHLIB): $(OBJECTS_LP) $(OBJECTS_NLOPT) $(OBJECTS_AUX) $(OBJECTS_MODULES)
 
 $(OBJECTS_LP): $(SOURCES_LP)
 	$(CC) $(LP_CFLAGS) $^ -c -o $@
@@ -31,11 +33,14 @@ $(OBJECTS_LP): $(SOURCES_LP)
 $(OBJECTS_NLOPT): $(SOURCES_NLOPT)
 	$(CXX) $(NLOPT_CPPFLAGS) $^ -c -o $@
 
+./aux/trame_aux.o: ./aux/trame_aux.cpp
+	$(CXX) $(PKG_CPPFLAGS) $^ -c -o $@
+
 ./prob/prob.o: ./prob/prob.f90
 	$(FC) $(TRAME_FFLAGS) $^ -c -o $@
 
 ./math/quadpack_double.o: ./math/quadpack_double.f90
 	$(FC) $(TRAME_FFLAGS) $^ -c -o $@
 
-./prob/trame_aux.o: ./prob/trame_aux.f90
+./prob/trame_F90_aux.o: ./prob/trame_F90_aux.f90
 	$(FC) $(TRAME_FFLAGS) $^ -c -o $@
