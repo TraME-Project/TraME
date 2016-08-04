@@ -122,10 +122,9 @@ buildModel_TU_logit <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
 }
 #
 parametricMarket.TU_logit<- function(model, theta)
-  # the theta are the parameters for alpha, gamma and tau
+  # theta is the parameter vector for phi
 {
-  phi_xyk_mat = matrix(model$phi_xyk,ncol = model$nbParams)
-  phi_xy_vec = apply(phi_xyk_mat,1,sum)
+  phi_xy_vec = matrix(model$phi_xyk,ncol = model$nbParams) %*% theta
   phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
   return( build_market_TU_logit(model$n,model$m,phi_xy_mat,
                                 neededNorm=model$neededNorm) )
@@ -234,6 +233,14 @@ buildModel_TU_empirical = function(phi_xyk, n=NULL, m=NULL, arumsG, arumsH) {
   dims = dim(phi_xyk)
   nbX = dims[1]
   nbY = dims[2]
+  #
+  if(is.null(n)){
+    n = rep(1,nbX)
+  }
+  if(is.null(m)){
+    m = rep(1,nbY)
+  }
+  #
   nbParams = dims[3]
   ret = list(  phi_xyk = phi_xyk,
                nbParams = nbParams,                         
@@ -251,8 +258,7 @@ buildModel_TU_empirical = function(phi_xyk, n=NULL, m=NULL, arumsG, arumsH) {
 #
 parametricMarket.TU_empirical <- function(model, theta)
 {
-  phi_xyk_mat = matrix(model$phi_xyk,ncol = model$nbParams)
-  phi_xy_vec = apply(phi_xyk_mat,1,sum)
+  phi_xy_vec = matrix(model$phi_xyk,ncol = model$nbParams) %*% theta
   phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
 return(  build_market_TU_general(model$n,model$m,phi_xy_mat,model$arumsG,model$arumsH))
 }
@@ -358,8 +364,7 @@ buildModel_TU_none = function(phi_xyk, n=NULL, m=NULL,seed=777) {
 #
 parametricMarket.TU_none<- function(model, theta)
 {
-  phi_xyk_mat = matrix(model$phi_xyk,ncol = model$nbParams)
-  phi_xy_vec = apply(phi_xyk_mat,1,sum)
+  phi_xy_vec = matrix(model$phi_xyk,ncol = model$nbParams) %*% theta
   phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
   return( build_market_TU_none(model$n,model$m,phi_xy_mat) )
 }
