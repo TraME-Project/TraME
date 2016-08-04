@@ -19,7 +19,7 @@
   ##
   ################################################################################*/
 
-#define TRAME_USE_GUROBI_C
+#include "../misc/TRAME_OPTIONS.hpp"
 
 #include "../aux/trame_aux.hpp"
 #include "../aux/trame_structs.hpp"

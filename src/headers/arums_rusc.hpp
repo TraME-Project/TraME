@@ -19,8 +19,12 @@
   ##
   ################################################################################*/
 
+#include "../misc/TRAME_OPTIONS.hpp"
+
 #include "../aux/trame_aux.hpp"
 #include "../aux/trame_structs.hpp"
+
+#include "../lp/generic_lp.hpp"
 
 // RUSC class
 class RUSC
@@ -57,7 +61,7 @@ class RUSC
         double Gstarx(arma::vec& U_x, double n_x, int x);
         
         double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
-        double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mux_inp, int x);
+        double Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp, int x);
         
         void simul(empirical &ret, int nbDraws, int seed);
         
@@ -71,7 +75,7 @@ void RUSC::build(arma::mat zeta_inp, bool outsideOption_inp)
         return;
     }
     //
-    int i,j;
+    int i;
     //
     nbX = zeta_inp.n_rows;
     nbY = zeta_inp.n_cols - 1;
@@ -88,18 +92,18 @@ void RUSC::build(arma::mat zeta_inp, bool outsideOption_inp)
     aux_c = arma::zeros(nbY,1);
     //
     double z_0;
-    arma::mat max_z, max_z0_mat;
-    arma::vec z_x_temp, z_x, max_z0;
+    arma::mat A_x, max_z, max_z0_mat;
+    arma::vec z_x, max_z0;
     arma::uvec ordx_temp;
     
     for (i=0; i<nbX; i++) {
-        z_x_temp = zeta.row(i).t();
+        z_x = zeta.row(i).t();
 
-        z_x = z_x_temp.shed_row(nbY);
+        z_x.shed_rows(nbY,zeta.n_cols-1);
         z_0 = z_x(nbY);
 
         max_z  = arma::max(z_x * arma::ones(1,nbY), arma::ones(nbY,1) * z_x.t());
-        max_z0 = arma::max(z,z_0);
+        max_z0 = arma::max(z_x,z_0);
         max_z0_mat = max_z0 * arma::ones(1,nbY);
 
         A_x = max_z0_mat + max_z0_mat.t() - max_z - z_0; 
@@ -185,7 +189,7 @@ double RUSC::Gx(arma::vec& mu_x, int x)
     //
     mu_x = mu_x_tilde.rows(0,nbAlt-2);
     //
-    val_x = arma::accu(mu_x % (U_x - aux_b.row(x))) - mu_x.t() * aux_A.slice(x) * mu_x/2 - aux_c(x);
+    val_x = arma::accu(mu_x % (U_x - aux_b.row(x))) - arma::as_scalar(mu_x.t() * aux_A.slice(x) * mu_x/2) - aux_c(x);
     //
     return val_x;
 }
@@ -227,10 +231,6 @@ double RUSC::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp
     int i;
     double val=0.0, val_temp;
     
-    if (!TRAME_PRESOLVED_GBAR){
-        presolve_LP_Gbar();
-    }
-    
     U_inp.set_size(nbX,nbY);
     mu_inp.set_size(nbX,nbY);
     arma::mat Ux_temp, mux_temp;
@@ -246,9 +246,10 @@ double RUSC::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp
     return val;
 }
 
-double RUSC::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp)
+double RUSC::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp, int x)
 {
     int nbAlt = nbY + 1;
+    double val_x = 0.0;
 
     arma::vec obj_grbi = arma::join_cols(aux_b.row(x).t(),arma::zeros(1,1));
     arma::mat A_grbi = arma::ones(1,nbAlt);
@@ -276,11 +277,11 @@ double RUSC::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, ar
         if (LP_optimal) {
             mu_x_inp = sol_mat(arma::span(0,nbAlt-2),0);
 
-            A_mu = arma::trans(aux_A.slice(x) * mu_x_inp);
+            arma::mat A_mu = arma::trans(aux_A.slice(x) * mu_x_inp);
 
             U_x_inp = A_mu + aux_b.row(x).t();
             //
-            valx = -objval - aux_c(x);
+            val_x = -objval - aux_c(x);
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;
         }
@@ -296,7 +297,7 @@ double RUSC::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, ar
     return val_x;
 }
 
-void RSC::simul(empirical &ret, int nbDraws, int seed_val)
+void RUSC::simul(empirical &ret, int nbDraws, int seed_val)
 {
     int i;
     arma::arma_rng::set_seed(seed_val);
