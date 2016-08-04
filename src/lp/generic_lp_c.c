@@ -5,13 +5,13 @@
  * Keith O'Hara
  * 05/08/2016
  *
- * clang -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp.c -c -o generic_lp.o
- * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp.c -c -o generic_lp.o
+ * clang -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_c.c -c -o generic_lp_c.o
+ * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_c.c -c -o generic_lp_c.o
  */
  
 #include <string.h>
 
-#include "generic_lp.h"
+#include "generic_lp_c.h"
 
 //
 // Dense setup; NOT to be used with Armadillo memptr based passing 
