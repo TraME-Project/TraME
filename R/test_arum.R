@@ -33,7 +33,7 @@ test_Logit <- function(nbDraws=1E4, seed=777, outsideOption=TRUE)
     nbY = dim(U)[2]
     n = c(apply(mu,1,sum))
     #
-    logits = build_logits(nbX,nbY,outsideOption=outsideOption)
+    logits = build_logit(nbX,nbY,outsideOption=outsideOption)
     logitsSim = simul(logits,nbDraws,seed)
     #
     resG = G(logits,U,n)

@@ -32,8 +32,8 @@ test_loglikelihood <- function(seed=777, nbX=5, nbY=4, dX=3, dY=2)
     xs = matrix(runif(nbX*dX),nrow=nbX)
     ys = matrix(runif(nbY*dY),nrow=nbY)
     #
-    logitM = build_logits(nbX,nbY)
-    logitW = build_logits(nbY,nbX)
+    logitM = build_logit(nbX,nbY)
+    logitW = build_logit(nbY,nbX)
     # logitSimM = simul(logitM,1,seed)
     # logitSimW = simul(logitW,1,seed)
     #
@@ -95,8 +95,8 @@ test_mle <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     xs = matrix(runif(nbX*dX),nrow=nbX)
     ys = matrix(runif(nbY*dY),nrow=nbY)
     #
-    logitM = build_logits(nbX,nbY,1)
-    logitW = build_logits(nbY,nbX,1)
+    logitM = build_logit(nbX,nbY,1)
+    logitW = build_logit(nbY,nbX,1)
     
     logitSimM = simul(logitM,50,seed)
     logitSimW = simul(logitW,50,seed)
@@ -134,8 +134,8 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     xs = matrix(runif(nbX*dX),nrow=nbX)
     ys = matrix(runif(nbY*dY),nrow=nbY)
     #
-    logitM = build_logits(nbX,nbY,1)
-    logitW = build_logits(nbY,nbX,1)
+    logitM = build_logit(nbX,nbY,1)
+    logitW = build_logit(nbY,nbX,1)
     
     logitSimM = simul(logitM,50,seed)
     logitSimW = simul(logitW,50,seed)

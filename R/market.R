@@ -295,8 +295,8 @@ build_market_LTU_logit <- function(n, m, lambda, phi, sigma=1, neededNorm=NULL)
   nbY = length(m)
   #
   LTUs = build_LTUs(lambda,phi)
-  logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=outsideOption)
-  logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=outsideOption)
+  logitM = build_logit(nbX,nbY,sigma=sigma,outsideOption=outsideOption)
+  logitW = build_logit(nbY,nbX,sigma=sigma,outsideOption=outsideOption)
   # 
   LTUmmfs = build_LTUmmfs(n,m,lambda,exp(phi/sigma),neededNorm)
   #
@@ -325,8 +325,8 @@ build_market_ETU_logit <- function(n, m, alpha,gamma,tau,sigma=1, neededNorm=NUL
   #
   #
   ETUs = build_ETUs(alpha, gamma, tau)
-  logitM = build_logits(nbX,nbY,sigma,outsideOption=is.null(neededNorm))
-  logitW = build_logits(nbY,nbX,sigma,outsideOption=is.null(neededNorm))
+  logitM = build_logit(nbX,nbY,sigma,outsideOption=is.null(neededNorm))
+  logitW = build_logit(nbY,nbX,sigma,outsideOption=is.null(neededNorm))
   #
   ETUmmfs = build_ETUmmfs(n,m,exp(-alpha/tau),exp(-gamma/tau),-1/tau,neededNorm)
   #
@@ -370,8 +370,8 @@ build_market_NTU_logit <- function(n, m, alpha, gamma, sigma=1, neededNorm=NULL)
   nbY = length(m)
   #
   NTUs = build_NTUs(alpha,gamma)
-  logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=is.null(neededNorm))
-  logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=is.null(neededNorm))
+  logitM = build_logit(nbX,nbY,sigma=sigma,outsideOption=is.null(neededNorm))
+  logitW = build_logit(nbY,nbX,sigma=sigma,outsideOption=is.null(neededNorm))
   #
   NTUmmfs = build_NTUmmfs(n,m,exp(alpha/sigma),exp(gamma/sigma),neededNorm)
   #
@@ -402,8 +402,8 @@ build_market_TU_logit <- function(n, m, phi, sigma=1, neededNorm=NULL)
   nbY = length(m)
   #
   TUs = build_TUs(phi)
-  logitM = build_logits(nbX,nbY,sigma=sigma,outsideOption=is.null(neededNorm))
-  logitW = build_logits(nbY,nbX,sigma=sigma,outsideOption=is.null(neededNorm))
+  logitM = build_logit(nbX,nbY,sigma=sigma,outsideOption=is.null(neededNorm))
+  logitW = build_logit(nbY,nbX,sigma=sigma,outsideOption=is.null(neededNorm))
   #
   TUmmfs = build_TUmmfs(n,m,exp(phi/(2*sigma)),neededNorm)
   #

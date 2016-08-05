@@ -29,7 +29,7 @@
 # K. Chiong, A. Galichon, M. Shum: "Duality in dynamic discrete choice models"
 #
 
-build_logits <- function(nbX, nbY, sigma=1, outsideOption=TRUE)
+build_logit <- function(nbX, nbY, sigma=1, outsideOption=TRUE)
     # Extreme value type I errors; sigma is the scaling parameter
 {
     ret = list(nbX=nbX,nbY=nbY,
