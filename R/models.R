@@ -32,6 +32,7 @@ estimate.default = mle
 ################################################################################
 ########################       affinity model            #######################
 ################################################################################
+# The TU_logit and the affinity models should be merged 
 #
 buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, noSingles=FALSE)
 {
@@ -159,7 +160,7 @@ mme.affinity <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0
 ################################################################################
 ########################       TU_logit model            #######################
 ################################################################################
-#
+# The TU_logit and the affinity models should be merged
 buildModel_TU_logit <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
 {
   dims = dim(phi_xyk)
@@ -206,6 +207,8 @@ dparam.TU_logit <- function(model, dparams=diag(model$nbParams))
                dparamsG = dparamsG,
                dparamsH = dparamsH))
 }
+#
+mme.TU_logit <- mme.affinity 
 #
 ################################################################################
 ########################      ETU-logit model            #######################
@@ -512,7 +515,7 @@ buildModel_TU_rum = function(phi_xyk, n=NULL, m=NULL, arumsG, arumsH) {
                arumsG=arumsG,
                arumsH=arumsH)
   
-  class(ret) =   "TU_empirical"
+  class(ret) =   "TU_rum"
   return(ret)
   
 }
