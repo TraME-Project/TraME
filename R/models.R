@@ -89,6 +89,73 @@ dparam.affinity <- function(model, dparams=diag(model$nbParams))
 }
 #
 #
+mme.affinity <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+  # mme.affinity should be improved as one should make use of the logit structure and use the ipfp
+{
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of TU_rum model via optimization."))
+  }
+  
+  theta0 = initparam(model)$param
+  dtheta = dparam(model)
+  market = parametricMarket(model,theta0)
+  
+  kron = dtheta$dparamsPsi
+  Chat = c(c(muhat) %*% kron)
+  #
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of ",class(model)," model via BFGS optimization."))
+  }
+  #
+  nbX = length(model$n)
+  nbY = length(model$m)
+  
+  nbParams = dim(kron)[2]
+  #
+  eval_f <- function(thearg){
+    theU = matrix(thearg[1:(nbX*nbY)],nbX,nbY)
+    thetheta = thearg[(1+nbX*nbY):(nbParams+nbX*nbY)]
+    
+    phi = kron %*% thetheta
+    phimat = matrix(phi,nbX,nbY)
+    #
+    resG = G(market$arumsG,theU,model$n)
+    resH = G(market$arumsH,t(phimat-theU),model$m)
+    #
+    Ehatphi = sum(thetheta * Chat)
+    val = resG$val + resH$val - Ehatphi
+    
+    tresHmu = t(resH$mu)
+    
+    gradU = c(resG$mu - tresHmu)
+    gradtheta = c( c(tresHmu) %*% kron ) - Chat
+    #
+    ret = list(objective = val,
+               gradient = c(gradU,gradtheta))
+    #
+    return(ret)
+  }
+  #
+  resopt = nloptr(x0=c( (kron %*% theta0) / 2,theta0 ),
+                  eval_f=eval_f,
+                  opt=list("algorithm" = "NLOPT_LD_LBFGS",
+                           "xtol_rel"=xtol_rel,
+                           "maxeval"=maxeval,
+                           "print_level"=print_level))
+  #
+  #if(print_level>0){print(resopt, show.controls=((1+nbX*nbY):(nbParams+nbX*nbY)))}
+  #
+  U = matrix(resopt$solution[1:(nbX*nbY)],nbX,nbY)  
+  thetahat = resopt$solution[(1+nbX*nbY):(nbParams+nbX*nbY)]
+  V = matrix(kron %*% thetahat,nbX,nbY) - U
+  #
+  ret =list(thetahat=thetahat,
+            U=U, V=V,
+            val=resopt$objective)
+  #
+  return(ret)
+}
+#
 ################################################################################
 ########################       TU_logit model            #######################
 ################################################################################
