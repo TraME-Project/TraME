@@ -52,45 +52,153 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, noSingles=FALSE)
   neededNorm = defaultNorm(noSingles)
   #
   ret = list(types = c("itu-rum", "mfe"),
-             kron=kronecker(Yvals,Xvals),
              nbParams=dX*dY,
              dX=dX, dY=dY,
              nbX = nbX, nbY = nbY,
              n=n, m=m,
              neededNorm = neededNorm,
-             isLinear=TRUE)
+             phi_xyk_aux = kronecker(Yvals,Xvals),
+             Phi_xyk = function(model) 
+               (model$phi_xyk_aux),
+             Phi_xy = function(model ,lambda) 
+               ( array(model$phi_xyk_aux,dim=c(model$nbX*model$nbY,model$nbParams)) %*% lambda ),
+             Phi_k = function(model, muhat) 
+               (c(c(muhat) %*% array(model$phi_xyk_aux,dim=c(model$nbX*model$nbY,model$nbParams))))
+               )
   class(ret) = "affinity"
   #
   return(ret)
 }
 #
-parametricMarket.affinity <- function(model, theta)
-  # theta is simply the affinity matrix
-{
-  phi = matrix(model$kron %*% c(theta),nrow=model$nbX)
-  #
-  ret = build_market_TU_logit(model$n,model$m,phi,
-                              neededNorm=model$neededNorm)
-  #
-  return(ret)
-}
-
+parametricMarket.affinity <- function(model, theta) 
+  (build_market_TU_logit(model$n,model$m,
+                         matrix(model$Phi_xy(model,c(theta)), nrow=model$nbX),
+                         neededNorm=model$neededNorm))
 
 dparam.affinity <- function(model, dparams=diag(model$nbParams))
-{
-  dparamsPsi = model$kron %*% dparams
-  dparamsG = matrix(0,nrow=0,ncol=dim(dparams)[2])
-  dparamsH = matrix(0,nrow=0,ncol=dim(dparams)[2])
-  #
-  ret = list(dparamsPsi = dparamsPsi,
-             dparamsG   = dparamsG,
-             dparamsH   = dparamsH)
-  #
-  return(ret)
-}
+  (list(dparamsPsi = model$Phi_xy(model, dparams),
+        dparamsG   =  matrix(0,nrow=0,ncol=dim(dparams)[2]),
+        dparamsH   = matrix(0,nrow=0,ncol=dim(dparams)[2]))
+  )
 #
 #
 mme.affinity <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+  # mme.affinity should be improved as one should make use of the logit structure and use the ipfp
+{
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of TU_rum model via optimization."))
+  }
+  
+  theta0 = initparam(model)$param
+  #dtheta = dparam(model) ####################################
+  market = parametricMarket(model,theta0)
+  
+  #kron = dtheta$dparamsPsi ##################################
+  Chat = model$Phi_k(model, muhat)
+  #
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of ",class(model)," model via BFGS optimization."))
+  }
+  #
+  nbX = model$nbX
+  nbY = model$nbY
+  nbParams = model$nbParams
+  #
+  eval_f <- function(thearg){
+    theU = matrix(thearg[1:(nbX*nbY)],nbX,nbY)
+    thetheta = thearg[(1+nbX*nbY):(nbParams+nbX*nbY)]
+    
+    phi = model$Phi_xy(model,thetheta)
+    phimat = matrix(phi,nbX,nbY)
+    #
+    resG = G(market$arumsG,theU,model$n)
+    resH = G(market$arumsH,t(phimat-theU),model$m)
+    #
+    Ehatphi = sum(thetheta * Chat)
+    val = resG$val + resH$val - Ehatphi
+    
+    tresHmu = t(resH$mu)
+    
+    gradU = c(resG$mu - tresHmu)
+    gradtheta = model$Phi_k(model, tresHmu)  - Chat
+    #
+    ret = list(objective = val,
+               gradient = c(gradU,gradtheta))
+    #
+    return(ret)
+  }
+  #
+  resopt = nloptr(x0=c( model$Phi_xy(model,theta0) / 2,theta0 ),
+                  eval_f=eval_f,
+                  opt=list("algorithm" = "NLOPT_LD_LBFGS",
+                           "xtol_rel"=xtol_rel,
+                           "maxeval"=maxeval,
+                           "print_level"=print_level))
+  #
+  #if(print_level>0){print(resopt, show.controls=((1+nbX*nbY):(nbParams+nbX*nbY)))}
+  #
+  U = matrix(resopt$solution[1:(nbX*nbY)],nbX,nbY)  
+  thetahat = resopt$solution[(1+nbX*nbY):(nbParams+nbX*nbY)]
+  V = matrix(model$Phi_xy(model,thetahat),nbX,nbY) - U
+  #
+  ret =list(thetahat=thetahat,
+            U=U, V=V,
+            val=resopt$objective)
+  #
+  return(ret)
+}
+#
+################################################################################
+########################       TU_logit model            #######################
+################################################################################
+# The TU_logit and the affinity models should be merged
+buildModel_TU_logit <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
+{
+  dims = dim(phi_xyk)
+  nbX = dims[1]
+  nbY = dims[2]
+  nbParams = dims[3]
+  #
+  if(is.null(n)){
+    n = rep(1,nbX)
+  }
+  if(is.null(m)){
+    m = rep(1,nbY)
+  }
+  #  
+  neededNorm = defaultNorm(noSingles)
+  #
+  ret = list(types = c("itu-rum", "mfe"),
+             phi_xyk = phi_xyk,
+             nbParams = nbParams,
+             nbX = nbX, nbY = nbY,
+             n=n, m=m,
+             neededNorm = neededNorm)
+  class(ret) = "TU_logit"
+  #
+  return(ret)
+}
+#
+parametricMarket.TU_logit<- function(model, theta)
+  # theta is the parameter vector for phi
+{
+  phi_xy_vec = matrix(model$phi_xyk,ncol = model$nbParams) %*% theta
+  phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
+  return( build_market_TU_logit(model$n,model$m,phi_xy_mat,
+                                neededNorm=model$neededNorm) )
+}
+
+dparam.TU_logit <- function(model, dparams=diag(model$nbParams))
+{
+  dparamsPsi = matrix(model$phi_xyk,ncol = model$nbParams) %*% dparams
+  dparamsG = matrix(0,nrow=0,ncol=dim(dparams)[2])
+  dparamsH = matrix(0,nrow=0,ncol=dim(dparams)[2])
+  return( list(dparamsPsi=dparamsPsi,
+               dparamsG = dparamsG,
+               dparamsH = dparamsH))
+}
+#
+mme.TU_logit <-  function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
   # mme.affinity should be improved as one should make use of the logit structure and use the ipfp
 {
   if (print_level>0){
@@ -157,58 +265,6 @@ mme.affinity <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0
   return(ret)
 }
 #
-################################################################################
-########################       TU_logit model            #######################
-################################################################################
-# The TU_logit and the affinity models should be merged
-buildModel_TU_logit <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
-{
-  dims = dim(phi_xyk)
-  nbX = dims[1]
-  nbY = dims[2]
-  nbParams = dims[3]
-  #
-  if(is.null(n)){
-    n = rep(1,nbX)
-  }
-  if(is.null(m)){
-    m = rep(1,nbY)
-  }
-  #  
-  neededNorm = defaultNorm(noSingles)
-  #
-  ret = list(types = c("itu-rum", "mfe"),
-             phi_xyk = phi_xyk,
-             nbParams = nbParams,
-             nbX = nbX, nbY = nbY,
-             n=n, m=m,
-             neededNorm = neededNorm,
-             isLinear=TRUE)
-  class(ret) = "TU_logit"
-  #
-  return(ret)
-}
-#
-parametricMarket.TU_logit<- function(model, theta)
-  # theta is the parameter vector for phi
-{
-  phi_xy_vec = matrix(model$phi_xyk,ncol = model$nbParams) %*% theta
-  phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
-  return( build_market_TU_logit(model$n,model$m,phi_xy_mat,
-                                neededNorm=model$neededNorm) )
-}
-
-dparam.TU_logit <- function(model, dparams=diag(model$nbParams))
-{
-  dparamsPsi = matrix(model$phi_xyk,ncol = model$nbParams) %*% dparams
-  dparamsG = matrix(0,nrow=0,ncol=dim(dparams)[2])
-  dparamsH = matrix(0,nrow=0,ncol=dim(dparams)[2])
-  return( list(dparamsPsi=dparamsPsi,
-               dparamsG = dparamsG,
-               dparamsH = dparamsH))
-}
-#
-mme.TU_logit <- mme.affinity 
 #
 ################################################################################
 ########################      ETU-logit model            #######################
@@ -239,8 +295,7 @@ buildModel_ETU_logit <- function(Xvals, Yvals, n=NULL, m=NULL)
              nbParams=2*dim(t(t(diff)))[2]+1,
              nbX=nbX, nbY=nbY,
              dX=dX, dY=dY,
-             n=n, m=m,
-             isLinear=TRUE)
+             n=n, m=m)
   class(ret) = "ETU_logit"
   #
   return(ret)
