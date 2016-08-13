@@ -1,0 +1,106 @@
+
+# core compiling options
+CC  = gcc-mp-5
+CXX = g++-mp-5
+FC  = gfortran-mp-5
+
+CXX_STD = -std=c++11
+OPT_FLAGS = -O2
+
+ARMA_INCLUDE_PATH = -I/Builds/R-devel/lib/R/include -I/Builds/R-devel/lib/R/library/Rcpp/include -I/Builds/R-devel/lib/R/library/RcppArmadillo/include
+
+CXXFLAGS = -Wall $(OPT_FLAGS) $(ARMA_INCLUDE_PATH)
+FFLAGS = $(OPT_FLAGS)
+LIBS= -lgfortran -framework Accelerate
+
+# install location
+INSTALL_PATH?=/opt/local
+
+# source directories
+SDIR = .
+TRAME_DIR = $(SDIR)
+TRAME_SRC_DIR = $(SDIR)/src
+TRAME_HEADER_DIR = $(SDIR)/headers
+TRAME_TEST_DIR = $(SDIR)/tests
+
+# shared library name and flags
+SHLIB = libtrame.so
+SHLIB_FLAGS = -dynamiclib -install_name "@loader_path/$(SHLIB)" -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress
+
+# linear programming flags
+LP_CFLAGS= -Wall $(OPT_FLAGS) -I/Library/gurobi651/mac64/include -I$(TRAME_HEADER_DIR)
+LP_LIBS= -L/Library/gurobi651/mac64/lib -lgurobi65
+SOURCES_LP= $(TRAME_SRC_DIR)/lp/generic_lp_c.c
+OBJECTS_LP= $(TRAME_SRC_DIR)/lp/generic_lp_c.o
+
+LP_CXXFLAGS= -I/Library/gurobi651/mac64/include -I$(TRAME_HEADER_DIR)
+SOURCES_LPXX= $(TRAME_SRC_DIR)/lp/generic_lp.cpp
+OBJECTS_LPXX= $(TRAME_SRC_DIR)/lp/generic_lp.o
+
+# nlopt flags
+NLOPT_CXXFLAGS= -I/usr/local/include -I$(TRAME_HEADER_DIR)
+NLOPT_LIBS = -L/usr/local/lib -lnlopt
+SOURCES_NLOPT= $(TRAME_SRC_DIR)/nlopt/generic_nlopt.cpp
+OBJECTS_NLOPT= $(TRAME_SRC_DIR)/nlopt/generic_nlopt.o
+
+# core TraME files
+SOURCES_TRAME= $(TRAME_SRC_DIR)/arums/arums_empirical.cpp $(TRAME_SRC_DIR)/arums/arums_logit.cpp $(TRAME_SRC_DIR)/arums/arums_none.cpp $(TRAME_SRC_DIR)/arums/arums_probit.cpp $(TRAME_SRC_DIR)/arums/arums_rsc.cpp $(TRAME_SRC_DIR)/arums/arums_rusc.cpp
+OBJECTS_TRAME= $(SOURCES_TRAME:.cpp=.o)
+
+OBJECTS_TRAME_AUX= $(TRAME_SRC_DIR)/aux/inv_pwa.o $(TRAME_SRC_DIR)/aux/trame_aux.o $(TRAME_SRC_DIR)/aux/trame_stats.o $(TRAME_SRC_DIR)/aux/zeroin.o $(TRAME_SRC_DIR)/prob/prob.o $(TRAME_SRC_DIR)/math/quadpack_double.o $(TRAME_SRC_DIR)/prob/trame_F90_aux.o
+
+# test files
+SOURCES= $(TRAME_TEST_DIR)/arums/logit_test.cpp $(TRAME_TEST_DIR)/arums/none_test.cpp $(TRAME_TEST_DIR)/arums/probit_test.cpp $(TRAME_TEST_DIR)/arums/rsc_test.cpp
+OBJECTS= $(SOURCES:.cpp=.o)
+PROGS= $(SOURCES:.cpp=.test)
+
+all: $(PROGS) $(TRAME_DIR)/$(SHLIB) $(OBJECTS) $(OBJECTS_TRAME) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_AUX)
+
+# LP and nlopt
+$(OBJECTS_LP): $(SOURCES_LP)
+	$(CC) $(LP_CFLAGS) $^ -c -o $@
+
+$(OBJECTS_LPXX): $(SOURCES_LPXX)
+	$(CXX) $(CXXFLAGS) $(LP_CXXFLAGS) $^ -c -o $@
+
+$(OBJECTS_NLOPT): $(SOURCES_NLOPT)
+	$(CXX) $(CXXFLAGS) $(NLOPT_CXXFLAGS) $^ -c -o $@
+
+# aux and Fortran code
+$(TRAME_SRC_DIR)/aux/%.o: $(TRAME_SRC_DIR)/aux/%.cpp
+	$(CXX) $(CXX_STD) $(CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@
+
+$(TRAME_SRC_DIR)/prob/prob.o: $(TRAME_SRC_DIR)/prob/prob.f90
+	$(FC) $(FFLAGS) $^ -c -o $@
+
+$(TRAME_SRC_DIR)/math/quadpack_double.o: $(TRAME_SRC_DIR)/math/quadpack_double.f90
+	$(FC) $(FFLAGS) $^ -c -o $@
+
+$(TRAME_SRC_DIR)/prob/trame_F90_aux.o: $(TRAME_SRC_DIR)/prob/trame_F90_aux.f90
+	$(FC) $(FFLAGS) $^ -c -o $@
+
+# core TraME files
+$(TRAME_SRC_DIR)/arums/%.o: $(TRAME_SRC_DIR)/arums/%.cpp
+	$(CXX) $(CXX_STD) $(CXXFLAGS) $(LP_CXXFLAGS) $(NLOPT_CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@
+
+# shared library
+$(TRAME_DIR)/$(SHLIB): $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_AUX) $(OBJECTS_TRAME)
+	$(CXX) $(CXX_STD) $(SHLIB_FLAGS) -o $@ $^ $(LP_LIBS) $(NLOPT_LIBS) $(LIBS)
+
+# tests
+$(TRAME_TEST_DIR)/%.o: $(TRAME_TEST_DIR)/%.cpp
+	$(CXX) $(CXX_STD) $(CXXFLAGS) $(LP_CXXFLAGS) $(NLOPT_CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@ 
+
+$(TRAME_TEST_DIR)/%.test: $(TRAME_TEST_DIR)/%.o | $(TRAME_DIR)/$(SHLIB)
+	$(CXX) -Wall $(OPT_FLAGS) $(CXX_STD) -o $@ $< -L$(TRAME_SRC_DIR) -ltrame -framework Accelerate
+
+# cleanup and install
+.PHONY: clean
+clean:
+	@rm -f *.so ./tests/*.test $(TRAME_SRC_DIR)/*/*.o
+
+.PHONY: install
+install: $(SHLIB)
+	@cp $(TRAME_DIR)/$(SHLIB) $(INSTALL_PATH)/lib/$(SHLIB)
+	@mkdir $(INSTALL_PATH)/include/trame
+	@cp -r $(TRAME_DIR)/headers/* $(INSTALL_PATH)/include/trame

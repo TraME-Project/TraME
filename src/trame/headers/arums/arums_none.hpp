@@ -23,46 +23,39 @@
   ################################################################################*/
 
 /*
- * probit class module
+ * none class
  *
  * Keith O'Hara
  * 08/08/2016
  */
 
-
-#include <RcppArmadillo.h>
-
-#include "trame.hpp"
-
-RCPP_MODULE(probit_module)
+class none
 {
-    using namespace Rcpp ;
-
-    void (probit::*unifCorrelCovMatrices_1)() = &probit::unifCorrelCovMatrices;
-    arma::cube (probit::*unifCorrelCovMatrices_2)(double) = &probit::unifCorrelCovMatrices ;
-  
-    // now we can declare the class
-    class_<probit>( "probit" )
-        .default_constructor()
-
-        // basic objects
-        .field( "nbX", &probit::nbX )
-        .field( "nbY", &probit::nbY )
-
-        .field( "nbParams", &probit::nbParams )
-        .field( "aux_nbOptions", &probit::aux_nbOptions )
-        .field( "outsideOption", &probit::outsideOption )
-
-        .field( "rho", &probit::rho )
-
-        .field( "Covar", &probit::Covar )
-
-        // read only objects
-        //.field_readonly( "", &probit:: )
-
+    public:
+        // build objects
+        int nbX;
+        int nbY;
+        int nbParams;
+        
+        // input objects
+        arma::mat mu;
+        arma::mat U;
+        
+        // equilibrium objects
+        arma::mat mu_sol;
+        arma::mat U_sol;
+        
         // member functions
-        .method( "build", &probit::build )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_1 )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_2 )
-    ;
-}
+        void build(int nbX_inp, int nbY_inp);
+        double G(arma::vec n);
+        double Gx(arma::mat Ux, arma::mat& mu_x_inp);
+
+        double Gstar(arma::mat& U_inp, arma::vec n);
+        
+        double Gbar(arma::mat Ubarx, arma::mat mubarx, arma::vec n, arma::mat& Ux_inp, arma::mat& mu_x_inp);
+        double Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp);
+        
+        arma::vec dtheta_NablaGstar();
+        
+        void simul(empirical &ret, int nbDraws, int seed);
+};

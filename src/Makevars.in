@@ -1,53 +1,15 @@
 
 CXX_STD = CXX11
 
-TRAME_FFLAGS= -Wall -O2
-
-LP_CFLAGS= -Wall -O2 @GRB_INCLUDE_PATH@
-LP_LIBS = @GRB_LIB_PATH@ @GRB_LIBS@ @GRB_LIB_RPATH@
-SOURCES_LP= ./lp/generic_lp_c.c
-OBJECTS_LP= ./lp/generic_lp_c.o
-
-LP_CXXFLAGS= -Wall -O2 @R_INCLUDE_PATH@ @OTHER_PKG_INCLUDE_PATH@ @GRB_INCLUDE_PATH@
-SOURCES_LPXX= ./lp/generic_lp.cpp
-OBJECTS_LPXX= ./lp/generic_lp.o
-
-NLOPT_CPPFLAGS= -Wall -O2 @R_INCLUDE_PATH@ @OTHER_PKG_INCLUDE_PATH@ @NLOPT_INCLUDE_PATH@
-NLOPT_LIBS = @NLOPT_LIB_PATH@ @NLOPT_LIBS@
-SOURCES_NLOPT= ./nlopt/generic_nlopt.cpp
-OBJECTS_NLOPT= ./nlopt/generic_nlopt.o
-
-PKG_CPPFLAGS= -Wall -O2 @TRAME_INCLUDE_PATH@
-PKG_LIBS= @TRAME_LIB_PATH@ @TRAME_LIBS@ @TRAME_LIB_RPATH@
+#PKG_CPPFLAGS= -Wall -O2 @TRAME_INCLUDE_PATH@
+PKG_CPPFLAGS= -std=c++11 -Wall -O2 -I./trame/headers
+PKG_LIBS= -L./trame/ -ltrame
 
 SOURCES_MODULES= ./modules/R_arums_empirical.cpp ./modules/R_arums_logit.cpp ./modules/R_arums_none.cpp ./modules/R_arums_probit.cpp ./modules/R_arums_rsc.cpp ./modules/R_arums_rusc.cpp
 OBJECTS_MODULES= $(SOURCES_MODULES:.cpp=.o)
 
-OBJECTS_AUX= ./aux/trame_aux.o ./prob/prob.o ./math/quadpack_double.o ./prob/trame_F90_aux.o
-
 OBJECTS=$(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_MODULES) $(OBJECTS_AUX)
 
-all: $(SHLIB) $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_AUX)
+all: $(SHLIB)
 
-$(SHLIB): $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_AUX) $(OBJECTS_MODULES)
-
-$(OBJECTS_LP): $(SOURCES_LP)
-	$(CC) $(LP_CFLAGS) $^ -c -o $@
-
-$(OBJECTS_LPXX): $(SOURCES_LPXX)
-	$(CXX) $(LP_CXXFLAGS) $^ -c -o $@
-
-$(OBJECTS_NLOPT): $(SOURCES_NLOPT)
-	$(CXX) $(NLOPT_CPPFLAGS) $^ -c -o $@
-
-./aux/trame_aux.o: ./aux/trame_aux.cpp
-	$(CXX) $(PKG_CPPFLAGS) $^ -c -o $@
-
-./prob/prob.o: ./prob/prob.f90
-	$(FC) $(TRAME_FFLAGS) $^ -c -o $@
-
-./math/quadpack_double.o: ./math/quadpack_double.f90
-	$(FC) $(TRAME_FFLAGS) $^ -c -o $@
-
-./prob/trame_F90_aux.o: ./prob/trame_F90_aux.f90
-	$(FC) $(TRAME_FFLAGS) $^ -c -o $@
+$(SHLIB): $(OBJECTS_MODULES)

@@ -23,46 +23,18 @@
   ################################################################################*/
 
 /*
- * probit class module
+ * Aux functions
  *
  * Keith O'Hara
  * 08/08/2016
  */
 
+#ifndef _trame_aux_HPP
+#define _trame_aux_HPP
 
-#include <RcppArmadillo.h>
+#include "../misc/TRAME_OPTIONS.hpp"
 
-#include "trame.hpp"
+arma::uvec which_max(const arma::mat* X, int which_dim);
+arma::uvec uvec_linspace(int a, int b);
 
-RCPP_MODULE(probit_module)
-{
-    using namespace Rcpp ;
-
-    void (probit::*unifCorrelCovMatrices_1)() = &probit::unifCorrelCovMatrices;
-    arma::cube (probit::*unifCorrelCovMatrices_2)(double) = &probit::unifCorrelCovMatrices ;
-  
-    // now we can declare the class
-    class_<probit>( "probit" )
-        .default_constructor()
-
-        // basic objects
-        .field( "nbX", &probit::nbX )
-        .field( "nbY", &probit::nbY )
-
-        .field( "nbParams", &probit::nbParams )
-        .field( "aux_nbOptions", &probit::aux_nbOptions )
-        .field( "outsideOption", &probit::outsideOption )
-
-        .field( "rho", &probit::rho )
-
-        .field( "Covar", &probit::Covar )
-
-        // read only objects
-        //.field_readonly( "", &probit:: )
-
-        // member functions
-        .method( "build", &probit::build )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_1 )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_2 )
-    ;
-}
+#endif

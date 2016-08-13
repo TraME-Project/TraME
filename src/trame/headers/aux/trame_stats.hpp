@@ -23,46 +23,27 @@
   ################################################################################*/
 
 /*
- * probit class module
+ * Stats functions
  *
  * Keith O'Hara
  * 08/08/2016
  */
 
+#ifndef _trame_stats_HPP
+#define _trame_stats_HPP
 
-#include <RcppArmadillo.h>
+#include "../misc/TRAME_OPTIONS.hpp"
 
-#include "trame.hpp"
+double pbeta (double x, double* fn_pars);
+arma::vec pbeta (arma::vec x, double* fn_pars);
 
-RCPP_MODULE(probit_module)
-{
-    using namespace Rcpp ;
+double qbeta (double x, double* fn_pars);
+arma::vec qbeta (arma::vec x, double* fn_pars);
 
-    void (probit::*unifCorrelCovMatrices_1)() = &probit::unifCorrelCovMatrices;
-    arma::cube (probit::*unifCorrelCovMatrices_2)(double) = &probit::unifCorrelCovMatrices ;
-  
-    // now we can declare the class
-    class_<probit>( "probit" )
-        .default_constructor()
+double iqbeta (double x, double* fn_pars);
+arma::vec iqbeta (arma::vec x, double* fn_pars);
 
-        // basic objects
-        .field( "nbX", &probit::nbX )
-        .field( "nbY", &probit::nbY )
+double dbeta (double x, double* fn_pars);
+arma::vec dbeta (arma::vec x, double* fn_pars);
 
-        .field( "nbParams", &probit::nbParams )
-        .field( "aux_nbOptions", &probit::aux_nbOptions )
-        .field( "outsideOption", &probit::outsideOption )
-
-        .field( "rho", &probit::rho )
-
-        .field( "Covar", &probit::Covar )
-
-        // read only objects
-        //.field_readonly( "", &probit:: )
-
-        // member functions
-        .method( "build", &probit::build )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_1 )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_2 )
-    ;
-}
+#endif

@@ -23,46 +23,47 @@
   ################################################################################*/
 
 /*
- * probit class module
+ * RUSC class
  *
  * Keith O'Hara
  * 08/08/2016
  */
 
-
-#include <RcppArmadillo.h>
-
-#include "trame.hpp"
-
-RCPP_MODULE(probit_module)
+class RUSC
 {
-    using namespace Rcpp ;
-
-    void (probit::*unifCorrelCovMatrices_1)() = &probit::unifCorrelCovMatrices;
-    arma::cube (probit::*unifCorrelCovMatrices_2)(double) = &probit::unifCorrelCovMatrices ;
-  
-    // now we can declare the class
-    class_<probit>( "probit" )
-        .default_constructor()
-
-        // basic objects
-        .field( "nbX", &probit::nbX )
-        .field( "nbY", &probit::nbY )
-
-        .field( "nbParams", &probit::nbParams )
-        .field( "aux_nbOptions", &probit::aux_nbOptions )
-        .field( "outsideOption", &probit::outsideOption )
-
-        .field( "rho", &probit::rho )
-
-        .field( "Covar", &probit::Covar )
-
-        // read only objects
-        //.field_readonly( "", &probit:: )
-
+    public:
+        // build objects
+        int nbX;
+        int nbY;
+        int nbParams;
+        bool outsideOption;
+        
+        arma::mat zeta;
+        arma::mat aux_ord;
+        
+        arma::cube aux_A;
+        arma::mat  aux_b;
+        arma::vec  aux_c; 
+        
+        // input objects
+        arma::mat mu;
+        arma::mat U;
+        
+        // equilibrium objects
+        arma::mat mu_sol;
+        arma::mat U_sol;
+        
         // member functions
-        .method( "build", &probit::build )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_1 )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_2 )
-    ;
-}
+        void build(arma::mat zeta_inp, bool outsideOption_inp);
+        
+        double G(arma::vec n);
+        double Gx(arma::vec& mu_x, int x);
+        
+        double Gstar(arma::vec n);
+        double Gstarx(arma::vec& U_x, double n_x, int x);
+        
+        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
+        double Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp, int x);
+        
+        void simul(empirical &ret, int nbDraws, int seed);
+};

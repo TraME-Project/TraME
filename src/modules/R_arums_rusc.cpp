@@ -1,15 +1,18 @@
 /*################################################################################
   ##
-  ##   Copyright (C) 2015 - 2016 Alfred Galichon and the TraME Team
+  ##   Copyright (C) 2015 - 2016 the TraME Team:
+  ##      Alfred Galichon
+  ##      Keith O'Hara
+  ##      Simon Weber
   ##
-  ##   This file is part of the R package TraME.
+  ##   This file is part of TraME.
   ##
-  ##   The R package TraME is free software: you can redistribute it and/or modify
+  ##   TraME is free software: you can redistribute it and/or modify
   ##   it under the terms of the GNU General Public License as published by
   ##   the Free Software Foundation, either version 2 of the License, or
   ##   (at your option) any later version.
   ##
-  ##   The R package TraME is distributed in the hope that it will be useful,
+  ##   TraME is distributed in the hope that it will be useful,
   ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
   ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ##   GNU General Public License for more details.
@@ -19,11 +22,16 @@
   ##
   ################################################################################*/
 
+/*
+ * RUSC class module
+ *
+ * Keith O'Hara
+ * 08/08/2016
+ */
+
 #include <RcppArmadillo.h>
 
-#include "../headers/arums_empirical_class.hpp"
-
-#include "../headers/arums_RUSC.hpp"
+#include "trame.hpp"
 
 // derived class to provide wrappers to some functions
 class RUSC_R : public RUSC

@@ -23,46 +23,56 @@
   ################################################################################*/
 
 /*
- * probit class module
+ * TraME structures
  *
  * Keith O'Hara
  * 08/08/2016
  */
 
+// guard against double inclusion
+#pragma once
 
-#include <RcppArmadillo.h>
+//
+// for use in zeroin()
+struct trame_opt_data {
+    arma::mat* exp_U_bar_X;
+    arma::mat* mu_bar_X;
+};
 
-#include "trame.hpp"
-
-RCPP_MODULE(probit_module)
+class trame_zeroin_data
 {
-    using namespace Rcpp ;
+    public:
+        //
+        // for logit class
+        arma::mat exp_U_bar_X;
+        arma::mat mu_bar_X;
+        //
+        // for mmf class
+        arma::mat A_xs;
+        arma::mat B_ys;
 
-    void (probit::*unifCorrelCovMatrices_1)() = &probit::unifCorrelCovMatrices;
-    arma::cube (probit::*unifCorrelCovMatrices_2)(double) = &probit::unifCorrelCovMatrices ;
-  
-    // now we can declare the class
-    class_<probit>( "probit" )
-        .default_constructor()
+        int x_ind;
+        int y_ind;
 
-        // basic objects
-        .field( "nbX", &probit::nbX )
-        .field( "nbY", &probit::nbY )
+        bool coeff;
+};
 
-        .field( "nbParams", &probit::nbParams )
-        .field( "aux_nbOptions", &probit::aux_nbOptions )
-        .field( "outsideOption", &probit::outsideOption )
+//
+// nlopt structures
+typedef struct {
+    int x;
+    int nbY;
+    arma::vec Ubar_x;
+    arma::mat zeta;
+    arma::mat aux_DinvPsigma;
+    arma::mat aux_Psigma;
+    arma::mat aux_Influence_lhs;
+    arma::mat aux_Influence_rhs;
+    arma::vec (*pot_eps_vec)(arma::vec x, double* dist_pars);
+    arma::vec (*quantile_eps_vec)(arma::vec x, double* dist_pars);
+    double* dist_pars;
+} trame_nlopt_opt_data;
 
-        .field( "rho", &probit::rho )
-
-        .field( "Covar", &probit::Covar )
-
-        // read only objects
-        //.field_readonly( "", &probit:: )
-
-        // member functions
-        .method( "build", &probit::build )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_1 )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_2 )
-    ;
-}
+typedef struct {
+    int nbY;
+} trame_nlopt_constr_data;

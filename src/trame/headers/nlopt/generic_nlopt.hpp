@@ -23,46 +23,27 @@
   ################################################################################*/
 
 /*
- * probit class module
+ * Generic NLopt
  *
  * Keith O'Hara
  * 08/08/2016
  */
 
+#ifndef _generic_nlopt_HPP
+#define _generic_nlopt_HPP
 
-#include <RcppArmadillo.h>
+#include "../misc/TRAME_OPTIONS.hpp"
 
-#include "trame.hpp"
+#include <nlopt.hpp>
+#include "../aux/trame_structs.hpp"
 
-RCPP_MODULE(probit_module)
-{
-    using namespace Rcpp ;
+bool generic_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
+                   double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
+                   trame_nlopt_opt_data opt_data);
+bool generic_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
+                   double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
+                   double (*opt_constr)(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data),
+                   trame_nlopt_opt_data opt_data,
+                   trame_nlopt_constr_data constr_data);
 
-    void (probit::*unifCorrelCovMatrices_1)() = &probit::unifCorrelCovMatrices;
-    arma::cube (probit::*unifCorrelCovMatrices_2)(double) = &probit::unifCorrelCovMatrices ;
-  
-    // now we can declare the class
-    class_<probit>( "probit" )
-        .default_constructor()
-
-        // basic objects
-        .field( "nbX", &probit::nbX )
-        .field( "nbY", &probit::nbY )
-
-        .field( "nbParams", &probit::nbParams )
-        .field( "aux_nbOptions", &probit::aux_nbOptions )
-        .field( "outsideOption", &probit::outsideOption )
-
-        .field( "rho", &probit::rho )
-
-        .field( "Covar", &probit::Covar )
-
-        // read only objects
-        //.field_readonly( "", &probit:: )
-
-        // member functions
-        .method( "build", &probit::build )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_1 )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_2 )
-    ;
-}
+#endif

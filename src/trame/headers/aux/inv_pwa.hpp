@@ -23,46 +23,17 @@
   ################################################################################*/
 
 /*
- * probit class module
+ * inverse PWA function
  *
  * Keith O'Hara
  * 08/08/2016
  */
 
+#ifndef _inv_pwa_HPP
+#define _inv_pwa_HPP
 
-#include <RcppArmadillo.h>
+#include "../misc/TRAME_OPTIONS.hpp"
 
-#include "trame.hpp"
+arma::vec invPWA (arma::vec a, arma::mat B, arma::mat C, double k);
 
-RCPP_MODULE(probit_module)
-{
-    using namespace Rcpp ;
-
-    void (probit::*unifCorrelCovMatrices_1)() = &probit::unifCorrelCovMatrices;
-    arma::cube (probit::*unifCorrelCovMatrices_2)(double) = &probit::unifCorrelCovMatrices ;
-  
-    // now we can declare the class
-    class_<probit>( "probit" )
-        .default_constructor()
-
-        // basic objects
-        .field( "nbX", &probit::nbX )
-        .field( "nbY", &probit::nbY )
-
-        .field( "nbParams", &probit::nbParams )
-        .field( "aux_nbOptions", &probit::aux_nbOptions )
-        .field( "outsideOption", &probit::outsideOption )
-
-        .field( "rho", &probit::rho )
-
-        .field( "Covar", &probit::Covar )
-
-        // read only objects
-        //.field_readonly( "", &probit:: )
-
-        // member functions
-        .method( "build", &probit::build )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_1 )
-        .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_2 )
-    ;
-}
+#endif
