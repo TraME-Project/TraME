@@ -2,17 +2,19 @@
 ## TraME R config script
 
 R_INCLUDE_PATH="-I${R_HOME}/include"
-OTHER_PKG_INCLUDE_PATH="-I${R_HOME}/library/Rcpp/include -I${R_HOME}/library/RcppArmadillo/include"
+RCPP_INCLUDE_PATH="-I${R_HOME}/library/Rcpp/include -I${R_HOME}/library/RcppArmadillo/include"
 
-export ARMA_INCLUDE_PATH="${R_INCLUDE_PATH} ${OTHER_PKG_INCLUDE_PATH}"
+export ARMA_INCLUDE_PATH="${R_INCLUDE_PATH} ${RCPP_INCLUDE_PATH}"
 
-cd src/trame
-sh configure
-make clean
-make
-cp ./libtrame.so ../../inst/libs/libtrame.so
-cd ../..
+if [[ !(-e src/trame/libtrame.so) ]] ; then
+    cd src/trame
+    sh configure
+    make clean
+    make
+    cp ./libtrame.so ../../inst/libs/libtrame.so
+    cd ../..
+fi
 
 sed -e "s|@R_INCLUDE_PATH@|${R_INCLUDE_PATH}|" \
-    -e "s|@OTHER_PKG_INCLUDE_PATH@|${OTHER_PKG_INCLUDE_PATH}|" \
+    -e "s|@RCPP_INCLUDE_PATH@|${RCPP_INCLUDE_PATH}|" \
     src/Makevars.in > src/Makevars
