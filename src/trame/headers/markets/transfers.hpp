@@ -36,7 +36,7 @@ class transfers
 
         arma::mat alpha;
         arma::mat gamma;
-        arma::mat lambda
+        arma::mat lambda;
         arma::mat tau;
 
         arma::mat phi;
@@ -55,11 +55,14 @@ class transfers
         arma::mat Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec ys);
 
         arma::mat du_Psi(arma::mat U, arma::mat V);
-        arma::mat du_Psi(double U, arma::mat V, arma::uvec xs, arma::uvec ys)
-        arma::mat du_Psi(arma::mat U, double V, arma::uvec xs, arma::uvec ys)
-        arma::mat du_Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec ys)
+        arma::mat du_Psi(double U, arma::mat V, arma::uvec xs, arma::uvec ys);
+        arma::mat du_Psi(arma::mat U, double V, arma::uvec xs, arma::uvec ys);
+        arma::mat du_Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec ys);
 
         arma::mat dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dtheta);
+
+        arma::mat Ucal(arma::mat vs, arma::uvec xs, arma::uvec ys);
+        arma::mat Vcal(arma::mat us, arma::uvec xs, arma::uvec ys);
 
         arma::mat UW(arma::mat Ws, arma::uvec xs, arma::uvec ys);
         arma::mat VW(arma::mat Ws, arma::uvec xs, arma::uvec ys);
@@ -74,7 +77,7 @@ class transfers
         arma::mat aux_exp_gammaovertau;
 
         arma::mat aux_zeta;
-}
+};
 
 void transfers::build_ETU(arma::mat alpha_ETU, arma::mat gamma_ETU, arma::mat tau_ETU)
 {
@@ -144,7 +147,7 @@ void transfers::trans()
         gamma = alpha_temp.t();
         tau   = tau.t();
 
-        aux_exp_alphaovertau_temp = aux_exp_alphaovertau;
+        arma::mat aux_exp_alphaovertau_temp = aux_exp_alphaovertau;
 
         aux_exp_alphaovertau = aux_exp_gammaovertau.t();
         aux_exp_gammaovertau = aux_exp_alphaovertau_temp.t();
@@ -207,7 +210,7 @@ arma::mat transfers::Psi(arma::mat U, arma::mat V)
     }
     //
 finished:
-    return ret
+    return ret;
 }
 
 arma::mat transfers::Psi(double U, arma::mat V, arma::uvec xs, arma::uvec ys)
@@ -235,7 +238,7 @@ arma::mat transfers::Psi(double U, arma::mat V, arma::uvec xs, arma::uvec ys)
     }
     //
 finished:
-    return ret
+    return ret;
 }
 
 arma::mat transfers::Psi(arma::mat U, double V, arma::uvec xs, arma::uvec ys)
@@ -263,7 +266,7 @@ arma::mat transfers::Psi(arma::mat U, double V, arma::uvec xs, arma::uvec ys)
     }
     //
 finished:
-    return ret
+    return ret;
 }
 
 arma::mat transfers::Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec ys)
@@ -291,7 +294,7 @@ arma::mat transfers::Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec ys)
     }
     //
 finished:
-    return ret
+    return ret;
 }
 
 arma::mat transfers::du_Psi(arma::mat U, arma::mat V)
@@ -309,11 +312,7 @@ arma::mat transfers::du_Psi(arma::mat U, arma::mat V)
     }
 
     if (NTU) {
-        if (U - alpha >= V - gamma) {
-            ret.ones();
-        } else {
-            ret.zeros();
-        }
+        ret.elem( arma::find(U - alpha >= V - gamma) ).ones();
         goto finished;
     }
 
@@ -323,7 +322,7 @@ arma::mat transfers::du_Psi(arma::mat U, arma::mat V)
     }
     //
 finished:
-    return ret
+    return ret;
 }
 
 arma::mat transfers::du_Psi(double U, arma::mat V, arma::uvec xs, arma::uvec ys)
@@ -341,11 +340,7 @@ arma::mat transfers::du_Psi(double U, arma::mat V, arma::uvec xs, arma::uvec ys)
     }
 
     if (NTU) {
-        if (U - alpha(xs,ys) >= V - gamma(xs,ys)) {
-            ret.ones();
-        } else {
-            ret.zeros();
-        }
+        ret.elem( arma::find(U - alpha(xs,ys) >= V - gamma(xs,ys)) ).ones();
         goto finished;
     }
 
@@ -355,7 +350,7 @@ arma::mat transfers::du_Psi(double U, arma::mat V, arma::uvec xs, arma::uvec ys)
     }
     //
 finished:
-    return ret
+    return ret;
 }
 
 arma::mat transfers::du_Psi(arma::mat U, double V, arma::uvec xs, arma::uvec ys)
@@ -373,11 +368,7 @@ arma::mat transfers::du_Psi(arma::mat U, double V, arma::uvec xs, arma::uvec ys)
     }
 
     if (NTU) {
-        if (U - alpha(xs,ys) >= V - gamma(xs,ys)) {
-            ret.ones();
-        } else {
-            ret.zeros();
-        }
+        ret.elem( arma::find(U - alpha(xs,ys) >= V - gamma(xs,ys)) ).ones();
         goto finished;
     }
 
@@ -387,7 +378,7 @@ arma::mat transfers::du_Psi(arma::mat U, double V, arma::uvec xs, arma::uvec ys)
     }
     //
 finished:
-    return ret
+    return ret;
 }
 
 arma::mat transfers::du_Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec ys)
@@ -405,11 +396,7 @@ arma::mat transfers::du_Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec 
     }
 
     if (NTU) {
-        if (U - alpha(xs,ys) >= V - gamma(xs,ys)) {
-            ret.ones();
-        } else {
-            ret.zeros();
-        }
+        ret.elem( arma::find(U - alpha(xs,ys) >= V - gamma(xs,ys)) ).ones();
         goto finished;
     }
 
@@ -419,7 +406,7 @@ arma::mat transfers::du_Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec 
     }
     //
 finished:
-    return ret
+    return ret;
 }
 
 arma::mat transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dtheta)
@@ -427,34 +414,35 @@ arma::mat transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dtheta)
     arma::mat ret(nbX,nbY);
     //
     if (ETU) {
-        dupsi_mat = du_Psi(U,V);
-        dupsi = arma::vectorise(dupsi_mat);
+        arma::mat dupsi_mat = du_Psi(U,V);
+        arma::vec dupsi = arma::vectorise(dupsi_mat);
 
         if (!dtheta) {
             arma::mat term_1, term_2;
             term_1 = (U - alpha) % dupsi_mat;
             term_2 = (V - gamma) % (1 - dupsi_mat);
 
-            dsigmapsi_mat = (Psi(U,V) - term_1 - term_2)/tau;
-            dsigmapsi = arma::vectorise(dsigmapsi_mat);
+            arma::mat dsigmapsi_mat = (Psi(U,V) - term_1 - term_2)/tau;
+            arma::vec dsigmapsi = arma::vectorise(dsigmapsi_mat);
             //
             ret = arma::join_rows(arma::diagmat(-dupsi),arma::join_rows(arma::diagmat(dupsi-1),arma::diagmat(dsigmapsi)));
             goto finished;
         } else {
-            arma::mat dtheta_1 = dtheta.rows(0,nbX*nbY-1);
-            arma::mat dtheta_2 = dtheta.rows(nbX*nbY,2*nbX*nbY-1);
-            arma::mat dtheta_3 = dtheta.rows(2*nbX*nbY,3*nbX*nbY-1);
+            arma::mat dtheta_1 = dtheta->rows(0,nbX*nbY-1);
+            arma::mat dtheta_2 = dtheta->rows(nbX*nbY,2*nbX*nbY-1);
+            arma::mat dtheta_3 = dtheta->rows(2*nbX*nbY,3*nbX*nbY-1);
 
-            if (min(dtheta_3)==0) {
-                double dsigmapsidtheta = 0.0; 
-            } else {
+            arma::vec dsigmapsidtheta = arma::zeros(dtheta_3.n_rows,1);
+            double min_check = arma::as_scalar(arma::min(arma::min(dtheta_3)));
+
+            if (min_check!=0) {
                 arma::mat term_1, term_2;
                 term_1 = (U - alpha) % dupsi_mat;
                 term_2 = (V - gamma) % (1 - dupsi_mat);
 
-                dsigmapsi_mat = (Psi(U,V) - term_1 - term_2)/tau;
+                arma::mat dsigmapsi_mat = (Psi(U,V) - term_1 - term_2)/tau;
 
-                arma::mat dsigmapsidtheta = dtheta_3 % arma::vectorise(dsigmapsi_mat);
+                dsigmapsidtheta = dtheta_3 % arma::vectorise(dsigmapsi_mat);
             }
             //
             ret = arma::vectorise(-dupsi % dtheta_1 - (1-dupsi) % dtheta_2 + dsigmapsidtheta);
@@ -469,8 +457,8 @@ arma::mat transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dtheta)
             ret = arma::join_rows(arma::diagmat(U_minus_V),-arma::eye(nbX*nbY,nbX*nbY));
             goto finished;
         } else {
-            arma::mat dtheta_1 = dtheta.rows(0,nbX*nbY-1);
-            arma::mat dtheta_2 = dtheta.rows(nbX*nbY,2*nbX*nbY-1);
+            arma::mat dtheta_1 = dtheta->rows(0,nbX*nbY-1);
+            arma::mat dtheta_2 = dtheta->rows(nbX*nbY,2*nbX*nbY-1);
             //
             ret = arma::vectorise(U_minus_V % dtheta_1 - dtheta_2);
             goto finished;
@@ -484,8 +472,8 @@ arma::mat transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dtheta)
             ret = - arma::join_rows(arma::diagmat(dupsi),arma::diagmat(1 - dupsi));
             goto finished;
         } else {
-            arma::mat dtheta_1 = dtheta.rows(0,nbX*nbY-1);
-            arma::mat dtheta_2 = dtheta.rows(nbX*nbY,2*nbX*nbY-1);
+            arma::mat dtheta_1 = dtheta->rows(0,nbX*nbY-1);
+            arma::mat dtheta_2 = dtheta->rows(nbX*nbY,2*nbX*nbY-1);
 
             ret = - arma::vectorise(dupsi % dtheta_1 + (1 - dupsi) % dtheta_2);
             goto finished;
@@ -497,30 +485,30 @@ arma::mat transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dtheta)
             ret = - 0.5*arma::eye(nbX*nbY,nbX*nbY);
             goto finished;
         } else {
-            ret = - dtheta/2;
+            ret = - (*dtheta)/2;
             goto finished;
         }
     }
     //
 finished:
-    return ret
+    return ret;
 }
 
-arma::mat transfers::Ucal(vs, arma::uvec xs, arma::uvec ys)
+arma::mat transfers::Ucal(arma::mat vs, arma::uvec xs, arma::uvec ys)
 {
     arma::mat ret;
     //
     if (ETU) {
-        arma::mat term_1 = vs - gamma(xs,ys)
-        arma::term_log = 2 - arma::exp(term_1/tau(xs,ys))
+        arma::mat term_1 = vs - gamma(xs,ys);
+        arma::mat term_log = 2 - arma::exp(term_1/tau(xs,ys));
 
         ret = alpha(xs,ys) + tau(xs,ys) % arma::log(term_log);
         goto finished;
     }
 
     if (LTU) {
-        arma::term_1 = phi(xs,ys) - aux_zeta(xs,ys) % vs;
-        arma::term_2 = lambda(xs,ys);
+        arma::mat term_1 = phi(xs,ys) - aux_zeta(xs,ys) % vs;
+        arma::mat term_2 = lambda(xs,ys);
 
         ret = term_1 / term_2;
         goto finished;
@@ -536,24 +524,24 @@ arma::mat transfers::Ucal(vs, arma::uvec xs, arma::uvec ys)
     }
     //
 finished:
-    return ret
+    return ret;
 }
 
-arma::mat transfers::Vcal(us, arma::uvec xs, arma::uvec ys)
+arma::mat transfers::Vcal(arma::mat us, arma::uvec xs, arma::uvec ys)
 {
     arma::mat ret;
     //
     if (ETU) {
-        arma::mat term_1 = us - alpha(xs,ys)
-        arma::term_log = 2 - arma::exp(term_1/tau(xs,ys))
+        arma::mat term_1 = us - alpha(xs,ys);
+        arma::mat term_log = 2 - arma::exp(term_1/tau(xs,ys));
 
         ret = gamma(xs,ys) + tau(xs,ys) % arma::log(term_log);
         goto finished;
     }
 
     if (LTU) {
-        arma::term_1 = phi(xs,ys) - lambda(xs,ys) % us;
-        arma::term_2 = aux_zeta(xs,ys);
+        arma::mat term_1 = phi(xs,ys) - lambda(xs,ys) % us;
+        arma::mat term_2 = aux_zeta(xs,ys);
 
         ret = term_1 / term_2;
         goto finished;
@@ -569,7 +557,7 @@ arma::mat transfers::Vcal(us, arma::uvec xs, arma::uvec ys)
     }
     //
 finished:
-    return ret
+    return ret;
 }
 
 arma::mat transfers::UW(arma::mat Ws, arma::uvec xs, arma::uvec ys)
