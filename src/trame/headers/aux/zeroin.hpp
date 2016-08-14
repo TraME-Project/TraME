@@ -37,6 +37,6 @@
 #include "../misc/TRAME_OPTIONS.hpp"
 #include "trame_structs.hpp" // for abs value
 
-double zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double tol, int max_iter);
+double zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol, int* max_iter);
 
 #endif

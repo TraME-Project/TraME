@@ -168,16 +168,13 @@ double logit::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, a
     double valx = 0.0;
 
     if (outsideOption) {
-        double tol_zero = 1E-12;
-        double max_iter = 10000;
-        
         arma::mat exp_U_bar_X = arma::exp(U_bar_x/sigma);
         
         trame_zeroin_data root_data;
         root_data.exp_U_bar_X = exp_U_bar_X;
         root_data.mu_bar_X = mu_bar_x;
         
-        double mu_x_0 = zeroin(0.0, 1.0, differMargX, root_data, tol_zero, max_iter);
+        double mu_x_0 = zeroin(0.0, 1.0, differMargX, root_data, NULL, NULL);
         //
         mu_x_inp = arma::min(mu_x_0 * exp_U_bar_X, mu_bar_x);
         U_x_inp  = sigma * arma::log(mu_x_inp/mu_x_0);
