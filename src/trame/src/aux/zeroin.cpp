@@ -31,19 +31,26 @@
 
 #include "aux/zeroin.hpp"
 
-double zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol, int* max_iter)
+double zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol_inp, int* max_iter_inp)
 {
 	double a,b,c;
 	double fa;
 	double fb;
 	double fc;
 
-	if (!tol) {
-        *tol = 1E-12;
+	double tol;
+    int max_iter;
+    
+    if (tol_inp) {
+        tol = *tol_inp;
+    } else {
+        tol = 1E-12;
     }
 
-	if (!max_iter) {
-        *max_iter = 10000;
+    if (max_iter_inp) {
+        max_iter = *max_iter_inp;
+    } else {
+        max_iter = 10000;
     }
 		
 	a = ax;  b = bx;  fa = (*f)(a,zeroin_data);  fb = (*f)(b,zeroin_data);
@@ -61,7 +68,7 @@ double zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_dat
 	int iter = 0;
 	
 	double eps_temp = std::numeric_limits<double>::epsilon();
-	double tol_act = 2*eps_temp*fabs(b) + (*tol)/2;
+	double tol_act = 2*eps_temp*fabs(b) + tol/2;
 
 	double p, q, prev_step, new_step;
 	//register double t1,cb,t2;
@@ -69,7 +76,7 @@ double zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_dat
 	
 	new_step = (c - b)/2;
 	
-	while(fabs(new_step) > tol_act && iter < *max_iter){
+	while(fabs(new_step) > tol_act && iter < max_iter){
 		iter++;
 		prev_step = b-a;
 			
