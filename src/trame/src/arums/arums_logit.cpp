@@ -31,11 +31,11 @@
 
 #include "trame.hpp"
 
-void logit::build(int nbX_inp, int nbY_inp, int nbParams_inp, double sigma_inp, bool outsideOption_inp)
+void logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
-    nbParams = nbParams_inp;
+    nbParams = 1;
     sigma = sigma_inp;
     outsideOption = outsideOption_inp;
 }
