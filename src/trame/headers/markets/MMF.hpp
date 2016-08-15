@@ -318,30 +318,48 @@ double MMF::marg_x_inv_fn(double z, const trame_zeroin_data& opt_data)
     bool coeff = opt_data.coeff;
     int x_ind = opt_data.x_ind;
     arma::mat B_ys = opt_data.B_ys;
-    
+
+    arma::uvec x_ind_temp(1);
+    x_ind_temp(0) = x_ind;
+    //
     if (coeff) {
         term_1 = z;
     } else {
         term_1 = 0;
     }
-
-    arma::uvec x_ind_temp(1);
-    x_ind_temp(0) = x_ind;
+    
+    double ret = term_1 - n(x_ind) + arma::accu(M(z,B_ys,&x_ind_temp,NULL));
     //
-    double ret = term_1 + n(x_ind) + arma::accu(M(z,B_ys,&x_ind_temp,NULL));
-    //
+    std::cout << ret << std::endl;
     return ret;
 }
 
 arma::vec MMF::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
 {
-    if (!xs) {
-        arma::uvec full_x_ind = uvec_linspace(0, (int) n.n_elem-1);
-        xs = &full_x_ind;
+    arma::uvec temp_ind;
+
+    if (xs) {
+        temp_ind = *xs;
+    } else {
+        temp_ind = uvec_linspace(0, (int) n.n_elem-1);
     }
     //
     if (NTU) {
-        arma::vec the_a_xs = invPWA(n.elem(*xs),arma::trans(arma::trans(B.rows(*xs)/A.rows(*xs)) % B_ys),A.rows(*xs),1);
+        arma::vec the_a_xs = invPWA(n.elem(temp_ind),arma::trans(arma::trans(B.rows(temp_ind)/A.rows(temp_ind)) % B_ys),A.rows(temp_ind),1);
+        //
+        return the_a_xs;
+    } else if (TU) {
+        arma::mat sqrt_A_xs;
+        arma::mat sqrt_B_ys = arma::sqrt(B_ys);
+
+        if (!need_norm) {
+            arma::mat b = (K.rows(temp_ind) * sqrt_B_ys) / 2;
+            sqrt_A_xs = arma::sqrt(n.rows(temp_ind) + b%b) - b;
+        } else{
+            sqrt_A_xs = n.elem(temp_ind) / arma::vectorise(K.rows(temp_ind) * sqrt_B_ys);
+        }
+        
+        arma::vec the_a_xs = arma::vectorise(sqrt_A_xs % sqrt_A_xs);
         //
         return the_a_xs;
     } else { // 'default'
@@ -366,7 +384,7 @@ arma::vec MMF::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
         arma::vec the_a_xs(xs->n_elem);
         
         for (j=0; j < (int) xs->n_elem; j++) {
-            x = (*xs)(j);
+            x = temp_ind(j);
             root_data.x_ind = x;
             the_a_xs(j) = zeroin_mmf(0.0, ubs(x), &MMF::marg_x_inv_fn, root_data, NULL, NULL);
         }
@@ -382,29 +400,46 @@ double MMF::marg_y_inv_fn(double z, const trame_zeroin_data& opt_data)
     int y_ind = opt_data.y_ind;
     arma::mat A_xs = opt_data.A_xs;
 
+    arma::uvec y_ind_temp(1);
+    y_ind_temp(0) = y_ind;
+    //
     if (coeff) {
         term_1 = z;
     } else {
         term_1 = 0;
     }
 
-    arma::uvec y_ind_temp(1);
-    y_ind_temp(0) = y_ind;
-    //
-    double ret = term_1 + m(y_ind) + arma::accu(M(A_xs,z,NULL,&y_ind_temp));
+    double ret = term_1 - m(y_ind) + arma::accu(M(A_xs,z,NULL,&y_ind_temp));
     //
     return ret;
 }
 
 arma::vec MMF::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
 {
-    if (!ys) {
-        arma::uvec full_y_ind = uvec_linspace(0, (int) m.n_elem-1);
-        ys = &full_y_ind;
+    arma::uvec temp_ind;
+
+    if (ys) {
+        temp_ind = *ys;
+    } else {
+        temp_ind = uvec_linspace(0, (int) m.n_elem-1);
     }
     //
     if (NTU) {
-        arma::vec the_b_ys = invPWA(m.elem(*ys),arma::trans(arma::trans(A.cols(*ys)/B.cols(*ys)) % A_xs),B.cols(*ys),1.0);
+        arma::vec the_b_ys = invPWA(m.elem(temp_ind),arma::trans(arma::trans(A.cols(temp_ind)/B.cols(temp_ind)) % A_xs),B.cols(temp_ind),1.0);
+        //
+        return the_b_ys;
+    } else if (TU) {
+        arma::mat sqrt_B_ys;
+        arma::mat sqrt_A_xs = arma::sqrt(A_xs);
+
+        if (!need_norm) {
+            arma::mat b = arma::trans(sqrt_A_xs.t() * K.cols(temp_ind)) / 2; // not sure about this
+            sqrt_B_ys = arma::sqrt(m.rows(temp_ind) + b%b) - b;
+        } else {
+            sqrt_B_ys = m.elem(temp_ind) / arma::vectorise(arma::trans(sqrt_A_xs.t() * K.cols(temp_ind))); // not sure about this
+        }
+        
+        arma::vec the_b_ys = arma::vectorise(sqrt_B_ys % sqrt_B_ys);
         //
         return the_b_ys;
     } else { // 'default'
@@ -430,7 +465,7 @@ arma::vec MMF::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
         arma::vec the_b_ys(ys->n_elem);
         
         for (j=0; j < (int) ys->n_elem; j++) {
-            y = (*ys)(j);
+            y = temp_ind(j);
             root_data.y_ind = y;
 
             the_b_ys(j) = zeroin_mmf(0.0, ubs(y), &MMF::marg_y_inv_fn, root_data, NULL, NULL);
