@@ -71,7 +71,7 @@ class MMF
         double marg_x_inv_fn(double z, const trame_zeroin_data& opt_data);
         double marg_y_inv_fn(double z, const trame_zeroin_data& opt_data);
 
-        double zeroin_mmf(double ax, double bx, double (MMF::*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol, int* max_iter);
+        double zeroin_mmf(double ax, double bx, double (MMF::*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol_inp, int* max_iter_inp);
 };
 
 void MMF::build_ETU(arma::vec n_ETU, arma::vec m_ETU, arma::mat C_ETU, arma::mat D_ETU, arma::mat kappa_ETU, bool need_norm_ETU)
@@ -134,11 +134,14 @@ arma::mat MMF::M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys)
 {
     arma::mat ret;
 
+    // null cases for indices
     if (!xs) {
-        *xs = uvec_linspace(0,n.n_elem-1);
+        arma::uvec full_x_ind = uvec_linspace(0, (int) n.n_elem-1);
+        xs = &full_x_ind;
     }
     if (!ys) {
-        *ys = uvec_linspace(0,m.n_elem-1);
+        arma::uvec full_y_ind = uvec_linspace(0, (int) m.n_elem-1);
+        ys = &full_y_ind;
     }
     //
     if (ETU) {
@@ -178,10 +181,12 @@ arma::mat MMF::M(double a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys)
     arma::mat ret;
 
     if (!xs) {
-        *xs = uvec_linspace(0,n.n_elem-1);
+        arma::uvec full_x_ind = uvec_linspace(0, (int) n.n_elem-1);
+        xs = &full_x_ind;
     }
     if (!ys) {
-        *ys = uvec_linspace(0,m.n_elem-1);
+        arma::uvec full_y_ind = uvec_linspace(0, (int) m.n_elem-1);
+        ys = &full_y_ind;
     }
     //
     if (ETU) {
@@ -221,10 +226,12 @@ arma::mat MMF::M(arma::mat a_xs, double b_ys, arma::uvec* xs, arma::uvec* ys)
     arma::mat ret;
 
     if (!xs) {
-        *xs = uvec_linspace(0,n.n_elem-1);
+        arma::uvec full_x_ind = uvec_linspace(0, (int) n.n_elem-1);
+        xs = &full_x_ind;
     }
     if (!ys) {
-        *ys = uvec_linspace(0,m.n_elem-1);
+        arma::uvec full_y_ind = uvec_linspace(0, (int) m.n_elem-1);
+        ys = &full_y_ind;
     }
     //
     if (ETU) {
@@ -329,7 +336,8 @@ double MMF::marg_x_inv_fn(double z, const trame_zeroin_data& opt_data)
 arma::vec MMF::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
 {
     if (!xs) {
-        *xs = uvec_linspace(0,n.n_elem-1);
+        arma::uvec full_x_ind = uvec_linspace(0, (int) n.n_elem-1);
+        xs = &full_x_ind;
     }
     //
     if (NTU) {
@@ -352,7 +360,6 @@ arma::vec MMF::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
         }
         //
         trame_zeroin_data root_data;
-
         root_data.coeff = coeff;
         root_data.B_ys  = B_ys;
         //
@@ -361,7 +368,6 @@ arma::vec MMF::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
         for (j=0; j < (int) xs->n_elem; j++) {
             x = (*xs)(j);
             root_data.x_ind = x;
-
             the_a_xs(j) = zeroin_mmf(0.0, ubs(x), &MMF::marg_x_inv_fn, root_data, NULL, NULL);
         }
         //
@@ -393,7 +399,8 @@ double MMF::marg_y_inv_fn(double z, const trame_zeroin_data& opt_data)
 arma::vec MMF::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
 {
     if (!ys) {
-        *ys = uvec_linspace(0,m.n_elem-1);
+        arma::uvec full_y_ind = uvec_linspace(0, (int) m.n_elem-1);
+        ys = &full_y_ind;
     }
     //
     if (NTU) {
@@ -433,29 +440,36 @@ arma::vec MMF::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
     }
 }
 
-double MMF::zeroin_mmf(double ax, double bx, double (MMF::*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol, int* max_iter)
+double MMF::zeroin_mmf(double ax, double bx, double (MMF::*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol_inp, int* max_iter_inp)
 {
 	double a,b,c;
 	double fa;
 	double fb;
 	double fc;
 
-    if (!tol) {
-        *tol = 1E-12;
+    double tol;
+    int max_iter;
+    
+    if (tol_inp) {
+        tol = *tol_inp;
+    } else {
+        tol = 1E-12;
     }
 
-    if (!max_iter) {
-        *max_iter = 10000;
+    if (max_iter_inp) {
+        max_iter = *max_iter_inp;
+    } else {
+        max_iter = 10000;
     }
-		
+
 	a = ax;  b = bx;  fa = (this->*f)(a,zeroin_data);  fb = (this->*f)(b,zeroin_data);
 	c = a;   fc = fa;
 	
 	// check endpoints
-	if(fa == 0.0){
+	if (fa == 0.0) {
 		return b;
 	}
-	if(fb == 0.0){
+	if (fb == 0.0) {
 		return b;
 	}
 	
@@ -463,7 +477,7 @@ double MMF::zeroin_mmf(double ax, double bx, double (MMF::*f)(double x, const tr
 	int iter = 0;
 	
 	double eps_temp = std::numeric_limits<double>::epsilon();
-	double tol_act = 2*eps_temp*fabs(b) + (*tol)/2;
+	double tol_act = 2*eps_temp*fabs(b) + tol/2;
 
 	double p, q, prev_step, new_step;
 	//register double t1,cb,t2;
@@ -471,7 +485,7 @@ double MMF::zeroin_mmf(double ax, double bx, double (MMF::*f)(double x, const tr
 	
 	new_step = (c - b)/2;
 	
-	while(fabs(new_step) > tol_act && iter < *max_iter){
+	while (fabs(new_step) > tol_act && iter < max_iter) {
 		iter++;
 		prev_step = b-a;
 			
@@ -482,42 +496,42 @@ double MMF::zeroin_mmf(double ax, double bx, double (MMF::*f)(double x, const tr
 		
 		new_step = (c-b)/2;
 
-		if( fabs(prev_step) >= tol_act	&& fabs(fa) > fabs(fb) ){
+		if ( fabs(prev_step) >= tol_act	&& fabs(fa) > fabs(fb) ) {
 			
 			cb = c - b;
 						
-			if( a==c ){
+			if ( a==c ) {
 				t1 = fb/fa;
 				p = cb*t1;
 				q = 1.0 - t1;
-			}else{
+			} else {
 				q = fa/fc;  t1 = fb/fc;  t2 = fb/fa;
 				p = t2 * ( cb*q*(q-t1) - (b-a)*(t1-1.0) );
 				q = (q-1.0) * (t1-1.0) * (t2-1.0);
 			}
 						
-			if( p > 0.0 ){
+			if ( p > 0.0 ) {
 				q = -q;
-			}else{
+			} else {
 				p = -p;
 			}
 
-			if( p < (0.75*cb*q-fabs(tol_act*q)/2) && p < fabs(prev_step*q/2) ){
+			if ( p < (0.75*cb*q-fabs(tol_act*q)/2) && p < fabs(prev_step*q/2) ) {
 				new_step = p/q;
 			}
 		}
 				
-		if( fabs(new_step) < tol_act ){
-			if( new_step > 0.0 ){
+		if ( fabs(new_step) < tol_act ) {
+			if ( new_step > 0.0 ) {
 				new_step = tol_act;
-			}else{
+			} else {
 				new_step = -tol_act;
 			}
 		}
 						
 		a = b;  fa = fb;
 		b += new_step;  fb = (this->*f)(b,zeroin_data);
-		if( (fb > 0.0 && fc > 0.0) || (fb < 0.0 && fc < 0.0) ){
+		if ( (fb > 0.0 && fc > 0.0) || (fb < 0.0 && fc < 0.0) ) {
 			c = a;  fc = fa;
 		}
 	}
