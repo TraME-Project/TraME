@@ -1,15 +1,25 @@
 #! /bin/sh
 ## TraME config script
 
+
 if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
     ARMA_INCLUDE_PATH="-I/opt/local/include"
 fi
+
+TRAME_SHLIB_NAME="libtrame.so"
+TRAME_INSTALL_PATH="/opt/local"
 
 NLOPT_INCLUDE_PATH="-I/usr/local/include"
 NLOPT_LIB_PATH="-L/usr/local/lib"
 NLOPT_LIBS="-lnlopt"
 
 if [[ $OSTYPE == darwin* ]] ; then
+    if [[ !(-z ${TRAME_R_VERSION+x}) ]]; then 
+        TRAME_SHLIB_FLAGS="-dynamiclib -install_name "@loader_path/${TRAME_SHLIB_NAME}" -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress"
+    else
+        TRAME_SHLIB_FLAGS="-dynamiclib -install_name "${TRAME_INSTALL_PATH}/lib/${TRAME_SHLIB_NAME}" -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress"
+    fi
+
     if [ -d "/Library/gurobi"* ] ; then
         grb_dirs=( /Library/gurobi* )
         nmb_dirs=${#grb_dirs[@]}
@@ -47,6 +57,9 @@ else
 fi
 
 sed -e "s|@ARMA_INCLUDE_PATH@|${ARMA_INCLUDE_PATH}|" \
+    -e "s|@TRAME_SHLIB_NAME@|${TRAME_SHLIB_NAME}|" \
+    -e "s|@TRAME_SHLIB_FLAGS@|${TRAME_SHLIB_FLAGS}|" \
+    -e "s|@TRAME_INSTALL_PATH@|${TRAME_INSTALL_PATH}|" \
     -e "s|@NLOPT_INCLUDE_PATH@|${NLOPT_INCLUDE_PATH}|" \
     -e "s|@NLOPT_LIB_PATH@|${NLOPT_LIB_PATH}|" \
     -e "s|@NLOPT_LIBS@|${NLOPT_LIBS}|" \
