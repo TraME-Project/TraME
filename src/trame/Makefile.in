@@ -14,7 +14,7 @@ FFLAGS = $(OPT_FLAGS)
 LIBS= -lgfortran -framework Accelerate
 
 # install location
-INSTALL_PATH?=/opt/local
+INSTALL_PATH=@TRAME_INSTALL_PATH@
 
 # source directories
 SDIR = .
@@ -24,8 +24,8 @@ TRAME_HEADER_DIR = $(SDIR)/headers
 TRAME_TEST_DIR = $(SDIR)/tests
 
 # shared library name and flags
-SHLIB = libtrame.so
-SHLIB_FLAGS = -dynamiclib -install_name "@loader_path/$(SHLIB)" -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress
+SHLIB = @TRAME_SHLIB_NAME@
+SHLIB_FLAGS = @TRAME_SHLIB_FLAGS@
 
 # linear programming flags
 LP_CFLAGS= -Wall $(OPT_FLAGS) @GRB_INCLUDE_PATH@ -I$(TRAME_HEADER_DIR)
@@ -50,11 +50,12 @@ OBJECTS_TRAME= $(SOURCES_TRAME:.cpp=.o)
 OBJECTS_TRAME_AUX= $(TRAME_SRC_DIR)/aux/inv_pwa.o $(TRAME_SRC_DIR)/aux/trame_aux.o $(TRAME_SRC_DIR)/aux/trame_stats.o $(TRAME_SRC_DIR)/aux/zeroin.o $(TRAME_SRC_DIR)/prob/prob.o $(TRAME_SRC_DIR)/math/quadpack_double.o $(TRAME_SRC_DIR)/prob/trame_F90_aux.o
 
 # test files
-SOURCES= $(TRAME_TEST_DIR)/arums/logit_test.cpp $(TRAME_TEST_DIR)/arums/none_test.cpp $(TRAME_TEST_DIR)/arums/probit_test.cpp $(TRAME_TEST_DIR)/arums/rsc_test.cpp
-OBJECTS= $(SOURCES:.cpp=.o)
-PROGS= $(SOURCES:.cpp=.test)
+SOURCES_TEST= $(TRAME_TEST_DIR)/arums/logit_test.cpp $(TRAME_TEST_DIR)/arums/none_test.cpp $(TRAME_TEST_DIR)/arums/probit_test.cpp $(TRAME_TEST_DIR)/arums/rsc_test.cpp
+OBJECTS_TEST= $(SOURCES_TEST:.cpp=.o)
+PROGS_TEST= $(SOURCES_TEST:.cpp=.test)
 
-all: $(PROGS) $(TRAME_DIR)/$(SHLIB) $(OBJECTS) $(OBJECTS_TRAME) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_AUX)
+#all: $(PROGS_TEST) $(TRAME_DIR)/$(SHLIB) $(OBJECTS_TEST) $(OBJECTS_TRAME) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_AUX)
+all: $(TRAME_DIR)/$(SHLIB) $(OBJECTS_TRAME) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_AUX)
 
 # LP and nlopt
 $(OBJECTS_LP): $(SOURCES_LP)
@@ -88,11 +89,11 @@ $(TRAME_DIR)/$(SHLIB): $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_
 	$(CXX) $(CXX_STD) $(SHLIB_FLAGS) -o $@ $^ $(LP_LIBS) $(NLOPT_LIBS) $(LIBS)
 
 # tests
-$(TRAME_TEST_DIR)/%.o: $(TRAME_TEST_DIR)/%.cpp
-	$(CXX) $(CXX_STD) $(CXXFLAGS) $(LP_CXXFLAGS) $(NLOPT_CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@ 
+#$(TRAME_TEST_DIR)/%.o: $(TRAME_TEST_DIR)/%.cpp
+#	$(CXX) $(CXX_STD) $(CXXFLAGS) $(LP_CXXFLAGS) $(NLOPT_CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@ 
 
-$(TRAME_TEST_DIR)/%.test: $(TRAME_TEST_DIR)/%.o | $(TRAME_DIR)/$(SHLIB)
-	$(CXX) -Wall $(OPT_FLAGS) $(CXX_STD) -o $@ $< -L$(TRAME_SRC_DIR) -ltrame -framework Accelerate
+#$(TRAME_TEST_DIR)/%.test: $(TRAME_TEST_DIR)/%.o | $(TRAME_DIR)/$(SHLIB)
+#	$(CXX) -Wall $(OPT_FLAGS) $(CXX_STD) -o $@ $< -L$(TRAME_SRC_DIR) -ltrame -framework Accelerate
 
 # cleanup and install
 .PHONY: clean
@@ -102,5 +103,5 @@ clean:
 .PHONY: install
 install: $(SHLIB)
 	@cp $(TRAME_DIR)/$(SHLIB) $(INSTALL_PATH)/lib/$(SHLIB)
-	@mkdir $(INSTALL_PATH)/include/trame
+	@mkdir -p $(INSTALL_PATH)/include/trame
 	@cp -r $(TRAME_DIR)/headers/* $(INSTALL_PATH)/include/trame
