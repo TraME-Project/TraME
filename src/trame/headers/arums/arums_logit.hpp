@@ -48,7 +48,7 @@ class logit
         arma::mat U_sol;
         
         // member functions
-        void build(int nbX_inp, int nbY_inp, int nbParams_inp, double sigma_inp, bool outsideOption_inp);
+        void build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp);
         double G(arma::vec n);
         double G(arma::mat &mu_ret, arma::vec n);
         
