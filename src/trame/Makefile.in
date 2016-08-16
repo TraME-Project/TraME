@@ -44,10 +44,13 @@ SOURCES_NLOPT= $(TRAME_SRC_DIR)/nlopt/generic_nlopt.cpp
 OBJECTS_NLOPT= $(TRAME_SRC_DIR)/nlopt/generic_nlopt.o
 
 # core TraME files
-SOURCES_TRAME= $(TRAME_SRC_DIR)/arums/arums_empirical.cpp $(TRAME_SRC_DIR)/arums/arums_logit.cpp $(TRAME_SRC_DIR)/arums/arums_none.cpp $(TRAME_SRC_DIR)/arums/arums_probit.cpp $(TRAME_SRC_DIR)/arums/arums_rsc.cpp $(TRAME_SRC_DIR)/arums/arums_rusc.cpp
-OBJECTS_TRAME= $(SOURCES_TRAME:.cpp=.o)
-
 OBJECTS_TRAME_AUX= $(TRAME_SRC_DIR)/aux/inv_pwa.o $(TRAME_SRC_DIR)/aux/trame_aux.o $(TRAME_SRC_DIR)/aux/trame_stats.o $(TRAME_SRC_DIR)/aux/zeroin.o $(TRAME_SRC_DIR)/prob/prob.o $(TRAME_SRC_DIR)/math/quadpack_double.o $(TRAME_SRC_DIR)/prob/trame_F90_aux.o
+
+SOURCES_TRAME_ARUMS= $(TRAME_SRC_DIR)/arums/arums_empirical.cpp $(TRAME_SRC_DIR)/arums/arums_logit.cpp $(TRAME_SRC_DIR)/arums/arums_none.cpp $(TRAME_SRC_DIR)/arums/arums_probit.cpp $(TRAME_SRC_DIR)/arums/arums_rsc.cpp $(TRAME_SRC_DIR)/arums/arums_rusc.cpp
+OBJECTS_TRAME_ARUMS= $(SOURCES_TRAME_ARUMS:.cpp=.o)
+
+SOURCES_TRAME_MKTS= $(TRAME_SRC_DIR)/markets/mmf.cpp
+OBJECTS_TRAME_MKTS= $(SOURCES_TRAME_MKTS:.cpp=.o)
 
 # test files
 SOURCES_TEST= $(TRAME_TEST_DIR)/arums/logit_test.cpp $(TRAME_TEST_DIR)/arums/none_test.cpp $(TRAME_TEST_DIR)/arums/probit_test.cpp $(TRAME_TEST_DIR)/arums/rsc_test.cpp
@@ -55,7 +58,7 @@ OBJECTS_TEST= $(SOURCES_TEST:.cpp=.o)
 PROGS_TEST= $(SOURCES_TEST:.cpp=.test)
 
 #all: $(PROGS_TEST) $(TRAME_DIR)/$(SHLIB) $(OBJECTS_TEST) $(OBJECTS_TRAME) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_AUX)
-all: $(TRAME_DIR)/$(SHLIB) $(OBJECTS_TRAME) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_AUX)
+all: $(TRAME_DIR)/$(SHLIB) $(OBJECTS_TRAME_MKTS) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_AUX) $(OBJECTS_LPXX) $(OBJECTS_NLOPT)
 
 # LP and nlopt
 $(OBJECTS_LP): $(SOURCES_LP)
@@ -84,8 +87,11 @@ $(TRAME_SRC_DIR)/prob/trame_F90_aux.o: $(TRAME_SRC_DIR)/prob/trame_F90_aux.f90
 $(TRAME_SRC_DIR)/arums/%.o: $(TRAME_SRC_DIR)/arums/%.cpp
 	$(CXX) $(CXX_STD) $(CXXFLAGS) $(LP_CXXFLAGS) $(NLOPT_CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@
 
+$(TRAME_SRC_DIR)/markets/%.o: $(TRAME_SRC_DIR)/markets/%.cpp
+	$(CXX) $(CXX_STD) $(CXXFLAGS) $(LP_CXXFLAGS) $(NLOPT_CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@
+
 # shared library
-$(TRAME_DIR)/$(SHLIB): $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_AUX) $(OBJECTS_TRAME)
+$(TRAME_DIR)/$(SHLIB): $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_AUX) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_MKTS)
 	$(CXX) $(CXX_STD) $(SHLIB_FLAGS) -o $@ $^ $(LP_LIBS) $(NLOPT_LIBS) $(LIBS)
 
 # tests
