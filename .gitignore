@@ -4,8 +4,7 @@
 src/Makevars
 src-i386/
 src-x64/
-src/headers/old/
-src/lp/tests/gurobi_ex/
+src/trame/Makefile
 *.dll
 *.exe
 *.log
