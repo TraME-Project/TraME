@@ -21,7 +21,7 @@
 
 // ipfp for logit
 
-bool ipfp (MFE market, bool xFirst, double* tol, arma::vec* by_start, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U, arma::mat& V, arma::vec& u, arma::vec& v)
+bool ipfp (MFE market, bool xFirst, double* tol_inp, arma::vec* by_start, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U, arma::mat& V, arma::vec& u, arma::vec& v)
 {
     MMF mmf_obj = marker.mmf_obj;
 
@@ -44,11 +44,14 @@ bool ipfp (MFE market, bool xFirst, double* tol, arma::vec* by_start, arma::mat&
     arma::vec ax(nbX);
     arma::vec val(nbX+nbY);
 
-    if (!tol) {
-        *tol = 1E-12;
+    double tol;
+    if (tol_inp) {
+        tol = *tol_inp;
+    } else {
+        tol = 1E-12;
     }
 
-    double err = 2*(*tol);
+    double err = 2*tol;
     int iter = 0;
     //
     while (err > tol) {
@@ -65,7 +68,7 @@ bool ipfp (MFE market, bool xFirst, double* tol, arma::vec* by_start, arma::mat&
         }
         */
 
-        err = arma::max(arma::abs(arma::join_cols(ax,bs) - val));
+        err = arma::as_scalar(arma::max(arma::abs(arma::join_cols(ax,bs) - val)));
     }
     //
     // Construct the equilibrium outcome based on ax and by obtained from above
