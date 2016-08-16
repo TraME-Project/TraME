@@ -31,14 +31,14 @@
 
 #include "trame.hpp"
 
-void none::build(int nbX_inp, int nbY_inp)
+void trame::none::build(int nbX_inp, int nbY_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
     nbParams = 0;
 }
 
-double none::G(arma::vec n)
+double trame::none::G(arma::vec n)
 {   
     int i;
     double val=0.0, val_x;
@@ -47,7 +47,7 @@ double none::G(arma::vec n)
     arma::mat mu_x_temp;
     //
     for(i=0; i<nbX; i++){
-        val_x = none::Gx(U.row(i).t(),mu_x_temp);
+        val_x = Gx(U.row(i).t(),mu_x_temp);
         //
         val += n(i)*val_x;
         mu_sol.row(i) = arma::trans(n(i)*mu_x_temp);
@@ -56,7 +56,7 @@ double none::G(arma::vec n)
     return val;
 }
 
-double none::Gx(arma::mat Ux, arma::mat& mu_x_inp)
+double trame::none::Gx(arma::mat Ux, arma::mat& mu_x_inp)
 {
     arma::uvec temp_vec = which_max(&Ux, (int) 0);
     int y = temp_vec(0);
@@ -73,14 +73,14 @@ double none::Gx(arma::mat Ux, arma::mat& mu_x_inp)
     return val_x;
 }
 
-double none::Gstar(arma::mat& U_inp, arma::vec n)
+double trame::none::Gstar(arma::mat& U_inp, arma::vec n)
 {   
     printf("Gstar not yet defined for no arums case.\n");
 
     return 0.0;
 }
 
-double none::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+double trame::none::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
 {   
     int i;
     double val=0.0, val_temp;
@@ -100,7 +100,7 @@ double none::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp
     return val;
 }
 
-double none::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp)
+double trame::none::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp)
 {
     int count_int=0;
     int nbY0 = Ubarx.n_elem;
@@ -128,13 +128,13 @@ double none::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::m
     return valx;
 }
 
-arma::vec none::dtheta_NablaGstar()
+arma::vec trame::none::dtheta_NablaGstar()
 {
     arma::vec ret = arma::zeros(nbX*nbY,1);
     return ret;
 }
 
-void none::simul(empirical &ret, int nbDraws, int seed_val)
+void trame::none::simul(empirical &ret, int nbDraws, int seed_val)
 {
     arma::arma_rng::set_seed(seed_val);
     //

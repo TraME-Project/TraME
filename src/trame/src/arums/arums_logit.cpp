@@ -31,7 +31,7 @@
 
 #include "trame.hpp"
 
-void logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp)
+void trame::logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -40,7 +40,7 @@ void logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption
     outsideOption = outsideOption_inp;
 }
 
-double logit::G(arma::vec n)
+double trame::logit::G(arma::vec n)
 {   
     arma::mat denom;
     
@@ -58,7 +58,7 @@ double logit::G(arma::vec n)
     return val;
 }
 
-double logit::G(arma::mat &mu_ret, arma::vec n)
+double trame::logit::G(arma::mat &mu_ret, arma::vec n)
 {   
     arma::mat denom;
     
@@ -76,7 +76,7 @@ double logit::G(arma::mat &mu_ret, arma::vec n)
     return val;
 }
 
-double logit::Gstar(arma::vec n)
+double trame::logit::Gstar(arma::vec n)
 {
     double val=0.0;
     
@@ -96,7 +96,7 @@ double logit::Gstar(arma::vec n)
     return val;
 }
 
-double logit::Gstar(arma::mat &U_ret, arma::vec n)
+double trame::logit::Gstar(arma::mat &U_ret, arma::vec n)
 {
     double val=0.0;
     
@@ -116,7 +116,7 @@ double logit::Gstar(arma::mat &U_ret, arma::vec n)
     return val;
 }
 
-double logit::Gstarx(arma::mat &U_x, arma::mat mu_x)
+double trame::logit::Gstarx(arma::mat &U_x, arma::mat mu_x)
 {
     double val_x=0.0;
     
@@ -135,7 +135,7 @@ double logit::Gstarx(arma::mat &U_x, arma::mat mu_x)
     return val_x;
 }
 
-double logit::Gbar(arma::mat U_bar, arma::mat mu_bar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+double trame::logit::Gbar(arma::mat U_bar, arma::mat mu_bar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
 {   
     int i;
     double val=0.0, val_temp;
@@ -145,7 +145,7 @@ double logit::Gbar(arma::mat U_bar, arma::mat mu_bar, arma::vec n, arma::mat& U_
     arma::mat U_x_temp, mu_x_temp;
     //
     for(i=0; i<nbX; i++){
-        val_temp = logit::Gbarx(U_bar.row(i).t(),(mu_bar.row(i).t())/n(i),U_x_temp,mu_x_temp);
+        val_temp = Gbarx(U_bar.row(i).t(),(mu_bar.row(i).t())/n(i),U_x_temp,mu_x_temp);
         //
         val += n(i)*val_temp;
         U_inp.row(i) = arma::trans(U_x_temp);
@@ -155,7 +155,7 @@ double logit::Gbar(arma::mat U_bar, arma::mat mu_bar, arma::vec n, arma::mat& U_
     return val;
 }
 
-double differMargX(double z, const trame_zeroin_data& opt_data)
+double differMargX(double z, const trame::trame_zeroin_data& opt_data)
 {
     arma::mat temp_mat = arma::min(z * opt_data.exp_U_bar_X, opt_data.mu_bar_X);
     double ret = z + arma::accu(temp_mat) - 1;
@@ -163,7 +163,7 @@ double differMargX(double z, const trame_zeroin_data& opt_data)
     return ret;
 }
 
-double logit::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp)
+double trame::logit::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp)
 {
     double valx = 0.0;
 
@@ -185,7 +185,7 @@ double logit::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, a
     return valx;
 }
 
-void logit::D2G(arma::mat &H, arma::vec n, bool xFirst)
+void trame::logit::D2G(arma::mat &H, arma::vec n, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption is true
     int x, y, yprime;
@@ -214,7 +214,7 @@ void logit::D2G(arma::mat &H, arma::vec n, bool xFirst)
     }
 }
 
-void logit::D2Gstar(arma::mat &H, arma::vec n, bool xFirst)
+void trame::logit::D2Gstar(arma::mat &H, arma::vec n, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption == 1 or 0
     int x, y, yprime;
@@ -247,7 +247,7 @@ void logit::D2Gstar(arma::mat &H, arma::vec n, bool xFirst)
     H *= sigma;
 }
 
-void logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, bool xFirst)
+void trame::logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, bool xFirst)
 {
     arma::mat logmu_temp, mu_x_0;
     
@@ -276,7 +276,7 @@ void logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, boo
     }
 }
 
-void logit::simul(empirical &ret, int nbDraws, int seed_val)
+void trame::logit::simul(empirical &ret, int nbDraws, int seed_val)
 {
     arma::arma_rng::set_seed(seed_val);
     
@@ -303,41 +303,3 @@ void logit::simul(empirical &ret, int nbDraws, int seed_val)
     //
     arma::arma_rng::set_seed_random(); // need to reset the seed
 }
-
-// this generated weird assembly code...
-/*double differMargX_old(double z, void *opt_data)
-{
-    
-    trame_opt_data *opt_data_temp = reinterpret_cast<trame_opt_data*>(opt_data);
-    arma::mat* expU_bar_x = opt_data_temp->expU_bar_x;
-    arma::mat* mu_bar_x = opt_data_temp->mu_bar_x;
-    //
-    arma::mat temp_mat = arma::min(z * (*expU_bar_x), (*mu_bar_x));
-    double ret = z + arma::accu(temp_mat) - 1;
-    //
-    return ret;
-}*/
-
-// this generated weird assembly code...
-/*double logit::Gbarx_old(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp)
-{
-    double valx=0.0;
-    if(outsideOption){
-        double tol_zero = 1E-12;
-        double max_iter = 10000;
-        
-        arma::mat expU_bar_x = arma::exp(U_bar_x/sigma);
-        
-        trame_opt_data root_data;
-        root_data.expU_bar_x = &expU_bar_x;
-        root_data.mu_bar_x = &mu_bar_x;
-        
-        double mu_x_0 = zeroin_old(0.0, 1.0, differMargX, &root_data, tol_zero, max_iter);
-        //
-        mu_x_inp = arma::min(mu_x_0 * expU_bar_x, mu_bar_x);
-        U_x_inp  = sigma * arma::log(mu_x/mu_x_0);
-        //
-        valx = arma::accu(mu_x % U_bar_x) - sigma*(mu_x_0*std::log(mu_x_0) + arma::accu(mu_x % arma::log(mu_x)));
-    }
-    return valx;
-}*/

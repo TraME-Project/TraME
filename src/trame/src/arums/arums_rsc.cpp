@@ -31,7 +31,7 @@
 
 #include "trame.hpp"
 
-void RSC::build(arma::mat zeta_inp, bool outsideOption_inp)
+void trame::rsc::build(arma::mat zeta_inp, bool outsideOption_inp)
 {
     if (!outsideOption_inp) {
         return;
@@ -86,7 +86,7 @@ void RSC::build(arma::mat zeta_inp, bool outsideOption_inp)
 }
 
 // epsilon is a beta(alpha,beta) distribution
-void RSC::build_beta(arma::mat zeta_inp, double alpha, double beta)
+void trame::rsc::build_beta(arma::mat zeta_inp, double alpha, double beta)
 {
     dist_pars = new double[2];
     dist_pars[0] = alpha;
@@ -102,10 +102,10 @@ void RSC::build_beta(arma::mat zeta_inp, double alpha, double beta)
     aux_pdf_eps_vec   = dbeta;
     aux_pot_eps_vec   = iqbeta;
     //
-    RSC::build(zeta_inp,true);
+    build(zeta_inp,true);
 }
 
-double RSC::G(arma::vec n)
+double trame::rsc::G(arma::vec n)
 {   
     int i;
     double val=0.0, val_x_temp;
@@ -124,7 +124,7 @@ double RSC::G(arma::vec n)
     return val;
 }
 
-double RSC::Gx(arma::vec& mu_x, int x)
+double trame::rsc::Gx(arma::vec& mu_x, int x)
 {
     int nbAlt = nbY + 1;
     int i,j,y,z;
@@ -195,7 +195,7 @@ double RSC::Gx(arma::vec& mu_x, int x)
     return val_x;
 }
 
-double RSC::Gstar(arma::vec n)
+double trame::rsc::Gstar(arma::vec n)
 {   
     int i;
     double val=0.0, val_x_temp;
@@ -214,7 +214,7 @@ double RSC::Gstar(arma::vec n)
     return val;
 }
 
-double RSC::Gstar(arma::mat& U_inp, arma::vec n)
+double trame::rsc::Gstar(arma::mat& U_inp, arma::vec n)
 {   
     int i;
     double val=0.0, val_x_temp;
@@ -233,7 +233,7 @@ double RSC::Gstar(arma::mat& U_inp, arma::vec n)
     return val;
 }
 
-double RSC::Gstarx(arma::vec& U_x, double n_x, int x)
+double trame::rsc::Gstarx(arma::vec& U_x, double n_x, int x)
 {
     double val_x = 0;
     arma::vec mu_x = (mu_sol.row(x).t())/n_x; // we divide by n(x)
@@ -258,7 +258,7 @@ double RSC::Gstarx(arma::vec& U_x, double n_x, int x)
     return val_x;
 }
 
-double RSC::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, int x)
+double trame::rsc::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, int x)
 {
     double val_x = 0;
     
@@ -282,7 +282,7 @@ double RSC::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, int x)
     return val_x;
 }
 
-double RSC::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta, 
+double trame::rsc::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta, 
                    arma::mat aux_DinvPsigma, arma::mat aux_Psigma, 
                    arma::mat aux_Influence_lhs, arma::mat aux_Influence_rhs,
                    arma::vec (*pot_eps_vec)(arma::vec pot_inp, double* dist_pars),
@@ -311,7 +311,7 @@ double RSC::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta,
     return val_x;
 }
 
-double RSC::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+double trame::rsc::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
 {   
     int i;
     double val=0.0, val_temp;
@@ -331,7 +331,7 @@ double RSC::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp,
     return val;
 }
 
-double RSC::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x)
+double trame::rsc::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x)
 {
     if (!outsideOption) {
         printf("Gbarx not implemented yet when outsideOption==false");
@@ -368,7 +368,7 @@ double RSC::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::ma
     trame_nlopt_constr_data constr_data;
     constr_data.nbY = nbY;
     //
-    bool success = generic_nlopt(nbY,sol_vec,obj_val,lb.memptr(),ub.memptr(),RSC::Gbar_opt_objfn,RSC::Gbar_opt_constr,opt_data,constr_data);
+    bool success = generic_nlopt(nbY,sol_vec,obj_val,lb.memptr(),ub.memptr(),trame::rsc::Gbar_opt_objfn,trame::rsc::Gbar_opt_constr,opt_data,constr_data);
     //
     arma::vec Ux_temp;
     arma::vec sol_temp = arma::conv_to<arma::vec>::from(sol_vec);
@@ -382,7 +382,7 @@ double RSC::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::ma
     return ret;
 }
 
-void RSC::D2Gstar(arma::mat& hess, arma::vec n, bool x_first)
+void trame::rsc::D2Gstar(arma::mat& hess, arma::vec n, bool x_first)
 {
     int i,j;
     
@@ -424,7 +424,7 @@ void RSC::D2Gstar(arma::mat& hess, arma::vec n, bool x_first)
     }
 }
 
-void RSC::dtheta_NablaGstar(arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first)
+void trame::rsc::dtheta_NablaGstar(arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first)
 {
     int i,j;
     arma::mat dtheta_mat;
@@ -478,7 +478,7 @@ void RSC::dtheta_NablaGstar(arma::mat& ret, arma::vec n, arma::mat* dtheta, bool
     }
 }
 
-void RSC::simul(empirical &ret, int nbDraws, int seed_val)
+void trame::rsc::simul(empirical &ret, int nbDraws, int seed_val)
 {
     int i;
     arma::arma_rng::set_seed(seed_val);
@@ -509,7 +509,7 @@ void RSC::simul(empirical &ret, int nbDraws, int seed_val)
  * optimization-related functions
  */
 
-double RSC::Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data)
+double trame::rsc::Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data)
 {
     trame_nlopt_opt_data *d = reinterpret_cast<trame_nlopt_opt_data*>(opt_data);
 
@@ -543,7 +543,7 @@ double RSC::Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<double>
     return ret;
 }
 
-double RSC::Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data)
+double trame::rsc::Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data)
 {
     trame_nlopt_constr_data *d = reinterpret_cast<trame_nlopt_constr_data*>(constr_data);
 
@@ -564,7 +564,7 @@ double RSC::Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double
  * Distribution-related functions
  */
 
-double RSC::cdf(double x)
+double trame::rsc::cdf(double x)
 {
     double res;
     
@@ -573,7 +573,7 @@ double RSC::cdf(double x)
     return res;
 }
 
-arma::vec RSC::cdf(arma::vec x)
+arma::vec trame::rsc::cdf(arma::vec x)
 {
     arma::vec res;
     
@@ -582,7 +582,7 @@ arma::vec RSC::cdf(arma::vec x)
     return res;
 }
 
-double RSC::pdf(double x)
+double trame::rsc::pdf(double x)
 {
     double res;
     
@@ -591,7 +591,7 @@ double RSC::pdf(double x)
     return res;
 }
 
-arma::vec RSC::pdf(arma::vec x)
+arma::vec trame::rsc::pdf(arma::vec x)
 {
     arma::vec res;
     
@@ -600,7 +600,7 @@ arma::vec RSC::pdf(arma::vec x)
     return res;
 }
 
-double RSC::quantile(double x)
+double trame::rsc::quantile(double x)
 {
     double res;
     
@@ -609,7 +609,7 @@ double RSC::quantile(double x)
     return res;
 }
 
-arma::vec RSC::quantile(arma::vec x)
+arma::vec trame::rsc::quantile(arma::vec x)
 {
     arma::vec res;
     
@@ -618,7 +618,7 @@ arma::vec RSC::quantile(arma::vec x)
     return res;
 }
 
-double RSC::pot(double x)
+double trame::rsc::pot(double x)
 {
     double res;
     
@@ -627,7 +627,7 @@ double RSC::pot(double x)
     return res;
 }
 
-arma::vec RSC::pot(arma::vec x)
+arma::vec trame::rsc::pot(arma::vec x)
 {
     arma::vec res;
     

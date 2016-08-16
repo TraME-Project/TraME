@@ -29,9 +29,6 @@
  * 08/08/2016
  */
 
-#ifndef _arums_empirical_HPP
-#define _arums_empirical_HPP
-
 class empirical
 {
     public:
@@ -93,5 +90,3 @@ class empirical
         int* vbeg_Gbar;
         double* vval_Gbar;
 };
-
-#endif

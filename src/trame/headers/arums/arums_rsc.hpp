@@ -29,7 +29,7 @@
  * 08/08/2016
  */
 
-class RSC
+class rsc
 {
     public:
         // build objects

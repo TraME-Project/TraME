@@ -31,7 +31,7 @@
 
 #include "trame.hpp"
 
-void empirical::build(int nbX_inp, int nbY_inp, arma::cube atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
+void trame::empirical::build(int nbX_inp, int nbY_inp, arma::cube atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -45,7 +45,7 @@ void empirical::build(int nbX_inp, int nbY_inp, arma::cube atoms_inp, bool xHomo
     outsideOption = outsideOption_inp;
 }
 
-void empirical::presolve_LP_Gstar()
+void trame::empirical::presolve_LP_Gstar()
 {   
     /*
      * Here we build and store the 'A' matrix that get passed to 
@@ -101,7 +101,7 @@ void empirical::presolve_LP_Gstar()
     TRAME_PRESOLVED_GSTAR = true;
 }
 
-void empirical::presolve_LP_Gbar()
+void trame::empirical::presolve_LP_Gbar()
 {   
     /*
      * Here we build and store the 'A' matrix that get passed to 
@@ -173,7 +173,7 @@ void empirical::presolve_LP_Gbar()
     TRAME_PRESOLVED_GBAR = true;
 }
 
-double empirical::G(arma::vec n)
+double trame::empirical::G(arma::vec n)
 {   
     int i;
     double val=0.0, val_x;
@@ -191,7 +191,7 @@ double empirical::G(arma::vec n)
     return val;
 }
 
-double empirical::Gx(arma::mat Ux, arma::mat& mu_x_inp, int x)
+double trame::empirical::Gx(arma::mat Ux, arma::mat& mu_x_inp, int x)
 {   
     arma::mat Uxs, Utilde;
     
@@ -229,7 +229,7 @@ double empirical::Gx(arma::mat Ux, arma::mat& mu_x_inp, int x)
     return valx;
 }
 
-double empirical::Gstar(arma::vec n)
+double trame::empirical::Gstar(arma::vec n)
 {   
     int i;
     double val=0.0, val_temp;
@@ -251,7 +251,7 @@ double empirical::Gstar(arma::vec n)
     return val;
 }
 
-double empirical::Gstar(arma::mat& U_inp, arma::vec n)
+double trame::empirical::Gstar(arma::mat& U_inp, arma::vec n)
 {   
     int i;
     double val=0.0, val_temp;
@@ -273,7 +273,7 @@ double empirical::Gstar(arma::mat& U_inp, arma::vec n)
     return val;
 }
 
-double empirical::Gstarx(arma::mat mu_x, arma::mat& Ux_inp, int x)
+double trame::empirical::Gstarx(arma::mat mu_x, arma::mat& Ux_inp, int x)
 {   
     int jj;
     double valx=0.0;
@@ -344,7 +344,7 @@ double empirical::Gstarx(arma::mat mu_x, arma::mat& Ux_inp, int x)
     return valx;
 }
 
-double empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+double trame::empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
 {   
     int i;
     double val=0.0, val_temp;
@@ -368,7 +368,7 @@ double empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& 
     return val;
 }
 
-double empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x)
+double trame::empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x)
 {   
     int jj;
     double valx=0.0;

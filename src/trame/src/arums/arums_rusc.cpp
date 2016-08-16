@@ -31,7 +31,7 @@
 
 #include "trame.hpp"
 
-void RUSC::build(arma::mat zeta_inp, bool outsideOption_inp)
+void trame::rusc::build(arma::mat zeta_inp, bool outsideOption_inp)
 {
     if (!outsideOption_inp) {
         printf("outsideOption=F not implemented yet on RUSC arums\n");
@@ -82,7 +82,7 @@ void RUSC::build(arma::mat zeta_inp, bool outsideOption_inp)
     outsideOption = true;
 }
 
-double RUSC::G(arma::vec n)
+double trame::rusc::G(arma::vec n)
 {   
     int i;
     double val=0.0, val_x_temp;
@@ -100,7 +100,7 @@ double RUSC::G(arma::vec n)
     return val;
 }
 
-double RUSC::Gx(arma::vec& mu_x, int x)
+double trame::rusc::Gx(arma::vec& mu_x, int x)
 {
     int nbAlt = nbY + 1;
     int i,j,y,z;
@@ -157,7 +157,7 @@ double RUSC::Gx(arma::vec& mu_x, int x)
     return val_x;
 }
 
-double RUSC::Gstar(arma::vec n)
+double trame::rusc::Gstar(arma::vec n)
 {   
     int i;
     double val=0.0, val_x_temp;
@@ -176,7 +176,7 @@ double RUSC::Gstar(arma::vec n)
     return val;
 }
 
-double RUSC::Gstarx(arma::vec& U_x, double n_x, int x)
+double trame::rusc::Gstarx(arma::vec& U_x, double n_x, int x)
 {
     double val_x = 0;
     arma::vec mu_x = (mu_sol.row(x).t())/n_x; // we divide by n(x)
@@ -189,7 +189,7 @@ double RUSC::Gstarx(arma::vec& U_x, double n_x, int x)
     return val_x;
 }
 
-double RUSC::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+double trame::rusc::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
 {   
     int i;
     double val=0.0, val_temp;
@@ -209,7 +209,7 @@ double RUSC::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp
     return val;
 }
 
-double RUSC::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp, int x)
+double trame::rusc::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp, int x)
 {
     int nbAlt = nbY + 1;
     double val_x = 0.0;
@@ -261,7 +261,7 @@ double RUSC::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, ar
     return val_x;
 }
 
-void RUSC::simul(empirical &ret, int nbDraws, int seed_val)
+void trame::rusc::simul(empirical &ret, int nbDraws, int seed_val)
 {
     int i;
     arma::arma_rng::set_seed(seed_val);

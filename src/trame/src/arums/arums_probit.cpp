@@ -31,7 +31,7 @@
 
 #include "trame.hpp"
 
-void probit::build(int nbX_inp, int nbY_inp, bool outsideOption_inp)
+void trame::probit::build(int nbX_inp, int nbY_inp, bool outsideOption_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -45,7 +45,7 @@ void probit::build(int nbX_inp, int nbY_inp, bool outsideOption_inp)
     nbParams = (nbX_inp * aux_nbOptions * (aux_nbOptions-1))/2;
 }
 
-void probit::simul(empirical &ret, int nbDraws, int seed_val)
+void trame::probit::simul(empirical &ret, int nbDraws, int seed_val)
 {
     arma::arma_rng::set_seed(seed_val);
     //
@@ -77,7 +77,7 @@ void probit::simul(empirical &ret, int nbDraws, int seed_val)
     arma::arma_rng::set_seed_random(); // need to reset the seed
 }
 
-void probit::unifCorrelCovMatrices()
+void trame::probit::unifCorrelCovMatrices()
 {
     int i;
     //
@@ -95,7 +95,7 @@ void probit::unifCorrelCovMatrices()
     }
 }
 
-arma::cube probit::unifCorrelCovMatrices(double rho_inp)
+arma::cube trame::probit::unifCorrelCovMatrices(double rho_inp)
 {
     int i;
     //

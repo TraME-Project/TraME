@@ -29,7 +29,7 @@
  * 08/08/2016
  */
 
-class RUSC
+class rusc
 {
     public:
         // build objects
