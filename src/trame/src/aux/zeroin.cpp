@@ -29,9 +29,9 @@
  * 05/10/2016
  */
 
-#include "aux/zeroin.hpp"
+#include "trame.hpp"
 
-double zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol_inp, int* max_iter_inp)
+double trame::zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol_inp, int* max_iter_inp)
 {
 	double a,b,c;
 	double fa;

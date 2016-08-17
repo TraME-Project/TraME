@@ -32,8 +32,6 @@
 #ifndef _generic_lp_HPP
 #define _generic_lp_HPP
 
-#include "../misc/TRAME_OPTIONS.hpp"
-
 #if (defined(WIN32) || defined(_WIN32) || defined(TRAME_USE_GUROBI_C)) && !defined(TRAME_PREDEF_GUROBI_C)
     #define TRAME_PREDEF_GUROBI_C
 #endif

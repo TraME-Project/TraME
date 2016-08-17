@@ -32,8 +32,6 @@
 #ifndef _inv_pwa_HPP
 #define _inv_pwa_HPP
 
-#include "../misc/TRAME_OPTIONS.hpp"
-
 arma::vec invPWA (arma::vec a, arma::mat B, arma::mat C, double k);
 
 #endif

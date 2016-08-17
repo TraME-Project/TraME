@@ -32,8 +32,6 @@
 #ifndef _trame_aux_HPP
 #define _trame_aux_HPP
 
-#include "../misc/TRAME_OPTIONS.hpp"
-
 arma::uvec which_max(const arma::mat* X, int which_dim);
 arma::uvec uvec_linspace(int a, int b);
 

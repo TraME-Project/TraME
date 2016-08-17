@@ -2,6 +2,9 @@
 #ifndef TRAMELIB_INCLUDES
 #define TRAMELIB_INCLUDES
 
+#include <cmath> // for abs value
+#include <limits>
+
 #include "misc/TRAME_OPTIONS.hpp"
 
 namespace trame
@@ -26,6 +29,11 @@ namespace trame
 
     // markets
     #include "markets/mmf.hpp"
+    #include "markets/transfers.hpp"
+    #include "markets/mfe.hpp"
+
+    // solvers
+    #include "solvers/ipfp.hpp"
 }
 
 #endif

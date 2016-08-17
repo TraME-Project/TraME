@@ -29,10 +29,10 @@
  * 08/08/2016
  */
 
-#include "aux/trame_aux.hpp"
+#include "trame.hpp"
 
 // Find indices that correspond to maximum values 
-arma::uvec which_max(const arma::mat* X, int which_dim)
+arma::uvec trame::which_max(const arma::mat* X, int which_dim)
 {
     int i,j;
     
@@ -76,7 +76,7 @@ arma::uvec which_max(const arma::mat* X, int which_dim)
 }
 
 // Generate an equally-spaced grid of integers
-arma::uvec uvec_linspace (int a, int b)
+arma::uvec trame::uvec_linspace (int a, int b)
 {
     int i;
     int n_points = b - a + 1;

@@ -4,14 +4,10 @@
  * Keith O'Hara
  * 05/17/2016
  * 
- * cd ~/Desktop/SCM/GitHub/TraME/src/tests
+ * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/arums
  *
- * clang++ -O2 -Wall -std=c++11 -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -o arums_logit.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
- * clang++ -O2 -Wall -static-libgcc -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -o arums_logit.test -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
- *
- * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include ../lp/generic_lp.c -c -o ../lp/generic_lp.o
- * g++-mp-5 -O2 -Wall -std=c++11 -fopenmp -I/opt/local/include -I/Library/gurobi650/mac64/include arums_logit_test.cpp -c -o arums_logit_test.o
- * g++-mp-5 -O2 -Wall -fopenmp -o arums_logit.test ../lp/generic_lp.o arums_logit_test.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include logit_test.cpp -c -o logit_test.o
+ * g++-mp-5 -O2 -Wall -o logit.test logit_test.o -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -44,7 +40,7 @@ int main()
     
     arma::vec n = arma::sum(mu,1);
 
-    logit logits;
+    trame::logit logits;
     logits.nbX = nbX;
     logits.nbY = nbY;
     logits.nbParams = 1;
@@ -56,7 +52,7 @@ int main()
     //
     // empirical object:
     int n_draws = 1000;
-    empirical logit_sim;
+    trame::empirical logit_sim;
     
     logits.simul(logit_sim, n_draws, (int) 1777);
     

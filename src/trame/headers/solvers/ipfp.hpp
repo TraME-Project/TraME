@@ -23,25 +23,15 @@
   ################################################################################*/
 
 /*
- * Stats functions
+ * ipfp for logit
  *
  * Keith O'Hara
- * 08/08/2016
+ * 08/16/2016
  */
 
-#ifndef _trame_stats_HPP
-#define _trame_stats_HPP
+#ifndef _trame_ipfp_HPP
+#define _trame_ipfp_HPP
 
-double pbeta (double x, double* fn_pars);
-arma::vec pbeta (arma::vec x, double* fn_pars);
-
-double qbeta (double x, double* fn_pars);
-arma::vec qbeta (arma::vec x, double* fn_pars);
-
-double iqbeta (double x, double* fn_pars);
-arma::vec iqbeta (arma::vec x, double* fn_pars);
-
-double dbeta (double x, double* fn_pars);
-arma::vec dbeta (arma::vec x, double* fn_pars);
+bool ipfp(mfe market, bool xFirst, double* tol_inp, arma::vec* by_start, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U, arma::mat& V, arma::vec& u, arma::vec& v);
 
 #endif

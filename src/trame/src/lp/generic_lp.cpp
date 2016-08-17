@@ -29,13 +29,13 @@
  * 05/08/2016
  */
 
-#include "lp/generic_lp.hpp"
+#include "trame.hpp"
 
 #if !defined(TRAME_PREDEF_GUROBI_C)
 
     #include "gurobi_c++.h"
 
-    bool generic_LP(int k, int n, double *obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat)
+    bool trame::generic_LP(int k, int n, double *obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat)
     {
         // k: number of constraints ('rows')
         // n: number of variables ('columns')
@@ -129,7 +129,7 @@
         #include "lp/generic_lp_c.h"
     }
     
-    bool generic_LP(int k, int n, double *obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
+    bool trame::generic_LP(int k, int n, double *obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
     {
         // k: number of constraints ('rows')
         // n: number of variables ('columns')
@@ -150,7 +150,7 @@
         return success;
     }
     
-    bool generic_LP(int k, int n, double *obj, int numnz, int* vbeg, int* vind, double* vval, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
+    bool trame::generic_LP(int k, int n, double *obj, int numnz, int* vbeg, int* vind, double* vval, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
     {
         // k: number of constraints ('rows')
         // n: number of variables ('columns')

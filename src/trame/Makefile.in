@@ -9,10 +9,6 @@ OPT_FLAGS = -O2
 
 ARMA_INCLUDE_PATH = @ARMA_INCLUDE_PATH@
 
-CXXFLAGS = -Wall $(OPT_FLAGS) $(ARMA_INCLUDE_PATH)
-FFLAGS = $(OPT_FLAGS)
-LIBS= -lgfortran -framework Accelerate
-
 # install location
 INSTALL_PATH=@TRAME_INSTALL_PATH@
 
@@ -25,32 +21,44 @@ TRAME_TEST_DIR = $(SDIR)/tests
 
 # shared library name and flags
 SHLIB = @TRAME_SHLIB_NAME@
-SHLIB_FLAGS = @TRAME_SHLIB_FLAGS@
+SHLIB_FLAGS = $(CXX_STD) @TRAME_SHLIB_FLAGS@
 
 # linear programming flags
-LP_CFLAGS= -Wall $(OPT_FLAGS) @GRB_INCLUDE_PATH@ -I$(TRAME_HEADER_DIR)
+LP_CFLAGS= @GRB_INCLUDE_PATH@
 LP_LIBS= @GRB_LIB_PATH@ @GRB_LIBS@
 SOURCES_LP= $(TRAME_SRC_DIR)/lp/generic_lp_c.c
 OBJECTS_LP= $(TRAME_SRC_DIR)/lp/generic_lp_c.o
 
-LP_CXXFLAGS= @GRB_INCLUDE_PATH@ -I$(TRAME_HEADER_DIR)
+LP_CXXFLAGS= @GRB_INCLUDE_PATH@
 SOURCES_LPXX= $(TRAME_SRC_DIR)/lp/generic_lp.cpp
 OBJECTS_LPXX= $(TRAME_SRC_DIR)/lp/generic_lp.o
 
 # nlopt flags
-NLOPT_CXXFLAGS= @NLOPT_INCLUDE_PATH@ -I$(TRAME_HEADER_DIR)
+NLOPT_CXXFLAGS= @NLOPT_INCLUDE_PATH@
 NLOPT_LIBS = @NLOPT_LIB_PATH@ @NLOPT_LIBS@
 SOURCES_NLOPT= $(TRAME_SRC_DIR)/nlopt/generic_nlopt.cpp
 OBJECTS_NLOPT= $(TRAME_SRC_DIR)/nlopt/generic_nlopt.o
 
+# general flags
+CFLAGS = -Wall $(OPT_FLAGS) $(LP_CFLAGS) -I$(TRAME_HEADER_DIR)
+CXXFLAGS = $(CXX_STD) -Wall $(OPT_FLAGS) $(ARMA_INCLUDE_PATH) $(LP_CXXFLAGS) $(NLOPT_CXXFLAGS) -I$(TRAME_HEADER_DIR)
+FFLAGS = $(OPT_FLAGS)
+LIBS= -lgfortran -framework Accelerate
+
 # core TraME files
-OBJECTS_TRAME_AUX= $(TRAME_SRC_DIR)/aux/inv_pwa.o $(TRAME_SRC_DIR)/aux/trame_aux.o $(TRAME_SRC_DIR)/aux/trame_stats.o $(TRAME_SRC_DIR)/aux/zeroin.o $(TRAME_SRC_DIR)/prob/prob.o $(TRAME_SRC_DIR)/math/quadpack_double.o $(TRAME_SRC_DIR)/prob/trame_F90_aux.o
+OBJECTS_TRAME_F90= $(TRAME_SRC_DIR)/prob/prob.o $(TRAME_SRC_DIR)/math/quadpack_double.o $(TRAME_SRC_DIR)/prob/trame_F90_aux.o
+
+SOURCES_TRAME_AUX= $(TRAME_SRC_DIR)/aux/inv_pwa.cpp $(TRAME_SRC_DIR)/aux/trame_aux.cpp $(TRAME_SRC_DIR)/aux/trame_stats.cpp $(TRAME_SRC_DIR)/aux/zeroin.cpp
+OBJECTS_TRAME_AUX= $(SOURCES_TRAME_AUX:.cpp=.o)
 
 SOURCES_TRAME_ARUMS= $(TRAME_SRC_DIR)/arums/arums_empirical.cpp $(TRAME_SRC_DIR)/arums/arums_logit.cpp $(TRAME_SRC_DIR)/arums/arums_none.cpp $(TRAME_SRC_DIR)/arums/arums_probit.cpp $(TRAME_SRC_DIR)/arums/arums_rsc.cpp $(TRAME_SRC_DIR)/arums/arums_rusc.cpp
 OBJECTS_TRAME_ARUMS= $(SOURCES_TRAME_ARUMS:.cpp=.o)
 
-SOURCES_TRAME_MKTS= $(TRAME_SRC_DIR)/markets/mmf.cpp
+SOURCES_TRAME_MKTS= $(TRAME_SRC_DIR)/markets/mmf.cpp $(TRAME_SRC_DIR)/markets/transfers.cpp $(TRAME_SRC_DIR)/markets/mfe.cpp
 OBJECTS_TRAME_MKTS= $(SOURCES_TRAME_MKTS:.cpp=.o)
+
+SOURCES_TRAME_SLVRS= $(TRAME_SRC_DIR)/solvers/ipfp.cpp
+OBJECTS_TRAME_SLVRS= $(SOURCES_TRAME_SLVRS:.cpp=.o)
 
 # test files
 SOURCES_TEST= $(TRAME_TEST_DIR)/arums/logit_test.cpp $(TRAME_TEST_DIR)/arums/none_test.cpp $(TRAME_TEST_DIR)/arums/probit_test.cpp $(TRAME_TEST_DIR)/arums/rsc_test.cpp
@@ -58,22 +66,19 @@ OBJECTS_TEST= $(SOURCES_TEST:.cpp=.o)
 PROGS_TEST= $(SOURCES_TEST:.cpp=.test)
 
 #all: $(PROGS_TEST) $(TRAME_DIR)/$(SHLIB) $(OBJECTS_TEST) $(OBJECTS_TRAME) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_AUX)
-all: $(TRAME_DIR)/$(SHLIB) $(OBJECTS_TRAME_MKTS) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_AUX) $(OBJECTS_LPXX) $(OBJECTS_NLOPT)
+all: $(TRAME_DIR)/$(SHLIB) $(OBJECTS_TRAME_SLVRS) $(OBJECTS_TRAME_MKTS) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_AUX) $(OBJECTS_TRAME_F90) $(OBJECTS_LPXX) $(OBJECTS_NLOPT)
 
 # LP and nlopt
 $(OBJECTS_LP): $(SOURCES_LP)
-	$(CC) $(LP_CFLAGS) $^ -c -o $@
+	$(CC) $(CFLAGS) $^ -c -o $@
 
 $(OBJECTS_LPXX): $(SOURCES_LPXX)
-	$(CXX) $(CXXFLAGS) $(LP_CXXFLAGS) $^ -c -o $@
+	$(CXX) $(CXXFLAGS) $^ -c -o $@
 
 $(OBJECTS_NLOPT): $(SOURCES_NLOPT)
-	$(CXX) $(CXXFLAGS) $(NLOPT_CXXFLAGS) $^ -c -o $@
+	$(CXX) $(CXXFLAGS) $^ -c -o $@
 
 # aux and Fortran code
-$(TRAME_SRC_DIR)/aux/%.o: $(TRAME_SRC_DIR)/aux/%.cpp
-	$(CXX) $(CXX_STD) $(CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@
-
 $(TRAME_SRC_DIR)/prob/prob.o: $(TRAME_SRC_DIR)/prob/prob.f90
 	$(FC) $(FFLAGS) $^ -c -o $@
 
@@ -83,20 +88,26 @@ $(TRAME_SRC_DIR)/math/quadpack_double.o: $(TRAME_SRC_DIR)/math/quadpack_double.f
 $(TRAME_SRC_DIR)/prob/trame_F90_aux.o: $(TRAME_SRC_DIR)/prob/trame_F90_aux.f90
 	$(FC) $(FFLAGS) $^ -c -o $@
 
+$(TRAME_SRC_DIR)/aux/%.o: $(TRAME_SRC_DIR)/aux/%.cpp
+	$(CXX) $(CXXFLAGS) $< -c -o $@
+
 # core TraME files
 $(TRAME_SRC_DIR)/arums/%.o: $(TRAME_SRC_DIR)/arums/%.cpp
-	$(CXX) $(CXX_STD) $(CXXFLAGS) $(LP_CXXFLAGS) $(NLOPT_CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@
+	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 $(TRAME_SRC_DIR)/markets/%.o: $(TRAME_SRC_DIR)/markets/%.cpp
-	$(CXX) $(CXX_STD) $(CXXFLAGS) $(LP_CXXFLAGS) $(NLOPT_CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@
+	$(CXX) $(CXXFLAGS) $< -c -o $@
+
+$(TRAME_SRC_DIR)/solvers/%.o: $(TRAME_SRC_DIR)/solvers/%.cpp
+	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 # shared library
-$(TRAME_DIR)/$(SHLIB): $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_AUX) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_MKTS)
-	$(CXX) $(CXX_STD) $(SHLIB_FLAGS) -o $@ $^ $(LP_LIBS) $(NLOPT_LIBS) $(LIBS)
+$(TRAME_DIR)/$(SHLIB): $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_F90) $(OBJECTS_TRAME_AUX) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_MKTS) $(OBJECTS_TRAME_SLVRS)
+	$(CXX) $(SHLIB_FLAGS) -o $@ $^ $(LP_LIBS) $(NLOPT_LIBS) $(LIBS)
 
 # tests
 #$(TRAME_TEST_DIR)/%.o: $(TRAME_TEST_DIR)/%.cpp
-#	$(CXX) $(CXX_STD) $(CXXFLAGS) $(LP_CXXFLAGS) $(NLOPT_CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@ 
+#	$(CXX) $(CXXFLAGS) -I$(TRAME_HEADER_DIR) $< -c -o $@ 
 
 #$(TRAME_TEST_DIR)/%.test: $(TRAME_TEST_DIR)/%.o | $(TRAME_DIR)/$(SHLIB)
 #	$(CXX) -Wall $(OPT_FLAGS) $(CXX_STD) -o $@ $< -L$(TRAME_SRC_DIR) -ltrame -framework Accelerate

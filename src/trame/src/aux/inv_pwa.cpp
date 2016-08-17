@@ -29,9 +29,9 @@
  * 08/08/2016
  */
 
-#include "aux/inv_pwa.hpp"
+#include "trame.hpp"
 
-arma::vec invPWA (arma::vec a, arma::mat B, arma::mat C, double k)
+arma::vec trame::invPWA (arma::vec a, arma::mat B, arma::mat C, double k)
 {
     int nb_X = a.n_elem;
     int nb_Y = B.n_cols;

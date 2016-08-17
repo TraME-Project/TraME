@@ -29,7 +29,7 @@
  * 08/08/2016
  */
 
-#include "aux/trame_stats.hpp"
+#include "trame.hpp"
 
 extern "C" {
     void beta_cdf_(double* x, double* p, double* q, double* result);
@@ -38,7 +38,7 @@ extern "C" {
     void beta_pdf_(double* x, double* p, double* q, double* result);
 }
 
-double pbeta (double x, double* fn_pars)
+double trame::pbeta (double x, double* fn_pars)
 {
     double p, q, res;
     p = fn_pars[0];
@@ -49,7 +49,7 @@ double pbeta (double x, double* fn_pars)
     return res;
 }
 
-arma::vec pbeta (arma::vec x, double* fn_pars)
+arma::vec trame::pbeta (arma::vec x, double* fn_pars)
 {
     int i;
     int N = x.n_elem;
@@ -68,7 +68,7 @@ arma::vec pbeta (arma::vec x, double* fn_pars)
     return res;
 }
 
-double qbeta (double x, double* fn_pars)
+double trame::qbeta (double x, double* fn_pars)
 {
     double p, q, res;
     p = fn_pars[0];
@@ -79,7 +79,7 @@ double qbeta (double x, double* fn_pars)
     return res;
 }
 
-arma::vec qbeta (arma::vec x, double* fn_pars)
+arma::vec trame::qbeta (arma::vec x, double* fn_pars)
 {
     int i;
     int N = x.n_elem;
@@ -98,7 +98,7 @@ arma::vec qbeta (arma::vec x, double* fn_pars)
     return res;
 }
 
-double iqbeta (double x, double* fn_pars)
+double trame::iqbeta (double x, double* fn_pars)
 {
     double p, q, res;
     p = fn_pars[0];
@@ -109,7 +109,7 @@ double iqbeta (double x, double* fn_pars)
     return res;
 }
 
-arma::vec iqbeta (arma::vec x, double* fn_pars)
+arma::vec trame::iqbeta (arma::vec x, double* fn_pars)
 {
     int i;
     int N = x.n_elem;
@@ -128,7 +128,7 @@ arma::vec iqbeta (arma::vec x, double* fn_pars)
     return res;
 }
 
-double dbeta (double x, double* fn_pars)
+double trame::dbeta (double x, double* fn_pars)
 {
     double p, q, res;
     p = fn_pars[0];
@@ -139,7 +139,7 @@ double dbeta (double x, double* fn_pars)
     return res;
 }
 
-arma::vec dbeta (arma::vec x, double* fn_pars)
+arma::vec trame::dbeta (arma::vec x, double* fn_pars)
 {
     int i;
     int N = x.n_elem;
