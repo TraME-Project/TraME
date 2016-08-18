@@ -31,6 +31,7 @@ namespace trame
     #include "markets/mmf.hpp"
     #include "markets/transfers.hpp"
     #include "markets/mfe.hpp"
+    #include "markets/dse.hpp"
 
     // solvers
     #include "solvers/ipfp.hpp"

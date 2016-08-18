@@ -112,16 +112,34 @@ arma::mat trame::mmf::M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uv
     }
     //
     if (LTU) {
-        arma::mat term_1 = arma::exp(lambda(x_ind,y_ind) % arma::log(a_xs));
-        arma::mat term_2 = arma::trans(arma::exp(arma::trans(aux_zeta(x_ind,y_ind)) % arma::log(b_ys)));
+        arma::mat term_1, term_2;
+        if (a_xs.n_cols==1) {
+            term_1 = arma::exp(lambda(x_ind,y_ind) % arma::repmat(arma::log(a_xs),1,y_ind.n_elem));
+        } else {
+            term_1 = arma::exp(lambda(x_ind,y_ind) % arma::log(a_xs));
+        }
+        if (b_ys.n_cols==1) {
+            term_2 = arma::trans(arma::exp(arma::trans(aux_zeta(x_ind,y_ind)) % arma::repmat(arma::log(b_ys),1,x_ind.n_elem)));
+        } else {
+            term_2 = arma::trans(arma::exp(arma::trans(aux_zeta(x_ind,y_ind)) % arma::log(b_ys)));
+        }
         arma::mat term_3 = K(x_ind,y_ind);
 
         ret = term_1 % term_2 % term_3;
     }
     //
     if (NTU) {
-        arma::mat term_1 = a_xs % A(x_ind,y_ind);
-        arma::mat term_2 = arma::trans(b_ys % arma::trans(A(x_ind,y_ind)));
+        arma::mat term_1, term_2;
+        if (a_xs.n_cols==1) {
+            term_1 = arma::repmat(a_xs,1,y_ind.n_elem) % A(x_ind,y_ind);
+        } else {
+            term_1 = a_xs % A(x_ind,y_ind);
+        }
+        if (b_ys.n_cols==1) {
+            term_2 = arma::trans(arma::repmat(b_ys,1,x_ind.n_elem) % arma::trans(A(x_ind,y_ind)));
+        } else {
+            term_2 = arma::trans(b_ys % arma::trans(A(x_ind,y_ind)));
+        }
 
         ret = arma::min(term_1, term_2);
     }

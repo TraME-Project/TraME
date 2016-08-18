@@ -54,7 +54,7 @@ OBJECTS_TRAME_AUX= $(SOURCES_TRAME_AUX:.cpp=.o)
 SOURCES_TRAME_ARUMS= $(TRAME_SRC_DIR)/arums/arums_empirical.cpp $(TRAME_SRC_DIR)/arums/arums_logit.cpp $(TRAME_SRC_DIR)/arums/arums_none.cpp $(TRAME_SRC_DIR)/arums/arums_probit.cpp $(TRAME_SRC_DIR)/arums/arums_rsc.cpp $(TRAME_SRC_DIR)/arums/arums_rusc.cpp
 OBJECTS_TRAME_ARUMS= $(SOURCES_TRAME_ARUMS:.cpp=.o)
 
-SOURCES_TRAME_MKTS= $(TRAME_SRC_DIR)/markets/mmf.cpp $(TRAME_SRC_DIR)/markets/transfers.cpp $(TRAME_SRC_DIR)/markets/mfe.cpp
+SOURCES_TRAME_MKTS= $(TRAME_SRC_DIR)/markets/mmf.cpp $(TRAME_SRC_DIR)/markets/transfers.cpp $(TRAME_SRC_DIR)/markets/mfe.cpp $(TRAME_SRC_DIR)/markets/dse.cpp
 OBJECTS_TRAME_MKTS= $(SOURCES_TRAME_MKTS:.cpp=.o)
 
 SOURCES_TRAME_SLVRS= $(TRAME_SRC_DIR)/solvers/ipfp.cpp
