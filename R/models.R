@@ -504,7 +504,7 @@ dparam.TU_none  <- function(model,dparams=diag(model$nbParams))
                dparamsH = dparamsH))
 }
 #
-mmeTU_noneTEST <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+mme.TU_none <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
   if (print_level>0){
     message(paste0("Moment Matching Estimation of TU_none model via LP optimization."))
