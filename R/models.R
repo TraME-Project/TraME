@@ -504,8 +504,7 @@ dparam.TU_none  <- function(model,dparams=diag(model$nbParams))
                dparamsH = dparamsH))
 }
 #
-mme.TU_none <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
-# MomentMatchingTUNone <- function(n, m, kron, Chat, print_level=0)
+mmeTU_noneTEST <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
   if (print_level>0){
     message(paste0("Moment Matching Estimation of TU_none model via LP optimization."))
@@ -516,25 +515,24 @@ mme.TU_none <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
   nbX = length (model$n)
   nbY = length (model$m)
   #
-  A_1 = kronecker(matrix(1,nbY,1),sparseMatrix(1:nbX,1:nbX))
-  A_2 = kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,nbX,1))
-  A_3 = -kron
+  A_11 = kronecker(matrix(1,nbY,1),sparseMatrix(1:nbX,1:nbX))
+  A_12 = kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,nbX,1))
+  A_13 = -kron
+  A_1   = cbind(A_11,A_12,A_13)
+  A_2 = matrix(c(rep(0,nbX+nbY),rep(1,model$nbParams)),nrow=1)
   #
-  A   = cbind(A_1,A_2,A_3)
+  A = rbind(A_1,A_2)
   #
   nbconstr = dim(A)[1]
   nbvar = dim(A)[2]
   #
-  rhs = rep(0,nbX*nbY)
+  rhs = c(rep(0,nbX*nbY),1)
   obj = c(model$n,model$m,c(-Chat))
-  lb =c(rep(0,nbX+nbY),rep(-Inf,model$nbParams))
-  #
-  result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense=rep(">=",nbconstr),lb=lb)
-  #
+  result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense=c(rep(">",nbconstr-1),"="),lb=c(rep(0,nbX+nbY),rep(-Inf, model$nbParams) ))
   u = result$solution[1:nbX]
   v = result$solution[(nbX+1):(nbX+nbY)]
   thetahat = result$solution[(1+nbX+nbY):(model$nbParams+nbX+nbY)]
-  mu = matrix(result$pi,nbX,nbY)
+  mu = matrix(result$pi[1:(nbX*nbY)],nbX,nbY)
   val = result$objval
   #
   ret = list(thetahat=thetahat,
