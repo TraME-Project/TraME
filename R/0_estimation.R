@@ -236,3 +236,31 @@ mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_lev
   return(list(thetahat=res$solution))
 }
 
+
+plotCovariogram2D = function(model,lambda,muhat = NULL, dim1=1,dim2=2,nbSteps =100)
+{
+  # HERE, INSERT FILTER TO APPLY ONLY TO TU MODELS W LINEAR PARAMETERIZATION
+  
+  library(gplots)
+  points = matrix(0,nbSteps,2)
+  for (i in (1:nbSteps))
+  {
+    angle=2 * pi * i / (nbSteps-1)
+    lambdastar = lambda
+    lambdastar[dim1]=lambda[dim1]*cos(angle) - lambda[dim2]*sin(angle) 
+    lambdastar[dim2]=lambda[dim1]*sin(angle) + lambda[dim2]*cos(angle) 
+    market = parametricMarket(model,lambdastar)
+    mustar = solveEquilibrium(market)$mu
+    points[i,] =  c(c(mustar) %*% matrix(phi_xyk, ncol=model$nbParams) ) [c(dim1,dim2)]
+    
+  }
+  par(mar = rep(2, 4))
+  plot(points,col=rgb(0, 0,1))
+  lines(points,col=rgb(0, 0,1))
+  
+  if (! is.null(muhat))
+  {
+    Chat = c(c(muhat) %*% matrix(phi_xyk, ncol=model$nbParams) ) [c(dim1,dim2)]
+    points(matrix(Chat,1,2),pch=16,col=rgb(1,0,0))
+  }
+}
