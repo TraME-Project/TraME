@@ -179,6 +179,7 @@ Gx.RSC <- function(arums, Ux, x)
             ey = arums$aux_quant_eps(cumulmusofar)
             EepssofarNext = ey*cumulmusofar - arums$aux_pot_eps(cumulmusofar)
             valx = valx + muxtildey*Uxtilde[y] + arums$zeta[x,y]*(EepssofarNext - Eepssofar) 
+            Eepssofar =EepssofarNext 
         }
     }  
     #
