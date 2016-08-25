@@ -182,7 +182,7 @@ Gx.RSC <- function(arums, Ux, x)
         }
     }  
     #
-    mux = muxtilde[1:nbAlt-1]
+    mux = muxtilde[1:(nbAlt-1)]
     #
     ret = list(valx = sum(mux*Ux) - Gstarx.RSC(arums,mux,x)$valx,
                mux  = mux)
@@ -259,9 +259,9 @@ dtheta_NablaGstar.RSC <- function(arums, mu, n, dtheta=diag(arums$nbParams), xFi
         e = diag( c(0,arums$aux_quant_eps(tsfull[1:arums$nbY])) )
         
         if(xFirst){
-            ders[x,,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,x,]
+            ders[x,,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,]
         }else{
-            ders[,x,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,x,]
+            ders[,x,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,]
         }
     }
     #
