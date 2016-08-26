@@ -34,7 +34,7 @@ estimate.default = mle
 ################################################################################
 # The TU_logit and the affinity models should be merged 
 #
-buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, noSingles=FALSE)
+buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1, noSingles=FALSE)
 {
   nbX = dim(Xvals)[1]
   nbY = dim(Yvals)[1]
@@ -56,6 +56,7 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, noSingles=FALSE)
              dX=dX, dY=dY,
              nbX = nbX, nbY = nbY,
              n=n, m=m,
+             sigma = sigma,
              neededNorm = neededNorm,
              phi_xyk_aux = kronecker(Yvals,Xvals),
              Phi_xyk = function(model) 
@@ -86,7 +87,7 @@ mme.affinity <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0
   # mme.affinity should be improved as one should make use of the logit structure and use the ipfp
 {
   if (print_level>0){
-    message(paste0("Moment Matching Estimation of TU_rum model via optimization."))
+    message(paste0("Moment Matching Estimation of affinity model via optimization."))
   }
   
   theta0 = initparam(model)$param
