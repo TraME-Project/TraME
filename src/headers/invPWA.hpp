@@ -43,7 +43,7 @@ arma::vec invPWA (arma::vec a, arma::mat B, arma::mat C, double k)
         y_low = 1;
         y_up  = nb_Y;
         
-        while (y_up > y_low) {
+        while (y_up > y_low+1) {
             y_mid = y_low + std::floor((y_up - y_low)/2.0);
             
             b_low.fill(b(y_low-1));
