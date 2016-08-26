@@ -740,7 +740,7 @@ oapLP <- function(market, xFirst=TRUE, notifications=FALSE)
     result = genericLP(obj=obj,A=A,modelsense="max",rhs=d,sense="<",start=pi_init)
     #
     mu = matrix(result$solution,nrow=nbX)
-    u0 = result$pi[1:nbX] 
+    u0 = result$pi[1:nbX]
     v0 = result$pi[(nbX+1):(nbX+nbY)]
     val = result$objval
     #
@@ -833,7 +833,7 @@ vfromus <- function(tr, u, tol=0)
   tsubdiff = matrix(0,tr$nbY,tr$nbX)
   tsubdiff[which(abs(v-t(vs)) <= tol)] = 1
   #
-  return(list(v=v,subdiff=t(tsubdiff) ))
+  return(list(v=v,subdiff=t(tsubdiff)))
 }
 #
 eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmode=FALSE)
@@ -855,7 +855,7 @@ eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmod
     OutputFlag = 0  #ifelse(notifications,1,0)
     #
     if(notifications){
-        message('Solving for equilibrium in ITU_none problem using Nash-ITU.')
+        message('Solving for equilibrium in ITU_none problem using Nash-ITU.') # Keith: ITU or LTU?
     }
     if(xFirst){
         vcur = vfromus(tr,rep(0,nbX))$v
@@ -895,7 +895,7 @@ eapNash <- function(market, xFirst=TRUE, notifications=FALSE, tol=1e-8, debugmod
     A2 = Matrix::kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,1,nbX))
     A = rbind2(A1,A2)
     #
-    sense = ifelse(abs(c(u,v) - 0) < tol, "<", "=")
+    sense = ifelse(abs(c(u,v) - 0) < tol, "<", "=") # Keith: why - 0?
     
     result = genericLP(obj=c(res$subdiff),A=A,modelsense="max",rhs=c(n,m),sense=sense)
     #
