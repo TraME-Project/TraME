@@ -26,7 +26,7 @@
  * inverse PWA function
  *
  * Keith O'Hara
- * 08/08/2016
+ * 08/24/2016
  */
 
 #include "trame.hpp"
@@ -50,18 +50,18 @@ arma::vec trame::invPWA (arma::vec a, arma::mat B, arma::mat C, double k)
         //
         small_C = C.row(x).t();
         small_C = small_C.elem(Bx_sort_ind);
-        small_C_sum = arma::sum(small_C);
+        small_C_sum = arma::accu(small_C);
         //
         y_low = 1;
         y_up  = nb_Y;
         
         while (y_up > y_low) {
-            y_mid = y_low + (y_up - y_low)/2.0;
+            y_mid = y_low + std::floor((y_up - y_low)/2.0);
             
             b_low.fill(b(y_low-1));
             b_mid.fill(b(y_mid-1));
             
-            lhs = k * b(y_mid-1) + arma::sum(small_C % arma::min(b_mid,b));
+            lhs = k * b(y_mid-1) + arma::accu(small_C % arma::min(b_mid,b));
             //
             if (lhs == a(x)) {
                 y_low = y_mid;
@@ -71,18 +71,18 @@ arma::vec trame::invPWA (arma::vec a, arma::mat B, arma::mat C, double k)
             } else {
                 y_low = y_mid + 1;
             }
-            //
-            if ((y_low==1) && ( k * b(y_low-1) + arma::sum(small_C % arma::min(b_low,b)) >= a(x) )) {
-                vals(x) = a(x) / (k + small_C_sum);
-            } else {
-                y_incl = y_low - 1;
+        }
+        //
+        if ((y_low==1) && ( k * b(y_low-1) + arma::accu(small_C % arma::min(b_low,b)) >= a(x) )) {
+            vals(x) = a(x) / (k + small_C_sum);
+        } else {
+            y_incl = y_low - 1;
                 
-                temp_vec = (small_C % b);
-                term_1 = a(x) - arma::sum(temp_vec(arma::span(0,y_incl)));
-                term_2 = k + sum(small_C) - arma::sum(small_C(arma::span(0,y_incl)));
+            temp_vec = (small_C % b);
+            term_1 = a(x) - arma::accu(temp_vec.rows(0,y_incl));
+            term_2 = k + small_C_sum - arma::accu(small_C.rows(0,y_incl));
                 
-                vals(x) = term_1 / term_2;
-            }
+            vals(x) = term_1 / term_2;
         }
     }
     //

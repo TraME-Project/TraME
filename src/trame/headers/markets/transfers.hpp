@@ -38,6 +38,8 @@ class transfers
         bool NTU = false;
         bool TU  = false;
 
+        int transfers_type;
+
         int nbX;
         int nbY;
         int nbParams;
@@ -57,28 +59,28 @@ class transfers
 
         void trans();
 
-        arma::mat Psi(arma::mat U, arma::mat V);
-        arma::mat Psi(double U, arma::mat V, arma::uvec xs, arma::uvec ys);
-        arma::mat Psi(arma::mat U, double V, arma::uvec xs, arma::uvec ys);
-        arma::mat Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec ys);
+        arma::mat Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
+        arma::mat Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
+        arma::mat Psi(arma::mat U, double V, arma::uvec* xs, arma::uvec* ys);
 
-        arma::mat du_Psi(arma::mat U, arma::mat V);
-        arma::mat du_Psi(double U, arma::mat V, arma::uvec xs, arma::uvec ys);
-        arma::mat du_Psi(arma::mat U, double V, arma::uvec xs, arma::uvec ys);
-        arma::mat du_Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec ys);
+        arma::mat du_Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_Psi(arma::mat U, double V, arma::uvec* xs, arma::uvec* ys);
 
         arma::mat dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dtheta);
 
-        arma::mat Ucal(arma::mat vs, arma::uvec xs, arma::uvec ys);
-        arma::mat Vcal(arma::mat us, arma::uvec xs, arma::uvec ys);
+        arma::mat Ucal(arma::mat vs, arma::uvec* xs, arma::uvec* ys);
+        double Ucal(double vs, int xs, int ys);
+        arma::mat Vcal(arma::mat us, arma::uvec* xs, arma::uvec* ys);
+        double Vcal(double us, int xs, int ys);
 
-        arma::mat UW(arma::mat Ws, arma::uvec xs, arma::uvec ys);
-        arma::mat VW(arma::mat Ws, arma::uvec xs, arma::uvec ys);
-        arma::mat du_UW(arma::mat Ws, arma::uvec xs, arma::uvec ys);
-        arma::mat du_VW(arma::mat Ws, arma::uvec xs, arma::uvec ys);
+        arma::mat UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
+        arma::mat VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
 
-        arma::mat WU(arma::mat Us, arma::uvec xs, arma::uvec ys);
-        arma::mat WV(arma::mat Vs, arma::uvec xs, arma::uvec ys);
+        arma::mat WU(arma::mat Us, arma::uvec* xs, arma::uvec* ys);
+        arma::mat WV(arma::mat Vs, arma::uvec* xs, arma::uvec* ys);
 
     private:
         arma::mat aux_exp_alphaovertau;

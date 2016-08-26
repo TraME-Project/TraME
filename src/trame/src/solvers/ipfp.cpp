@@ -65,7 +65,7 @@ bool trame::ipfp(mfe market, bool xFirst, double* tol_inp, arma::vec* by_start, 
 
     double err = 2*tol;
     int iter = 0;
-    int max_iter = 1000;
+    int max_iter = 10000;
     //
     while (err > tol && iter < max_iter) {
         iter++;

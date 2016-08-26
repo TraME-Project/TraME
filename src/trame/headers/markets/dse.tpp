@@ -29,10 +29,8 @@
  * 08/17/2016
  */
 
-#include "trame.hpp"
-
-template <class Ta>
-void trame::dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi, bool need_norm_inp)
+template <typename Ta>
+void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -48,7 +46,7 @@ void trame::dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi, b
         outsideOption = true;
     }
 
-    trans_obj.build_TU(phi);
+    trans_obj.build_TU(phi_inp);
 
     arums_G.build(nbX,nbY);
     arums_H.build(nbY,nbX);
@@ -56,9 +54,9 @@ void trame::dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi, b
     arum_none = true;
 }
 
-// need templates to allow for general arums type
-template <typename Ta> template <typename T>
-void trame::dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+// general arums input
+template <typename Ta>
+void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -74,45 +72,17 @@ void trame::dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi, T
         outsideOption = true;
     }
 
-    trans_obj.build_TU(phi);
+    trans_obj.build_TU(phi_inp);
 
-    arums_G_inp.simul(arums_G,nbDraws,seed);
-    arums_H_inp.simul(arums_H,nbDraws,seed);
+    arums_G = arums_G_inp;
+    arums_H = arums_H_inp;
     //
     arum_empirical = true;
 }
 
-// 'general' class output requires complicated polymorphism for class structure; finish later
-
-// arums none
-template <class Ta>
-void trame::dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha, arma::mat gamma, bool need_norm_inp)
-{
-    need_norm = need_norm_inp;
-
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    if (need_norm) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
-
-    trans_obj.build_NTU(alpha,gamma);
-
-    arums_G.build(nbX,nbY);
-    arums_H.build(nbY,nbX);
-    //
-    arum_none = true;
-}
-
-// general simulation
+// empirical version
 template <typename Ta> template <typename T>
-void trame::dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha, arma::mat gamma, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -128,7 +98,7 @@ void trame::dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha
         outsideOption = true;
     }
 
-    trans_obj.build_NTU(alpha,gamma);
+    trans_obj.build_TU(phi_inp);
 
     arums_G_inp.simul(arums_G,nbDraws,seed);
     arums_H_inp.simul(arums_H,nbDraws,seed);
@@ -137,8 +107,8 @@ void trame::dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha
 }
 
 // arums none
-template <class Ta>
-void trame::dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda, arma::mat phi, bool need_norm_inp)
+template <typename Ta>
+void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -154,7 +124,7 @@ void trame::dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambd
         outsideOption = true;
     }
 
-    trans_obj.build_LTU(lambda,phi);
+    trans_obj.build_NTU(alpha_inp,gamma_inp);
 
     arums_G.build(nbX,nbY);
     arums_H.build(nbY,nbX);
@@ -162,9 +132,9 @@ void trame::dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambd
     arum_none = true;
 }
 
-// general simulation
-template <class Ta> template <typename T>
-void trame::dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda, arma::mat phi, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+// general arums input
+template <typename Ta>
+void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -180,10 +150,131 @@ void trame::dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambd
         outsideOption = true;
     }
 
-    trans_obj.build_LTU(lambda,phi);
+    trans_obj.build_NTU(alpha_inp,gamma_inp);
+
+    arums_G = arums_G_inp;
+    arums_H = arums_H_inp;
+}
+
+// general simulation
+template <typename Ta> template <typename T>
+void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+{
+    need_norm = need_norm_inp;
+
+    nbX = n_inp.n_elem;
+    nbY = m_inp.n_elem;
+    
+    n = n_inp;
+    m = m_inp;
+
+    if (need_norm) {
+        outsideOption = false;
+    } else {
+        outsideOption = true;
+    }
+
+    trans_obj.build_NTU(alpha_inp,gamma_inp);
 
     arums_G_inp.simul(arums_G,nbDraws,seed);
     arums_H_inp.simul(arums_H,nbDraws,seed);
     //
     arum_empirical = true;
+}
+
+// arums none
+template <typename Ta>
+void dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp)
+{
+    need_norm = need_norm_inp;
+
+    nbX = n_inp.n_elem;
+    nbY = m_inp.n_elem;
+    
+    n = n_inp;
+    m = m_inp;
+
+    if (need_norm) {
+        outsideOption = false;
+    } else {
+        outsideOption = true;
+    }
+
+    trans_obj.build_LTU(lambda_inp,phi_inp);
+
+    arums_G.build(nbX,nbY);
+    arums_H.build(nbY,nbX);
+    //
+    arum_none = true;
+}
+
+// general arums input
+template <typename Ta>
+void dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp)
+{
+    need_norm = need_norm_inp;
+
+    nbX = n_inp.n_elem;
+    nbY = m_inp.n_elem;
+    
+    n = n_inp;
+    m = m_inp;
+
+    if (need_norm) {
+        outsideOption = false;
+    } else {
+        outsideOption = true;
+    }
+
+    trans_obj.build_LTU(lambda_inp,phi_inp);
+
+    arums_G = arums_G_inp;
+    arums_H = arums_H_inp;
+}
+
+// general simulation
+template <typename Ta> template <typename T>
+void dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+{
+    need_norm = need_norm_inp;
+
+    nbX = n_inp.n_elem;
+    nbY = m_inp.n_elem;
+    
+    n = n_inp;
+    m = m_inp;
+
+    if (need_norm) {
+        outsideOption = false;
+    } else {
+        outsideOption = true;
+    }
+
+    trans_obj.build_LTU(lambda_inp,phi_inp);
+
+    arums_G_inp.simul(arums_G,nbDraws,seed);
+    arums_H_inp.simul(arums_H,nbDraws,seed);
+    //
+    arum_empirical = true;
+}
+
+template <typename Ta>
+void dse<Ta>::trans()
+{
+    int nbX_temp = nbX;
+    nbX = nbY;
+    nbY = nbX_temp;
+
+    arma::vec n_temp = n;
+    n = m;
+    m = n_temp;
+    // Keith: fill in normalization later
+
+    //mmf_obj.trans();
+    trans_obj.trans();
+
+    Ta arums_G_temp = arums_G;
+    arums_G = arums_H;
+    arums_H = arums_G_temp;
+    //
 }

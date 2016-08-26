@@ -55,6 +55,7 @@ class logit
         double Gstar(arma::vec n);
         double Gstar(arma::mat &U_ret, arma::vec n);
         double Gstarx(arma::mat &U_x_ret, arma::mat mu_x);
+        double Gstarx(arma::mat &U_x_ret, arma::mat mu_x, int x);
         
         double Gbar(arma::mat U_bar, arma::mat mu_bar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
         double Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp);

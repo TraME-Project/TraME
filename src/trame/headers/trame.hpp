@@ -1,6 +1,6 @@
 
-#ifndef TRAMELIB_INCLUDES
-#define TRAMELIB_INCLUDES
+#ifndef TRAMELIB_INCL
+#define TRAMELIB_INCL
 
 #include <cmath> // for abs value
 #include <limits>
@@ -34,7 +34,12 @@ namespace trame
     #include "markets/dse.hpp"
 
     // solvers
+    #include "solvers/aux_solvers.hpp"
     #include "solvers/ipfp.hpp"
+    #include "solvers/oap_lp.hpp"
+    #include "solvers/darum.hpp"
+    #include "solvers/eap_nash.hpp"
+    #include "solvers/jacobi.hpp"
 }
 
 #endif

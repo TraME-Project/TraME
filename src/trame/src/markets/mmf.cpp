@@ -112,34 +112,16 @@ arma::mat trame::mmf::M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uv
     }
     //
     if (LTU) {
-        arma::mat term_1, term_2;
-        if (a_xs.n_cols==1) {
-            term_1 = arma::exp(lambda(x_ind,y_ind) % arma::repmat(arma::log(a_xs),1,y_ind.n_elem));
-        } else {
-            term_1 = arma::exp(lambda(x_ind,y_ind) % arma::log(a_xs));
-        }
-        if (b_ys.n_cols==1) {
-            term_2 = arma::trans(arma::exp(arma::trans(aux_zeta(x_ind,y_ind)) % arma::repmat(arma::log(b_ys),1,x_ind.n_elem)));
-        } else {
-            term_2 = arma::trans(arma::exp(arma::trans(aux_zeta(x_ind,y_ind)) % arma::log(b_ys)));
-        }
+        arma::mat term_1 = arma::exp(elem_prod(lambda(x_ind,y_ind), arma::log(a_xs)));
+        arma::mat term_2 = arma::trans(arma::exp( elem_prod(arma::trans(aux_zeta(x_ind,y_ind)), arma::log(b_ys)) ));
         arma::mat term_3 = K(x_ind,y_ind);
 
         ret = term_1 % term_2 % term_3;
     }
     //
     if (NTU) {
-        arma::mat term_1, term_2;
-        if (a_xs.n_cols==1) {
-            term_1 = arma::repmat(a_xs,1,y_ind.n_elem) % A(x_ind,y_ind);
-        } else {
-            term_1 = a_xs % A(x_ind,y_ind);
-        }
-        if (b_ys.n_cols==1) {
-            term_2 = arma::trans(arma::repmat(b_ys,1,x_ind.n_elem) % arma::trans(A(x_ind,y_ind)));
-        } else {
-            term_2 = arma::trans(b_ys % arma::trans(A(x_ind,y_ind)));
-        }
+        arma::mat term_1 = elem_prod(a_xs,A(x_ind,y_ind));
+        arma::mat term_2 = arma::trans( elem_prod(b_ys, arma::trans(A(x_ind,y_ind))) );
 
         ret = arma::min(term_1, term_2);
     }
@@ -331,12 +313,7 @@ arma::vec trame::mmf::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
     //
     if (NTU) {
         arma::vec a_NTU = n.elem(temp_ind);
-        arma::mat B_NTU;
-        if (B_ys.n_cols==1) {
-            B_NTU = arma::trans(arma::trans(B.rows(temp_ind)/A.rows(temp_ind)) % arma::repmat(B_ys,1,B.n_rows));
-        } else {
-            B_NTU = arma::trans(arma::trans(B.rows(temp_ind)/A.rows(temp_ind)) % B_ys);            
-        }
+        arma::mat B_NTU = arma::trans( elem_prod(arma::trans(B.rows(temp_ind)/A.rows(temp_ind)), B_ys) );
         arma::mat C_NTU = A.rows(temp_ind);
 
         arma::vec the_a_xs = invPWA(a_NTU, B_NTU, C_NTU, 1.0);
@@ -422,12 +399,7 @@ arma::vec trame::mmf::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
     //
     if (NTU) {
         arma::vec a_NTU = m.elem(temp_ind);
-        arma::mat B_NTU;
-        if (A_xs.n_cols==1) {
-            B_NTU = arma::trans((A.cols(temp_ind)/B.cols(temp_ind)) % arma::repmat(A_xs,1,A.n_cols));
-        } else {
-            B_NTU = arma::trans((A.cols(temp_ind)/B.cols(temp_ind)) % A_xs);
-        }
+        arma::mat B_NTU = arma::trans( elem_prod(A.cols(temp_ind)/B.cols(temp_ind), A_xs) );
         arma::mat C_NTU = arma::trans(B.cols(temp_ind));
 
         arma::vec the_b_ys = invPWA(a_NTU, B_NTU, C_NTU, 1.0);

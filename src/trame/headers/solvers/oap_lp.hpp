@@ -23,24 +23,19 @@
   ################################################################################*/
 
 /*
- * Aux functions
+ * OAP LP
  *
  * Keith O'Hara
- * 08/08/2016
+ * 08/16/2016
  */
 
-#ifndef _trame_aux_HPP
-#define _trame_aux_HPP
+#ifndef _trame_oap_lp_HPP
+#define _trame_oap_lp_HPP
 
-inline arma::uvec which_max(const arma::mat* X, int which_dim);
-inline arma::uvec uvec_linspace(int a, int b);
-inline arma::mat elem_add(const arma::mat& mat_1, const arma::mat& mat_2);
-inline arma::mat elem_sub(const arma::mat& mat_1, const arma::mat& mat_2);
-inline arma::mat elem_prod(const arma::mat& mat_1, const arma::mat& mat_2);
-inline arma::mat elem_div(const arma::mat& mat_1, const arma::mat& mat_2);
-inline double elem_min(const arma::mat& mat_1);
-inline double elem_max(const arma::mat& mat_1);
+template<typename Ta>
+bool oap_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::vec& u, arma::vec& v, double& val, arma::mat& residuals);
 
-#include "trame_aux.ipp"
+#include "oap_lp.tpp"
 
 #endif
+

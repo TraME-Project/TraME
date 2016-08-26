@@ -41,10 +41,11 @@ void trame::transfers::build_ETU(arma::mat alpha_ETU, arma::mat gamma_ETU, arma:
     nbY = alpha_ETU.n_cols;
     nbParams = 3*nbX*nbY;
 
-    aux_exp_alphaovertau = arma::exp(- alpha / tau);
-    aux_exp_gammaovertau = arma::exp(- gamma / tau);
+    aux_exp_alphaovertau = arma::exp(- elem_div(alpha, tau));
+    aux_exp_gammaovertau = arma::exp(- elem_div(gamma, tau));
 
     ETU = true;
+    transfers_type = 2;
 }
 
 void trame::transfers::build_LTU(arma::mat lambda_LTU, arma::mat phi_LTU)
@@ -59,6 +60,7 @@ void trame::transfers::build_LTU(arma::mat lambda_LTU, arma::mat phi_LTU)
     aux_zeta = 1 - lambda;
 
     LTU = true;
+    transfers_type = 1;
 }
 
 void trame::transfers::build_NTU(arma::mat alpha_NTU, arma::mat gamma_NTU)
@@ -71,6 +73,7 @@ void trame::transfers::build_NTU(arma::mat alpha_NTU, arma::mat gamma_NTU)
     nbParams = 2*nbX*nbY;
 
     NTU = true;
+    transfers_type = 2;
 }
 
 void trame::transfers::build_TU(arma::mat phi_TU)
@@ -82,6 +85,7 @@ void trame::transfers::build_TU(arma::mat phi_TU)
     nbParams = nbX*nbY;
 
     TU = true;
+    transfers_type = 1;
 }
 
 void trame::transfers::trans()
@@ -137,27 +141,44 @@ void trame::transfers::trans()
     }
 }
 
-arma::mat trame::transfers::Psi(arma::mat U, arma::mat V)
+arma::mat trame::transfers::Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::mat ret(nbX,nbY);
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+
+    arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
     if (ETU) {
-        ret =  tau % arma::log(0.5 * (arma::exp(U/tau) % aux_exp_alphaovertau + arma::exp(V/tau) % aux_exp_gammaovertau));
+        arma::mat temp_1 = elem_prod(arma::exp(elem_div(U,tau(x_ind,y_ind))), aux_exp_alphaovertau(x_ind,y_ind));
+        arma::mat temp_2 = elem_prod(arma::exp(elem_div(V,tau(x_ind,y_ind))), aux_exp_gammaovertau(x_ind,y_ind));
+
+        ret =  elem_prod(tau(x_ind,y_ind), arma::log(0.5 * (temp_1 + temp_2)));
         goto finished;
     }
 
     if (LTU) {
-        ret = lambda % U + aux_zeta % V - phi;
+        ret = elem_prod(lambda(x_ind,y_ind), U) + elem_prod(aux_zeta(x_ind,y_ind), V) - phi(x_ind,y_ind);
         goto finished;
     }
 
     if (NTU) {
-        ret = arma::max(U - alpha, V - gamma);
+        ret = arma::max(U - alpha(x_ind,y_ind), V - gamma(x_ind,y_ind));
         goto finished;
     }
 
     if (TU) {
-        ret = (U + V - phi) / 2;
+        ret = (U + V - phi(x_ind,y_ind)) / 2;
         goto finished;
     }
     //
@@ -165,27 +186,44 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::Psi(double U, arma::mat V, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::mat ret(nbX,nbY);
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+
+    arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
     if (ETU) {
-        ret =  tau % arma::log(0.5 * (arma::exp(U/tau(xs,ys)) % aux_exp_alphaovertau(xs,ys) + arma::exp(V/tau(xs,ys)) % aux_exp_gammaovertau(xs,ys)));
+        arma::mat temp_1 = elem_prod(arma::exp(U/tau(x_ind,y_ind)), aux_exp_alphaovertau(x_ind,y_ind));
+        arma::mat temp_2 = elem_prod(arma::exp(elem_div(V,tau(x_ind,y_ind))), aux_exp_gammaovertau(x_ind,y_ind));
+        
+        ret =  elem_prod(tau(x_ind,y_ind), arma::log(0.5 * (temp_1 + temp_2)));
         goto finished;
     }
 
     if (LTU) {
-        ret = lambda(xs,ys) * U + aux_zeta(xs,ys) % V - phi(xs,ys);
+        ret = lambda(x_ind,y_ind)*U + elem_prod(aux_zeta(x_ind,y_ind), V) - phi(x_ind,y_ind);
         goto finished;
     }
 
     if (NTU) {
-        ret = arma::max(U - alpha(xs,ys), V - gamma(xs,ys));
+        ret = arma::max(U - alpha(x_ind,y_ind), V - gamma(x_ind,y_ind));
         goto finished;
     }
 
     if (TU) {
-        ret = (U + V - phi(xs,ys)) / 2;
+        ret = (U + V - phi(x_ind,y_ind)) / 2;
         goto finished;
     }
     //
@@ -193,27 +231,44 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::Psi(arma::mat U, double V, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::Psi(arma::mat U, double V, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::mat ret(nbX,nbY);
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+
+    arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
     if (ETU) {
-        ret =  tau % arma::log(0.5 * (arma::exp(U/tau(xs,ys)) % aux_exp_alphaovertau(xs,ys) + arma::exp(V/tau(xs,ys)) % aux_exp_gammaovertau(xs,ys)));
+        arma::mat temp_1 = elem_prod(arma::exp(elem_div(U,tau(x_ind,y_ind))), aux_exp_alphaovertau(x_ind,y_ind));
+        arma::mat temp_2 = elem_prod(arma::exp(V/tau(x_ind,y_ind)), aux_exp_gammaovertau(x_ind,y_ind));
+
+        ret =  elem_prod(tau(x_ind,y_ind), arma::log(0.5 * (temp_1 + temp_2)));
         goto finished;
     }
 
     if (LTU) {
-        ret = lambda(xs,ys) % U + aux_zeta(xs,ys) * V - phi(xs,ys);
+        ret = elem_prod(lambda(x_ind,y_ind), U) + aux_zeta(x_ind,y_ind)*V - phi(x_ind,y_ind);
         goto finished;
     }
 
     if (NTU) {
-        ret = arma::max(U - alpha(xs,ys), V - gamma(xs,ys));
+        ret = arma::max(U - alpha(x_ind,y_ind), V - gamma(x_ind,y_ind));
         goto finished;
     }
 
     if (TU) {
-        ret = (U + V - phi(xs,ys)) / 2;
+        ret = (U + V - phi(x_ind,y_ind)) / 2;
         goto finished;
     }
     //
@@ -221,106 +276,36 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::du_Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::mat ret(nbX,nbY);
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+
+    arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
     if (ETU) {
-        ret =  tau(xs,ys) % arma::log(0.5 * (arma::exp(U/tau(xs,ys)) % aux_exp_alphaovertau(xs,ys) + arma::exp(V/tau(xs,ys)) % aux_exp_gammaovertau(xs,ys)));
+        ret =  1 / (1 + arma::exp((V - U + alpha(x_ind,y_ind) - gamma(x_ind,y_ind))/tau(x_ind,y_ind)));
         goto finished;
     }
 
     if (LTU) {
-        ret = lambda(xs,ys) % U + aux_zeta(xs,ys) % V - phi(xs,ys);
+        ret = lambda(x_ind,y_ind);
         goto finished;
     }
 
     if (NTU) {
-        ret = arma::max(U - alpha(xs,ys), V - gamma(xs,ys));
-        goto finished;
-    }
-
-    if (TU) {
-        ret = (U + V - phi(xs,ys)) / 2;
-        goto finished;
-    }
-    //
-finished:
-    return ret;
-}
-
-arma::mat trame::transfers::du_Psi(arma::mat U, arma::mat V)
-{
-    arma::mat ret(nbX,nbY);
-    //
-    if (ETU) {
-        ret =  1 / (1 + arma::exp((V - U + alpha - gamma)/tau));
-        goto finished;
-    }
-
-    if (LTU) {
-        ret = lambda;
-        goto finished;
-    }
-
-    if (NTU) {
-        ret.elem( arma::find(U - alpha >= V - gamma) ).ones();
-        goto finished;
-    }
-
-    if (TU) {
-        ret.fill(0.5);
-        goto finished;
-    }
-    //
-finished:
-    return ret;
-}
-
-arma::mat trame::transfers::du_Psi(double U, arma::mat V, arma::uvec xs, arma::uvec ys)
-{
-    arma::mat ret(xs.n_elem,ys.n_elem);
-    //
-    if (ETU) {
-        ret =  1 / (1 + arma::exp((V - U + alpha(xs,ys) - gamma(xs,ys))/tau(xs,ys)));
-        goto finished;
-    }
-
-    if (LTU) {
-        ret = lambda(xs,ys);
-        goto finished;
-    }
-
-    if (NTU) {
-        ret.elem( arma::find(U - alpha(xs,ys) >= V - gamma(xs,ys)) ).ones();
-        goto finished;
-    }
-
-    if (TU) {
-        ret.fill(0.5);
-        goto finished;
-    }
-    //
-finished:
-    return ret;
-}
-
-arma::mat trame::transfers::du_Psi(arma::mat U, double V, arma::uvec xs, arma::uvec ys)
-{
-    arma::mat ret(xs.n_elem,ys.n_elem);
-    //
-    if (ETU) {
-        ret =  1 / (1 + arma::exp((V - U + alpha(xs,ys) - gamma(xs,ys))/tau(xs,ys)));
-        goto finished;
-    }
-
-    if (LTU) {
-        ret = lambda(xs,ys);
-        goto finished;
-    }
-
-    if (NTU) {
-        ret.elem( arma::find(U - alpha(xs,ys) >= V - gamma(xs,ys)) ).ones();
+        ret.elem( arma::find(U - alpha(x_ind,y_ind) >= V - gamma(x_ind,y_ind)) ).ones();
         goto finished;
     }
 
@@ -333,22 +318,78 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::du_Psi(arma::mat U, arma::mat V, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::du_Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::mat ret(xs.n_elem,ys.n_elem);
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+
+    arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
     if (ETU) {
-        ret =  1 / (1 + arma::exp((V - U + alpha(xs,ys) - gamma(xs,ys))/tau(xs,ys)));
+        ret =  1 / (1 + arma::exp((V - U + alpha(x_ind,y_ind) - gamma(x_ind,y_ind))/tau(x_ind,y_ind)));
         goto finished;
     }
 
     if (LTU) {
-        ret = lambda(xs,ys);
+        ret = lambda(x_ind,y_ind);
         goto finished;
     }
 
     if (NTU) {
-        ret.elem( arma::find(U - alpha(xs,ys) >= V - gamma(xs,ys)) ).ones();
+        ret.elem( arma::find(U - alpha(x_ind,y_ind) >= V - gamma(x_ind,y_ind)) ).ones();
+        goto finished;
+    }
+
+    if (TU) {
+        ret.fill(0.5);
+        goto finished;
+    }
+    //
+finished:
+    return ret;
+}
+
+arma::mat trame::transfers::du_Psi(arma::mat U, double V, arma::uvec* xs, arma::uvec* ys)
+{
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+
+    arma::mat ret(x_ind.n_elem,y_ind.n_elem);
+    //
+    if (ETU) {
+        ret =  1 / (1 + arma::exp((V - U + alpha(x_ind,y_ind) - gamma(x_ind,y_ind))/tau(x_ind,y_ind)));
+        goto finished;
+    }
+
+    if (LTU) {
+        ret = lambda(x_ind,y_ind);
+        goto finished;
+    }
+
+    if (NTU) {
+        ret.elem( arma::find(U - alpha(x_ind,y_ind) >= V - gamma(x_ind,y_ind)) ).ones();
         goto finished;
     }
 
@@ -366,7 +407,7 @@ arma::mat trame::transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dthe
     arma::mat ret(nbX,nbY);
     //
     if (ETU) {
-        arma::mat dupsi_mat = du_Psi(U,V);
+        arma::mat dupsi_mat = du_Psi(U,V,NULL,NULL);
         arma::vec dupsi = arma::vectorise(dupsi_mat);
 
         if (!dtheta) {
@@ -374,7 +415,7 @@ arma::mat trame::transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dthe
             term_1 = (U - alpha) % dupsi_mat;
             term_2 = (V - gamma) % (1 - dupsi_mat);
 
-            arma::mat dsigmapsi_mat = (Psi(U,V) - term_1 - term_2)/tau;
+            arma::mat dsigmapsi_mat = (Psi(U,V,NULL,NULL) - term_1 - term_2)/tau;
             arma::vec dsigmapsi = arma::vectorise(dsigmapsi_mat);
             //
             ret = arma::join_rows(arma::diagmat(-dupsi),arma::join_rows(arma::diagmat(dupsi-1),arma::diagmat(dsigmapsi)));
@@ -392,7 +433,7 @@ arma::mat trame::transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dthe
                 term_1 = (U - alpha) % dupsi_mat;
                 term_2 = (V - gamma) % (1 - dupsi_mat);
 
-                arma::mat dsigmapsi_mat = (Psi(U,V) - term_1 - term_2)/tau;
+                arma::mat dsigmapsi_mat = (Psi(U,V,NULL,NULL) - term_1 - term_2)/tau;
 
                 dsigmapsidtheta = dtheta_3 % arma::vectorise(dsigmapsi_mat);
             }
@@ -418,7 +459,7 @@ arma::mat trame::transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dthe
     }
 
     if (NTU) {
-        arma::vec dupsi = arma::vectorise(du_Psi(U,V));
+        arma::vec dupsi = arma::vectorise(du_Psi(U,V,NULL,NULL));
 
         if (!dtheta) {
             ret = - arma::join_rows(arma::diagmat(dupsi),arma::diagmat(1 - dupsi));
@@ -446,21 +487,68 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::Ucal(arma::mat vs, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::Ucal(arma::mat vs, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::mat ret;
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+
+    arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
     if (ETU) {
-        arma::mat term_1 = vs - gamma(xs,ys);
-        arma::mat term_log = 2 - arma::exp(term_1/tau(xs,ys));
+        arma::mat term_1 = vs - gamma(x_ind,y_ind);
+        arma::mat term_log = 2 - arma::exp(elem_div(term_1,tau(x_ind,y_ind)));
 
-        ret = alpha(xs,ys) + tau(xs,ys) % arma::log(term_log);
+        ret = alpha(x_ind,y_ind) + elem_prod(tau(x_ind,y_ind), arma::log(term_log));
         goto finished;
     }
 
     if (LTU) {
-        arma::mat term_1 = phi(xs,ys) - aux_zeta(xs,ys) % vs;
-        arma::mat term_2 = lambda(xs,ys);
+        arma::mat term_1 = phi(x_ind,y_ind) - elem_prod(aux_zeta(x_ind,y_ind), vs.t());
+        arma::mat term_2 = lambda(x_ind,y_ind);
+        
+        ret = term_1 / term_2;
+        goto finished;
+    }
+    /* no Ucal for NTU?
+    if (NTU) {
+
+    }
+    */
+    if (TU) {
+        ret = phi(x_ind,y_ind) - vs;
+        goto finished;
+    }
+    //
+finished:
+    return ret;
+}
+
+double trame::transfers::Ucal(double vs, int xs, int ys)
+{
+    double ret = 0;
+    //
+    if (ETU) {
+        double term_1 = vs - gamma(xs,ys);
+        double term_log = 2 - std::exp(term_1/tau(xs,ys));
+
+        ret = alpha(xs,ys) + tau(xs,ys) * std::log(term_log);
+        goto finished;
+    }
+
+    if (LTU) {
+        double term_1 = phi(xs,ys) - aux_zeta(xs,ys) * vs;
+        double term_2 = lambda(xs,ys);
 
         ret = term_1 / term_2;
         goto finished;
@@ -479,21 +567,68 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::Vcal(arma::mat us, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::Vcal(arma::mat us, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::mat ret;
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+
+    arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
     if (ETU) {
-        arma::mat term_1 = us - alpha(xs,ys);
-        arma::mat term_log = 2 - arma::exp(term_1/tau(xs,ys));
+        arma::mat term_1 = us - alpha(x_ind,y_ind);
+        arma::mat term_log = 2 - arma::exp(elem_div(term_1,tau(x_ind,y_ind)));
 
-        ret = gamma(xs,ys) + tau(xs,ys) % arma::log(term_log);
+        ret = gamma(x_ind,y_ind) + elem_prod(tau(x_ind,y_ind), arma::log(term_log));
         goto finished;
     }
 
     if (LTU) {
-        arma::mat term_1 = phi(xs,ys) - lambda(xs,ys) % us;
-        arma::mat term_2 = aux_zeta(xs,ys);
+        arma::mat term_1 = phi(x_ind,y_ind) - elem_prod(lambda(x_ind,y_ind), us);
+        arma::mat term_2 = aux_zeta(x_ind,y_ind);
+
+        ret = term_1 / term_2;
+        goto finished;
+    }
+    /* no Ucal for NTU?
+    if (NTU) {
+
+    }
+    */
+    if (TU) {
+        ret = phi(x_ind,y_ind) - us;
+        goto finished;
+    }
+    //
+finished:
+    return ret;
+}
+
+double trame::transfers::Vcal(double us, int xs, int ys)
+{
+    double ret = 0;
+    //
+    if (ETU) {
+        double term_1 = us - alpha(xs,ys);
+        double term_log = 2 - std::exp(term_1/tau(xs,ys));
+
+        ret = gamma(xs,ys) + tau(xs,ys) * std::log(term_log);
+        goto finished;
+    }
+
+    if (LTU) {
+        double term_1 = phi(xs,ys) - lambda(xs,ys) * us;
+        double term_2 = aux_zeta(xs,ys);
 
         ret = term_1 / term_2;
         goto finished;
@@ -512,59 +647,129 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::UW(arma::mat Ws, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::mat ret = - Psi(0.0,-Ws,xs,ys);
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+    //
+    arma::mat ret = - Psi(0.0,-Ws,&x_ind,&y_ind);
 
     return ret;
 }
 
-arma::mat trame::transfers::VW(arma::mat Ws, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::mat ret = - Psi(Ws,0.0,xs,ys);
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+    //
+    arma::mat ret = - Psi(Ws,0.0,&x_ind,&y_ind);
 
     return ret;
 }
 
-arma::mat trame::transfers::du_UW(arma::mat Ws, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::du_UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::mat ret = 1 - du_Psi(0.0,-Ws,xs,ys);
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+    //
+    arma::mat ret = 1 - du_Psi(0.0,-Ws,&x_ind,&y_ind);
 
     return ret;
 }
 
-arma::mat trame::transfers::du_VW(arma::mat Ws, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::du_VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::mat ret = - du_Psi(Ws,0.0,xs,ys);
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+    //
+    arma::mat ret = - du_Psi(Ws,0.0,&x_ind,&y_ind);
 
     return ret;
 }
 
-arma::mat trame::transfers::WU(arma::mat Us, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::WU(arma::mat Us, arma::uvec* xs, arma::uvec* ys)
 {
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+
     arma::mat ret;
     //
     if (ETU) {
-        arma::mat term_1 = 2 * arma::exp( (gamma(xs,ys) - Us)/tau(xs,ys) );
-        arma::mat term_2 = arma::exp( (gamma(xs,ys) - alpha(xs,ys))/tau(xs,ys) );
+        arma::mat term_1 = 2 * arma::exp( (gamma(x_ind,y_ind) - Us)/tau(x_ind,y_ind) );
+        arma::mat term_2 = arma::exp( (gamma(x_ind,y_ind) - alpha(x_ind,y_ind))/tau(x_ind,y_ind) );
         arma::mat term_log = term_1 - term_2;
 
-        ret = - tau(xs,ys) % arma::log(term_log);
+        ret = - tau(x_ind,y_ind) % arma::log(term_log);
         goto finished;
     }
 
     if (LTU) {
-        ret = (Us - phi(xs,ys)) / aux_zeta(xs,ys);
+        ret = (Us - phi(x_ind,y_ind)) / aux_zeta(x_ind,y_ind);
         goto finished;
     }
 
     if (NTU) {
-        ret = Us - alpha(xs,ys);
+        ret = Us - alpha(x_ind,y_ind);
         goto finished;
     }
 
     if (TU) {
-        ret = 2*Us - phi(xs,ys);
+        ret = 2*Us - phi(x_ind,y_ind);
         goto finished;
     }
     //
@@ -572,31 +777,45 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::WV(arma::mat Vs, arma::uvec xs, arma::uvec ys)
+arma::mat trame::transfers::WV(arma::mat Vs, arma::uvec* xs, arma::uvec* ys)
 {
+    arma::uvec x_ind, y_ind;
+
+    if (xs) {
+        x_ind = *xs;
+    } else {
+        x_ind = uvec_linspace(0, nbX-1);
+    }
+
+    if (ys) {
+        y_ind = *ys;
+    } else {
+        y_ind = uvec_linspace(0, nbY-1);
+    }
+    
     arma::mat ret;
     //
     if (ETU) {
-        arma::mat term_1 = 2 * arma::exp( (alpha(xs,ys) - Vs)/tau(xs,ys) );
-        arma::mat term_2 = arma::exp( (alpha(xs,ys) - gamma(xs,ys))/tau(xs,ys) );
+        arma::mat term_1 = 2 * arma::exp( (alpha(x_ind,y_ind) - Vs)/tau(x_ind,y_ind) );
+        arma::mat term_2 = arma::exp( (alpha(x_ind,y_ind) - gamma(x_ind,y_ind))/tau(x_ind,y_ind) );
         arma::mat term_log = term_1 - term_2;
 
-        ret = - tau(xs,ys) % arma::log(term_log);
+        ret = - tau(x_ind,y_ind) % arma::log(term_log);
         goto finished;
     }
 
     if (LTU) {
-        ret = (phi(xs,ys) - Vs) / lambda(xs,ys);
+        ret = (phi(x_ind,y_ind) - Vs) / lambda(x_ind,y_ind);
         goto finished;
     }
 
     if (NTU) {
-        ret = gamma(xs,ys) - Vs;
+        ret = gamma(x_ind,y_ind) - Vs;
         goto finished;
     }
 
     if (TU) {
-        ret = phi(xs,ys) - 2*Vs;
+        ret = phi(x_ind,y_ind) - 2*Vs;
         goto finished;
     }
     //

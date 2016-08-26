@@ -35,54 +35,54 @@ class empirical
         // build objects
         int nbX;
         int nbY;
-        
+
         int nbParams;
         int aux_nbDraws;
         int nbOptions;
-        
+
         bool xHomogenous;
         bool outsideOption;
-        
+
         arma::cube atoms;
-        
+
         // input objects
         arma::mat U;
         arma::mat mu;
-        
+
         // equilibrium objects
         arma::mat U_sol;
         arma::mat mu_sol;
-        
+
         // member functions
         void build(int nbX_inp, int nbY_inp, arma::cube atoms_inp, bool xHomogenous_inp, bool outsideOption_inp);
-        
+
         double G(arma::vec n);
         double Gx(arma::mat Ux, arma::mat& mu_x_inp, int x);
-        
+
         double Gstar(arma::vec n);
         double Gstar(arma::mat& U_inp, arma::vec n);
-        double Gstarx(arma::mat mu_x, arma::mat& Ux_inp, int x);
-        
+        double Gstarx(arma::mat& Ux_inp, arma::mat mu_x, int x);
+
         double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
         double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x);
-        
+
     private:
         /*
          * these private member objects are mostly for use with Gurobi
          */
         void presolve_LP_Gstar();
         void presolve_LP_Gbar();
-        
+
         bool TRAME_PRESOLVED_GSTAR = false; // initialization requires C++11
         bool TRAME_PRESOLVED_GBAR  = false;
-        
+
         int k_Gstar;
         int n_Gstar;
         int numnz_Gstar;
         int* vind_Gstar;
         int* vbeg_Gstar;
         double* vval_Gstar;
-        
+
         int k_Gbar;
         int n_Gbar;
         int numnz_Gbar;

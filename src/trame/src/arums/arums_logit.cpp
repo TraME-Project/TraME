@@ -120,12 +120,32 @@ double trame::logit::Gstarx(arma::mat &U_x, arma::mat mu_x)
 {
     double val_x=0.0;
     
-    arma::mat mu0;
+    double mu0;
     //
     if(outsideOption){
         mu0 = 1 - arma::accu(mu_x);
         
-        val_x   = sigma * ( arma::accu(mu0 % arma::log(mu0)) + arma::accu(mu_x % arma::log(mu_x)) );
+        val_x   = sigma * ( mu0 * std::log(mu0) + arma::accu(mu_x % arma::log(mu_x)) );
+        U_x = sigma * arma::log(mu_x / mu0);
+    }else{
+        val_x   = sigma * arma::accu(mu_x % arma::log(mu_x));
+        U_x = sigma * arma::log(mu_x);
+    }
+    //
+    return val_x;
+}
+
+// just to conform with other arums classes
+double trame::logit::Gstarx(arma::mat &U_x, arma::mat mu_x, int x)
+{
+    double val_x=0.0;
+    
+    double mu0;
+    //
+    if(outsideOption){
+        mu0 = 1 - arma::accu(mu_x);
+        
+        val_x   = sigma * ( mu0 * std::log(mu0) + arma::accu(mu_x % arma::log(mu_x)) );
         U_x = sigma * arma::log(mu_x / mu0);
     }else{
         val_x   = sigma * arma::accu(mu_x % arma::log(mu_x));
