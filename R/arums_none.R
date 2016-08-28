@@ -36,7 +36,7 @@ Gx.none <- function(arums, Ux, x)
     mux = rep(0,nbY)
     if (y<=nbY) {mux[y] = 1}
     #
-    return(list(valx = max(c(Ux,0),mux = mux)))
+    return(list(valx = max(c(Ux,0),mux = mux))) # Keith: should this be max(c(Ux,0)) ?
 }
 
 Gstar.none <- function(arums, mu)
