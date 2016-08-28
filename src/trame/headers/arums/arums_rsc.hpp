@@ -70,17 +70,21 @@ class rsc
         arma::mat U_sol;
         
         // member functions
+        ~rsc(){};
+         rsc(){};
+        explicit rsc(arma::mat zeta_inp, double alpha, double beta);
+
         void build(arma::mat zeta_inp, bool outsideOption_inp);
 
         void build_beta(arma::mat zeta_inp, double alpha, double beta);
         
         double G(arma::vec n);
-        double Gx(arma::vec& mu_x, int x);
+        double G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out);
+        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x);
         
         double Gstar(arma::vec n);
-        double Gstar(arma::mat& U_inp, arma::vec n);
-        double Gstarx(arma::vec& U_x, double n_x, int x);
-        double Gstarx(arma::vec& U_x, arma::vec mu_x_inp, int x);
+        double Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out);
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
         static double Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta, 
                              arma::mat aux_DinvPsigma, arma::mat aux_Psigma, 
                              arma::mat aux_Influence_lhs, arma::mat aux_Influence_rhs,
@@ -88,8 +92,8 @@ class rsc
                              arma::vec (*quantile_eps_vec)(arma::vec quant_inp, double* dist_pars),
                              double* dist_pars, int nbY, int x);
 
-        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
-        double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x);
+        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out);
+        double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
         
         void D2Gstar (arma::mat& hess, arma::vec n, bool x_first);
         void dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first);

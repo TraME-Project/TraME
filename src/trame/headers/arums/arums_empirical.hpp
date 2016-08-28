@@ -54,17 +54,22 @@ class empirical
         arma::mat mu_sol;
 
         // member functions
+        ~empirical(){};
+         empirical(){};
+        explicit empirical(int nbX_inp, int nbY_inp, arma::cube atoms_inp, bool xHomogenous_inp, bool outsideOption_inp);
+
         void build(int nbX_inp, int nbY_inp, arma::cube atoms_inp, bool xHomogenous_inp, bool outsideOption_inp);
 
         double G(arma::vec n);
-        double Gx(arma::mat Ux, arma::mat& mu_x_inp, int x);
+        double G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out);
+        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x);
 
         double Gstar(arma::vec n);
-        double Gstar(arma::mat& U_inp, arma::vec n);
-        double Gstarx(arma::mat& Ux_inp, arma::mat mu_x, int x);
+        double Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out);
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
 
-        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
-        double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x);
+        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out);
+        double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
 
     private:
         /*

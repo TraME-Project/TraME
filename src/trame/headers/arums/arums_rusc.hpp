@@ -43,7 +43,7 @@ class rusc
         
         arma::cube aux_A;
         arma::mat  aux_b;
-        arma::vec  aux_c; 
+        arma::vec  aux_c;
         
         // input objects
         arma::mat mu;
@@ -54,16 +54,22 @@ class rusc
         arma::mat U_sol;
         
         // member functions
+        ~rusc(){};
+         rusc(){};
+        explicit rusc(arma::mat zeta_inp, bool outsideOption_inp);
+
         void build(arma::mat zeta_inp, bool outsideOption_inp);
         
         double G(arma::vec n);
-        double Gx(arma::vec& mu_x, int x);
+        double G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out);
+        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x);
         
         double Gstar(arma::vec n);
-        double Gstarx(arma::vec& U_x, double n_x, int x);
+        double Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out);
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
         
-        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
-        double Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp, int x);
+        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out);
+        double Gbarx(arma::mat Ubar_x, arma::mat mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
         
         void simul(empirical &ret, int nbDraws, int seed);
 };

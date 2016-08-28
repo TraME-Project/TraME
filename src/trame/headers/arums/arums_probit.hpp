@@ -45,7 +45,12 @@ class probit
         arma::cube Covar;
         
         // member functions
+        ~probit(){};
+         probit(){};
+        explicit probit(int nbX_inp, int nbY_inp, bool outsideOption_inp);
+
         void build(int nbX_inp, int nbY_inp, bool outsideOption_inp);
+
         void simul(empirical &ret, int nbDraws, int seed);
         void unifCorrelCovMatrices();
         arma::cube unifCorrelCovMatrices(double rho);

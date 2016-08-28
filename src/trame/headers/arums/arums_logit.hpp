@@ -48,17 +48,24 @@ class logit
         arma::mat U_sol;
         
         // member functions
+        ~logit(){};
+         logit(){};
+        explicit logit(int nbX_inp, int nbY_inp);
+        explicit logit(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp);
+
         void build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp);
+        
         double G(arma::vec n);
-        double G(arma::mat &mu_ret, arma::vec n);
+        double G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out);
+        //double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x);
         
         double Gstar(arma::vec n);
-        double Gstar(arma::mat &U_ret, arma::vec n);
-        double Gstarx(arma::mat &U_x_ret, arma::mat mu_x);
-        double Gstarx(arma::mat &U_x_ret, arma::mat mu_x, int x);
+        double Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out);
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out);
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
         
-        double Gbar(arma::mat U_bar, arma::mat mu_bar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp);
-        double Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp);
+        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out);
+        double Gbarx(arma::mat Ubar_x, arma::mat mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out);
         
         void D2G(arma::mat &H, arma::vec n, bool xFirst);
         void D2Gstar(arma::mat &H, arma::vec n, bool xFirst);

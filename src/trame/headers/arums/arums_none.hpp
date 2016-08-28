@@ -46,14 +46,22 @@ class none
         arma::mat U_sol;
         
         // member functions
-        void build(int nbX_inp, int nbY_inp);
-        double G(arma::vec n);
-        double Gx(arma::mat Ux, arma::mat& mu_x_inp);
-
-        double Gstar(arma::mat& U_inp, arma::vec n);
+        ~none(){};
+         none(){};
+        explicit none(int nbX_inp, int nbY_inp);
         
-        double Gbar(arma::mat Ubarx, arma::mat mubarx, arma::vec n, arma::mat& Ux_inp, arma::mat& mu_x_inp);
-        double Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp);
+        void build(int nbX_inp, int nbY_inp);
+        
+        double G(arma::vec n);
+        double G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out);
+        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out);
+        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x);
+
+        double Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out);
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
+        
+        double Gbar(arma::mat Ubarx, arma::mat mubarx, arma::vec n, arma::mat& U_x_out, arma::mat& mu_x_out);
+        double Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& U_x_out, arma::mat& mu_x_out);
         
         arma::vec dtheta_NablaGstar();
         

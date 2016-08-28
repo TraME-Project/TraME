@@ -31,6 +31,11 @@
 
 #include "trame.hpp"
 
+trame::rusc::rusc(arma::mat zeta_inp, bool outsideOption_inp)
+{
+    this->build(zeta_inp, outsideOption_inp);
+}
+
 void trame::rusc::build(arma::mat zeta_inp, bool outsideOption_inp)
 {
     if (!outsideOption_inp) {
@@ -84,23 +89,30 @@ void trame::rusc::build(arma::mat zeta_inp, bool outsideOption_inp)
 
 double trame::rusc::G(arma::vec n)
 {   
+    double val = this->G(n,U,mu_sol);
+    //
+    return val;
+}
+
+double trame::rusc::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
+{   
     int i;
     double val=0.0, val_x_temp;
     
-    mu_sol.set_size(nbX,nbY);
+    mu_out.set_size(nbX,nbY);
     arma::vec mu_x;
     //
     for (i=0; i<nbX; i++) {
-        val_x_temp = Gx(mu_x,i);
+        val_x_temp = Gx(U_inp.row(i).t(), mu_x, i);
         //
         val += n(i)*val_x_temp;
-        mu_sol.row(i) = arma::trans(n(i)*mu_x);
+        mu_out.row(i) = arma::trans(n(i)*mu_x);
     }
     //
     return val;
 }
 
-double trame::rusc::Gx(arma::vec& mu_x, int x)
+double trame::rusc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
 {
     int nbAlt = nbY + 1;
     int i,j,y,z;
@@ -108,10 +120,8 @@ double trame::rusc::Gx(arma::vec& mu_x, int x)
     double val_x; 
     double run_max=0, run_min=0, run_temp=0;
     
-    arma::vec U_x = U.row(x).t();
-    
     arma::vec mu_x_tilde = arma::zeros(nbAlt,1);
-    arma::vec U_x_tilde = arma::join_cols(arma::vectorise(U_x),arma::zeros(1,1));
+    arma::vec U_x_tilde = arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1));
     //
     for (i=0; i<nbAlt; i++) {
         y = aux_ord(x,i);
@@ -150,66 +160,71 @@ double trame::rusc::Gx(arma::vec& mu_x, int x)
         mu_x_tilde(y) = std::max(run_min - run_max,0.0);
     }
     //
-    mu_x = mu_x_tilde.rows(0,nbAlt-2);
+    mu_x_out = mu_x_tilde.rows(0,nbAlt-2);
     //
-    val_x = arma::accu(mu_x % (U_x - aux_b.row(x))) - arma::as_scalar(mu_x.t() * aux_A.slice(x) * mu_x/2) - aux_c(x);
+    val_x = arma::accu(mu_x_out % (U_x_inp - aux_b.row(x))) - arma::as_scalar(mu_x_out.t() * aux_A.slice(x) * mu_x_out/2) - aux_c(x);
     //
     return val_x;
 }
 
 double trame::rusc::Gstar(arma::vec n)
+{
+    double val = this->Gstar(n,mu_sol,U_sol);
+    //
+    return val;
+}
+
+double trame::rusc::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out)
 {   
     int i;
     double val=0.0, val_x_temp;
     
-    U_sol.set_size(nbX,nbY);
+    U_out.set_size(nbX,nbY);
     arma::vec U_x_temp;
     //
     for (i=0; i<nbX; i++) {
-        //val_x_temp = Gstarx((mu.row(i).t())/n(i),U_x_temp,i);
-        val_x_temp = Gstarx(U_x_temp,n(i),i);
+        val_x_temp = Gstarx((mu_inp.row(i).t())/n(i),U_x_temp,i);
         //
         val += n(i)*val_x_temp;
-        U_sol.row(i) = arma::trans(U_x_temp);
+        U_out.row(i) = arma::trans(U_x_temp);
     }
     //
     return val;
 }
 
-double trame::rusc::Gstarx(arma::vec& U_x, double n_x, int x)
+double trame::rusc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
 {
     double val_x = 0;
-    arma::vec mu_x = (mu_sol.row(x).t())/n_x; // we divide by n(x)
     
-    arma::vec A_mu = arma::trans(aux_A.slice(x) * mu_x); 
+    arma::vec A_mu = arma::trans(aux_A.slice(x) * mu_x_inp); 
 
-    U_x = A_mu + aux_b.row(x).t();
-    val_x = arma::accu(mu_x % A_mu)/2 + arma::accu(mu_x % aux_b.row(x).t()) + aux_c(x);
+    U_x_out = A_mu + aux_b.row(x).t();
+    val_x = arma::accu(mu_x_inp % A_mu)/2 + arma::accu(mu_x_inp % aux_b.row(x).t()) + aux_c(x);
     
     return val_x;
 }
 
-double trame::rusc::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+double trame::rusc::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out)
 {   
     int i;
     double val=0.0, val_temp;
     
-    U_inp.set_size(nbX,nbY);
-    mu_inp.set_size(nbX,nbY);
-    arma::mat Ux_temp, mux_temp;
+    U_out.set_size(nbX,nbY);
+    mu_out.set_size(nbX,nbY);
+    arma::mat U_x_temp, mux_temp;
     //
     for(i=0; i<nbX; i++){
-        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mux_temp,i);
+        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mux_temp,i);
         //
         val += n(i)*val_temp;
-        U_inp.row(i) = arma::trans(Ux_temp);
-        mu_inp.row(i) = arma::trans(n(i)*mux_temp);
+        U_out.row(i) = arma::trans(U_x_temp);
+        mu_out.row(i) = arma::trans(n(i)*mux_temp);
     }
     //
     return val;
 }
 
-double trame::rusc::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp, int x)
+double trame::rusc::Gbarx(arma::mat Ubar_x, arma::mat mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     int nbAlt = nbY + 1;
     double val_x = 0.0;
@@ -222,7 +237,7 @@ double trame::rusc::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_
     Q_grbi.submat(0,0,nbAlt-2,nbAlt-2) = aux_A.slice(x) / 2;
 
     arma::vec lb_grbi = arma::zeros(1,nbAlt);
-    arma::vec ub_grbi = arma::join_cols(mu_bar_x,arma::ones(1,1));
+    arma::vec ub_grbi = arma::join_cols(mubar_x,arma::ones(1,1));
     
     char* sense_grbi = new char[1];
     sense_grbi[0] = '=';
@@ -239,11 +254,11 @@ double trame::rusc::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_
         LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, Q_grbi.memptr(), lb_grbi.memptr(), ub_grbi.memptr(), NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
         if (LP_optimal) {
-            mu_x_inp = sol_mat(arma::span(0,nbAlt-2),0);
+            mu_x_out = sol_mat(arma::span(0,nbAlt-2),0);
 
-            arma::mat A_mu = arma::trans(aux_A.slice(x) * mu_x_inp);
+            arma::mat A_mu = arma::trans(aux_A.slice(x) * mu_x_out);
 
-            U_x_inp = A_mu + aux_b.row(x).t();
+            U_x_out = A_mu + aux_b.row(x).t();
             //
             val_x = -objval - aux_c(x);
         } else {

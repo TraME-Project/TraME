@@ -31,6 +31,16 @@
 
 #include "trame.hpp"
 
+trame::logit::logit(int nbX_inp, int nbY_inp)
+{   
+    this->build(nbX_inp,nbY_inp, (double) 1.0, (bool) true);
+}
+
+trame::logit::logit(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp)
+{   
+    this->build(nbX_inp,nbY_inp,sigma_inp,outsideOption_inp);
+}
+
 void trame::logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp)
 {   
     nbX = nbX_inp;
@@ -42,27 +52,16 @@ void trame::logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsid
 
 double trame::logit::G(arma::vec n)
 {   
-    arma::mat denom;
-    
-    arma::mat expU = arma::exp(U / sigma);
-    //
-    if (outsideOption) {
-        denom = 1 + arma::sum(expU,1);
-    } else {
-        denom = arma::sum(expU,1);
-    }
-    //
-    double val = sigma*arma::accu(n % arma::log(denom));
-    mu_sol = arma::repmat(n/denom,1,nbY) % expU;
+    double val = this->G(n,U,mu_sol);
     //
     return val;
 }
 
-double trame::logit::G(arma::mat &mu_ret, arma::vec n)
+double trame::logit::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
 {   
     arma::mat denom;
     
-    arma::mat expU = arma::exp(U / sigma);
+    arma::mat expU = arma::exp(U_inp / sigma);
     //
     if (outsideOption) {
         denom = 1 + arma::sum(expU,1);
@@ -71,105 +70,86 @@ double trame::logit::G(arma::mat &mu_ret, arma::vec n)
     }
     //
     double val = sigma*arma::accu(n % arma::log(denom));
-    mu_ret = arma::repmat(n/denom,1,nbY) % expU;
+    mu_out = elem_prod(n/denom, expU);
     //
     return val;
 }
 
 double trame::logit::Gstar(arma::vec n)
 {
-    double val=0.0;
+    double val = this->Gstar(n,mu_sol,U_sol);
+    //
+    return val;
+}
+
+double trame::logit::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out)
+{
+    double val = 0.0;
     
     arma::mat mu_x_0;
     arma::mat n_repd = arma::repmat(n,1,nbY);
     //
     if(outsideOption){
-        mu_x_0 = n - arma::sum(mu_sol,1);
+        mu_x_0 = n - arma::sum(mu_inp,1);
         
-        val = sigma * ( arma::accu(mu_sol % arma::log(mu_sol/n_repd)) + arma::accu(mu_x_0 % arma::log(mu_x_0/n)) );
-        U_sol   = sigma * arma::log(mu_sol / arma::repmat(mu_x_0,1,nbY));
+        val   = sigma * ( arma::accu(mu_inp % arma::log(mu_inp/n_repd)) + arma::accu(mu_x_0 % arma::log(mu_x_0/n)) );
+        U_out = sigma * arma::log(elem_div(mu_inp, mu_x_0));
     }else{
-        val = sigma * arma::accu(mu_sol % arma::log(mu_sol/n_repd));
-        U_sol   = sigma * arma::log(mu_sol / n_repd);
+        val   = sigma * arma::accu(mu_inp % arma::log(mu_inp/n_repd));
+        U_out = sigma * arma::log(mu_inp / n_repd);
     }
     //
     return val;
 }
 
-double trame::logit::Gstar(arma::mat &U_ret, arma::vec n)
+double trame::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out)
 {
-    double val=0.0;
-    
-    arma::mat mu_x_0;
-    arma::mat n_repd = arma::repmat(n,1,nbY);
-    //
-    if(outsideOption){
-        mu_x_0 = n - arma::sum(mu_sol,1);
-        
-        val   = sigma * ( arma::accu(mu_sol % arma::log(mu_sol/n_repd)) + arma::accu(mu_x_0 % arma::log(mu_x_0/n)) );
-        U_ret = sigma * arma::log(mu_sol / arma::repmat(mu_x_0,1,nbY));
-    }else{
-        val   = sigma * arma::accu(mu_sol % arma::log(mu_sol/n_repd));
-        U_ret = sigma * arma::log(mu_sol / n_repd);
-    }
-    //
-    return val;
-}
-
-double trame::logit::Gstarx(arma::mat &U_x, arma::mat mu_x)
-{
-    double val_x=0.0;
+    double val_x = 0.0;
     
     double mu0;
     //
     if(outsideOption){
-        mu0 = 1 - arma::accu(mu_x);
+        mu0 = 1 - arma::accu(mu_x_inp);
         
-        val_x   = sigma * ( mu0 * std::log(mu0) + arma::accu(mu_x % arma::log(mu_x)) );
-        U_x = sigma * arma::log(mu_x / mu0);
+        val_x   = sigma * ( mu0 * std::log(mu0) + arma::accu(mu_x_inp % arma::log(mu_x_inp)) );
+        U_x_out = sigma * arma::log(mu_x_inp / mu0);
     }else{
-        val_x   = sigma * arma::accu(mu_x % arma::log(mu_x));
-        U_x = sigma * arma::log(mu_x);
+        val_x   = sigma * arma::accu(mu_x_inp % arma::log(mu_x_inp));
+        U_x_out = sigma * arma::log(mu_x_inp);
     }
     //
     return val_x;
 }
 
 // just to conform with other arums classes
-double trame::logit::Gstarx(arma::mat &U_x, arma::mat mu_x, int x)
+double trame::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
 {
-    double val_x=0.0;
-    
-    double mu0;
-    //
-    if(outsideOption){
-        mu0 = 1 - arma::accu(mu_x);
-        
-        val_x   = sigma * ( mu0 * std::log(mu0) + arma::accu(mu_x % arma::log(mu_x)) );
-        U_x = sigma * arma::log(mu_x / mu0);
-    }else{
-        val_x   = sigma * arma::accu(mu_x % arma::log(mu_x));
-        U_x = sigma * arma::log(mu_x);
+    double val_x = 0.0;
+
+    if (mu_x_inp.n_rows > 1) {
+        val_x = this->Gstarx(mu_x_inp.row(x).t(),U_x_out);
+    } else {
+        val_x = this->Gstarx(mu_x_inp,U_x_out);
     }
     //
     return val_x;
 }
 
-double trame::logit::Gbar(arma::mat U_bar, arma::mat mu_bar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+double trame::logit::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out)
 {   
     int i;
     double val=0.0, val_temp;
     
-    U_inp.set_size(nbX,nbY);
-    mu_inp.set_size(nbX,nbY);
+    U_out.set_size(nbX,nbY);
+    mu_out.set_size(nbX,nbY);
     arma::mat U_x_temp, mu_x_temp;
     //
     for(i=0; i<nbX; i++){
-        val_temp = Gbarx(U_bar.row(i).t(),(mu_bar.row(i).t())/n(i),U_x_temp,mu_x_temp);
+        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp);
         //
         val += n(i)*val_temp;
-        U_inp.row(i) = arma::trans(U_x_temp);
-        mu_inp.row(i) = arma::trans(n(i)*mu_x_temp);
+        U_out.row(i) = arma::trans(U_x_temp);
+        mu_out.row(i) = arma::trans(n(i)*mu_x_temp);
     }
     //
     return val;
@@ -177,29 +157,29 @@ double trame::logit::Gbar(arma::mat U_bar, arma::mat mu_bar, arma::vec n, arma::
 
 double differMargX(double z, const trame::trame_zeroin_data& opt_data)
 {
-    arma::mat temp_mat = arma::min(z * opt_data.exp_U_bar_X, opt_data.mu_bar_X);
+    arma::mat temp_mat = arma::min(z * opt_data.exp_Ubar_X, opt_data.mubar_X);
     double ret = z + arma::accu(temp_mat) - 1;
     //
     return ret;
 }
 
-double trame::logit::Gbarx(arma::mat U_bar_x, arma::mat mu_bar_x, arma::mat& U_x_inp, arma::mat& mu_x_inp)
+double trame::logit::Gbarx(arma::mat Ubar_x, arma::mat mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out)
 {
     double valx = 0.0;
 
     if (outsideOption) {
-        arma::mat exp_U_bar_X = arma::exp(U_bar_x/sigma);
+        arma::mat exp_Ubar_X = arma::exp(Ubar_x/sigma);
         
         trame_zeroin_data root_data;
-        root_data.exp_U_bar_X = exp_U_bar_X;
-        root_data.mu_bar_X = mu_bar_x;
+        root_data.exp_Ubar_X = exp_Ubar_X;
+        root_data.mubar_X = mubar_x;
         
         double mu_x_0 = zeroin(0.0, 1.0, differMargX, root_data, NULL, NULL);
         //
-        mu_x_inp = arma::min(mu_x_0 * exp_U_bar_X, mu_bar_x);
-        U_x_inp  = sigma * arma::log(mu_x_inp/mu_x_0);
+        mu_x_out = arma::min(mu_x_0 * exp_Ubar_X, mubar_x);
+        U_x_out  = sigma * arma::log(mu_x_out/mu_x_0);
         //
-        valx = arma::accu(mu_x_inp % U_bar_x) - sigma*(mu_x_0*std::log(mu_x_0) + arma::accu(mu_x_inp % arma::log(mu_x_inp)));
+        valx = arma::accu(mu_x_out % Ubar_x) - sigma*(mu_x_0*std::log(mu_x_0) + arma::accu(mu_x_out % arma::log(mu_x_out)));
     }
     //
     return valx;

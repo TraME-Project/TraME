@@ -31,6 +31,11 @@
 
 #include "trame.hpp"
 
+trame::rsc::rsc(arma::mat zeta_inp, double alpha, double beta)
+{
+    this->build_beta(zeta_inp, alpha, beta);
+}
+
 void trame::rsc::build(arma::mat zeta_inp, bool outsideOption_inp)
 {
     if (!outsideOption_inp) {
@@ -106,25 +111,31 @@ void trame::rsc::build_beta(arma::mat zeta_inp, double alpha, double beta)
 }
 
 double trame::rsc::G(arma::vec n)
-{
-    int i;
-    double val=0.0, val_x_temp;
-
-    mu_sol.set_size(nbX,nbY);
-    arma::vec mu_x;
-    //
-    //#pragma omp parallel for private(mu_x,val_x_temp)
-        for (i=0; i<nbX; i++) {
-            val_x_temp = Gx(mu_x,i);
-            //
-            val += n(i)*val_x_temp;
-            mu_sol.row(i) = arma::trans(n(i)*mu_x);
-        }
+{   
+    double val = this->G(n,U,mu_sol);
     //
     return val;
 }
 
-double trame::rsc::Gx(arma::vec& mu_x, int x)
+double trame::rsc::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
+{
+    int i;
+    double val=0.0, val_x;
+
+    mu_out.set_size(nbX,nbY);
+    arma::mat mu_x_temp;
+    //
+    for (i=0; i<nbX; i++) {
+        val_x = Gx(U_inp.row(i).t(), mu_x_temp, i);
+        //
+        val += n(i)*val_x;
+        mu_out.row(i) = arma::trans(n(i)*mu_x_temp);
+    }
+    //
+    return val;
+}
+
+double trame::rsc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
 {
     int nbAlt = nbY + 1;
     int i,j,y,z;
@@ -133,10 +144,8 @@ double trame::rsc::Gx(arma::vec& mu_x, int x)
     double run_max=0, run_min=0, run_temp=0;
     double mu_x_tilde_y, e_y;
 
-    arma::vec U_x = U.row(x).t();
-
     arma::vec mu_x_tilde = arma::zeros(nbAlt,1);
-    arma::vec U_x_tilde = arma::join_cols(arma::vectorise(U_x),arma::zeros(1,1));
+    arma::vec U_x_tilde = arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1));
     //
     for (i=0; i<nbAlt; i++) {
         y = aux_ord(x,i);
@@ -190,75 +199,37 @@ double trame::rsc::Gx(arma::vec& mu_x, int x)
         }
     }
     //
-    mu_x = mu_x_tilde.rows(0,nbAlt-2);
+    mu_x_out = mu_x_tilde.rows(0,nbAlt-2);
     //
     return val_x;
 }
 
 double trame::rsc::Gstar(arma::vec n)
 {
+    double val = this->Gstar(n,mu_sol,U_sol);
+    //
+    return val;
+}
+
+double trame::rsc::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out)
+{
     int i;
     double val=0.0, val_x_temp;
 
-    U_sol.set_size(nbX,nbY);
+    U_out.set_size(nbX,nbY);
     arma::vec U_x_temp;
     //
     for (i=0; i<nbX; i++) {
-        //val_x_temp = Gstarx((mu.row(i).t())/n(i),U_x_temp,i);
-        val_x_temp = Gstarx(U_x_temp,n(i),i);
+        val_x_temp = Gstarx((mu_inp.row(i).t())/n(i),U_x_temp,i);
         //
         val += n(i)*val_x_temp;
-        U_sol.row(i) = arma::trans(U_x_temp);
+        U_out.row(i) = arma::trans(U_x_temp);
     }
     //
     return val;
 }
 
-double trame::rsc::Gstar(arma::mat& U_inp, arma::vec n)
-{
-    int i;
-    double val=0.0, val_x_temp;
-
-    U_inp.set_size(nbX,nbY);
-    arma::vec U_x_temp;
-    //
-    for (i=0; i<nbX; i++) {
-        //val_x_temp = Gstarx((mu.row(i).t())/n(i),U_x_temp,i);
-        val_x_temp = Gstarx(U_x_temp,n(i),i);
-        //
-        val += n(i)*val_x_temp;
-        U_inp.row(i) = arma::trans(U_x_temp);
-    }
-    //
-    return val;
-}
-
-double trame::rsc::Gstarx(arma::vec& U_x, double n_x, int x)
-{
-    double val_x = 0;
-    arma::vec mu_x = (mu_sol.row(x).t())/n_x; // we divide by n(x)
-
-    arma::vec ts_temp(mu_x.n_elem+1);
-    ts_temp.rows(0,mu_x.n_elem-1) = mu_x;
-    ts_temp(mu_x.n_elem) = 1-arma::accu(mu_x);
-
-    arma::vec ts_full = aux_DinvPsigma.slice(x) * ts_temp;
-    arma::vec ts = ts_full.rows(0,nbY-1);
-    //
-    arma::vec pots_inp = arma::join_cols(arma::zeros(1,1),ts_full);
-    arma::vec pots = pot(pots_inp);
-
-    arma::vec diff_pots = pots.rows(1,nbY+1) - pots.rows(0,nbY);
-    //
-    val_x = - arma::accu( (aux_Psigma.slice(x)*zeta.row(x).t()) % diff_pots );
-
-    arma::mat e_mat = arma::diagmat( arma::join_cols(arma::zeros(1,1),quantile(ts)) );
-    U_x = - aux_Influence_lhs.slice(x) * e_mat * aux_Influence_rhs.slice(x) * zeta.row(x).t();
-    //
-    return val_x;
-}
-
-double trame::rsc::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, int x)
+double trame::rsc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
 {
     double val_x = 0;
 
@@ -277,7 +248,7 @@ double trame::rsc::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, int x)
     val_x = - arma::accu( (aux_Psigma.slice(x)*zeta.row(x).t()) % diff_pots );
 
     arma::mat e_mat = arma::diagmat( arma::join_cols(arma::zeros(1,1),quantile(ts)) );
-    U_x = - aux_Influence_lhs.slice(x) * e_mat * aux_Influence_rhs.slice(x) * zeta.row(x).t();
+    U_x_out = - aux_Influence_lhs.slice(x) * e_mat * aux_Influence_rhs.slice(x) * zeta.row(x).t();
     //
     return val_x;
 }
@@ -311,27 +282,27 @@ double trame::rsc::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta,
     return val_x;
 }
 
-double trame::rsc::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_inp, arma::mat& mu_inp)
+double trame::rsc::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out)
 {
     int i;
     double val=0.0, val_temp;
 
-    U_inp.set_size(nbX,nbY);
-    mu_inp.set_size(nbX,nbY);
-    arma::mat Ux_temp, mu_x_temp;
+    U_out.set_size(nbX,nbY);
+    mu_out.set_size(nbX,nbY);
+    arma::mat U_x_temp, mu_x_temp;
     //
     for (i=0; i<nbX; i++) {
-        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),Ux_temp,mu_x_temp,i);
+        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
 
         val += n(i)*val_temp;
-        U_inp.row(i) = arma::trans(Ux_temp);
-        mu_inp.row(i) = arma::trans(n(i)*mu_x_temp);
+        U_out.row(i) = arma::trans(U_x_temp);
+        mu_out.row(i) = arma::trans(n(i)*mu_x_temp);
     }
     //
     return val;
 }
 
-double trame::rsc::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, arma::mat& mu_x_inp, int x)
+double trame::rsc::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     if (!outsideOption) {
         printf("Gbarx not implemented yet when outsideOption==false");
@@ -370,13 +341,13 @@ double trame::rsc::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& Ux_inp, a
     //
     bool success = generic_nlopt(nbY,sol_vec,obj_val,lb.memptr(),ub.memptr(),trame::rsc::Gbar_opt_objfn,trame::rsc::Gbar_opt_constr,opt_data,constr_data);
     //
-    arma::vec Ux_temp;
+    arma::vec U_x_temp;
     arma::vec sol_temp = arma::conv_to<arma::vec>::from(sol_vec);
 
     if (success) {
-        mu_x_inp = sol_temp;
-        Gstarx(Ux_temp,sol_temp,x);
-        Ux_inp = Ux_temp;
+        mu_x_out = sol_temp;
+        Gstarx(sol_temp,U_x_temp,x);
+        U_x_out = U_x_temp;
         ret = -obj_val;
     }
     return ret;

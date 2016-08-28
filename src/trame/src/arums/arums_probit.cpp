@@ -31,6 +31,11 @@
 
 #include "trame.hpp"
 
+trame::probit::probit(int nbX_inp, int nbY_inp, bool outsideOption_inp)
+{   
+    this->build(nbX_inp, nbY_inp, outsideOption_inp);
+}
+
 void trame::probit::build(int nbX_inp, int nbY_inp, bool outsideOption_inp)
 {   
     nbX = nbX_inp;
