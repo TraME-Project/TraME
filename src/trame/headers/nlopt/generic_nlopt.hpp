@@ -32,10 +32,10 @@
 #ifndef _generic_nlopt_HPP
 #define _generic_nlopt_HPP
 
-#include "../misc/TRAME_OPTIONS.hpp"
+//#include "../misc/TRAME_OPTIONS.hpp"
 
 #include <nlopt.hpp>
-#include "../aux/trame_structs.hpp"
+//#include "../aux/trame_structs.hpp"
 
 bool generic_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
                    double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
