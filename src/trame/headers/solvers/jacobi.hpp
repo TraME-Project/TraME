@@ -33,7 +33,7 @@
 #define _trame_jacobi_HPP
 
 template<typename Ta>
-bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low, arma::mat* w_up, double* tol_inp, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U, arma::mat& V);
+bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low, arma::mat* w_up, double* tol_inp, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U_out, arma::mat& V_out);
 
 #include "jacobi.tpp"
 

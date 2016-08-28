@@ -30,7 +30,7 @@
  */
 
 template<typename Ta>
-bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_inp, double* tol_inp, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U, arma::mat& V)
+bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_inp, double* tol_inp, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U_out, arma::mat& V_out)
 {
     if (market.need_norm) {
         printf("Jacobi does not yet allow for the case without unmatched agents.\n");
@@ -48,7 +48,6 @@ bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_i
 
     transfers trans_obj = market.trans_obj;
     //
-    printf("jacobi 1\n");
     arma::mat w;
     if (!w_up_inp) {
         w = w_upper_bound(market);
@@ -71,7 +70,6 @@ bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_i
         }
     }
     //
-    printf("jacobi 2\n");
     arma::mat w_low;
     if (!w_low_inp) {
         dse<Ta> market_trans = market;
@@ -97,8 +95,8 @@ bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_i
         }
     }
     //
-    U = trans_obj.UW(w,NULL,NULL);
-    V = trans_obj.VW(w,NULL,NULL);
+    arma::mat U = trans_obj.UW(w,NULL,NULL);
+    arma::mat V = trans_obj.VW(w,NULL,NULL);
 
     arums_G.U = U;
     arums_H.U = V.t();
@@ -116,9 +114,62 @@ bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_i
     double tol = 1E-04;
     double err = 2*tol;
 
-    
+    arma::mat norm_mat = n * m.t();
 
+    trame_zeroin_data_tmp<Ta> root_data;
+    root_data.n = n;
+    root_data.m = m;
+    root_data.U = U;
+    root_data.V = V;
+    root_data.arums_G = arums_G;
+    root_data.arums_H = arums_H;
+    root_data.trans_obj = trans_obj;
 
+    int x = 0;
+    int y = 0;
+
+    root_data.x_ind = x;
+    root_data.y_ind = y;
+
+    while (err > tol && iter < max_iter) {
+        iter++;
+        
+        for (x=0; x < nbX; x++) {
+            root_data.x_ind = x;
+
+            for (y=0; y < nbY; y++) {
+                root_data.y_ind = y;
+        
+                w(x,y) = zeroin_tmp(w_low(x,y), w(x,y), jacobi_zeroin_fn, root_data, NULL, NULL);
+                U(x,y) = trans_obj.UW(w(x,y),x,y);
+                V(x,y) = trans_obj.VW(w(x,y),x,y);
+
+                root_data.U = U;
+                root_data.V = V;
+            }
+        }
+        //
+        arums_G.U = U;
+        arums_H.U = V.t();
+
+        arums_G.G(n);
+        arums_H.G(m);
+
+        Z = arums_G.mu_sol - arma::trans(arums_H.mu_sol);
+        //
+        err = elem_max(arma::abs(elem_div(Z,norm_mat)));
+    }
+    success = true;
     //
-    return true;
+    arums_G.U = U;
+    arums_G.G(n);
+
+    mu = arums_G.mu_sol;
+    mux0 = n - arma::sum(mu,1);
+    mu0y = m - arma::trans(arma::sum(mu,0));
+
+    U_out = U;
+    V_out = V;
+    //
+    return success;
 }
