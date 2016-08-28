@@ -62,6 +62,7 @@ class transfers
         arma::mat Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
         arma::mat Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
         arma::mat Psi(arma::mat U, double V, arma::uvec* xs, arma::uvec* ys);
+        double Psi(double U, double V, int x_ind, int y_ind);
 
         arma::mat du_Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
         arma::mat du_Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
@@ -75,7 +76,10 @@ class transfers
         double Vcal(double us, int xs, int ys);
 
         arma::mat UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
+        double UW(double Ws, int x_ind, int y_ind);
         arma::mat VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
+        double VW(double Ws, int x_ind, int y_ind);
+
         arma::mat du_UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
         arma::mat du_VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
 

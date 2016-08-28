@@ -276,6 +276,37 @@ finished:
     return ret;
 }
 
+double trame::transfers::Psi(double U, double V, int x_ind, int y_ind)
+{
+    double ret = 0.0;
+    //
+    if (ETU) {
+        double temp_1 = std::exp(U/tau(x_ind,y_ind)) * aux_exp_alphaovertau(x_ind,y_ind);
+        double temp_2 = std::exp(V/tau(x_ind,y_ind)) * aux_exp_gammaovertau(x_ind,y_ind);
+
+        ret =  tau(x_ind,y_ind) * std::log(0.5 * (temp_1 + temp_2));
+        goto finished;
+    }
+
+    if (LTU) {
+        ret = lambda(x_ind,y_ind) * U + aux_zeta(x_ind,y_ind)*V - phi(x_ind,y_ind);
+        goto finished;
+    }
+
+    if (NTU) {
+        ret = std::max(U - alpha(x_ind,y_ind), V - gamma(x_ind,y_ind));
+        goto finished;
+    }
+
+    if (TU) {
+        ret = (U + V - phi(x_ind,y_ind)) / 2;
+        goto finished;
+    }
+    //
+finished:
+    return ret;
+}
+
 arma::mat trame::transfers::du_Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys)
 {
     arma::uvec x_ind, y_ind;
@@ -668,6 +699,13 @@ arma::mat trame::transfers::UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys)
     return ret;
 }
 
+double trame::transfers::UW(double Ws, int x_ind, int y_ind)
+{
+    double ret = - Psi((double) 0.0,-Ws,x_ind,y_ind);
+    //
+    return ret;
+}
+
 arma::mat trame::transfers::VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys)
 {
     arma::uvec x_ind, y_ind;
@@ -686,6 +724,13 @@ arma::mat trame::transfers::VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys)
     //
     arma::mat ret = - Psi(Ws,0.0,&x_ind,&y_ind);
 
+    return ret;
+}
+
+double trame::transfers::VW(double Ws, int x_ind, int y_ind)
+{
+    double ret = - Psi(Ws,(double) 0.0,x_ind,y_ind);
+    //
     return ret;
 }
 
