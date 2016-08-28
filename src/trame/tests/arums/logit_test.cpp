@@ -40,12 +40,12 @@ int main()
     
     arma::vec n = arma::sum(mu,1);
 
-    trame::logit logits;
-    logits.nbX = nbX;
-    logits.nbY = nbY;
-    logits.nbParams = 1;
-    logits.sigma = 1.0;
-    logits.outsideOption = true;
+    trame::logit logits(nbX,nbY);
+    //logits.nbX = nbX;
+    //logits.nbY = nbY;
+    //logits.nbParams = 1;
+    //logits.sigma = 1.0;
+    //logits.outsideOption = true;
     
     logits.U = U;
     logits.mu = mu;
@@ -72,13 +72,13 @@ int main()
     arma::mat U_star;
     arma::mat U_star_sim;
     
-    double Gstar_val = logits.Gstar(U_star, n);
-    double Gstar_sim_val = logit_sim.Gstar(U_star_sim, n);
+    double Gstar_val = logits.Gstar(n);
+    double Gstar_sim_val = logit_sim.Gstar(n);
     
     std::cout << "G*(mu) and G*-sim(mu): \n" << Gstar_val << " and " << Gstar_sim_val << std::endl;
     
-    arma::cout << "\n\\nabla G*(\\nabla G(U)): \n" << U_star << arma::endl;
-    arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << U_star_sim << arma::endl;
+    arma::cout << "\n\\nabla G*(\\nabla G(U)): \n" << logits.U_sol << arma::endl;
+    arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << logit_sim.U_sol << arma::endl;
     //
     // Gbar
     arma::mat mu_bar(2,3);

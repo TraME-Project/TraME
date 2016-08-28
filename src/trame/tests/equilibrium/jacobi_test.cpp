@@ -55,21 +55,17 @@ int main()
     arma::mat mu_TU, U, V;
     trame::jacobi(dse_obj_TU, true, NULL, NULL, NULL, mu_TU, mux0, mu0y, U, V);
 
-    //arma::cout << "Solution of NTU-logit problem using darum:\n" << mu_NTU << arma::endl;
+    arma::cout << "Solution of TU-logit problem using jacobi:\n" << mu_TU << arma::endl;
     //
     // NTU
-    /*trame::dse<trame::logit> dse_obj_NTU;
-
-    trame::logit logit_1, logit_2;
-    logit_1.build(nbX,nbY,1.0,true);
-    logit_2.build(nbY,nbX,1.0,true);
+    trame::dse<trame::logit> dse_obj_NTU;
 
     dse_obj_NTU.build_NTU(n,m,alpha,gamma,logit_1,logit_2,false);
     //
-    arma::mat mu_NTU, U, V;
-    trame::darum(dse_obj_NTU, true, NULL, mu_NTU, mux0, mu0y, U, V);
+    arma::mat mu_NTU;
+    trame::jacobi(dse_obj_NTU, true, NULL, NULL, NULL, mu_NTU, mux0, mu0y, U, V);
 
-    arma::cout << "Solution of NTU-logit problem using darum:\n" << mu_NTU << arma::endl;*/
+    arma::cout << "Solution of NTU-logit problem using jacobi:\n" << mu_NTU << arma::endl;
     //
     printf("\n*===================    End of Jacobi Test    ===================*\n");
     printf("\n");

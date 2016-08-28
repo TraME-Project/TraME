@@ -4,12 +4,10 @@
  * Keith O'Hara
  * 05/17/2016
  * 
- * cd ~/Desktop/SCM/GitHub/TraME/src/tests
- * clang++ -O2 -Wall -std=c++11 -I/opt/local/include -I/Library/gurobi650/mac64/include arums_probit_test.cpp -o arums_probit.test -L/Library/gurobi650/mac64/lib -lgurobi_c++ -lgurobi65 -framework Accelerate
- *
- * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include ../lp/generic_lp.c -c -o ../lp/generic_lp.o
- * g++-mp-5 -O2 -Wall -std=c++11 -fopenmp -I/opt/local/include -I/Library/gurobi650/mac64/include arums_probit_test.cpp -c -o arums_probit_test.o
- * g++-mp-5 -O2 -Wall -fopenmp -o arums_probit.test ../lp/generic_lp.o arums_probit_test.o -L/Library/gurobi650/mac64/lib -lgurobi65 -framework Accelerate
+ * cd ~/Desktop/SCM/GitHub/TraME/src/tests/arums
+ * 
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include probit_test.cpp -c -o probit_test.o
+ * g++-mp-5 -O2 -Wall -o probit.test probit_test.o -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -42,7 +40,7 @@ int main()
     
     arma::vec n = arma::sum(mu,1);
     
-    probit probits;
+    trame::probit probits;
     probits.build(nbX,nbY,(bool) true);
     //
     // correlation matrices
@@ -53,7 +51,7 @@ int main()
     //
     // empirical object:
     int n_draws = 1000;
-    empirical emp_obj;
+    trame::empirical emp_obj;
     
     probits.simul(emp_obj, n_draws, (int) 1777);
     
@@ -68,10 +66,11 @@ int main()
     //
     // solution to dual problem U*
     arma::mat U_star_sim;
-    double Gstar_sim_val = emp_obj.Gstar(U_star_sim, n);
+    double Gstar_sim_val = emp_obj.Gstar(n);
+    //double Gstar_sim_val = emp_obj.Gstar(n,emp_obj.mu_sol,U_star_sim);
     
     arma::cout << "G*-sim(mu): \n" << Gstar_sim_val << arma::endl;
-    arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << U_star_sim << arma::endl;
+    arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << emp_obj.U_sol << arma::endl;
     //
     // Gbar
     arma::mat mu_bar(2,3);
@@ -79,7 +78,7 @@ int main()
     
     arma::mat U_bar_temp, mu_bar_temp;
 
-    double val_Gbar_sim = emp_obj.Gbar(U_star_sim, mu_bar, n, U_bar_temp, mu_bar_temp);
+    double val_Gbar_sim = emp_obj.Gbar(emp_obj.U_sol, mu_bar, n, U_bar_temp, mu_bar_temp);
     
     arma::cout << "Gbar-sim val: \n" << val_Gbar_sim << arma::endl;
     //

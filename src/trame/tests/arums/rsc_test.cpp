@@ -4,14 +4,10 @@
  * Keith O'Hara
  * 05/17/2016
  *
- * cd ~/Desktop/SCM/GitHub/TraME/src/tests
+ * cd ~/Desktop/SCM/GitHub/TraME/src/tests/arums
  *
- * g++-mp-5 -Wall -O2 -std=c++11 -I/opt/local/include -I/usr/local/include -I/Library/gurobi650/mac64/include -fopenmp arums_rsc_test.cpp -c -o arums_rsc_test.o
- * gcc-mp-5 -Wall -O2 -I/opt/local/include -I/Library/gurobi650/mac64/include ../lp/generic_lp.c -c -o ../lp/generic_lp.o
- * gfortran-mp-5 -O2 ../prob/prob.f90  -c -o ../prob/prob.o
- * gfortran-mp-5 -O2 ../math/quadpack_double.f90  -c -o ../math/quadpack_double.o
- * gfortran-mp-5 -O2 ../prob/trame_aux.f90  -c -o ../prob/trame_aux.o
- * g++-mp-5 -o arums_rsc_test.test ../lp/generic_lp.o ../prob/prob.o ../math/quadpack_double.o ../prob/trame_aux.o arums_rsc_test.o -L/Library/gurobi650/mac64/lib -L/usr/local/lib -lgurobi65 -lnlopt -fopenmp -lgfortran -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include rsc_test.cpp -c -o rsc_test.o
+ * g++-mp-5 -O2 -Wall -o rsc.test rsc_test.o -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -52,7 +48,7 @@ int main()
     arma::cout << "zeta: \n" << zeta << arma::endl;
     //
     // RSC object
-    RSC rsc_obj;
+    trame::rsc rsc_obj;
     rsc_obj.U = U;
     rsc_obj.mu = mu;
 
@@ -60,7 +56,7 @@ int main()
     //
     // empirical object:
     int n_draws = 10000;
-    empirical rsc_sim;
+    trame::empirical rsc_sim;
     
     rsc_obj.simul(rsc_sim, n_draws, (int) 1777);
     
