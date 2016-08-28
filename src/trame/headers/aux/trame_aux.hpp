@@ -32,7 +32,7 @@
 #ifndef _trame_aux_HPP
 #define _trame_aux_HPP
 
-inline arma::uvec which_max(const arma::mat* X, int which_dim);
+inline arma::uvec which_max(const arma::mat& X, int which_dim);
 inline arma::uvec uvec_linspace(int a, int b);
 inline arma::mat elem_add(const arma::mat& mat_1, const arma::mat& mat_2);
 inline arma::mat elem_sub(const arma::mat& mat_1, const arma::mat& mat_2);

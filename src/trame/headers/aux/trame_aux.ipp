@@ -30,12 +30,12 @@
  */
 
 // Find indices that correspond to maximum values 
-inline arma::uvec which_max(const arma::mat* X, int which_dim)
+inline arma::uvec which_max(const arma::mat& X, int which_dim)
 {
     int i,j;
     
-    int n = X->n_rows;
-    int k = X->n_cols;
+    int n = X.n_rows;
+    int k = X.n_cols;
 
     arma::uvec max_vec;
      
@@ -45,11 +45,11 @@ inline arma::uvec which_max(const arma::mat* X, int which_dim)
     if (which_dim==0) { // each column
         max_vec.set_size(k);
         for (j=0; j<k; j++) {
-            max_val = (*X)(0,j);
+            max_val = X(0,j);
             max_ind = 0;
             for (i=1; i<n; i++) {
-                if ((*X)(i,j)>max_val) {
-                    max_val = (*X)(i,j);
+                if (X(i,j) > max_val) {
+                    max_val = X(i,j);
                     max_ind = i;
                 }
             }
@@ -58,11 +58,11 @@ inline arma::uvec which_max(const arma::mat* X, int which_dim)
     } else { // each row
         max_vec.set_size(n);
         for (i=0; i<n; i++) {
-            max_val = (*X)(i,0);
+            max_val = X(i,0);
             max_ind = 0;
             for (j=0; j<k; j++) {
-                if ((*X)(i,j) > max_val) {
-                    max_val = (*X)(i,j);
+                if (X(i,j) > max_val) {
+                    max_val = X(i,j);
                     max_ind = j;
                 }
             }
