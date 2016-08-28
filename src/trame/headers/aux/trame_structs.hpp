@@ -35,8 +35,8 @@
 //
 // for use in zeroin()
 struct trame_opt_data {
-    arma::mat* exp_U_bar_X;
-    arma::mat* mu_bar_X;
+    arma::mat* exp_Ubar_X;
+    arma::mat* mubar_X;
 };
 
 class trame_zeroin_data
@@ -44,8 +44,8 @@ class trame_zeroin_data
     public:
         //
         // for logit class
-        arma::mat exp_U_bar_X;
-        arma::mat mu_bar_X;
+        arma::mat exp_Ubar_X;
+        arma::mat mubar_X;
         //
         // for mmf class
         arma::mat A_xs;
