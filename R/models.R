@@ -83,70 +83,192 @@ dparam.affinity <- function(model, dparams=diag(model$nbParams))
   )
 #
 #
-mme.affinity <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
-  # mme.affinity should be improved as one should make use of the logit structure and use the ipfp
+mmeaffinityNoRegul <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, tolIpfp=1E-14, maxiterIpfp = 1e5, print_level=0)
+  # mmeaffinityNoRegul should be improved as one should make use of the logit structure and use the ipfp
 {
+  #
   if (print_level>0){
-    message(paste0("Moment Matching Estimation of affinity model via optimization."))
+    message(paste0("Moment Matching Estimation of Affinity model via IPFP+BFGS optimization."))
   }
-  
+  #
   theta0 = initparam(model)$param
-  #dtheta = dparam(model) ####################################
   market = parametricMarket(model,theta0)
-  
-  #kron = dtheta$dparamsPsi ##################################
   Chat = model$Phi_k(model, muhat)
-  #
-  if (print_level>0){
-    message(paste0("Moment Matching Estimation of ",class(model)," model via BFGS optimization."))
-  }
-  #
   nbX = model$nbX
   nbY = model$nbY
+  dX = model$dX
+  dY = model$dY
   nbParams = model$nbParams
+  sigma = model$sigma
   #
-  eval_f <- function(thearg){
-    theU = matrix(thearg[1:(nbX*nbY)],nbX,nbY)
-    thetheta = thearg[(1+nbX*nbY):(nbParams+nbX*nbY)]
+  totmass = sum(model$n)
+  
+  if ( sum(model$n) != totmass ) {stop("Unequal mass of individuals in an affinity model.")}
+  if (sum(muhat) !=  totmass) {stop("Total number of couples does not conicide with margins.")}
+  p = model$n / totmass
+  q = model$m / totmass
+  IX=rep(1,nbX)
+  tIY=matrix(rep(1,nbY),nrow=1)
+  f = p %*% tIY
+  g = IX %*% t(q)
+  pihat = muhat / totmass
+  v=rep(0,nbY)
+  #
+  #
+  valuef = function(A)
+  {
+    Phi = matrix(model$Phi_xy(model,c(A)) ,nbX,nbY)
+    # Phi = Xvals %*% matrix(A,nrow=dX) %*% t(Yvals)
+    contIpfp = TRUE
+    iterIpfp = 0
+    while(contIpfp)
+    {
+      iterIpfp = iterIpfp+1
+      u = sigma*log(apply(g * exp( ( Phi - IX %*% t(v) ) / sigma ),1,sum))
+      vnext = sigma*log(apply(f * exp( ( Phi - u %*% tIY ) / sigma ),2,sum))
+      error = max(abs(apply(g * exp( ( Phi - IX %*% t(vnext) - u %*% tIY ) / sigma ),1,sum)-1))
+      if( (error<tolIpfp) | (iterIpfp >= maxiterIpfp)) {contIpfp=FALSE}
+      v=vnext
+    }
+    #print(c("Converged in ", iterIpfp, " iterations."))
+    pi = f * g * exp( ( Phi - IX %*% t(v) - u %*% tIY ) / model$sigma )
+    if (iterIpfp >= maxiterIpfp ) {stop('maximum number of iterations reached')} 
+    v <<- vnext
+    #thegrad =  c(    c(pi - pihat) %*% phis)
+    thegrad = model$Phi_k(model,pi - pihat)
+    theval = sum(thegrad * c(A)) - sigma* sum(pi*log(pi))
     
-    phi = model$Phi_xy(model,thetheta)
-    phimat = matrix(phi,nbX,nbY)
-    #
-    resG = G(market$arumsG,theU,model$n)
-    resH = G(market$arumsH,t(phimat-theU),model$m)
-    #
-    Ehatphi = sum(thetheta * Chat)
-    val = resG$val + resH$val - Ehatphi
-    
-    tresHmu = t(resH$mu)
-    
-    gradU = c(resG$mu - tresHmu)
-    gradtheta = model$Phi_k(model, tresHmu)  - Chat
-    #
-    ret = list(objective = val,
-               gradient = c(gradU,gradtheta))
-    #
-    return(ret)
+    return(list(objective = theval,gradient = thegrad))
   }
-  #
-  resopt = nloptr(x0=c( model$Phi_xy(model,theta0) / 2,theta0 ),
-                  eval_f=eval_f,
-                  opt=list("algorithm" = "NLOPT_LD_LBFGS",
-                           "xtol_rel"=xtol_rel,
-                           "maxeval"=maxeval,
-                           "print_level"=print_level))
-  #
-  #if(print_level>0){print(resopt, show.controls=((1+nbX*nbY):(nbParams+nbX*nbY)))}
-  #
-  U = matrix(resopt$solution[1:(nbX*nbY)],nbX,nbY)  
-  thetahat = resopt$solution[(1+nbX*nbY):(nbParams+nbX*nbY)]
-  V = matrix(model$Phi_xy(model,thetahat),nbX,nbY) - U
-  #
+  
+  A0 = rep(0,dX*dY)
+  resopt = nloptr(x0=A0, 
+                  eval_f = valuef, 
+                  opt = list(algorithm = 'NLOPT_LD_LBFGS',
+                             xtol_rel = xtol_rel,
+                             maxeval=maxeval,
+                             print_level = print_level))
+  #  AffinityMatrix = matrix(res$solution,nrow=dX)
+  thetahat = resopt$solution
   ret =list(thetahat=thetahat,
-            U=U, V=V,
             val=resopt$objective)
   #
   return(ret)
+}
+#
+#
+mmeaffinityWithRegul <- function(model, muhat, lambda, xtol_rel=1e-4, maxeval=1e5, tolIpfp=1E-14, maxiterIpfp = 1e5, print_level=0)
+  # Reference: Arnaud Dupuy, Alfred Galichon, Yifei Sun (2016). "Learning Optimal Transport Costs under Low-Rank Constraints."
+  # Implementation by Yifei Sun.
+{
+  #
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of Affinity model with regularization via proximal gradient."))
+  }
+  #
+  theta0 = initparam(model)$param
+  market = parametricMarket(model,theta0)
+  Chat = model$Phi_k(model, muhat)
+  nbX = model$nbX
+  nbY = model$nbY
+  dX = model$dX
+  dY = model$dY
+  nbParams = model$nbParams
+  sigma = model$sigma
+  #
+  totmass = sum(model$n)
+  #
+  if ( sum(model$n) != totmass ) {stop("Unequal mass of individuals in an affinity model.")}
+  if (sum(muhat) !=  totmass) {stop("Total number of couples does not conicide with margins.")}
+  p = model$n / totmass
+  q = model$m / totmass
+  IX=rep(1,nbX)
+  tIY=matrix(rep(1,nbY),nrow=1)
+  f = p %*% tIY
+  g = IX %*% t(q)
+  pihat = muhat / totmass
+  v=rep(0,nbY)
+  A = rep(0,dX*dY)
+  t_k = .3   # step size for the prox grad algorithm (or grad descent when lambda=0)
+  iterCount = 0
+  while (1)
+  {
+    # compute pi^A
+    # Phi = Xvals %*% matrix(A,nrow=dX) %*% t(Yvals)
+    Phi = matrix(model$Phi_xy(model,c(A)) ,nbX,nbY)
+    contIpfp = TRUE
+    iterIpfp = 0
+    while(contIpfp)
+    {
+      iterIpfp = iterIpfp+1
+      u = sigma*log(apply(g * exp( ( Phi - IX %*% t(v) ) / sigma ),1,sum))
+      vnext = sigma*log(apply(f * exp( ( Phi - u %*% tIY ) / sigma ),2,sum))
+      error = max(abs(apply(g * exp( ( Phi - IX %*% t(vnext) - u %*% tIY ) / sigma ),1,sum)-1))
+      if( (error<tolIpfp) | (iterIpfp >= maxiterIpfp)) {contIpfp=FALSE}
+      v=vnext
+    }
+    
+    pi = f * g * exp( ( Phi - IX %*% t(v) - u %*% tIY ) / sigma )
+    
+    if (iterIpfp >= maxiterIpfp ) {stop('maximum number of iterations reached')} 
+    
+    # do prox grad descent
+    # thegrad = c(phis %*% c(pi - pihat))
+    thegrad = model$Phi_k(model,pi - pihat)
+    
+    
+    # take one gradient step
+    A = A - t_k*thegrad
+    
+    if (lambda > 0)
+    {
+      # compute the proximal operator
+      SVD = svd(matrix(A,nrow=dX))
+      U = SVD$u
+      D = SVD$d
+      V = SVD$v
+      
+      D = pmax(D - lambda*t_k, 0.)
+      A = c(U %*% diag(D) %*% t(V))
+    } # if lambda = 0 then we are just taking one step of gradient descent
+    ### testing optimality
+    if (iterCount %% 10 == 0)
+    {
+      alpha = 1.
+      tmp = svd(matrix(A - alpha * thegrad, nrow=dX))
+      tmp_second = sum((A - c(tmp$u %*% diag(pmax(tmp$d - alpha*lambda, 0.)) %*% t(tmp$v)))^2)
+      cat("testing optimality ", tmp_second, "\n")
+    }
+    
+    if (lambda > 0)
+    {
+      theval = sum(thegrad * c(A)) - sigma * sum(pi*log(pi)) + lambda * sum(D)
+    } else
+    {
+      theval = sum(thegrad * c(A)) - sigma * sum(pi*log(pi))
+    }
+    
+    iterCount = iterCount + 1
+    
+    if (iterCount>1 && abs(theval - theval_old) < 1E-6) { break }
+    
+    theval_old = theval
+    
+  }
+  ret =list(thetahat=c(A),
+            val=theval)
+  
+  #
+  return(ret)
+}
+#
+#
+mme.affinity <- function(model, muhat, lambda = NULL, xtol_rel=1e-4, maxeval=1e5, tolIpfp=1E-14, maxiterIpfp = 1e5, print_level=0)
+{
+  if (is.null(lambda))
+  {return(mmeaffinityNoRegul(model,muhat, xtol_rel , maxeval , tolIpfp , maxiterIpfp , print_level))}
+  else
+  { return(mmeaffinityWithRegul(model,muhat, lambda, xtol_rel , maxeval , tolIpfp , maxiterIpfp , print_level)) }
 }
 #
 ################################################################################
