@@ -141,6 +141,13 @@ void trame::transfers::trans()
     }
 }
 
+arma::mat trame::transfers::Psi(arma::mat U, arma::mat V)
+{
+    arma::mat ret = this->Psi(U,V,NULL,NULL);
+    //
+    return ret;
+}
+
 arma::mat trame::transfers::Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys)
 {
     arma::uvec x_ind, y_ind;
@@ -678,6 +685,13 @@ finished:
     return ret;
 }
 
+arma::mat trame::transfers::UW(arma::mat Ws)
+{
+    arma::mat ret = this->UW(Ws,NULL,NULL);
+    //
+    return ret;
+}
+
 arma::mat trame::transfers::UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys)
 {
     arma::uvec x_ind, y_ind;
@@ -702,6 +716,13 @@ arma::mat trame::transfers::UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys)
 double trame::transfers::UW(double Ws, int x_ind, int y_ind)
 {
     double ret = - Psi((double) 0.0,-Ws,x_ind,y_ind);
+    //
+    return ret;
+}
+
+arma::mat trame::transfers::VW(arma::mat Ws)
+{
+    arma::mat ret = this->VW(Ws,NULL,NULL);
     //
     return ret;
 }
