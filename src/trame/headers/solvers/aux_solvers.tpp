@@ -259,3 +259,43 @@ double zeroin_tmp(double ax, double bx, double (*f)(double x, const trame_zeroin
 	//
 	return b;
 }
+
+/*
+ * build disaggregate epsilon function; used in Cupids_LP
+ * takes U_xy and arums as input; returns U_iy as output
+ *
+ * Keith O'Hara
+ * 08/23/2016
+ */
+
+int build_disaggregate_epsilon (arma::vec n, empirical arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix)
+{
+    int nbDraws = arums_emp_inp.aux_nbDraws;
+    int nbI = nbI * nbDraws;
+
+    arma::vec I_01(nbX);
+    arma::mat epsilon;
+    arma::mat epsilons = arma::zeros(nbI,nbY+1);
+    I_ix.zeros(nbI,nbX);
+    //
+    for (x=0; x < nbX; x++) {
+        if (arums_emp_inp) {
+            epsilon = arums_emp_inp.atoms;
+        } else {
+            epsilon = arums_emp_inp.atoms.slice(x);
+        }
+        //
+        epsilons.rows(x*nbDraws,(x+1)nbDraws-1) = epsilon;
+        //
+        I_01.zeros();
+        I_01(x) = 1;
+        
+        I_ix.rows(x*nbDraws,(x+1)nbDraws-1) = arma::repmat(I_01.t(),nbDraws,1);
+    }
+    //
+    epsilon_iy = epsilons.cols(0,nbY-1);
+    epsilon0_i = epsilons.col(nbY);
+    //
+    return nbDraws;
+}
+
