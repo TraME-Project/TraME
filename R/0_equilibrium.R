@@ -701,7 +701,7 @@ CupidsLP <- function(market, xFirst=TRUE, notifications=FALSE)
     mu = t(I_ix) %*% muiy
     
     val = sum(ni*result$solution[1:nbI]) + sum(mj*result$solution[(nbI+1):(nbI+nbJ)])
-    #
+    # Keith: why is 'val' calculated if result$objval is returned?
     ret = list(success=TRUE,
                mu=mu,
                mux0 = market$n - apply(mu,1,sum),
