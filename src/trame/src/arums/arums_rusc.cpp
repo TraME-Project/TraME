@@ -213,7 +213,7 @@ double trame::rusc::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat
     mu_out.set_size(nbX,nbY);
     arma::mat U_x_temp, mux_temp;
     //
-    for(i=0; i<nbX; i++){
+    for (i=0; i<nbX; i++) {
         val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mux_temp,i);
         //
         val += n(i)*val_temp;

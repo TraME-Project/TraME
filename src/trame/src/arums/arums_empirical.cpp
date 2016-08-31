@@ -253,10 +253,6 @@ double trame::empirical::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& 
     int i;
     double val = 0.0, val_x = 0.0;
 
-    if (TRAME_PRESOLVED_GSTAR!=true) {
-        presolve_LP_Gstar();
-    }
-
     U_out.set_size(nbX,nbY);
     arma::mat U_x;
     //
@@ -272,6 +268,10 @@ double trame::empirical::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& 
 
 double trame::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
 {
+    if (!TRAME_PRESOLVED_GSTAR) {
+        presolve_LP_Gstar();
+    }
+    //
     int jj;
     double val_x = 0.0;
     arma::mat Phi, U_x_temp;
@@ -346,10 +346,6 @@ double trame::empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma
     int i;
     double val=0.0, val_temp;
 
-    if (!TRAME_PRESOLVED_GBAR) {
-        presolve_LP_Gbar();
-    }
-
     U_out.set_size(nbX,nbY);
     mu_out.set_size(nbX,nbY);
     arma::mat U_x_temp, mu_x_temp;
@@ -367,6 +363,10 @@ double trame::empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma
 
 double trame::empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
+    if (!TRAME_PRESOLVED_GBAR) {
+        presolve_LP_Gbar();
+    }
+    //
     int jj;
     double val_x=0.0;
     arma::mat Phi, U_x_temp;

@@ -89,12 +89,12 @@ double trame::logit::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_ou
     arma::mat mu_x_0;
     arma::mat n_repd = arma::repmat(n,1,nbY);
     //
-    if(outsideOption){
+    if (outsideOption) {
         mu_x_0 = n - arma::sum(mu_inp,1);
         
         val   = sigma * ( arma::accu(mu_inp % arma::log(mu_inp/n_repd)) + arma::accu(mu_x_0 % arma::log(mu_x_0/n)) );
         U_out = sigma * arma::log(elem_div(mu_inp, mu_x_0));
-    }else{
+    } else {
         val   = sigma * arma::accu(mu_inp % arma::log(mu_inp/n_repd));
         U_out = sigma * arma::log(mu_inp / n_repd);
     }
@@ -108,12 +108,12 @@ double trame::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out)
     
     double mu0;
     //
-    if(outsideOption){
+    if (outsideOption) {
         mu0 = 1 - arma::accu(mu_x_inp);
         
         val_x   = sigma * ( mu0 * std::log(mu0) + arma::accu(mu_x_inp % arma::log(mu_x_inp)) );
         U_x_out = sigma * arma::log(mu_x_inp / mu0);
-    }else{
+    } else {
         val_x   = sigma * arma::accu(mu_x_inp % arma::log(mu_x_inp));
         U_x_out = sigma * arma::log(mu_x_inp);
     }
@@ -126,8 +126,10 @@ double trame::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x
 {
     double val_x = 0.0;
 
-    if (mu_x_inp.n_rows > 1) {
+    if (mu_x_inp.n_rows > 1 && mu_x_inp.n_cols > 1) {
         val_x = this->Gstarx(mu_x_inp.row(x).t(),U_x_out);
+    } if (mu_x_inp.n_rows == 1 && mu_x_inp.n_cols > 1) { 
+        val_x = this->Gstarx(mu_x_inp.t(),U_x_out);
     } else {
         val_x = this->Gstarx(mu_x_inp,U_x_out);
     }
@@ -144,7 +146,7 @@ double trame::logit::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::ma
     mu_out.set_size(nbX,nbY);
     arma::mat U_x_temp, mu_x_temp;
     //
-    for(i=0; i<nbX; i++){
+    for (i=0; i<nbX; i++) {
         val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp);
         //
         val += n(i)*val_temp;
@@ -193,19 +195,19 @@ void trame::logit::D2G(arma::mat &H, arma::vec n, bool xFirst)
     arma::mat mu_xy = mu_sol;
     H.zeros(nbX*nbY,nbX*nbY);
     //
-    for(x = 0; x < nbX; x++){
-        for(y = 0; y < nbY; y++){
-            for(yprime = 0; yprime < nbY; yprime++){
-                if(xFirst){
-                    if(y==yprime){
+    for (x = 0; x < nbX; x++) {
+        for (y = 0; y < nbY; y++) {
+            for (yprime = 0; yprime < nbY; yprime++) {
+                if (xFirst) {
+                    if (y==yprime) {
                         H(x + nbX*y, x + nbX*yprime) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
-                    }else{
+                    } else {
                         H(x + nbX*y, x + nbX*yprime) = - mu_xy(x,y)*mu_xy(x,yprime) / (n(x)*sigma);
                     }
-                }else{
-                    if(y==yprime){
+                } else {
+                    if (y==yprime) {
                         H(y + nbY*x, yprime + nbY*x) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
-                    }else{
+                    } else {
                         H(y + nbY*x, yprime + nbY*x) = - mu_xy(x,y)*mu_xy(x,yprime) / (n(x)*sigma);
                     }
                 }
@@ -225,19 +227,19 @@ void trame::logit::D2Gstar(arma::mat &H, arma::vec n, bool xFirst)
     
     H.zeros(nbX*nbY,nbX*nbY);
     //
-    for(x = 0; x < nbX; x++){
-        for(y = 0; y < nbY; y++){
-            for(yprime = 0; yprime < nbY; yprime++){
-                if(xFirst){
-                    if(y==yprime){
+    for (x = 0; x < nbX; x++) {
+        for (y = 0; y < nbY; y++) {
+            for (yprime = 0; yprime < nbY; yprime++) {
+                if (xFirst) {
+                    if (y==yprime) {
                         H(x + nbX*y, x + nbX*yprime) = mu_x_0_recip(x) + mu_xy_recip(x,y);
                     }else{
                         H(x + nbX*y, x + nbX*yprime) = mu_x_0_recip(x);
                     }
-                }else{
-                    if(y==yprime){
+                } else {
+                    if (y==yprime) {
                         H(y + nbY*x, yprime + nbY*x) = mu_x_0_recip(x) + mu_xy_recip(x,y);
-                    }else{
+                    } else {
                         H(y + nbY*x, yprime + nbY*x) = mu_x_0_recip(x);
                     }
                 }
@@ -251,23 +253,23 @@ void trame::logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dthe
 {
     arma::mat logmu_temp, mu_x_0;
     
-    if(dtheta.n_elem==0){
+    if (dtheta.n_elem==0) {
         ret.zeros(nbX*nbY,0);
-    }else{
-        if(outsideOption){
+    } else {
+        if (outsideOption) {
             mu_x_0 = arma::repmat(n - arma::sum(mu,1),1,mu.n_cols);
             
-            if(xFirst){
+            if (xFirst) {
                 logmu_temp = arma::vectorise(arma::log(mu/mu_x_0));
-            }else{
+            } else {
                 logmu_temp = arma::vectorise(arma::trans(arma::log(mu/mu_x_0)));
             }
             //
             ret = arma::vectorise(dtheta) % logmu_temp;
-        }else{
-            if(xFirst){
+        } else {
+            if (xFirst) {
                 logmu_temp = arma::vectorise(log(mu));
-            }else{
+            } else {
                 logmu_temp = arma::vectorise(arma::trans(arma::log(mu)));
             }
             //

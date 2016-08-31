@@ -58,7 +58,7 @@ double trame::none::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
     mu_out.set_size(nbX,nbY);
     arma::mat mu_x_temp;
     //
-    for(i=0; i<nbX; i++){
+    for (i=0; i<nbX; i++) {
         val_x = Gx(U_inp.row(i).t(),mu_x_temp);
         //
         val += n(i)*val_x;
@@ -90,8 +90,10 @@ double trame::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
 {
     double val_x = 0.0;
 
-    if (U_x_inp.n_rows > 1) {
+    if (U_x_inp.n_rows > 1 && U_x_inp.n_cols > 1) {
         val_x = this->Gx(U_x_inp.row(x).t(),mu_x_out);
+    } if (U_x_inp.n_rows == 1 && U_x_inp.n_cols > 1) { 
+        val_x = this->Gx(U_x_inp.t(),mu_x_out);
     } else {
         val_x = this->Gx(U_x_inp,mu_x_out);
     }
@@ -122,7 +124,7 @@ double trame::none::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat
     mu_out.set_size(nbX,nbY);
     arma::mat U_x_temp, mu_x_temp;
     //
-    for(i=0; i<nbX; i++){
+    for (i=0; i<nbX; i++) {
         val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp);
         //
         val += n(i)*val_temp;
@@ -144,13 +146,13 @@ double trame::none::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& U_x_out,
     mu_x_out.set_size(nbY0,1);
     double cumul = arma::as_scalar(mubarx(srt_ind(count_int)));
     //
-    while((count_int < nbY0-1) & (cumul < 1.0) & (Ubarx(srt_ind(count_int)) > 0)){
+    while ((count_int < nbY0-1) & (cumul < 1.0) & (Ubarx(srt_ind(count_int)) > 0)) {
         mu_x_out(srt_ind(count_int)) = mubarx(srt_ind(count_int));
         count_int++;
         cumul += mubarx(srt_ind(count_int)); // Keith: is this in the correct place?
     }
     //
-    if(Ubarx(srt_ind(count_int)) > 0){
+    if (Ubarx(srt_ind(count_int)) > 0) {
         mu_x_out(srt_ind(count_int)) = mubarx(srt_ind(count_int)) + 1 - cumul;
     }
     //
