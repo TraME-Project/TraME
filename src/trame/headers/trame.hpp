@@ -40,6 +40,7 @@ namespace trame
     #include "solvers/darum.hpp"
     #include "solvers/eap_nash.hpp"
     #include "solvers/jacobi.hpp"
+    #include "solvers/cupids_lp.hpp"
 }
 
 #endif
