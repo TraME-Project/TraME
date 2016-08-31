@@ -277,7 +277,7 @@ int build_disaggregate_epsilon (arma::vec n, Ta arums_emp_inp, arma::mat& epsilo
     int nbY = arums_emp_inp.nbY;
 
     int nbDraws = arums_emp_inp.aux_nbDraws;
-    int nbI = nbI * nbDraws;
+    int nbI = nbX * nbDraws;
 
     arma::vec I_01(nbX);
     arma::mat epsilon;
@@ -285,7 +285,7 @@ int build_disaggregate_epsilon (arma::vec n, Ta arums_emp_inp, arma::mat& epsilo
     I_ix.zeros(nbI,nbX);
     //
     for (int x=0; x < nbX; x++) {
-        if (arums_emp_inp) {
+        if (arums_emp_inp.xHomogenous) {
             epsilon = arums_emp_inp.atoms;
         } else {
             epsilon = arums_emp_inp.atoms.slice(x);

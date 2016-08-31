@@ -51,6 +51,7 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
     transfers trans_obj = market.trans_obj;
 
     arma::mat phi = trans_obj.phi;
+    printf("cupids_lp 1\n");
     //
     arma::mat epsilon_iy, epsilon0_i, I_ix;
     arma::mat eta_xj, eta0_j, I_yj;
@@ -58,6 +59,7 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
     int nbDraws_1 = build_disaggregate_epsilon(n,arums_G,epsilon_iy,epsilon0_i,I_ix);
     int nbDraws_2 = build_disaggregate_epsilon(m,arums_H,eta_xj,eta0_j,I_yj);
 
+    printf("cupids_lp 2\n");
     eta_xj = eta_xj.t();
 
     epsilon0_i = arma::vectorise(epsilon0_i);
@@ -66,11 +68,12 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
     I_yj = I_yj.t();
     //
     arma::vec n_i = arma::vectorise(I_ix * n) / (double) nbDraws_1;
-    arma::vec m_j = arma::vectorise(m * I_yj) / (double) nbDraws_2;
+    arma::vec m_j = arma::vectorise(m.t() * I_yj) / (double) nbDraws_2;
 
     int nbI = n_i.n_elem;
     int nbJ = m_j.n_elem;
     //
+    printf("cupids_lp 3\n");
     arma::mat A_11_lp = arma::kron(arma::ones(nbY,1), arma::eye(nbI,nbI));
     arma::mat A_12_lp = arma::zeros(nbI*nbY,nbJ);
     arma::mat A_13_lp = arma::kron(- arma::eye(nbY,nbY), I_ix);
@@ -94,19 +97,25 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
         sense_lp[jj] = '>';
     }
 
+    printf("cupids_lp 4\n");
     arma::vec lb_lp(epsilon0_i.n_elem + eta0_j.n_elem + nbX*nbY);
     lb_lp.rows(0,epsilon0_i.n_elem-1) = arma::vectorise(epsilon0_i);
     lb_lp.rows(epsilon0_i.n_elem,epsilon0_i.n_elem + eta0_j.n_elem - 1) = eta0_j;
     lb_lp.rows(epsilon0_i.n_elem + eta0_j.n_elem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
+    std::cout << lb_lp.n_rows << std::endl;
 
+    printf("cupids_lp 5\n");
     arma::vec rhs_lp(epsilon_iy.n_elem + eta_xj.n_elem);
     rhs_lp.rows(0,epsilon_iy.n_elem-1) = arma::vectorise(epsilon_iy);
-    rhs_lp.rows(epsilon_iy.n_elem,rhs_lp.n_elem-1) = eta_xj + phi * I_yj;
+    rhs_lp.rows(epsilon_iy.n_elem,rhs_lp.n_elem-1) = arma::vectorise(eta_xj + phi * I_yj);
+    std::cout << rhs_lp.n_rows << std::endl;
 
+    printf("cupids_lp 6\n");
     arma::vec obj_lp(nbI + nbJ + nbX*nbY);
     obj_lp.rows(0,nbI-1) = n_i;
     obj_lp.rows(nbI, nbI + nbJ-1) = m_j;
     obj_lp.rows(nbI + nbJ, obj_lp.n_elem-1).zeros();
+    std::cout << obj_lp.n_rows << std::endl;
 
     int modelSense = 0; // minimize
     

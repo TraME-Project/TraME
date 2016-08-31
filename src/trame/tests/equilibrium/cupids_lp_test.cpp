@@ -6,8 +6,8 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/equilibrium
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include eap_nash_test.cpp -c -o eap_nash_test.o
- * g++-mp-5 -O2 -Wall -o eap_nash.test eap_nash_test.o -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include cupids_lp_test.cpp -c -o cupids_lp_test.o
+ * g++-mp-5 -O2 -Wall -o cupids_lp.test cupids_lp_test.o -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -36,23 +36,21 @@ int main()
     printf("\n");
     //
     // TU
-    trame::dse<trame::logit> dse_obj_TU;
+    trame::dse<trame::empirical> dse_obj_TU;
 
     trame::logit logit_1, logit_2;
     logit_1.build(nbX,nbY,1.0,true);
     logit_2.build(nbY,nbX,1.0,true);
 
-    trame::empirical logit_sim_1;
-    trame::empirical logit_sim_2;
+    trame::empirical logit_sim_1 = logit_1.simul();
+    trame::empirical logit_sim_2 = logit_2.simul();
 
-    logit_1.simul
-
-    dse_obj_TU.build_TU(n,m,phi,logit_1,logit_2,false);
+    dse_obj_TU.build_TU(n,m,phi,logit_sim_1,logit_sim_2,false);
     //
     arma::vec mux0, mu0y;
     arma::mat mu_TU, U, V;
 
-    //trame::cupids_lp(dse_obj_LTU, true, NULL, mu_TU, mux0, mu0y, U, V);
+    trame::cupids_lp(dse_obj_TU, true, mu_TU, mux0, mu0y, U, V);
 
     //std::cout << "Solution of TU-none problem using eap_nash:\n" << std::endl;
     //arma::cout << "mu:\n" << mu_LTU << arma::endl;
