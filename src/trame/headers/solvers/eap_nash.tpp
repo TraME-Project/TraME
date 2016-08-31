@@ -99,7 +99,7 @@ bool eap_nash(dse<Ta> market, bool xFirst, double* tol_inp, arma::mat& mu, arma:
         }
     }
 
-    int modelSense = 1; // minimize
+    int modelSense = 1; // maximize
 
     arma::mat sol_mat(n_lp, 2);
     arma::mat dual_mat(k_lp, 2);
