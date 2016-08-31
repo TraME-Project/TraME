@@ -32,9 +32,8 @@ estimate.default = mle
 ################################################################################
 ########################       affinity model            #######################
 ################################################################################
-# The TU_logit and the affinity models should be merged 
 #
-buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1, noSingles=FALSE)
+buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
 {
   nbX = dim(Xvals)[1]
   nbY = dim(Yvals)[1]
@@ -48,6 +47,8 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1, noSingl
   if(is.null(m)){
     m = rep(1,nbY)
   }
+  # 
+  if ( sum(n) != sum(n) ) {stop("Unequal mass of individuals in an affinity model.")}
   #
   neededNorm = defaultNorm(noSingles)
   #
@@ -57,7 +58,7 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1, noSingl
              nbX = nbX, nbY = nbY,
              n=n, m=m,
              sigma = sigma,
-             neededNorm = neededNorm,
+             neededNorm = F,
              phi_xyk_aux = kronecker(Yvals,Xvals),
              Phi_xyk = function(model) 
                (model$phi_xyk_aux),
@@ -74,7 +75,7 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1, noSingl
 parametricMarket.affinity <- function(model, theta) 
   (build_market_TU_logit(model$n,model$m,
                          matrix(model$Phi_xy(model,c(theta)), nrow=model$nbX),
-                         neededNorm=model$neededNorm))
+                         neededNorm=F))
 
 dparam.affinity <- function(model, dparams=diag(model$nbParams))
   (list(dparamsPsi = model$Phi_xy(model, dparams),
@@ -104,7 +105,7 @@ mmeaffinityNoRegul <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, tolIpfp
   totmass = sum(model$n)
   
   if ( sum(model$n) != totmass ) {stop("Unequal mass of individuals in an affinity model.")}
-  if (sum(muhat) !=  totmass) {stop("Total number of couples does not conicide with margins.")}
+  if (sum(muhat) !=  totmass) {stop("Total number of couples does not coincide with margins.")}
   p = model$n / totmass
   q = model$m / totmass
   IX=rep(1,nbX)
