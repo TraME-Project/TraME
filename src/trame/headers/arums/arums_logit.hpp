@@ -71,5 +71,8 @@ class logit
         void D2Gstar(arma::mat &H, arma::vec n, bool xFirst);
         void dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, bool xFirst);
         
-        void simul(empirical &ret, int nbDraws, int seed);
+        empirical simul();
+        empirical simul(int* nbDraws, int* seed);
+        void simul(empirical& obj_out);
+        void simul(empirical& obj_out, int* nbDraws, int* seed);
 };

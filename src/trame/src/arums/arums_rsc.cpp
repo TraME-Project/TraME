@@ -449,31 +449,68 @@ void trame::rsc::dtheta_NablaGstar(arma::mat& ret, arma::vec n, arma::mat* dthet
     }
 }
 
-void trame::rsc::simul(empirical &ret, int nbDraws, int seed_val)
+trame::empirical trame::rsc::simul()
 {
-    int i;
-    arma::arma_rng::set_seed(seed_val);
+    empirical emp_obj;
+    
+    this->simul(emp_obj,NULL,NULL);
     //
-    arma::cube atoms(nbDraws,nbY+1,nbX);
+    return emp_obj;
+}
 
-    for (i=0; i<nbX; i++) {
-        atoms.slice(i) = quantile(arma::randu(nbDraws,1)) * zeta.row(i);
-    }
+trame::empirical trame::rsc::simul(int* nbDraws, int* seed)
+{
+    empirical emp_obj;
+    
+    this->simul(emp_obj,nbDraws,seed);
     //
-    ret.nbX = nbX;
-    ret.nbY = nbY;
-    ret.nbParams = atoms.n_elem;
-    ret.atoms = atoms;
-    ret.aux_nbDraws = nbDraws;
-    ret.xHomogenous = false;
-    ret.outsideOption = outsideOption;
-    if (outsideOption) {
-        ret.nbOptions = nbY + 1;
+    return emp_obj;
+}
+
+void trame::rsc::simul(empirical& obj_out)
+{
+    this->simul(obj_out,NULL,NULL);
+}
+
+void trame::rsc::simul(empirical& obj_out, int* nbDraws, int* seed_val)
+{
+    int n_draws = 0;
+    if (nbDraws) {
+        n_draws = *nbDraws;
     } else {
-        ret.nbOptions = nbY;
+#ifdef TRAME_DEFAULT_SIM_DRAWS
+        n_draws = TRAME_DEFAULT_SIM_DRAWS;
+#else
+        n_draws = 1000;
+#endif
     }
     //
-    arma::arma_rng::set_seed_random(); // need to reset the seed
+    if (seed_val) {
+        arma::arma_rng::set_seed(*seed_val);
+    }
+    //
+    arma::cube atoms(n_draws,nbY+1,nbX);
+
+    for (int i=0; i<nbX; i++) {
+        atoms.slice(i) = quantile(arma::randu(n_draws,1)) * zeta.row(i);
+    }
+    //
+    obj_out.nbX = nbX;
+    obj_out.nbY = nbY;
+    obj_out.nbParams = atoms.n_elem;
+    obj_out.atoms = atoms;
+    obj_out.aux_nbDraws = n_draws;
+    obj_out.xHomogenous = false;
+    obj_out.outsideOption = outsideOption;
+    if (outsideOption) {
+        obj_out.nbOptions = nbY + 1;
+    } else {
+        obj_out.nbOptions = nbY;
+    }
+    //
+    if (seed_val) {
+        arma::arma_rng::set_seed_random(); // need to reset the seed
+    }
 }
 
 /*

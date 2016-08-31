@@ -276,28 +276,63 @@ double trame::rusc::Gbarx(arma::mat Ubar_x, arma::mat mubar_x, arma::mat& U_x_ou
     return val_x;
 }
 
-void trame::rusc::simul(empirical &ret, int nbDraws, int seed_val)
+trame::empirical trame::rusc::simul()
 {
-    int i;
-    arma::arma_rng::set_seed(seed_val);
-    //
-    arma::cube atoms(nbDraws,nbY+1,nbX);
+    empirical emp_obj;
     
-    for (i=0; i<nbX; i++) {
-        atoms.slice(i) = arma::randu(nbDraws,1) * zeta.row(i);
+    this->simul(emp_obj,NULL,NULL);
+    //
+    return emp_obj;
+}
+
+trame::empirical trame::rusc::simul(int* nbDraws, int* seed)
+{
+    empirical emp_obj;
+    
+    this->simul(emp_obj,nbDraws,seed);
+    //
+    return emp_obj;
+}
+
+void trame::rusc::simul(empirical& obj_out)
+{
+    this->simul(obj_out,NULL,NULL);
+}
+
+void trame::rusc::simul(empirical& obj_out, int* nbDraws, int* seed_val)
+{
+    int n_draws = 0;
+    if (nbDraws) {
+        n_draws = *nbDraws;
+    } else {
+#ifdef TRAME_DEFAULT_SIM_DRAWS
+        n_draws = TRAME_DEFAULT_SIM_DRAWS;
+#else
+        n_draws = 1000;
+#endif
     }
     //
-    ret.nbX = nbX;
-    ret.nbY = nbY;
-    ret.nbParams = atoms.n_elem;
-    ret.atoms = atoms;
-    ret.aux_nbDraws = nbDraws;
-    ret.xHomogenous = false;
-    ret.outsideOption = outsideOption;
+    if (seed_val) {
+        arma::arma_rng::set_seed(*seed_val);
+    }
+    //
+    arma::cube atoms(n_draws,nbY+1,nbX);
+    
+    for (int i=0; i<nbX; i++) {
+        atoms.slice(i) = arma::randu(n_draws,1) * zeta.row(i);
+    }
+    //
+    obj_out.nbX = nbX;
+    obj_out.nbY = nbY;
+    obj_out.nbParams = atoms.n_elem;
+    obj_out.atoms = atoms;
+    obj_out.aux_nbDraws = n_draws;
+    obj_out.xHomogenous = false;
+    obj_out.outsideOption = outsideOption;
     if (outsideOption) {
-        ret.nbOptions = nbY + 1;
+        obj_out.nbOptions = nbY + 1;
     } else {
-        ret.nbOptions = nbY;
+        obj_out.nbOptions = nbY;
     }
     //
     arma::arma_rng::set_seed_random(); // need to reset the seed

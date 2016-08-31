@@ -50,38 +50,6 @@ void trame::probit::build(int nbX_inp, int nbY_inp, bool outsideOption_inp)
     nbParams = (nbX_inp * aux_nbOptions * (aux_nbOptions-1))/2;
 }
 
-void trame::probit::simul(empirical &ret, int nbDraws, int seed_val)
-{
-    arma::arma_rng::set_seed(seed_val);
-    //
-    int j;
-    arma::vec V;
-    arma::mat Q, SqrtCovar;
-    arma::cube atoms(nbDraws,aux_nbOptions,nbX);
-    
-    for (j=0; j<nbX; j++) {
-        eig_sym(V, Q, Covar.slice(j));
-        SqrtCovar = Q * arma::diagmat(1.0/arma::sqrt(V)) * Q.t();
-        //
-        atoms.slice(j) = arma::randn(nbDraws,aux_nbOptions) * SqrtCovar;
-    }
-    //
-    ret.nbX = nbX;
-    ret.nbY = nbY;
-    ret.nbParams = atoms.n_elem;
-    ret.atoms = atoms;
-    ret.aux_nbDraws = nbDraws;
-    ret.xHomogenous = false;
-    ret.outsideOption = outsideOption;
-    if (outsideOption) {
-        ret.nbOptions = nbY + 1;
-    } else {
-        ret.nbOptions = nbY;
-    }
-    //
-    arma::arma_rng::set_seed_random(); // need to reset the seed
-}
-
 void trame::probit::unifCorrelCovMatrices()
 {
     int i;
@@ -118,4 +86,74 @@ arma::cube trame::probit::unifCorrelCovMatrices(double rho_inp)
     }
     //
     return Covar_ret;
+}
+
+trame::empirical trame::probit::simul()
+{
+    empirical emp_obj;
+    
+    this->simul(emp_obj,NULL,NULL);
+    //
+    return emp_obj;
+}
+
+trame::empirical trame::probit::simul(int* nbDraws, int* seed)
+{
+    empirical emp_obj;
+    
+    this->simul(emp_obj,nbDraws,seed);
+    //
+    return emp_obj;
+}
+
+void trame::probit::simul(empirical& obj_out)
+{
+    this->simul(obj_out,NULL,NULL);
+}
+
+void trame::probit::simul(empirical& obj_out, int* nbDraws, int* seed_val)
+{
+    int n_draws = 0;
+    if (nbDraws) {
+        n_draws = *nbDraws;
+    } else {
+#ifdef TRAME_DEFAULT_SIM_DRAWS
+        n_draws = TRAME_DEFAULT_SIM_DRAWS;
+#else
+        n_draws = 1000;
+#endif
+    }
+    //
+    if (seed_val) {
+        arma::arma_rng::set_seed(*seed_val);
+    }
+    //
+    int j;
+    arma::vec V;
+    arma::mat Q, SqrtCovar;
+    arma::cube atoms(n_draws,aux_nbOptions,nbX);
+    
+    for (j=0; j<nbX; j++) {
+        eig_sym(V, Q, Covar.slice(j));
+        SqrtCovar = Q * arma::diagmat(1.0/arma::sqrt(V)) * Q.t();
+        //
+        atoms.slice(j) = arma::randn(n_draws,aux_nbOptions) * SqrtCovar;
+    }
+    //
+    obj_out.nbX = nbX;
+    obj_out.nbY = nbY;
+    obj_out.nbParams = atoms.n_elem;
+    obj_out.atoms = atoms;
+    obj_out.aux_nbDraws = n_draws;
+    obj_out.xHomogenous = false;
+    obj_out.outsideOption = outsideOption;
+    if (outsideOption) {
+        obj_out.nbOptions = nbY + 1;
+    } else {
+        obj_out.nbOptions = nbY;
+    }
+    //
+    if (seed_val) {
+        arma::arma_rng::set_seed_random(); // need to reset the seed
+    }
 }

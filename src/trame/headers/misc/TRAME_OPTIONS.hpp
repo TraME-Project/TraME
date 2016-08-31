@@ -30,3 +30,7 @@
 #else
 #include "armadillo"
 #endif
+
+#ifndef TRAME_DEFAULT_SIM_DRAWS
+#define TRAME_DEFAULT_SIM_DRAWS 1000;
+#endif

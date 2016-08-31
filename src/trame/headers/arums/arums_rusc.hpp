@@ -71,5 +71,8 @@ class rusc
         double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out);
         double Gbarx(arma::mat Ubar_x, arma::mat mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
         
-        void simul(empirical &ret, int nbDraws, int seed);
+        empirical simul();
+        empirical simul(int* nbDraws, int* seed);
+        void simul(empirical& obj_out);
+        void simul(empirical& obj_out, int* nbDraws, int* seed);
 };

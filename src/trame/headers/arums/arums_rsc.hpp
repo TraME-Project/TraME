@@ -98,7 +98,10 @@ class rsc
         void D2Gstar (arma::mat& hess, arma::vec n, bool x_first);
         void dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first);
         
-        void simul(empirical &ret, int nbDraws, int seed);
+        empirical simul();
+        empirical simul(int* nbDraws, int* seed);
+        void simul(empirical& obj_out);
+        void simul(empirical& obj_out, int* nbDraws, int* seed);
         
         double cdf (double x);
         arma::vec cdf (arma::vec x);

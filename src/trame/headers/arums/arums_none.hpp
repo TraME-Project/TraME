@@ -65,5 +65,8 @@ class none
         
         arma::vec dtheta_NablaGstar();
         
-        void simul(empirical &ret, int nbDraws, int seed);
+        empirical simul();
+        empirical simul(int* nbDraws, int* seed);
+        void simul(empirical& obj_out);
+        void simul(empirical& obj_out, int* nbDraws, int* seed);
 };

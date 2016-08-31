@@ -51,7 +51,11 @@ class probit
 
         void build(int nbX_inp, int nbY_inp, bool outsideOption_inp);
 
-        void simul(empirical &ret, int nbDraws, int seed);
         void unifCorrelCovMatrices();
         arma::cube unifCorrelCovMatrices(double rho);
+
+        empirical simul();
+        empirical simul(int* nbDraws, int* seed);
+        void simul(empirical& obj_out);
+        void simul(empirical& obj_out, int* nbDraws, int* seed);
 };
