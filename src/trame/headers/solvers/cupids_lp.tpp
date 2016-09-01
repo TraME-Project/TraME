@@ -51,7 +51,6 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
     transfers trans_obj = market.trans_obj;
 
     arma::mat phi = trans_obj.phi;
-    printf("cupids_lp 1\n");
     //
     arma::mat epsilon_iy, epsilon0_i, I_ix;
     arma::mat eta_xj, eta0_j, I_yj;
@@ -59,7 +58,6 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
     int nbDraws_1 = build_disaggregate_epsilon(n,arums_G,epsilon_iy,epsilon0_i,I_ix);
     int nbDraws_2 = build_disaggregate_epsilon(m,arums_H,eta_xj,eta0_j,I_yj);
 
-    printf("cupids_lp 2\n");
     eta_xj = eta_xj.t();
 
     epsilon0_i = arma::vectorise(epsilon0_i);
@@ -73,49 +71,101 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
     int nbI = n_i.n_elem;
     int nbJ = m_j.n_elem;
     //
-    printf("cupids_lp 3\n");
-    arma::mat A_11_lp = arma::kron(arma::ones(nbY,1), arma::eye(nbI,nbI));
-    arma::mat A_12_lp = arma::zeros(nbI*nbY,nbJ);
-    arma::mat A_13_lp = arma::kron(- arma::eye(nbY,nbY), I_ix);
+    // use batch allocation for sparse matrices to construct the constraint matrix (A)
+    int jj, kk, ll, count_val = 0;
+    int num_non_zero = nbI*nbY + nbJ*nbX + nbDraws_1*(nbX*nbY) + nbX*nbDraws_1*nbY;
 
-    arma::mat A_1_lp = arma::join_rows(arma::join_rows(A_11_lp,A_12_lp),A_13_lp);
+    arma::umat location_mat(2,num_non_zero);
+    arma::rowvec vals_mat(num_non_zero);
 
-    arma::mat A_21_lp = arma::zeros(nbX*nbJ,nbI);
-    arma::mat A_22_lp = arma::kron(arma::eye(nbJ,nbJ),arma::ones(nbX,1));
-    arma::mat A_23_lp = arma::kron(I_yj.t(), arma::eye(nbX,nbX));
+    // diagonal blocks
+    for (jj=0; jj<nbY; jj++) {
+        for (kk=0; kk<nbI; kk++) {
+            location_mat(0,count_val) = kk; // rows
+            location_mat(1,count_val) = kk + jj*nbI; // columns
 
-    arma::mat A_2_lp = arma::join_rows(arma::join_rows(A_21_lp,A_22_lp),A_23_lp);
+            vals_mat(count_val) = 1;
 
-    arma::mat A_lp = arma::join_cols(A_1_lp,A_2_lp);
+            ++count_val;
+        }
+    }
 
-    int k_lp = A_lp.n_rows;
-    int n_lp = A_lp.n_cols;
+    // mid diagonal block (mid-right)
+    for (jj=0; jj<nbJ; jj++) {
+        for (kk=0; kk<nbX; kk++) {
+            location_mat(0,count_val) = nbI + jj; // rows
+            location_mat(1,count_val) = nbI*nbY + jj*nbX + kk; // columns
 
-    int jj;
+            vals_mat(count_val) = 1;
+
+            ++count_val;
+        }
+    }
+
+    // lower blocks
+    for (jj=0; jj<(nbX*nbY); jj++) {
+        for (kk=0; kk<nbDraws_1; kk++) {
+            location_mat(0,count_val) = nbI + nbJ + jj; // rows
+            location_mat(1,count_val) = jj*nbDraws_1 + kk; // columns
+
+            vals_mat(count_val) = -1;
+
+            ++count_val;
+        }
+    }
+
+    for (jj=0; jj<nbY; jj++) {
+        for (kk=0; kk<nbDraws_1; kk++) {
+            for (ll=0; ll<nbX; ll++) {
+                location_mat(0,count_val) = nbI + nbJ + jj*nbX + ll; // rows
+                location_mat(1,count_val) = nbI*nbY + kk*nbX + jj*nbX*nbDraws_1 + ll; // columns
+
+                vals_mat(count_val) = 1;
+
+                ++count_val;
+            }
+        }
+    }
+    
+    arma::sp_mat A_sp_t(location_mat,vals_mat); // transpose of A
+    
+    int k_lp = A_sp_t.n_cols; // cols as we're working with the transpose
+    int n_lp = A_sp_t.n_rows; // rows as we're working with the transpose
+
+    const arma::uword* row_vals = &(*A_sp_t.row_indices);
+    const arma::uword* col_vals = &(*A_sp_t.col_ptrs);
+
+    int* vind_lp = new int[num_non_zero];
+    int* vbeg_lp = new int[k_lp+1];
+    double* vval_lp = new double[num_non_zero];
+
+    for (jj=0; jj<num_non_zero; jj++) {
+        vind_lp[jj] = row_vals[jj];
+        vval_lp[jj] = A_sp_t.values[jj];
+    }
+
+    for (jj=0; jj<k_lp+1; jj++) {
+        vbeg_lp[jj] = col_vals[jj];
+    }
+    //
     char* sense_lp = new char[k_lp];
     for (jj=0; jj<k_lp; jj++) {
         sense_lp[jj] = '>';
     }
 
-    printf("cupids_lp 4\n");
     arma::vec lb_lp(epsilon0_i.n_elem + eta0_j.n_elem + nbX*nbY);
     lb_lp.rows(0,epsilon0_i.n_elem-1) = arma::vectorise(epsilon0_i);
     lb_lp.rows(epsilon0_i.n_elem,epsilon0_i.n_elem + eta0_j.n_elem - 1) = eta0_j;
     lb_lp.rows(epsilon0_i.n_elem + eta0_j.n_elem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
-    std::cout << lb_lp.n_rows << std::endl;
 
-    printf("cupids_lp 5\n");
     arma::vec rhs_lp(epsilon_iy.n_elem + eta_xj.n_elem);
     rhs_lp.rows(0,epsilon_iy.n_elem-1) = arma::vectorise(epsilon_iy);
     rhs_lp.rows(epsilon_iy.n_elem,rhs_lp.n_elem-1) = arma::vectorise(eta_xj + phi * I_yj);
-    std::cout << rhs_lp.n_rows << std::endl;
 
-    printf("cupids_lp 6\n");
     arma::vec obj_lp(nbI + nbJ + nbX*nbY);
     obj_lp.rows(0,nbI-1) = n_i;
     obj_lp.rows(nbI, nbI + nbJ-1) = m_j;
     obj_lp.rows(nbI + nbJ, obj_lp.n_elem-1).zeros();
-    std::cout << obj_lp.n_rows << std::endl;
 
     int modelSense = 0; // minimize
     
@@ -126,8 +176,8 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
     double val_lp = 0.0;
     //
     try {
-        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
-
+        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_non_zero, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        
         if (lp_optimal) {
             U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
             V_out = phi - U_out;
