@@ -21,7 +21,7 @@ int main()
     int nbX = 5;
     int nbY = 3;
 
-    int nbDraws = 100;
+    int nbDraws = 1000;
 
     arma::vec n = arma::ones(nbX,1);
     arma::vec m = arma::ones(nbY,1);
@@ -42,8 +42,8 @@ int main()
     logit_1.build(nbX,nbY,1.0,true);
     logit_2.build(nbY,nbX,1.0,true);
 
-    trame::empirical logit_sim_1 = logit_1.simul();
-    trame::empirical logit_sim_2 = logit_2.simul();
+    trame::empirical logit_sim_1 = logit_1.simul(&nbDraws,NULL);
+    trame::empirical logit_sim_2 = logit_2.simul(&nbDraws,NULL);
 
     dse_obj_TU.build_TU(n,m,phi,logit_sim_1,logit_sim_2,false);
     //
@@ -52,8 +52,8 @@ int main()
 
     trame::cupids_lp(dse_obj_TU, true, mu_TU, mux0, mu0y, U, V);
 
-    //std::cout << "Solution of TU-none problem using eap_nash:\n" << std::endl;
-    //arma::cout << "mu:\n" << mu_LTU << arma::endl;
+    std::cout << "Solution of TU-logitSim problem using LP:\n" << std::endl;
+    arma::cout << "mu:\n" << mu_TU << arma::endl;
     //arma::cout << "u:\n" << u << "\n v:\n" << v << arma::endl;
     //
     printf("\n*===================    End of cupids_lp Test    ===================*\n");
