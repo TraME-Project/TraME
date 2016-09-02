@@ -491,7 +491,7 @@ jacobi <- function(market, xFirst=TRUE, notifications=TRUE, wlow=NULL, wup=NULL,
     return(ret)
 }
 
-maxWelfare <- function(market, xFirst=TRUE, notifications=FALSE, tol_rel=1e-8)
+maxWelfare <- function(market, xFirst=TRUE, notifications=TRUE, tol_rel=1e-8)
 {
     if(!is.null(market$neededNorm)){
         stop("maxWelfare does not yet allow for the case without unmatched agents.")
@@ -522,11 +522,19 @@ maxWelfare <- function(market, xFirst=TRUE, notifications=FALSE, tol_rel=1e-8)
     }
     #
     U_init = phi / 2
-    
+    #
+    tm = proc.time()  
     resopt = nloptr(x0 = U_init, eval_f = eval_f,
                     opt = list("algorithm" = "NLOPT_LD_LBFGS",
                                "xtol_rel"=tol_rel,
                                "ftol_rel"=1e-15))
+    #
+    time = proc.time()-tm  
+    time = time["elapsed"] 
+    if(notifications){
+      message(paste0("MaxWelfare converged in ", iter," iterations and ", round(time,digits=2), " seconds.\n"))
+    }
+    
     #
     U = matrix(resopt$solution,nbX,nbY)
     resG = G(market$arumsG,U,market$n)
