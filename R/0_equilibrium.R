@@ -532,7 +532,7 @@ maxWelfare <- function(market, xFirst=TRUE, notifications=TRUE, tol_rel=1e-8)
     time = proc.time()-tm  
     time = time["elapsed"] 
     if(notifications){
-      message(paste0("MaxWelfare converged in ", iter," iterations and ", round(time,digits=2), " seconds.\n"))
+      message(paste0("MaxWelfare converged in ", round(time,digits=2), " seconds.\n"))
     }
     
     #

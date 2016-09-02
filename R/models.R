@@ -50,7 +50,7 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
   # 
   if ( sum(n) != sum(n) ) {stop("Unequal mass of individuals in an affinity model.")}
   #
-  neededNorm = defaultNorm(noSingles)
+  neededNorm = defaultNorm(T)
   #
   ret = list(types = c("itu-rum", "mfe"),
              nbParams=dX*dY,
