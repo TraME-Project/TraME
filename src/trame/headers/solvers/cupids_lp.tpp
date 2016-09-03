@@ -73,12 +73,12 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
     //
     // use batch allocation for sparse matrices to construct the constraint matrix (A)
     int jj, kk, ll, count_val = 0;
-    int num_non_zero = nbI*nbY + nbJ*nbX + nbDraws_1*(nbX*nbY) + nbX*nbDraws_1*nbY;
+    int num_non_zero = nbI*nbY + nbJ*nbX + nbDraws_1*(nbX*nbY) + nbX*nbDraws_2*nbY;
 
     arma::umat location_mat(2,num_non_zero);
     arma::rowvec vals_mat(num_non_zero);
 
-    // diagonal blocks
+    // upper diagonal blocks
     for (jj=0; jj<nbY; jj++) {
         for (kk=0; kk<nbI; kk++) {
             location_mat(0,count_val) = kk; // rows
@@ -115,10 +115,10 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
     }
 
     for (jj=0; jj<nbY; jj++) {
-        for (kk=0; kk<nbDraws_1; kk++) {
+        for (kk=0; kk<nbDraws_2; kk++) {
             for (ll=0; ll<nbX; ll++) {
                 location_mat(0,count_val) = nbI + nbJ + jj*nbX + ll; // rows
-                location_mat(1,count_val) = nbI*nbY + kk*nbX + jj*nbX*nbDraws_1 + ll; // columns
+                location_mat(1,count_val) = nbI*nbY + kk*nbX + jj*nbX*nbDraws_2 + ll; // columns
 
                 vals_mat(count_val) = 1;
 
