@@ -330,7 +330,7 @@ test_cupidsLP <- function(nbX=5, nbY=3, nbDraws=1E3, seed=777)
     message("")
     #
     probitMth = build_probit(unifCorrelCovMatrices(nbX,nbY,0.3))
-    probitWth =  build_probit(unifCorrelCovMatrices(nbY,nbX,0.3))
+    probitWth = build_probit(unifCorrelCovMatrices(nbY,nbX,0.3))
     
     probitM = simul(probitMth,nbDraws,seed)
     probitW = simul(probitWth,nbDraws,seed)
