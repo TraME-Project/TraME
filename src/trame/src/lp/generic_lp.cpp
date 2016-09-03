@@ -35,7 +35,7 @@
 
     #include "gurobi_c++.h"
 
-    bool trame::generic_LP(int k, int n, double *obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat)
+    bool trame::generic_LP(int k, int n, double *obj, double* A, int model_opt_sense, double* rhs, char* constr_sense, double* Q, double* lb, double* ub, double* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat)
     {
         // k: number of constraints ('rows')
         // n: number of variables ('columns')
@@ -63,7 +63,7 @@
                     lhs += A[i+j*k]*vars[j]; // need to switch order; was A[i*n+j]
                 }
             }
-            model.addConstr(lhs, sense[i], rhs[i]);
+            model.addConstr(lhs, constr_sense[i], rhs[i]);
         }
         //
         // Model objective
@@ -74,7 +74,7 @@
                 LPobj += obj[j]*vars[j];
             }
             
-            if (modelSense==1) {
+            if (model_opt_sense==1) {
                 model.setObjective(LPobj,GRB_MAXIMIZE);
             } else {
                 model.setObjective(LPobj,GRB_MINIMIZE);
@@ -93,7 +93,7 @@
                 }
             }
             
-            if (modelSense==1) {
+            if (model_opt_sense==1) {
                 model.setObjective(QPobj,GRB_MAXIMIZE);
             } else {
                 model.setObjective(QPobj,GRB_MINIMIZE);
@@ -129,7 +129,7 @@
         #include "lp/generic_lp_c.h"
     }
     
-    bool trame::generic_LP(int k, int n, double *obj, double* A, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
+    bool trame::generic_LP(int k, int n, double *obj, double* A, int model_opt_sense, double* rhs, char* constr_sense, double* Q, double* lb, double* ub, double* start, double& objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
     {
         // k: number of constraints ('rows')
         // n: number of variables ('columns')
@@ -139,7 +139,7 @@
         int solved;
         //
         // Call C-version of the solver
-        solved = generic_LP_C_switch(k, n, obj, A, modelSense, rhs, sense, Q, lb, ub, 
+        solved = generic_LP_C_switch(k, n, obj, A, model_opt_sense, rhs, constr_sense, Q, lb, ub, 
                                      &objval, sol_mat_X, sol_mat_RC, dual_mat_PI, dual_mat_SLACK);
         //
         // Put solution matrices together
@@ -150,7 +150,7 @@
         return success;
     }
     
-    bool trame::generic_LP(int k, int n, double *obj, int numnz, int* vbeg, int* vind, double* vval, int modelSense, double* rhs, char* sense, double* Q, double* lb, double* ub, double* start, double& objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
+    bool trame::generic_LP(int k, int n, double *obj, int numnz, int* vbeg, int* vind, double* vval, int model_opt_sense, double* rhs, char* constr_sense, double* Q, double* lb, double* ub, double* start, double& objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
     {
         // k: number of constraints ('rows')
         // n: number of variables ('columns')
@@ -160,7 +160,7 @@
         int solved;
         //
         // Call C-version of the solver
-        solved = generic_LP_C_sparse(k, n, obj, numnz, vbeg, vind, vval, modelSense, rhs, sense, Q, lb, ub, 
+        solved = generic_LP_C_sparse(k, n, obj, numnz, vbeg, vind, vval, model_opt_sense, rhs, constr_sense, Q, lb, ub, 
                                      &objval, sol_mat_X, sol_mat_RC, dual_mat_PI, dual_mat_SLACK);
         //
         // Put solution matrices together
