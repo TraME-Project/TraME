@@ -48,14 +48,19 @@ class probit
         ~probit(){};
          probit(){};
         explicit probit(int nbX_inp, int nbY_inp, bool outsideOption_inp);
+        explicit probit(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp);
 
         void build(int nbX_inp, int nbY_inp, bool outsideOption_inp);
+        void build(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp);
 
         void unifCorrelCovMatrices();
-        arma::cube unifCorrelCovMatrices(double rho);
+        void unifCorrelCovMatrices(double rho_inp);
 
         empirical simul();
         empirical simul(int* nbDraws, int* seed);
         void simul(empirical& obj_out);
         void simul(empirical& obj_out, int* nbDraws, int* seed);
+    
+    private:
+         void build_prv(int nbX_inp, int nbY_inp, double* rho_inp, bool outsideOption_inp);
 };

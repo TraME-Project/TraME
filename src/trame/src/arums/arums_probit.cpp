@@ -33,14 +33,33 @@
 
 trame::probit::probit(int nbX_inp, int nbY_inp, bool outsideOption_inp)
 {   
-    this->build(nbX_inp, nbY_inp, outsideOption_inp);
+    this->build_prv(nbX_inp, nbY_inp, NULL, outsideOption_inp);
+}
+
+trame::probit::probit(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp)
+{   
+    this->build_prv(nbX_inp, nbY_inp, &rho_inp, outsideOption_inp);
 }
 
 void trame::probit::build(int nbX_inp, int nbY_inp, bool outsideOption_inp)
 {   
+    this->build_prv(nbX_inp, nbY_inp, NULL, outsideOption_inp);
+}
+
+void trame::probit::build(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp)
+{   
+    this->build_prv(nbX_inp, nbY_inp, &rho_inp, outsideOption_inp);
+}
+
+void trame::probit::build_prv(int nbX_inp, int nbY_inp, double* rho_inp, bool outsideOption_inp)
+{   
     nbX = nbX_inp;
     nbY = nbY_inp;
     outsideOption = outsideOption_inp;
+
+    if (rho_inp) {
+        rho = *rho_inp;
+    }
     //
     if (outsideOption_inp) {
         aux_nbOptions = nbY + 1;
@@ -52,23 +71,10 @@ void trame::probit::build(int nbX_inp, int nbY_inp, bool outsideOption_inp)
 
 void trame::probit::unifCorrelCovMatrices()
 {
-    int i;
-    //
-    arma::mat Sig = rho * arma::ones(aux_nbOptions,aux_nbOptions) + (1-rho) * arma::eye(aux_nbOptions,aux_nbOptions);
-    //
-    if (outsideOption) {
-        Sig.col(aux_nbOptions-1).fill(0);
-        Sig.row(aux_nbOptions-1).fill(0);
-        Sig(aux_nbOptions-1,aux_nbOptions-1) = 1;
-    }
-    //
-    Covar.set_size(aux_nbOptions,aux_nbOptions,nbX); // note: this is different to the R code
-    for (i=0; i<nbX; i++) {
-        Covar.slice(i) = Sig;
-    }
+    this->unifCorrelCovMatrices(rho);
 }
 
-arma::cube trame::probit::unifCorrelCovMatrices(double rho_inp)
+void trame::probit::unifCorrelCovMatrices(double rho_inp)
 {
     int i;
     //
@@ -80,12 +86,11 @@ arma::cube trame::probit::unifCorrelCovMatrices(double rho_inp)
         Sig(aux_nbOptions-1,aux_nbOptions-1) = 1;
     }
     //
-    arma::cube Covar_ret(aux_nbOptions,aux_nbOptions,nbX); // note: this is different to the R code
+    Covar.set_size(aux_nbOptions,aux_nbOptions,nbX); // note: this is different to the R code
     for (i=0; i<nbX; i++) {
-        Covar_ret.slice(i) = Sig;
+        Covar.slice(i) = Sig;
     }
     //
-    return Covar_ret;
 }
 
 trame::empirical trame::probit::simul()
