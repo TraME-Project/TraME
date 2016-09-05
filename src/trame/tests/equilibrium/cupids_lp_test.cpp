@@ -1,5 +1,5 @@
 /*
- * EAP Nash solver test
+ * Cupids-LP solver test
  *
  * Keith O'Hara
  * 08/01/2016
