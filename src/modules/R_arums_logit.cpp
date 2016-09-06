@@ -26,7 +26,7 @@
  * logit class module
  *
  * Keith O'Hara
- * 08/08/2016
+ * 09/06/2016
  */
 
 #include <RcppArmadillo.h>
@@ -34,20 +34,30 @@
 #include "trame.hpp"
 
 // derived class to provide wrappers to some functions
-class logit_R : public logit
+class logit_R : public trame::logit
 {
     public:
+        Rcpp::List G_R(arma::vec n, arma::mat U_inp);
         Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
 };
 
 // wrapper function as Rcpp can't handle memory pointers
+Rcpp::List logit_R::G_R(arma::vec n, arma::mat U_inp)
+{
+    arma::mat mu_out;
+
+    double val_out = this->G(n, U_inp, mu_out);
+
+    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("mu") = mu_out);
+}
+
 Rcpp::List logit_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
 {
     arma::mat U_out, mu_out;
 
-    Gbar(U_bar, mu_bar, n, U_out, mu_out);
+    double val_out = this->Gbar(U_bar, mu_bar, n, U_out, mu_out);
 
-    return Rcpp::List::create(Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
+    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
 }
 
 RCPP_MODULE(logit_module)
@@ -55,43 +65,44 @@ RCPP_MODULE(logit_module)
     using namespace Rcpp ;
 
     // function overloading requires some trickery
-    double (logit::*G_1)(arma::vec) = &logit::G ;
+    double (trame::logit::*G_1)(arma::vec) = &trame::logit::G ;
+    Rcpp::List (logit_R::*G_2)(arma::vec, arma::mat) = &logit_R::G_R ;
 
-    double (logit::*Gstar_1)(arma::vec) = &logit::Gstar ;
+    double (trame::logit::*Gstar_1)(arma::vec) = &trame::logit::Gstar ;
   
     // now we can declare the class
-    class_<logit>( "logit" )
+    class_<trame::logit>( "logit" )
         .default_constructor()
 
         // basic objects
-        .field( "nbX", &logit::nbX )
-        .field( "nbY", &logit::nbY )
+        .field( "nbX", &trame::logit::nbX )
+        .field( "nbY", &trame::logit::nbY )
 
-        .field( "nbParams", &logit::nbParams )
-        .field( "sigma", &logit::sigma )
-        .field( "outsideOption", &logit::outsideOption )
+        .field( "nbParams", &trame::logit::nbParams )
+        .field( "sigma", &trame::logit::sigma )
+        .field( "outsideOption", &trame::logit::outsideOption )
 
-        .field( "mu", &logit::mu )
-        .field( "U", &logit::U )
+        .field( "mu", &trame::logit::mu )
+        .field( "U", &trame::logit::U )
 
-        .field( "mu_sol", &logit::mu )
-        .field( "U_sol", &logit::U )
+        .field( "mu_sol", &trame::logit::mu )
+        .field( "U_sol", &trame::logit::U )
 
         // read only objects
-        //.field_readonly( "", &logit:: )
+        //.field_readonly( "", &trame::logit:: )
 
         // member functions
-        .method( "build", &logit::build )
+        .method( "build", &trame::logit::build )
         .method( "G", G_1 )
         .method( "Gstar", Gstar_1 )
-        .method( "Gstarx", &logit::Gstarx )
-        .method( "Gbarx", &logit::Gbarx )
+        //.method( "Gstarx", &trame::logit::Gstarx )
     ;
 
     class_<logit_R>( "logit_R" )
-        .derives<logit>( "logit" )
+        .derives<trame::logit>( "logit" )
         .default_constructor()
 
+        .method( "G", G_2 )
         .method( "Gbar", &logit_R::Gbar_R )
     ;
 }

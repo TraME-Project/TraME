@@ -10,7 +10,6 @@ export TRAME_R_VERSION="yes"
 if [[ !(-e src/trame/libtrame.so) ]] ; then
     cd src/trame
     sh configure
-    make clean
     make
     cp ./libtrame.so ../../inst/libs/libtrame.so
     cd ../..
