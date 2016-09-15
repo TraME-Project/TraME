@@ -82,11 +82,11 @@ RCPP_MODULE(logit_module)
         .field( "sigma", &trame::logit::sigma )
         .field( "outsideOption", &trame::logit::outsideOption )
 
-        .field( "mu", &trame::logit::mu )
         .field( "U", &trame::logit::U )
+        .field( "mu", &trame::logit::mu )
 
-        .field( "mu_sol", &trame::logit::mu )
-        .field( "U_sol", &trame::logit::U )
+        .field( "U_sol", &trame::logit::U_sol )
+        .field( "mu_sol", &trame::logit::mu_sol )
 
         // read only objects
         //.field_readonly( "", &trame::logit:: )

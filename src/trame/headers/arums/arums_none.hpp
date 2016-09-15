@@ -57,6 +57,7 @@ class none
         double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out);
         double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x);
 
+        double Gstar(arma::vec n);
         double Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out);
         double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
         

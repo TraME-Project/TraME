@@ -38,6 +38,9 @@ class empirical_R : public trame::empirical
 {
     public:
         Rcpp::List G_R(arma::vec n, arma::mat U_inp);
+        Rcpp::List Gx_R(arma::mat U_x_inp, int x);
+        Rcpp::List Gstar_R(arma::vec n, arma::mat mu_inp);
+        Rcpp::List Gstarx_R(arma::mat mu_x_inp, int x);
         Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
 };
 
@@ -49,6 +52,33 @@ Rcpp::List empirical_R::G_R(arma::vec n, arma::mat U_inp)
     double val_out = this->G(n, U_inp, mu_out);
 
     return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("mu") = mu_out);
+}
+
+Rcpp::List empirical_R::Gx_R(arma::mat U_x_inp, int x)
+{
+    arma::mat mu_x_out;
+
+    double val_x_out = this->Gx(U_x_inp, mu_x_out, x);
+
+    return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("mu_x") = mu_x_out);
+}
+
+Rcpp::List empirical_R::Gstar_R(arma::vec n, arma::mat mu_inp)
+{   
+    arma::mat U_out;
+
+    double val_out = this->Gstar(n, mu_inp, U_out);
+
+    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out);
+}
+
+Rcpp::List empirical_R::Gstarx_R(arma::mat mu_x_inp, int x)
+{   
+    arma::mat U_x_out;
+
+    double val_x_out = this->Gstarx(mu_x_inp, U_x_out, x);
+
+    return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("U_x") = U_x_out);
 }
 
 Rcpp::List empirical_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
@@ -66,8 +96,6 @@ RCPP_MODULE(empirical_module)
 
     // function overloading requires some trickery
     double (trame::empirical::*G_1)(arma::vec) = &trame::empirical::G ;
-    Rcpp::List (empirical_R::*G_2)(arma::vec, arma::mat) = &empirical_R::G_R ;
-
     double (trame::empirical::*Gstar_1)(arma::vec) = &trame::empirical::Gstar ;
     
     // now we can declare the class
@@ -87,22 +115,29 @@ RCPP_MODULE(empirical_module)
 
         .field( "atoms", &trame::empirical::atoms )
 
+        .field( "U", &trame::empirical::U )
+        .field( "mu", &trame::empirical::mu )
+
+        .field( "U_sol", &trame::empirical::U_sol )
+        .field( "mu_sol", &trame::empirical::mu_sol )
+
         // read only objects
         //.field_readonly( "k_Gstar", &empirical::k_Gstar )
 
         // member functions
         .method( "build", &trame::empirical::build )
         .method( "G", G_1 )
-        .method( "Gx", &trame::empirical::Gx )
         .method( "Gstar", Gstar_1 )
-        //.method( "Gstarx", &empirical::Gstarx )
     ;
 
     class_<empirical_R>( "empirical_R" )
         .derives<trame::empirical>( "empirical" )
         .default_constructor()
 
-        .method( "G", G_2 )
+        .method( "G", &empirical_R::G_R )
+        .method( "Gx", &empirical_R::Gx_R )
+        .method( "Gstar", &empirical_R::Gstar_R )
+        .method( "Gstarx", &empirical_R::Gstarx_R )
         .method( "Gbar", &empirical_R::Gbar_R )
     ;
 }

@@ -34,61 +34,106 @@
 #include "trame.hpp"
 
 // derived class to provide wrappers to some functions
-class RUSC_R : public RUSC
+class rusc_R : public trame::rusc
 {
     public:
+        Rcpp::List G_R(arma::vec n, arma::mat U_inp);
+        Rcpp::List Gx_R(arma::mat U_x_inp, int x);
+        Rcpp::List Gstar_R(arma::vec n, arma::mat mu_inp);
+        Rcpp::List Gstarx_R(arma::mat mu_x_inp, int x);
         Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
 };
 
 // wrapper function as Rcpp can't handle memory pointers
-Rcpp::List RUSC_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
+Rcpp::List rusc_R::G_R(arma::vec n, arma::mat U_inp)
+{
+    arma::mat mu_out;
+
+    double val_out = this->G(n, U_inp, mu_out);
+
+    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("mu") = mu_out);
+}
+
+Rcpp::List rusc_R::Gx_R(arma::mat U_x_inp, int x)
+{
+    arma::mat mu_x_out;
+
+    double val_x_out = this->Gx(U_x_inp, mu_x_out, x);
+
+    return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("mu_x") = mu_x_out);
+}
+
+Rcpp::List rusc_R::Gstar_R(arma::vec n, arma::mat mu_inp)
+{   
+    arma::mat U_out;
+
+    double val_out = this->Gstar(n, mu_inp, U_out);
+
+    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out);
+}
+
+Rcpp::List rusc_R::Gstarx_R(arma::mat mu_x_inp, int x)
+{   
+    arma::mat U_x_out;
+
+    double val_x_out = this->Gstarx(mu_x_inp, U_x_out, x);
+
+    return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("U_x") = U_x_out);
+}
+
+Rcpp::List rusc_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
 {
     arma::mat U_out, mu_out;
 
-    Gbar(U_bar, mu_bar, n, U_out, mu_out);
+    double val_out = this->Gbar(U_bar, mu_bar, n, U_out, mu_out);
 
-    return Rcpp::List::create(Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
+    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
 }
 
-RCPP_MODULE(RUSC_module)
+RCPP_MODULE(rusc_module)
 {
     using namespace Rcpp ;
 
     // function overloading requires some trickery
-    double (RUSC::*Gstar_1)(arma::vec) = &RUSC::Gstar ;
+    double (trame::rusc::*G_1)(arma::vec) = &trame::rusc::G ;
+    double (trame::rusc::*Gstar_1)(arma::vec) = &trame::rusc::Gstar ;
   
     // now we can declare the class
-    class_<RUSC>( "RUSC" )
+    class_<trame::rusc>( "rusc" )
         .default_constructor()
 
         // basic objects
-        .field( "nbX", &RUSC::nbX )
-        .field( "nbY", &RUSC::nbY )
+        .field( "nbX", &trame::rusc::nbX )
+        .field( "nbY", &trame::rusc::nbY )
 
-        .field( "nbParams", &RUSC::nbParams )
-        .field( "outsideOption", &RUSC::outsideOption )
+        .field( "nbParams", &trame::rusc::nbParams )
+        .field( "outsideOption", &trame::rusc::outsideOption )
 
-        .field( "mu", &RUSC::mu )
-        .field( "U", &RUSC::U )
+        .field( "zeta", &trame::rusc::zeta )
 
-        .field( "zeta", &RUSC::zeta )
+        .field( "U", &trame::rusc::U )
+        .field( "mu", &trame::rusc::mu )
 
-        .field( "mu_sol", &RUSC::mu_sol )
-        .field( "U_sol", &RUSC::U_sol )
+        .field( "U_sol", &trame::rusc::U_sol )
+        .field( "mu_sol", &trame::rusc::mu_sol )
 
         // read only objects
-        .field_readonly( "aux_ord", &RUSC::aux_ord )
+        .field_readonly( "aux_ord", &trame::rusc::aux_ord )
 
         // member functions
-        .method( "build", &RUSC::build )
-        .method( "G", &RUSC::G )
+        .method( "build", &trame::rusc::build )
+        .method( "G", G_1 )
         .method( "Gstar", Gstar_1 )
     ;
 
-    class_<RUSC_R>( "RUSC_R" )
-        .derives<RUSC>( "RUSC" )
+    class_<rusc_R>( "rusc_R" )
+        .derives<trame::rusc>( "rusc" )
         .default_constructor()
 
-        .method( "Gbar", &RUSC_R::Gbar_R )
+        .method( "G", &rusc_R::G_R )
+        .method( "Gx", &rusc_R::Gx_R )
+        .method( "Gstar", &rusc_R::Gstar_R )
+        .method( "Gstarx", &rusc_R::Gstarx_R )
+        .method( "Gbar", &rusc_R::Gbar_R )
     ;
 }

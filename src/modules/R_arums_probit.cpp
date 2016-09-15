@@ -38,30 +38,34 @@ RCPP_MODULE(probit_module)
 {
     using namespace Rcpp ;
 
-    void (probit::*unifCorrelCovMatrices_1)() = &probit::unifCorrelCovMatrices;
-    arma::cube (probit::*unifCorrelCovMatrices_2)(double) = &probit::unifCorrelCovMatrices ;
+    void (trame::probit::*build_1)(int, int, bool) = &trame::probit::build;
+    void (trame::probit::*build_2)(int, int, double, bool) = &trame::probit::build;
+
+    void (trame::probit::*unifCorrelCovMatrices_1)() = &trame::probit::unifCorrelCovMatrices;
+    void (trame::probit::*unifCorrelCovMatrices_2)(double) = &trame::probit::unifCorrelCovMatrices ;
   
     // now we can declare the class
-    class_<probit>( "probit" )
+    class_<trame::probit>( "probit" )
         .default_constructor()
 
         // basic objects
-        .field( "nbX", &probit::nbX )
-        .field( "nbY", &probit::nbY )
+        .field( "nbX", &trame::probit::nbX )
+        .field( "nbY", &trame::probit::nbY )
 
-        .field( "nbParams", &probit::nbParams )
-        .field( "aux_nbOptions", &probit::aux_nbOptions )
-        .field( "outsideOption", &probit::outsideOption )
+        .field( "nbParams", &trame::probit::nbParams )
+        .field( "aux_nbOptions", &trame::probit::aux_nbOptions )
+        .field( "outsideOption", &trame::probit::outsideOption )
 
-        .field( "rho", &probit::rho )
+        .field( "rho", &trame::probit::rho )
 
-        .field( "Covar", &probit::Covar )
+        .field( "Covar", &trame::probit::Covar )
 
         // read only objects
         //.field_readonly( "", &probit:: )
 
         // member functions
-        .method( "build", &probit::build )
+        .method( "build", build_1 )
+        .method( "build", build_2 )
         .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_1 )
         .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_2 )
     ;

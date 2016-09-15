@@ -101,6 +101,13 @@ double trame::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
     return val_x;
 }
 
+double trame::none::Gstar(arma::vec n)
+{   
+    printf("Gstar not yet defined for no arums case.\n");
+
+    return 0.0;
+}
+
 double trame::none::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out)
 {   
     printf("Gstar not yet defined for no arums case.\n");
