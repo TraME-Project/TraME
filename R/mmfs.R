@@ -160,7 +160,7 @@ margyInv.TUmmfs <- function(ys, mmfs, Axs)
     b = c(sqrtAxs %*% mmfs$K[,ys])/2 # Keith: will these be conformable? maybe need t(sqrtAxs)
     sqrtBys = sqrt(mmfs$m[ys] + b*b) - b
   }else{
-    sqrtBys = mkt$m / c(sqrtAxs %*% mmfs$K[,ys])
+    sqrtBys = mmfs$m / c(sqrtAxs %*% mmfs$K[,ys])
   }
   #
   ret = sqrtBys*sqrtBys

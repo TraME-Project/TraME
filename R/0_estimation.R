@@ -235,82 +235,32 @@ mle <- function(model, muhat, theta0=NULL, xtol_rel=1e-8, maxeval=1e5, print_lev
   #
   return(list(thetahat=res$solution))
 }
-#
-mme.default <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+
+
+plotCovariogram2D = function(model,lambda,muhat = NULL, dim1=1,dim2=2,nbSteps =100)
 {
-  if(print_level>0){
-    message(paste0("Moment Matching Estimation of ",class(model)," model."))
-  }
-  #
-  theta0 = initparam(model)$param
-  dtheta = dparam(model)
-  market = parametricMarket(model,theta0)
-  #
-  if (!("itu-rum" %in% model$types)) {
-    stop("Moment Matching Estimation only applies for itu-rum models for now.")
-  }
-  if(class(market$transfers)!="TU"){
-    stop("Moment Matching Estimation only applies for TU models for now.")
-  }
-  if(length(dtheta$dparamsG) + length(dtheta$dparamsH) > 0){
-    stop("Moment Matching Estimation does not support parameterization of arums.")
-  }
-  if(!model$isLinear){
-    stop("Moment Matching Estimation does not support nonlinear parameterizations for now.")
-  }
-  #
-  kron = dtheta$dparamsPsi
-  Chat = c(c(muhat) %*% kron)
-  #
-    if (print_level>0){
-      message(paste0("Moment Matching Estimation of ",class(model)," model via BFGS optimization."))
-    }
-    #
-    nbX = length(model$n)
-    nbY = length(model$m)
+  # HERE, INSERT FILTER TO APPLY ONLY TO TU MODELS W LINEAR PARAMETERIZATION
+  
+  library(gplots)
+  points = matrix(0,nbSteps,2)
+  for (i in (1:nbSteps))
+  {
+    angle=2 * pi * i / (nbSteps-1)
+    lambdastar = lambda
+    lambdastar[dim1]=lambda[dim1]*cos(angle) - lambda[dim2]*sin(angle) 
+    lambdastar[dim2]=lambda[dim1]*sin(angle) + lambda[dim2]*cos(angle) 
+    market = parametricMarket(model,lambdastar)
+    mustar = solveEquilibrium(market)$mu
+    points[i,] =  c(c(mustar) %*% matrix(phi_xyk, ncol=model$nbParams) ) [c(dim1,dim2)]
     
-    nbParams = dim(kron)[2]
-    #
-    eval_f <- function(thearg){
-      theU = matrix(thearg[1:(nbX*nbY)],nbX,nbY)
-      thetheta = thearg[(1+nbX*nbY):(nbParams+nbX*nbY)]
-      
-      phi = kron %*% thetheta
-      phimat = matrix(phi,nbX,nbY)
-      #
-      resG = G(market$arumsG,theU,model$n)
-      resH = G(market$arumsH,t(phimat-theU),model$m)
-      #
-      Ehatphi = sum(thetheta * Chat)
-      val = resG$val + resH$val - Ehatphi
-      
-      tresHmu = t(resH$mu)
-      
-      gradU = c(resG$mu - tresHmu)
-      gradtheta = c( c(tresHmu) %*% kron ) - Chat
-      #
-      ret = list(objective = val,
-                 gradient = c(gradU,gradtheta))
-      #
-      return(ret)
-    }
-    #
-    resopt = nloptr(x0=c( (kron %*% theta0) / 2,theta0 ),
-                    eval_f=eval_f,
-                    opt=list("algorithm" = "NLOPT_LD_LBFGS",
-                             "xtol_rel"=xtol_rel,
-                             "maxeval"=maxeval,
-                             "print_level"=print_level))
-    #
-    #if(print_level>0){print(resopt, show.controls=((1+nbX*nbY):(nbParams+nbX*nbY)))}
-    #
-    U = matrix(resopt$solution[1:(nbX*nbY)],nbX,nbY)  
-    thetahat = resopt$solution[(1+nbX*nbY):(nbParams+nbX*nbY)]
-    V = matrix(kron %*% thetahat,nbX,nbY) - U
-    #
-    ret =list(thetahat=thetahat,
-              U=U, V=V,
-              val=resopt$objective)
-    #
-    return(ret)
+  }
+  par(mar = rep(2, 4))
+  plot(points,col=rgb(0, 0,1))
+  lines(points,col=rgb(0, 0,1))
+  
+  if (! is.null(muhat))
+  {
+    Chat = c(c(muhat) %*% matrix(phi_xyk, ncol=model$nbParams) ) [c(dim1,dim2)]
+    points(matrix(Chat,1,2),pch=16,col=rgb(1,0,0))
+  }
 }

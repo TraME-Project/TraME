@@ -33,7 +33,7 @@ estimate.default = mle
 ########################       affinity model            #######################
 ################################################################################
 #
-buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, noSingles=FALSE)
+buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
 {
   nbX = dim(Xvals)[1]
   nbY = dim(Yvals)[1]
@@ -47,52 +47,235 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, noSingles=FALSE)
   if(is.null(m)){
     m = rep(1,nbY)
   }
+  # 
+  if ( sum(n) != sum(n) ) {stop("Unequal mass of individuals in an affinity model.")}
   #
-  neededNorm = defaultNorm(noSingles)
+  neededNorm = defaultNorm(T)
   #
   ret = list(types = c("itu-rum", "mfe"),
-             kron=kronecker(Yvals,Xvals),
              nbParams=dX*dY,
              dX=dX, dY=dY,
              nbX = nbX, nbY = nbY,
              n=n, m=m,
-             neededNorm = neededNorm,
-             isLinear=TRUE)
+             sigma = sigma,
+             neededNorm = F,
+             phi_xyk_aux = kronecker(Yvals,Xvals),
+             Phi_xyk = function(model) 
+               (model$phi_xyk_aux),
+             Phi_xy = function(model ,lambda) 
+               ( array(model$phi_xyk_aux,dim=c(model$nbX*model$nbY,model$nbParams)) %*% lambda ),
+             Phi_k = function(model, muhat) 
+               (c(c(muhat) %*% array(model$phi_xyk_aux,dim=c(model$nbX*model$nbY,model$nbParams))))
+               )
   class(ret) = "affinity"
   #
   return(ret)
 }
 #
-parametricMarket.affinity <- function(model, theta)
-  # theta is simply the affinity matrix
-{
-  phi = matrix(model$kron %*% c(theta),nrow=model$nbX)
-  #
-  ret = build_market_TU_logit(model$n,model$m,phi,
-                              neededNorm=model$neededNorm)
-  #
-  return(ret)
-}
-
+parametricMarket.affinity <- function(model, theta) 
+  (build_market_TU_logit(model$n,model$m,
+                         matrix(model$Phi_xy(model,c(theta)), nrow=model$nbX),
+                         neededNorm=F))
 
 dparam.affinity <- function(model, dparams=diag(model$nbParams))
+  (list(dparamsPsi = model$Phi_xy(model, dparams),
+        dparamsG   =  matrix(0,nrow=0,ncol=dim(dparams)[2]),
+        dparamsH   = matrix(0,nrow=0,ncol=dim(dparams)[2]))
+  )
+#
+#
+mmeaffinityNoRegul <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, tolIpfp=1E-14, maxiterIpfp = 1e5, print_level=0)
+  # mmeaffinityNoRegul should be improved as one should make use of the logit structure and use the ipfp
 {
-  dparamsPsi = model$kron %*% dparams
-  dparamsG = matrix(0,nrow=0,ncol=dim(dparams)[2])
-  dparamsH = matrix(0,nrow=0,ncol=dim(dparams)[2])
   #
-  ret = list(dparamsPsi = dparamsPsi,
-             dparamsG   = dparamsG,
-             dparamsH   = dparamsH)
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of Affinity model via IPFP+BFGS optimization."))
+  }
+  #
+  theta0 = initparam(model)$param
+  market = parametricMarket(model,theta0)
+  Chat = model$Phi_k(model, muhat)
+  nbX = model$nbX
+  nbY = model$nbY
+  dX = model$dX
+  dY = model$dY
+  nbParams = model$nbParams
+  sigma = model$sigma
+  #
+  totmass = sum(model$n)
+  
+  if ( sum(model$n) != totmass ) {stop("Unequal mass of individuals in an affinity model.")}
+  if (sum(muhat) !=  totmass) {stop("Total number of couples does not coincide with margins.")}
+  p = model$n / totmass
+  q = model$m / totmass
+  IX=rep(1,nbX)
+  tIY=matrix(rep(1,nbY),nrow=1)
+  f = p %*% tIY
+  g = IX %*% t(q)
+  pihat = muhat / totmass
+  v=rep(0,nbY)
+  #
+  #
+  valuef = function(A)
+  {
+    Phi = matrix(model$Phi_xy(model,c(A)) ,nbX,nbY)
+    # Phi = Xvals %*% matrix(A,nrow=dX) %*% t(Yvals)
+    contIpfp = TRUE
+    iterIpfp = 0
+    while(contIpfp)
+    {
+      iterIpfp = iterIpfp+1
+      u = sigma*log(apply(g * exp( ( Phi - IX %*% t(v) ) / sigma ),1,sum))
+      vnext = sigma*log(apply(f * exp( ( Phi - u %*% tIY ) / sigma ),2,sum))
+      error = max(abs(apply(g * exp( ( Phi - IX %*% t(vnext) - u %*% tIY ) / sigma ),1,sum)-1))
+      if( (error<tolIpfp) | (iterIpfp >= maxiterIpfp)) {contIpfp=FALSE}
+      v=vnext
+    }
+    #print(c("Converged in ", iterIpfp, " iterations."))
+    pi = f * g * exp( ( Phi - IX %*% t(v) - u %*% tIY ) / model$sigma )
+    if (iterIpfp >= maxiterIpfp ) {stop('maximum number of iterations reached')} 
+    v <<- vnext
+    #thegrad =  c(    c(pi - pihat) %*% phis)
+    thegrad = model$Phi_k(model,pi - pihat)
+    theval = sum(thegrad * c(A)) - sigma* sum(pi*log(pi))
+    
+    return(list(objective = theval,gradient = thegrad))
+  }
+  
+  A0 = rep(0,dX*dY)
+  resopt = nloptr(x0=A0, 
+                  eval_f = valuef, 
+                  opt = list(algorithm = 'NLOPT_LD_LBFGS',
+                             xtol_rel = xtol_rel,
+                             maxeval=maxeval,
+                             print_level = print_level))
+  #  AffinityMatrix = matrix(res$solution,nrow=dX)
+  thetahat = resopt$solution
+  ret =list(thetahat=thetahat,
+            val=resopt$objective)
   #
   return(ret)
 }
 #
+#
+mmeaffinityWithRegul <- function(model, muhat, lambda, xtol_rel=1e-4, maxeval=1e5, tolIpfp=1E-14, maxiterIpfp = 1e5, print_level=0)
+  # Reference: Arnaud Dupuy, Alfred Galichon, Yifei Sun (2016). "Learning Optimal Transport Costs under Low-Rank Constraints."
+  # Implementation by Yifei Sun.
+{
+  #
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of Affinity model with regularization via proximal gradient."))
+  }
+  #
+  theta0 = initparam(model)$param
+  market = parametricMarket(model,theta0)
+  Chat = model$Phi_k(model, muhat)
+  nbX = model$nbX
+  nbY = model$nbY
+  dX = model$dX
+  dY = model$dY
+  nbParams = model$nbParams
+  sigma = model$sigma
+  #
+  totmass = sum(model$n)
+  #
+  if ( sum(model$n) != totmass ) {stop("Unequal mass of individuals in an affinity model.")}
+  if (sum(muhat) !=  totmass) {stop("Total number of couples does not conicide with margins.")}
+  p = model$n / totmass
+  q = model$m / totmass
+  IX=rep(1,nbX)
+  tIY=matrix(rep(1,nbY),nrow=1)
+  f = p %*% tIY
+  g = IX %*% t(q)
+  pihat = muhat / totmass
+  v=rep(0,nbY)
+  A = rep(0,dX*dY)
+  t_k = .3   # step size for the prox grad algorithm (or grad descent when lambda=0)
+  iterCount = 0
+  while (1)
+  {
+    # compute pi^A
+    # Phi = Xvals %*% matrix(A,nrow=dX) %*% t(Yvals)
+    Phi = matrix(model$Phi_xy(model,c(A)) ,nbX,nbY)
+    contIpfp = TRUE
+    iterIpfp = 0
+    while(contIpfp)
+    {
+      iterIpfp = iterIpfp+1
+      u = sigma*log(apply(g * exp( ( Phi - IX %*% t(v) ) / sigma ),1,sum))
+      vnext = sigma*log(apply(f * exp( ( Phi - u %*% tIY ) / sigma ),2,sum))
+      error = max(abs(apply(g * exp( ( Phi - IX %*% t(vnext) - u %*% tIY ) / sigma ),1,sum)-1))
+      if( (error<tolIpfp) | (iterIpfp >= maxiterIpfp)) {contIpfp=FALSE}
+      v=vnext
+    }
+    
+    pi = f * g * exp( ( Phi - IX %*% t(v) - u %*% tIY ) / sigma )
+    
+    if (iterIpfp >= maxiterIpfp ) {stop('maximum number of iterations reached')} 
+    
+    # do prox grad descent
+    # thegrad = c(phis %*% c(pi - pihat))
+    thegrad = model$Phi_k(model,pi - pihat)
+    
+    
+    # take one gradient step
+    A = A - t_k*thegrad
+    
+    if (lambda > 0)
+    {
+      # compute the proximal operator
+      SVD = svd(matrix(A,nrow=dX))
+      U = SVD$u
+      D = SVD$d
+      V = SVD$v
+      
+      D = pmax(D - lambda*t_k, 0.)
+      A = c(U %*% diag(D) %*% t(V))
+    } # if lambda = 0 then we are just taking one step of gradient descent
+    ### testing optimality
+    if (iterCount %% 10 == 0)
+    {
+      alpha = 1.
+      tmp = svd(matrix(A - alpha * thegrad, nrow=dX))
+      tmp_second = sum((A - c(tmp$u %*% diag(pmax(tmp$d - alpha*lambda, 0.)) %*% t(tmp$v)))^2)
+      cat("testing optimality ", tmp_second, "\n")
+    }
+    
+    if (lambda > 0)
+    {
+      theval = sum(thegrad * c(A)) - sigma * sum(pi*log(pi)) + lambda * sum(D)
+    } else
+    {
+      theval = sum(thegrad * c(A)) - sigma * sum(pi*log(pi))
+    }
+    
+    iterCount = iterCount + 1
+    
+    if (iterCount>1 && abs(theval - theval_old) < 1E-6) { break }
+    
+    theval_old = theval
+    
+  }
+  ret =list(thetahat=c(A),
+            val=theval)
+  
+  #
+  return(ret)
+}
+#
+#
+mme.affinity <- function(model, muhat, lambda = NULL, xtol_rel=1e-4, maxeval=1e5, tolIpfp=1E-14, maxiterIpfp = 1e5, print_level=0)
+{
+  if (is.null(lambda))
+  {return(mmeaffinityNoRegul(model,muhat, xtol_rel , maxeval , tolIpfp , maxiterIpfp , print_level))}
+  else
+  { return(mmeaffinityWithRegul(model,muhat, lambda, xtol_rel , maxeval , tolIpfp , maxiterIpfp , print_level)) }
+}
 #
 ################################################################################
 ########################       TU_logit model            #######################
 ################################################################################
-#
+# The TU_logit and the affinity models should be merged
 buildModel_TU_logit <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
 {
   dims = dim(phi_xyk)
@@ -114,8 +297,7 @@ buildModel_TU_logit <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
              nbParams = nbParams,
              nbX = nbX, nbY = nbY,
              n=n, m=m,
-             neededNorm = neededNorm,
-             isLinear=TRUE)
+             neededNorm = neededNorm)
   class(ret) = "TU_logit"
   #
   return(ret)
@@ -139,6 +321,74 @@ dparam.TU_logit <- function(model, dparams=diag(model$nbParams))
                dparamsG = dparamsG,
                dparamsH = dparamsH))
 }
+#
+mme.TU_logit <-  function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+  # mme.affinity should be improved as one should make use of the logit structure and use the ipfp
+{
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of TU_rum model via optimization."))
+  }
+  
+  theta0 = initparam(model)$param
+  dtheta = dparam(model)
+  market = parametricMarket(model,theta0)
+  
+  kron = dtheta$dparamsPsi
+  Chat = c(c(muhat) %*% kron)
+  #
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of ",class(model)," model via BFGS optimization."))
+  }
+  #
+  nbX = length(model$n)
+  nbY = length(model$m)
+  
+  nbParams = dim(kron)[2]
+  #
+  eval_f <- function(thearg){
+    theU = matrix(thearg[1:(nbX*nbY)],nbX,nbY)
+    thetheta = thearg[(1+nbX*nbY):(nbParams+nbX*nbY)]
+    
+    phi = kron %*% thetheta
+    phimat = matrix(phi,nbX,nbY)
+    #
+    resG = G(market$arumsG,theU,model$n)
+    resH = G(market$arumsH,t(phimat-theU),model$m)
+    #
+    Ehatphi = sum(thetheta * Chat)
+    val = resG$val + resH$val - Ehatphi
+    
+    tresHmu = t(resH$mu)
+    
+    gradU = c(resG$mu - tresHmu)
+    gradtheta = c( c(tresHmu) %*% kron ) - Chat
+    #
+    ret = list(objective = val,
+               gradient = c(gradU,gradtheta))
+    #
+    return(ret)
+  }
+  #
+  resopt = nloptr(x0=c( (kron %*% theta0) / 2,theta0 ),
+                  eval_f=eval_f,
+                  opt=list("algorithm" = "NLOPT_LD_LBFGS",
+                           "xtol_rel"=xtol_rel,
+                           "maxeval"=maxeval,
+                           "print_level"=print_level))
+  #
+  #if(print_level>0){print(resopt, show.controls=((1+nbX*nbY):(nbParams+nbX*nbY)))}
+  #
+  U = matrix(resopt$solution[1:(nbX*nbY)],nbX,nbY)  
+  thetahat = resopt$solution[(1+nbX*nbY):(nbParams+nbX*nbY)]
+  V = matrix(kron %*% thetahat,nbX,nbY) - U
+  #
+  ret =list(thetahat=thetahat,
+            U=U, V=V,
+            val=resopt$objective)
+  #
+  return(ret)
+}
+#
 #
 ################################################################################
 ########################      ETU-logit model            #######################
@@ -169,8 +419,7 @@ buildModel_ETU_logit <- function(Xvals, Yvals, n=NULL, m=NULL)
              nbParams=2*dim(t(t(diff)))[2]+1,
              nbX=nbX, nbY=nbY,
              dX=dX, dY=dY,
-             n=n, m=m,
-             isLinear=TRUE)
+             n=n, m=m)
   class(ret) = "ETU_logit"
   #
   return(ret)
@@ -379,8 +628,56 @@ dparam.TU_none  <- function(model,dparams=diag(model$nbParams))
                dparamsH = dparamsH))
 }
 #
-mme.TU_none <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
-# MomentMatchingTUNone <- function(n, m, kron, Chat, print_level=0)
+mme.TU_none <- function(model, muhat, method = 1, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+{
+  if (method==1)
+{return(MARP_proj(model,muhat,xtol_rel ,maxeval,print_level ))}
+  else
+  {return(MARP_min(model,muhat,xtol_rel ,maxeval,print_level ))}
+
+  }
+
+  
+MARP_min <-function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)   
+  {
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of TU_none model via LP optimization."))
+  }
+  kron = matrix(model$phi_xyk,ncol = model$nbParams)
+  Chat = c(c(muhat) %*% kron)
+  #
+  nbX = length (model$n)
+  nbY = length (model$m)
+  #
+  A_11 = kronecker(matrix(1,nbY,1),sparseMatrix(1:nbX,1:nbX))
+  A_12 = kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,nbX,1))
+  A_13 = -kron
+  A_1   = cbind(A_11,A_12,A_13)
+  A_2 = matrix(c(rep(0,nbX+nbY),rep(1,model$nbParams)),nrow=1)
+  #
+  A = rbind(A_1,A_2)
+  #
+  nbconstr = dim(A)[1]
+  nbvar = dim(A)[2]
+  #
+  rhs = c(rep(0,nbX*nbY),1)
+  obj = c(model$n,model$m,c(-Chat))
+  result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense=c(rep(">",nbconstr-1),"="),lb=c(rep(0,nbX+nbY),rep(-Inf, model$nbParams) ))
+  u = result$solution[1:nbX]
+  v = result$solution[(nbX+1):(nbX+nbY)]
+  thetahat = result$solution[(1+nbX+nbY):(model$nbParams+nbX+nbY)]
+  mu = matrix(result$pi[1:(nbX*nbY)],nbX,nbY)
+  val = result$objval
+  #
+  ret = list(thetahat=thetahat,
+             u=u, v=v,
+             val=val)
+  #
+  return(ret)
+}
+
+
+MARP_proj <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
 {
   if (print_level>0){
     message(paste0("Moment Matching Estimation of TU_none model via LP optimization."))
@@ -391,30 +688,145 @@ mme.TU_none <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
   nbX = length (model$n)
   nbY = length (model$m)
   #
-  A_1 = kronecker(matrix(1,nbY,1),sparseMatrix(1:nbX,1:nbX))
-  A_2 = kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,nbX,1))
-  A_3 = -kron
+  A_11 = kronecker(matrix(1,nbY,1),sparseMatrix(1:nbX,1:nbX))
+  A_12 = kronecker(sparseMatrix(1:nbY,1:nbY),matrix(1,nbX,1))
+  A_13 = -kron
+  A_1   = cbind(A_11,A_12,A_13)
+  A_2 = matrix(c(rep(0,nbX+nbY),c(Chat)),nrow=1)
   #
-  A   = cbind(A_1,A_2,A_3)
+  A = rbind(A_1,A_2)
   #
   nbconstr = dim(A)[1]
   nbvar = dim(A)[2]
   #
-  rhs = rep(0,nbX*nbY)
-  obj = c(model$n,model$m,c(-Chat))
-  lb =c(rep(0,nbX+nbY),rep(-Inf,model$nbParams))
-  #
-  result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense=rep(">=",nbconstr),lb=lb)
-  #
+  rhs = c(rep(0,nbX*nbY),1)
+  obj = c(model$n,model$m,rep(0,model$nbParams))
+  result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense=c(rep(">=",nbconstr-1),"="),lb=c(rep(0,nbX+nbY),rep(-Inf, model$nbParams) ))
+  val = result$objval
   u = result$solution[1:nbX]
   v = result$solution[(nbX+1):(nbX+nbY)]
-  thetahat = result$solution[(1+nbX+nbY):(model$nbParams+nbX+nbY)]
-  mu = matrix(result$pi,nbX,nbY)
-  val = result$objval
+  thetahat =result$solution[(1+nbX+nbY):(model$nbParams+nbX+nbY)]
+  gamma = result$pi[nbX*nbY+1]
   #
   ret = list(thetahat=thetahat,
              u=u, v=v,
+             gamma =gamma,
              val=val)
+  #
+  return(ret)
+}
+
+#
+################################################################################
+########################            TU-rum model            ####################
+################################################################################
+#
+buildModel_TU_rum = function(phi_xyk, n=NULL, m=NULL, arumsG, arumsH) {
+  dims = dim(phi_xyk)
+  nbX = dims[1]
+  nbY = dims[2]
+  #
+  if(is.null(n)){
+    n = rep(1,nbX)
+  }
+  if(is.null(m)){
+    m = rep(1,nbY)
+  }
+  #
+  nbParams = dims[3]
+  ret = list(  phi_xyk = phi_xyk,
+               nbParams = nbParams,                         
+               nbX=nbX,
+               nbY=nbY,
+               n = n,
+               m = m,
+               arumsG=arumsG,
+               arumsH=arumsH)
+  
+  class(ret) =   "TU_rum"
+  return(ret)
+  
+}
+#
+parametricMarket.TU_rum <- function(model, theta)
+{
+  phi_xy_vec = matrix(model$phi_xyk,ncol = model$nbParams) %*% theta
+  phi_xy_mat = matrix(phi_xy_vec,model$nbX,model$nbY)
+  return(  build_market_TU_general(model$n,model$m,phi_xy_mat,model$arumsG,model$arumsH))
+}
+#
+dparam.TU_rum  <- function(model,dparams=diag(model$nbParams))
+{
+  dparamsPsi = matrix(model$phi_xyk,ncol = model$nbParams) %*% dparams
+  dparamsG = matrix(0,nrow=0,ncol=dim(dparams)[2])
+  dparamsH = matrix(0,nrow=0,ncol=dim(dparams)[2])
+  return( list(dparamsPsi=dparamsPsi,
+               dparamsG = dparamsG,
+               dparamsH = dparamsH))
+}
+#
+mme.TU_rum <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
+{
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of TU_rum model via optimization."))
+  }
+
+  theta0 = initparam(model)$param
+  dtheta = dparam(model)
+  market = parametricMarket(model,theta0)
+  
+  kron = dtheta$dparamsPsi
+  Chat = c(c(muhat) %*% kron)
+  #
+  if (print_level>0){
+    message(paste0("Moment Matching Estimation of ",class(model)," model via BFGS optimization."))
+  }
+  #
+  nbX = length(model$n)
+  nbY = length(model$m)
+  
+  nbParams = dim(kron)[2]
+  #
+  eval_f <- function(thearg){
+    theU = matrix(thearg[1:(nbX*nbY)],nbX,nbY)
+    thetheta = thearg[(1+nbX*nbY):(nbParams+nbX*nbY)]
+    
+    phi = kron %*% thetheta
+    phimat = matrix(phi,nbX,nbY)
+    #
+    resG = G(market$arumsG,theU,model$n)
+    resH = G(market$arumsH,t(phimat-theU),model$m)
+    #
+    Ehatphi = sum(thetheta * Chat)
+    val = resG$val + resH$val - Ehatphi
+    
+    tresHmu = t(resH$mu)
+    
+    gradU = c(resG$mu - tresHmu)
+    gradtheta = c( c(tresHmu) %*% kron ) - Chat
+    #
+    ret = list(objective = val,
+               gradient = c(gradU,gradtheta))
+    #
+    return(ret)
+  }
+  #
+  resopt = nloptr(x0=c( (kron %*% theta0) / 2,theta0 ),
+                  eval_f=eval_f,
+                  opt=list("algorithm" = "NLOPT_LD_LBFGS",
+                           "xtol_rel"=xtol_rel,
+                           "maxeval"=maxeval,
+                           "print_level"=print_level))
+  #
+  #if(print_level>0){print(resopt, show.controls=((1+nbX*nbY):(nbParams+nbX*nbY)))}
+  #
+  U = matrix(resopt$solution[1:(nbX*nbY)],nbX,nbY)  
+  thetahat = resopt$solution[(1+nbX*nbY):(nbParams+nbX*nbY)]
+  V = matrix(kron %*% thetahat,nbX,nbY) - U
+  #
+  ret =list(thetahat=thetahat,
+            U=U, V=V,
+            val=resopt$objective)
   #
   return(ret)
 }

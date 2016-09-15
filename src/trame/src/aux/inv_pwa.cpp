@@ -36,7 +36,7 @@ arma::vec trame::invPWA (arma::vec a, arma::mat B, arma::mat C, double k)
     int nb_X = a.n_elem;
     int nb_Y = B.n_cols;
     //
-    arma::vec vals(nb_X), Bx(nb_Y), b, small_C, b_mid(nb_Y), b_low(nb_Y), temp_vec;
+    arma::vec vals(nb_X), Bx(nb_Y), b, small_C, b_mid(nb_Y), b_low(nb_Y), b_up(nb_Y), temp_vec;
     vals.zeros();
     arma::uvec Bx_sort_ind;
     
@@ -76,13 +76,19 @@ arma::vec trame::invPWA (arma::vec a, arma::mat B, arma::mat C, double k)
         if ((y_low==1) && ( k * b(y_low-1) + arma::accu(small_C % arma::min(b_low,b)) >= a(x) )) {
             vals(x) = a(x) / (k + small_C_sum);
         } else {
-            y_incl = y_low - 1;
+            b_up.fill(b(y_up-1));
+
+            if ((y_up==nb_Y) && ( k * b(y_up-1) + arma::accu(small_C % arma::min(b_up,b)) <= a(x) )) {
+                vals(x) = (a(x) - arma::accu(small_C % b)) / k ;            
+            } else {
+                y_incl = y_low - 1;
+
+                temp_vec = (small_C % b);
+                term_1 = a(x) - arma::accu(temp_vec.rows(0,y_incl));
+                term_2 = k + small_C_sum - arma::accu(small_C.rows(0,y_incl));
                 
-            temp_vec = (small_C % b);
-            term_1 = a(x) - arma::accu(temp_vec.rows(0,y_incl));
-            term_2 = k + small_C_sum - arma::accu(small_C.rows(0,y_incl));
-                
-            vals(x) = term_1 / term_2;
+                vals(x) = term_1 / term_2;
+            }
         }
     }
     //

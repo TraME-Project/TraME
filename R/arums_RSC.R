@@ -47,7 +47,7 @@ build_RSC <- function(zeta, aux_cdf_eps, aux_quant_eps, aux_pot_eps=NULL, aux_pd
     D    = diag(nbY+1) - rbind(rep(0,nbY+1), cbind(diag(nbY),rep(0,nbY)))
     Dinv = solve(D)
     
-    #ts = array(0,c(nbX,nbY+1,nbY+1)) # Keith: where is this used?
+    ts = array(0,c(nbX,nbY+1,nbY+1))
     N  = cbind(diag(nbY),rep(-1,nbY))
     
     aux_Influence_lhs = c()
@@ -162,10 +162,10 @@ Gx.RSC <- function(arums, Ux, x)
         j = nbAlt
         while(j > i){
             z = arums$aux_ord[x,j]
-            runmin = min(runmin, (Uxtilde[y]-Uxtilde[z])/(arums$zeta[x,z]-arums$zeta[x,y])) # shouldn't this have a if(arums$zeta[x,z] != arums$zeta[x,y]) clause like above in the max case?
+            runmin = min(runmin, (Uxtilde[y]-Uxtilde[z])/(arums$zeta[x,z]-arums$zeta[x,y]))
             j = j - 1 
         }
-        #
+        #print(c("y",y,"low",round(runmax,2),"high",round(runmin,2)))
         if(runmin > runmax){
             muxtildey = max(arums$aux_cdf_eps(runmin)-arums$aux_cdf_eps(runmax),0)
         }else{
@@ -178,11 +178,12 @@ Gx.RSC <- function(arums, Ux, x)
             cumulmusofar = cumulmusofar + muxtildey
             ey = arums$aux_quant_eps(cumulmusofar)
             EepssofarNext = ey*cumulmusofar - arums$aux_pot_eps(cumulmusofar)
-            valx = valx + muxtildey*Uxtilde[y] + arums$zeta[x,y]*(EepssofarNext - Eepssofar)# should Eepssofar be updated somewhere?  
+            valx = valx + muxtildey*Uxtilde[y] + arums$zeta[x,y]*(EepssofarNext - Eepssofar) 
+            Eepssofar =EepssofarNext 
         }
     }  
     #
-    mux = muxtilde[1:nbAlt-1] # this looks like an error: 1:(nbAlt-1)?
+    mux = muxtilde[1:(nbAlt-1)]
     #
     ret = list(valx = sum(mux*Ux) - Gstarx.RSC(arums,mux,x)$valx,
                mux  = mux)
@@ -198,7 +199,7 @@ Gstarx.RSC <- function(arums, mux, x)
     pots = arums$aux_pot_eps(c(0,tsfull))
     diffpots = pots[2:(arums$nbY+2)] - pots[1:(arums$nbY+1)]
     #
-    valx = -sum( (arums$aux_Psigma[[x]] %*% arums$zeta[x,]) * diffpots ) # Keith: should really transpose arums$zeta[x,] first, and same below too
+    valx = -sum( (arums$aux_Psigma[[x]] %*% arums$zeta[x,]) * diffpots )
     
     e = diag( c(0,arums$aux_quant_eps(ts)) )
     Ux = -c( arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% arums$zeta[x,] )
@@ -219,7 +220,7 @@ D2Gstar.RSC <- function(arums, mu, n, xFirst=TRUE)
     }
     #
     for(x in 1:arums$nbX){
-        C = -t( (c(arums$aux_Influence_rhs[[x]] %*% arums$zeta[x,]) ) * t(arums$aux_Influence_lhs[[x]])) # Keith: should really transpose arums$zeta[x,] first
+        C = -t( (c(arums$aux_Influence_rhs[[x]] %*% arums$zeta[x,]) ) * t(arums$aux_Influence_lhs[[x]]))
         
         tsfull = arums$aux_DinvPsigma[[x]] %*% c(mu[x,],mux0[x])/n[x] 
         erestr = arums$aux_quant_eps(tsfull)[1:arums$nbY]
@@ -247,7 +248,7 @@ dtheta_NablaGstar.RSC <- function(arums, mu, n, dtheta=diag(arums$nbParams), xFi
     nbDirs = length(dtheta) %/% (arums$nbX * arums$nbX * (arums$nbY+1))
     dthetamat = array(dtheta,dim=c(arums$nbX,arums$nbY+1,arums$nbX,nbDirs))
     #
-    #mux0 = n - apply(mu,1,sum) # Keith: where is this used?
+    mux0 = n - apply(mu,1,sum)
     if(xFirst){
         ders = array(0,dim=c(arums$nbX,arums$nbY,arums$nbX,nbDirs))
     }else{
@@ -259,9 +260,9 @@ dtheta_NablaGstar.RSC <- function(arums, mu, n, dtheta=diag(arums$nbParams), xFi
         e = diag( c(0,arums$aux_quant_eps(tsfull[1:arums$nbY])) )
         
         if(xFirst){
-            ders[x,,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,x,]
+            ders[x,,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,]
         }else{
-            ders[,x,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,x,] # should this be dthetamat[,x,,x] ?
+            ders[,x,x,] = -arums$aux_Influence_lhs[[x]] %*% e %*% arums$aux_Influence_rhs[[x]] %*% dthetamat[x,,]
         }
     }
     #

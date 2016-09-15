@@ -19,12 +19,12 @@
 ##
 ################################################################################
 
-genericLP <- function(obj, A, modelsense, rhs, sense, Q=NULL, lb=NULL, ub=NULL, start=NULL){
+genericLP <- function(obj, A, modelsense, rhs, sense, Q=NULL, lb=NULL, ub=NULL, start=NULL, Method = -1){
     #
     if(.trame_lp_options$gurobi_exists==TRUE){
         gurobiModel = list(A=A,obj=obj,modelsense=modelsense,rhs=rhs,sense=sense,
                            Q=Q,lb=lb,ub=ub,start=start)
-        result = gurobi(gurobiModel, params=list(OutputFlag=0))
+        result = gurobi(gurobiModel, params=list(OutputFlag=0 , Method = Method))
         #
         if(result$status=="OPTIMAL"){
             solution = result$x

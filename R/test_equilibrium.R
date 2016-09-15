@@ -240,8 +240,8 @@ test_jacobi <- function(nbDraws=1E3, seed=777, extensiveTesting = FALSE)
         nbX = length(n)
         nbY = length(m)
         
-        logitM = build_logits(nbX,nbY)
-        logitW = build_logits(nbY,nbX)
+        logitM = build_logit(nbX,nbY)
+        logitW = build_logit(nbY,nbX)
         
         logitSimM = simul(logitM,nbDraws,seed)
         logitSimW = simul(logitW,nbDraws,seed)
@@ -277,8 +277,8 @@ test_darum <- function(nbDraws=1E3,seed=777)
     nbX = length(n)
     nbY = length(m)
     
-    logitM = build_logits(nbX,nbY)
-    logitW = build_logits(nbY,nbX)  
+    logitM = build_logit(nbX,nbY)
+    logitW = build_logit(nbY,nbX)  
     
     logitSimM = simul(logitM,nbDraws,seed)
     logitSimW = simul(logitW,nbDraws,seed)  
@@ -316,8 +316,8 @@ test_cupidsLP <- function(nbX=5, nbY=3, nbDraws=1E3, seed=777)
     n = rep(1,nbX)
     m = rep(1, nbY)
     
-    logitM = build_logits(nbX,nbY)
-    logitW = build_logits(nbY,nbX)
+    logitM = build_logit(nbX,nbY)
+    logitW = build_logit(nbY,nbX)
     
     logitSimM = simul(logitM,nbDraws,seed)
     logitSimW = simul(logitW,nbDraws,seed)

@@ -32,8 +32,8 @@ test_loglikelihood <- function(seed=777, nbX=5, nbY=4, dX=3, dY=2)
     xs = matrix(runif(nbX*dX),nrow=nbX)
     ys = matrix(runif(nbY*dY),nrow=nbY)
     #
-    logitM = build_logits(nbX,nbY)
-    logitW = build_logits(nbY,nbX)
+    logitM = build_logit(nbX,nbY)
+    logitW = build_logit(nbY,nbX)
     # logitSimM = simul(logitM,1,seed)
     # logitSimW = simul(logitW,1,seed)
     #
@@ -45,23 +45,23 @@ test_loglikelihood <- function(seed=777, nbX=5, nbY=4, dX=3, dY=2)
     muhatx0  = n-apply(muhat,1,sum)
     muhat0y  = m-apply(muhat,2,sum)
     #
-    affinitymodel = buildModel_affinity(xs,ys,n,m)
-    theta0=initparam(affinitymodel)$param
-    market = parametricMarket(affinitymodel,theta0)
-    dtheta = diag(affinitymodel$nbParams)
+    TUlogitmodel = buildModel_TU_logit(array(kronecker(ys,xs) , dim=c(nbX,nbY,dX*dY) ),n,m)
+    theta0=initparam(TUlogitmodel)$param
+    market = parametricMarket(TUlogitmodel,theta0)
+    dtheta = diag(TUlogitmodel$nbParams)
     #dtheta = matrix(0.1,nrow=6,ncol=1)
     #
     tsf = proc.time()  
-    #mudmu = dtheta_mu_default(affinitymodel,market,theta0,dtheta)
-    mudmu = dtheta_mu_default(affinitymodel,market,theta0)
+    #mudmu = dtheta_mu_default(TUlogitmodel,market,theta0,dtheta)
+    mudmu = dtheta_mu_default(TUlogitmodel,market,theta0)
     message(paste0('Time elapsed - general: ', round((proc.time()-tsf)["elapsed"],5), 's.')) 
     #
     tsf = proc.time()  
-    dmunum = dtheta_mu_numeric(affinitymodel,market,theta0,dtheta)
+    dmunum = dtheta_mu_numeric(TUlogitmodel,market,theta0,dtheta)
     message(paste0('Time elapsed - numerical: ', round((proc.time()-tsf)["elapsed"],5), 's.')) 
     #
     tsf = proc.time()    
-    dmulogit=dtheta_mu_logit(affinitymodel,market,theta0,dtheta)
+    dmulogit=dtheta_mu_logit(TUlogitmodel,market,theta0,dtheta)
     message(paste0('Time elapsed - logit: ', round((proc.time()-tsf)["elapsed"],5), 's.')) 
     #
     mu = mudmu$mu 
@@ -95,8 +95,8 @@ test_mle <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     xs = matrix(runif(nbX*dX),nrow=nbX)
     ys = matrix(runif(nbY*dY),nrow=nbY)
     #
-    logitM = build_logits(nbX,nbY,1)
-    logitW = build_logits(nbY,nbX,1)
+    logitM = build_logit(nbX,nbY,1)
+    logitW = build_logit(nbY,nbX,1)
     
     logitSimM = simul(logitM,50,seed)
     logitSimW = simul(logitW,50,seed)
@@ -108,8 +108,8 @@ test_mle <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     noise = matrix(1+ noiseScale*rnorm(nbX*nbY),nrow=nbX)
     muhat = ipfp(mktLogit, T, F)$mu * noise
     #
-    affinitymodel = buildModel_affinity(xs,ys,n,m)
-    thetahat = mle(affinitymodel,muhat, print_level=0)$thetahat
+    TUlogitmodel = buildModel_TU_logit(array(kronecker(ys,xs) , dim=c(nbX,nbY,dX*dY) ),n,m)
+    thetahat = mle(TUlogitmodel,muhat, print_level=0)$thetahat
     #
     message("Estimator:")
     print(thetahat)
@@ -134,8 +134,8 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     xs = matrix(runif(nbX*dX),nrow=nbX)
     ys = matrix(runif(nbY*dY),nrow=nbY)
     #
-    logitM = build_logits(nbX,nbY,1)
-    logitW = build_logits(nbY,nbX,1)
+    logitM = build_logit(nbX,nbY,1)
+    logitW = build_logit(nbY,nbX,1)
     
     logitSimM = simul(logitM,50,seed)
     logitSimW = simul(logitW,50,seed)
@@ -147,8 +147,8 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     noise = matrix(1 + noiseScale*rnorm(nbX*nbY),nrow=nbX)
     muhat = ipfp(mktLogit, T, F)$mu * noise
     #
-    affinitymodel = buildModel_affinity(xs,ys,n,m)
-    thetahat = mme(affinitymodel,muhat, print_level=0)$thetahat
+    TUlogitmodel = buildModel_TU_logit(array(kronecker(ys,xs) , dim=c(nbX,nbY,dX*dY) ),n,m)
+    thetahat = mme(TUlogitmodel,muhat, print_level=0)$thetahat
     #
     message("Estimator:")
     print(thetahat)  
@@ -167,7 +167,7 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
 # {
 #   theA = matrix(theta,dX,dY)
 #   thephi = xs %*% theA %*% t(ys)
-#   thephiBis = matrix(affinitymodel$kron %*% c(theta),nrow=affinitymodel$nbX)
+#   thephiBis = matrix(TUlogitmodel$kron %*% c(theta),nrow=TUlogitmodel$nbX)
 #   themkt = build_market_TU_logit(n,m,thephi)
 #   res = ipfp(themkt,notifications=F)
 #   themu = res$mu

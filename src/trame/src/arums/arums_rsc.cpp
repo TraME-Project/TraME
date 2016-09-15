@@ -196,6 +196,8 @@ double trame::rsc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
             E_eps_temp_next = e_y * cumul_temp - pot(cumul_temp);
 
             val_x += mu_x_tilde_y*U_x_tilde(y) + zeta(x,y)*(E_eps_temp_next - E_eps_temp);
+            //
+            E_eps_temp = E_eps_temp_next;
         }
     }
     //
