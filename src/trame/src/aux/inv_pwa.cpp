@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 08/24/2016
+ *
+ * Modified: 
+ *   09/15/16, Alfred Galichon
  */
 
 #include "trame.hpp"

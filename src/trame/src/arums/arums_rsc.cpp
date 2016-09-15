@@ -412,8 +412,9 @@ void trame::rsc::dtheta_NablaGstar(arma::mat& ret, arma::vec n, arma::mat* dthet
 
     ret.set_size(nbX*nbY,nbX*nbDirs);
     ret.zeros();
-
-    arma::umat mat_inds_1(nbDirs,nbX); // indices to place the results (complicated)
+    //
+    // indices to place the results (complicated)
+    arma::umat mat_inds_1(nbDirs,nbX);
     arma::umat mat_inds_2(nbDirs,nbX);
     arma::umat mat_inds_3(nbDirs,nbX);
 
