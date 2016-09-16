@@ -58,6 +58,7 @@ class mmf
         void build_NTU(arma::vec n_NTU, arma::vec m_NTU, arma::mat A_NTU, arma::mat B_NTU, bool need_norm_NTU);
         void build_TU(arma::vec n_TU, arma::vec m_TU, arma::mat K_TU, bool need_norm_TU);
 
+        arma::mat M(arma::mat a_xs, arma::mat b_ys);
         arma::mat M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys);
         arma::mat M(double a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys);
         arma::mat M(arma::mat a_xs, double b_ys, arma::uvec* xs, arma::uvec* ys);

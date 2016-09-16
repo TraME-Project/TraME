@@ -87,6 +87,13 @@ void trame::mmf::build_TU(arma::vec n_TU, arma::vec m_TU, arma::mat K_TU, bool n
     TU = true;
 }
 
+arma::mat trame::mmf::M(arma::mat a_xs, arma::mat b_ys)
+{
+    arma::mat ret = this->M(a_xs,b_ys,NULL,NULL);
+    //
+    return ret;
+}
+
 arma::mat trame::mmf::M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys)
 {
     arma::mat ret;
