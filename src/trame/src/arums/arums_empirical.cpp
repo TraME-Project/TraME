@@ -341,7 +341,7 @@ double trame::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, i
     return val_x;
 }
 
-double trame::empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out)
+double trame::empirical::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {
     int i;
     double val=0.0, val_temp;
@@ -361,7 +361,7 @@ double trame::empirical::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma
     return val;
 }
 
-double trame::empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+double trame::empirical::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     if (!TRAME_PRESOLVED_GBAR) {
         presolve_LP_Gbar();
@@ -382,11 +382,11 @@ double trame::empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& U_x
         Phi = atoms.slice(x);
     }
     //
-    arma::vec obj_grbi_1 = mubarx;
+    arma::vec obj_grbi_1 = mubar_x;
     arma::vec obj_grbi_2 = - arma::ones(aux_nbDraws,1)/aux_nbDraws;
     arma::vec obj_grbi   = arma::join_cols(obj_grbi_1,obj_grbi_2);
 
-    arma::vec rhs_grbi_1 = Ubarx;
+    arma::vec rhs_grbi_1 = Ubar_x;
     arma::vec rhs_grbi_2 = arma::vectorise(-Phi);
     arma::vec rhs_grbi = arma::join_cols(rhs_grbi_1,rhs_grbi_2);
 
@@ -410,9 +410,9 @@ double trame::empirical::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& U_x
         if (LP_optimal) {
             U_x_out = sol_mat.col(0).rows(0,nbY-1);
             arma::vec delta_mu_x = dual_mat.col(0).rows(0,nbY-1);
-            mu_x_out = mubarx - delta_mu_x;
+            mu_x_out = mubar_x - delta_mu_x;
             //
-            val_x = arma::accu(mubarx % Ubarx) - objval;
+            val_x = arma::accu(mubar_x % Ubar_x) - objval;
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;
         }

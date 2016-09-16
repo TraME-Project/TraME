@@ -31,6 +31,11 @@
 
 #include "trame.hpp"
 
+trame::rsc::rsc(arma::mat zeta_inp, bool outsideOption_inp)
+{
+    this->build(zeta_inp, outsideOption_inp);
+}
+
 trame::rsc::rsc(arma::mat zeta_inp, double alpha, double beta)
 {
     this->build_beta(zeta_inp, alpha, beta);
@@ -284,7 +289,7 @@ double trame::rsc::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta,
     return val_x;
 }
 
-double trame::rsc::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out)
+double trame::rsc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {
     int i;
     double val=0.0, val_temp;
@@ -304,7 +309,7 @@ double trame::rsc::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat&
     return val;
 }
 
-double trame::rsc::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     if (!outsideOption) {
         printf("Gbarx not implemented yet when outsideOption==false");
@@ -312,9 +317,9 @@ double trame::rsc::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& U_x_out, 
     }
     //
     arma::vec lb = arma::zeros(nbY,1);
-    arma::vec ub = mubarx;
+    arma::vec ub = mubar_x;
 
-    std::vector<double> sol_vec = arma::conv_to< std::vector<double> >::from(mubarx/2.0);
+    std::vector<double> sol_vec = arma::conv_to< std::vector<double> >::from(mubar_x/2.0);
     double obj_val = 0;
     double ret = 0;
     //
@@ -323,7 +328,7 @@ double trame::rsc::Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& U_x_out, 
 
     opt_data.x = x;
     opt_data.nbY = nbY;
-    opt_data.Ubar_x = Ubarx;
+    opt_data.Ubar_x = Ubar_x;
     opt_data.zeta = zeta;
 
     opt_data.aux_DinvPsigma = aux_DinvPsigma.slice(x);

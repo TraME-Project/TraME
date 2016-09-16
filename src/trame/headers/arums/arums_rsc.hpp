@@ -62,16 +62,17 @@ class rsc
         arma::vec (*aux_pot_eps_vec)(arma::vec x, double* dist_pars);
         
         // input objects
-        arma::mat mu;
         arma::mat U;
+        arma::mat mu;
         
         // equilibrium objects
-        arma::mat mu_sol;
         arma::mat U_sol;
+        arma::mat mu_sol;
         
         // member functions
         ~rsc(){};
          rsc(){};
+        explicit rsc(arma::mat zeta_inp, bool outsideOption_inp);
         explicit rsc(arma::mat zeta_inp, double alpha, double beta);
 
         void build(arma::mat zeta_inp, bool outsideOption_inp);
@@ -92,8 +93,8 @@ class rsc
                              arma::vec (*quantile_eps_vec)(arma::vec quant_inp, double* dist_pars),
                              double* dist_pars, int nbY, int x);
 
-        double Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out);
-        double Gbarx(arma::vec Ubarx, arma::vec mubarx, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
+        double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out);
+        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
         
         void D2Gstar (arma::mat& hess, arma::vec n, bool x_first);
         void dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first);

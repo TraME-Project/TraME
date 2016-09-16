@@ -137,7 +137,7 @@ double trame::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x
     return val_x;
 }
 
-double trame::logit::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out)
+double trame::logit::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {   
     int i;
     double val=0.0, val_temp;
@@ -165,7 +165,7 @@ double differMargX(double z, const trame::trame_zeroin_data& opt_data)
     return ret;
 }
 
-double trame::logit::Gbarx(arma::mat Ubar_x, arma::mat mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out)
+double trame::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     double valx = 0.0;
 

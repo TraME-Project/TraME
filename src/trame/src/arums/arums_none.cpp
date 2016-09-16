@@ -122,7 +122,7 @@ double trame::none::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
     return 0.0;
 }
 
-double trame::none::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out)
+double trame::none::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {   
     int i;
     double val=0.0, val_temp;
@@ -142,32 +142,40 @@ double trame::none::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat
     return val;
 }
 
-double trame::none::Gbarx(arma::mat Ubarx, arma::mat mubarx, arma::mat& U_x_out, arma::mat& mu_x_out)
+double trame::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out)
 {
     int count_int=0;
-    int nbY0 = Ubarx.n_elem;
+    int nbY0 = Ubar_x.n_elem;
     //
-    //arma::mat srt = arma::sort(Ubarx,"descend");
-    arma::uvec srt_ind = arma::sort_index(Ubarx,"descend");
+    //arma::mat srt = arma::sort(Ubar_x,"descend");
+    arma::uvec srt_ind = arma::sort_index(Ubar_x,"descend");
     //
     mu_x_out.set_size(nbY0,1);
-    double cumul = arma::as_scalar(mubarx(srt_ind(count_int)));
+    double cumul = arma::as_scalar(mubar_x(srt_ind(count_int)));
     //
-    while ((count_int < nbY0-1) & (cumul < 1.0) & (Ubarx(srt_ind(count_int)) > 0)) {
-        mu_x_out(srt_ind(count_int)) = mubarx(srt_ind(count_int));
+    while ((count_int < nbY0-1) && (cumul < 1.0) && (Ubar_x(srt_ind(count_int)) > 0)) {
+        mu_x_out(srt_ind(count_int)) = mubar_x(srt_ind(count_int));
         count_int++;
-        cumul += mubarx(srt_ind(count_int)); // Keith: is this in the correct place?
+        cumul += mubar_x(srt_ind(count_int)); // Keith: is this in the correct place?
     }
     //
-    if (Ubarx(srt_ind(count_int)) > 0) {
-        mu_x_out(srt_ind(count_int)) = mubarx(srt_ind(count_int)) + 1 - cumul;
+    if (Ubar_x(srt_ind(count_int)) > 0) {
+        mu_x_out(srt_ind(count_int)) = mubar_x(srt_ind(count_int)) + 1 - cumul;
     }
     //
     U_x_out = arma::zeros(nbY0,1);
     //
-    double valx = arma::accu(mu_x_out % Ubarx);
+    double valx = arma::accu(mu_x_out % Ubar_x);
     //
     return valx;
+}
+
+// just to conform with other arums classes
+double trame::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+{
+    double val_x = this->Gbarx(Ubar_x, mubar_x, U_x_out, mu_x_out);
+    //
+    return val_x;
 }
 
 arma::vec trame::none::dtheta_NablaGstar()

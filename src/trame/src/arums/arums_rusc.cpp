@@ -204,7 +204,7 @@ double trame::rusc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
     return val_x;
 }
 
-double trame::rusc::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat& U_out, arma::mat& mu_out)
+double trame::rusc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {   
     int i;
     double val=0.0, val_temp;
@@ -224,7 +224,7 @@ double trame::rusc::Gbar(arma::mat Ubar, arma::mat mubar, arma::vec n, arma::mat
     return val;
 }
 
-double trame::rusc::Gbarx(arma::mat Ubar_x, arma::mat mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+double trame::rusc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     int nbAlt = nbY + 1;
     double val_x = 0.0;
