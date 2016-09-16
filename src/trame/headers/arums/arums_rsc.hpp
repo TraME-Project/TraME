@@ -103,6 +103,7 @@ class rsc
         void simul(empirical& obj_out);
         void simul(empirical& obj_out, int* nbDraws, int* seed);
         
+    private:
         double cdf (double x);
         arma::vec cdf (arma::vec x);
         double pdf (double x);
@@ -111,8 +112,7 @@ class rsc
         arma::vec quantile (arma::vec x);
         double pot (double x);
         arma::vec pot (arma::vec x);
-        
-    private:
+
         static double Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
         static double Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data);
 };
