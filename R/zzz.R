@@ -63,3 +63,7 @@
         packageStartupMessage("Could not find any LP solver.\n")
     }
 }
+
+.onLoad <- function(libname, pkgname) {
+    suppressWarnings(Rcpp::loadRcppModules())
+}
