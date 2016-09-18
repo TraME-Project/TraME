@@ -65,6 +65,7 @@ class logit
         double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
         
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out);
+        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out);
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
         
         void D2G(arma::mat &H, arma::vec n, bool xFirst);

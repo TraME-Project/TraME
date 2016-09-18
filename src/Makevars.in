@@ -8,6 +8,8 @@ PKG_LIBS= -L./trame/ -ltrame
 SOURCES_MODULES= ./modules/R_arums_empirical.cpp ./modules/R_arums_logit.cpp ./modules/R_arums_none.cpp ./modules/R_arums_probit.cpp ./modules/R_arums_rsc.cpp ./modules/R_arums_rusc.cpp
 OBJECTS_MODULES= $(SOURCES_MODULES:.cpp=.o)
 
+OBJECTS=$(OBJECTS_MODULES)
+
 all: $(SHLIB)
 
-$(SHLIB): $(OBJECTS_MODULES)
+$(SHLIB): $(OBJECTS)
