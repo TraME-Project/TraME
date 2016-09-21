@@ -51,10 +51,11 @@ int main()
     logits.mu = mu;
     //
     // empirical object:
+    int sim_seed = 1777;
     int n_draws = 1000;
     trame::empirical logit_sim;
     
-    logits.simul(logit_sim, n_draws, (int) 1777);
+    logits.simul(logit_sim, &n_draws, &sim_seed);
     
     logit_sim.U = U;
     logit_sim.mu = mu;

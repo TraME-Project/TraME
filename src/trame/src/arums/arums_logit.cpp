@@ -41,6 +41,11 @@ trame::logit::logit(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOpti
     this->build(nbX_inp,nbY_inp,sigma_inp,outsideOption_inp);
 }
 
+void trame::logit::build(int nbX_inp, int nbY_inp)
+{   
+    this->build(nbX_inp,nbY_inp, (double) 1.0, (bool) true);
+}
+
 void trame::logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp)
 {   
     nbX = nbX_inp;

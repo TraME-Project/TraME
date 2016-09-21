@@ -40,12 +40,12 @@ class logit
         bool outsideOption;
         
         // input objects
-        arma::mat mu;
         arma::mat U;
+        arma::mat mu;
         
         // equilibrium objects
-        arma::mat mu_sol;
         arma::mat U_sol;
+        arma::mat mu_sol;
         
         // member functions
         ~logit(){};
@@ -53,6 +53,7 @@ class logit
         explicit logit(int nbX_inp, int nbY_inp);
         explicit logit(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp);
 
+        void build(int nbX_inp, int nbY_inp);
         void build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp);
         
         double G(arma::vec n);

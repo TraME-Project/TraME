@@ -65,11 +65,13 @@ RCPP_MODULE(logit_module)
     using namespace Rcpp ;
 
     // function overloading requires some trickery
+    void (trame::logit::*build_1)(int, int) = &trame::logit::build ;
+    void (trame::logit::*build_2)(int, int, double, bool) = &trame::logit::build ;
     double (trame::logit::*G_1)(arma::vec) = &trame::logit::G ;
     Rcpp::List (logit_R::*G_2)(arma::vec, arma::mat) = &logit_R::G_R ;
 
     double (trame::logit::*Gstar_1)(arma::vec) = &trame::logit::Gstar ;
-  
+
     // now we can declare the class
     class_<trame::logit>( "logit" )
         .default_constructor()
@@ -92,7 +94,8 @@ RCPP_MODULE(logit_module)
         //.field_readonly( "", &trame::logit:: )
 
         // member functions
-        .method( "build", &trame::logit::build )
+        .method( "build", build_1 )
+        .method( "build", build_2 )
         .method( "G", G_1 )
         .method( "Gstar", Gstar_1 )
         //.method( "Gstarx", &trame::logit::Gstarx )
