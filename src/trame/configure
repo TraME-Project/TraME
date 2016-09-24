@@ -1,6 +1,15 @@
 #! /bin/sh
 ## TraME config script
 
+if [ -z ${CC+x} ]; then 
+    CC=gcc
+fi
+if [ -z ${CXX+x} ]; then 
+    CXX=g++
+fi
+if [ -z ${FC+x} ]; then 
+    FC=gfortran
+fi
 
 if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
     ARMA_INCLUDE_PATH="-I/opt/local/include"
@@ -16,8 +25,14 @@ NLOPT_LIBS="-lnlopt"
 if [[ $OSTYPE == darwin* ]] ; then
     if [[ !(-z ${TRAME_R_VERSION+x}) ]]; then 
         TRAME_SHLIB_FLAGS="-dynamiclib -install_name "@loader_path/${TRAME_SHLIB_NAME}" -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress"
+        #TRAME_SHLIB_FLAGS="-dynamiclib -install_name "@loader_path/${TRAME_SHLIB_NAME}""
+
+        TRAME_BLAS_LAPACK="${TRAME_LAPACK_LIBS} ${TRAME_BLAS_LIBS}"
     else
         TRAME_SHLIB_FLAGS="-dynamiclib -install_name "${TRAME_INSTALL_PATH}/lib/${TRAME_SHLIB_NAME}" -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress"
+        #TRAME_SHLIB_FLAGS="-dynamiclib -install_name "${TRAME_INSTALL_PATH}/lib/${TRAME_SHLIB_NAME}""
+
+        TRAME_BLAS_LAPACK=-framework Accelerate
     fi
 
     if [ -d "/Library/gurobi"* ] ; then
@@ -35,6 +50,8 @@ if [[ $OSTYPE == darwin* ]] ; then
         GRB_LIB_RPATH=
     fi
 elif [[ $OSTYPE == *linux* ]] ; then
+    TRAME_BLAS_LAPACK="${TRAME_LAPACK_LIBS} ${TRAME_BLAS_LIBS}"
+
     if [ -d "/opt/gurobi"* ] ; then
         grb_dirs=( /opt/gurobi* )
         nmb_dirs=${#grb_dirs[@]}
@@ -50,13 +67,19 @@ elif [[ $OSTYPE == *linux* ]] ; then
         GRB_LIB_RPATH=
     fi
 else
+    TRAME_BLAS_LAPACK=
+
     GRB_INCLUDE_PATH=
     GRB_LIB_PATH=
     GRB_LIBS=
     GRB_LIB_RPATH=
 fi
 
-sed -e "s|@ARMA_INCLUDE_PATH@|${ARMA_INCLUDE_PATH}|" \
+sed -e "s|@CC@|${CC}|" \
+    -e "s|@CXX@|${CXX}|" \
+    -e "s|@FC@|${FC}|" \
+    -e "s|@ARMA_INCLUDE_PATH@|${ARMA_INCLUDE_PATH}|" \
+    -e "s|@TRAME_BLAS_LAPACK@|${TRAME_BLAS_LAPACK}|" \
     -e "s|@TRAME_SHLIB_NAME@|${TRAME_SHLIB_NAME}|" \
     -e "s|@TRAME_SHLIB_FLAGS@|${TRAME_SHLIB_FLAGS}|" \
     -e "s|@TRAME_INSTALL_PATH@|${TRAME_INSTALL_PATH}|" \

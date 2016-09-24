@@ -1,8 +1,11 @@
 
 # core compiling options
-CC  = gcc-mp-5
-CXX = g++-mp-5
-FC  = gfortran-mp-5
+#CC  = gcc-mp-5
+#CXX = g++-mp-5
+#FC  = gfortran-mp-5
+CC  = @CC@
+CXX = @CXX@
+FC  = @FC@
 
 CXX_STD = -std=c++11
 OPT_FLAGS = -O2
@@ -43,7 +46,7 @@ OBJECTS_NLOPT= $(TRAME_SRC_DIR)/nlopt/generic_nlopt.o
 CFLAGS = -Wall $(OPT_FLAGS) $(LP_CFLAGS) -I$(TRAME_HEADER_DIR)
 CXXFLAGS = $(CXX_STD) -Wall $(OPT_FLAGS) $(ARMA_INCLUDE_PATH) $(LP_CXXFLAGS) $(NLOPT_CXXFLAGS) -I$(TRAME_HEADER_DIR)
 FFLAGS = $(OPT_FLAGS)
-LIBS= -lgfortran -framework Accelerate
+LIBS= -lgfortran @TRAME_BLAS_LAPACK@
 
 # core TraME files
 OBJECTS_TRAME_F90= $(TRAME_SRC_DIR)/prob/prob.o $(TRAME_SRC_DIR)/math/quadpack_double.o $(TRAME_SRC_DIR)/prob/trame_F90_aux.o
@@ -59,6 +62,8 @@ OBJECTS_TRAME_MKTS= $(SOURCES_TRAME_MKTS:.cpp=.o)
 
 SOURCES_TRAME_SLVRS= $(TRAME_SRC_DIR)/solvers/aux_solvers.cpp $(TRAME_SRC_DIR)/solvers/ipfp.cpp
 OBJECTS_TRAME_SLVRS= $(SOURCES_TRAME_SLVRS:.cpp=.o)
+
+OBJECTS_TRAME= $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_F90) $(OBJECTS_TRAME_AUX) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_MKTS) $(OBJECTS_TRAME_SLVRS)
 
 # test files
 #SOURCES_TEST= $(TRAME_TEST_DIR)/arums/logit_test.cpp $(TRAME_TEST_DIR)/arums/none_test.cpp $(TRAME_TEST_DIR)/arums/probit_test.cpp $(TRAME_TEST_DIR)/arums/rsc_test.cpp
@@ -104,6 +109,7 @@ $(TRAME_SRC_DIR)/solvers/%.o: $(TRAME_SRC_DIR)/solvers/%.cpp
 # shared library
 $(TRAME_DIR)/$(SHLIB): $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_TRAME_F90) $(OBJECTS_TRAME_AUX) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_MKTS) $(OBJECTS_TRAME_SLVRS)
 	$(CXX) $(SHLIB_FLAGS) -o $@ $^ $(LP_LIBS) $(NLOPT_LIBS) $(LIBS)
+#    ar -rvs ../../inst/libs/libtrame.a $^
 
 # tests
 #$(TRAME_TEST_DIR)/%.o: $(TRAME_TEST_DIR)/%.cpp

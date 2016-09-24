@@ -22,15 +22,15 @@
 #pragma once
 
 #ifndef TRAME_USE_GUROBI_C
-#define TRAME_USE_GUROBI_C
+    #define TRAME_USE_GUROBI_C
 #endif
 
 #ifdef TRAME_RCPP_ARMADILLO
-#include <RcppArmadillo.h>
+    #include <RcppArmadillo.h>
 #else
-#include "armadillo"
+    #include "armadillo"
 #endif
 
 #ifndef TRAME_DEFAULT_SIM_DRAWS
-#define TRAME_DEFAULT_SIM_DRAWS 1000;
+    #define TRAME_DEFAULT_SIM_DRAWS 1000;
 #endif

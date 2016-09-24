@@ -4,16 +4,18 @@
 R_INCLUDE_PATH="-I${R_HOME}/include"
 RCPP_ARMADILLO_INCLUDE_PATH="-I${R_HOME}/library/Rcpp/include -I${R_HOME}/library/RcppArmadillo/include"
 
-export ARMA_INCLUDE_PATH="${R_INCLUDE_PATH} ${RCPP_ARMADILLO_INCLUDE_PATH}"
+export ARMA_INCLUDE_PATH="-DTRAME_RCPP_ARMADILLO ${R_INCLUDE_PATH} ${RCPP_ARMADILLO_INCLUDE_PATH}"
 export TRAME_R_VERSION="yes"
+export TRAME_BLAS_LIBS="${BLAS_LIBS}"
+export TRAME_LAPACK_LIBS="${LAPACK_LIBS}"
 
-if [[ !(-e src/trame/libtrame.so) ]] ; then
+#if [[ !(-e src/trame/libtrame.so) ]] ; then
     cd src/trame
     sh configure
     make
     cp ./libtrame.so ../../inst/libs/libtrame.so
     cd ../..
-fi
+#fi
 
 sed -e "s|@R_INCLUDE_PATH@|${R_INCLUDE_PATH}|" \
     -e "s|@RCPP_ARMADILLO_INCLUDE_PATH@|${RCPP_ARMADILLO_INCLUDE_PATH}|" \
