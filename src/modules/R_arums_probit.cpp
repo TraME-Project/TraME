@@ -29,8 +29,7 @@
  * 08/08/2016
  */
 
-
-#include <RcppArmadillo.h>
+//#define TRAME_RCPP_ARMADILLO
 
 #include "trame.hpp"
 

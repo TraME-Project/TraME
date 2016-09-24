@@ -29,20 +29,10 @@
  * 09/06/2016
  */
 
-#include <RcppArmadillo.h>
+//#define TRAME_RCPP_ARMADILLO
 
 #include "trame.hpp"
-
-// derived class to provide wrappers to some functions
-class empirical_R : public trame::empirical
-{
-    public:
-        Rcpp::List G_R(arma::vec n, arma::mat U_inp);
-        Rcpp::List Gx_R(arma::mat U_x_inp, int x);
-        Rcpp::List Gstar_R(arma::vec n, arma::mat mu_inp);
-        Rcpp::List Gstarx_R(arma::mat mu_x_inp, int x);
-        Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
-};
+#include "trame_R_modules.hpp"
 
 // wrapper function as Rcpp can't handle memory pointers
 Rcpp::List empirical_R::G_R(arma::vec n, arma::mat U_inp)
@@ -89,6 +79,8 @@ Rcpp::List empirical_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
 
     return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
 }
+
+RCPP_EXPOSED_CLASS(empirical_R)
 
 RCPP_MODULE(empirical_module)
 {
