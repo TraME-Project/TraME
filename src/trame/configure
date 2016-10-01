@@ -32,7 +32,7 @@ if [[ $OSTYPE == darwin* ]] ; then
         TRAME_SHLIB_FLAGS="-dynamiclib -install_name "${TRAME_INSTALL_PATH}/lib/${TRAME_SHLIB_NAME}" -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress"
         #TRAME_SHLIB_FLAGS="-dynamiclib -install_name "${TRAME_INSTALL_PATH}/lib/${TRAME_SHLIB_NAME}""
 
-        TRAME_BLAS_LAPACK=-framework Accelerate
+        TRAME_BLAS_LAPACK="-framework Accelerate"
     fi
 
     if [ -d "/Library/gurobi"* ] ; then
