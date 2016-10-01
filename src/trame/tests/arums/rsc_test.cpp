@@ -55,10 +55,11 @@ int main()
     rsc_obj.build_beta(zeta,2.0,2.0);
     //
     // empirical object:
-    int n_draws = 10000;
+    int sim_seed = 1777;
+    int n_draws = 1000;
     trame::empirical rsc_sim;
     
-    rsc_obj.simul(rsc_sim, n_draws, (int) 1777);
+    rsc_obj.simul(rsc_sim, &n_draws, &sim_seed);
     
     rsc_sim.U = U;
     rsc_sim.mu = mu;
@@ -95,7 +96,9 @@ int main()
     std::cout << "Gbar-sim val: \n" << val_Gbar_sim << std::endl;
 
     arma::cout << "\nUbar: \n" << U_bar_temp << arma::endl;
+    arma::cout << "\nUbar sim: \n" << U_bar_sim_temp << arma::endl;
     arma::cout << "mubar: \n" << mu_bar_temp << arma::endl;
+    arma::cout << "mubar sim: \n" << mu_bar_temp << arma::endl;
     //
     // hessian objects
     arma::mat hess;

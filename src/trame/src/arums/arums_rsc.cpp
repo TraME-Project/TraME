@@ -242,7 +242,7 @@ double trame::rsc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
 
     arma::vec ts_temp(mu_x_inp.n_elem+1);
     ts_temp.rows(0,mu_x_inp.n_elem-1) = mu_x_inp;
-    ts_temp(mu_x_inp.n_elem) = 1-arma::accu(mu_x_inp);
+    ts_temp(mu_x_inp.n_elem) = 1 - arma::accu(mu_x_inp);
 
     arma::vec ts_full = aux_DinvPsigma.slice(x) * ts_temp;
     arma::vec ts = ts_full.rows(0,nbY-1);
