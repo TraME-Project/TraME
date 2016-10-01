@@ -13,21 +13,25 @@ n = c(apply(mu,1,sum))
 logit_obj$build(nbX,nbY)
 logit_obj$U = U
 
-logit_obj$test_1(3,4)
-logit_obj$test_add(3,4)
-logit_obj$test_create(3,4)
-logit_obj$test_mat_add(3,4)
-logit_obj$test_2(3,4)
-logit_obj$test_3(3,4)
+sim_obj = logit_obj$simul(10000)
 
 logit_obj$G(n)
 
 resG = logit_obj$G(n,U)
+resG
+resGSim = sim_obj$G(n,U)
+resGSim
 
-ans_star = logit_obj$Gstar(n,resG$mu)
+resGstar = logit_obj$Gstar(n,resG$mu)
+resGstar
+resGstarSim = sim_obj$Gstar(n,resGSim$mu)
+resGstarSim
 
 mubar = matrix(2,2,3)
 
-logit_obj$Gbar(U,mubar,n)
+resGbar = logit_obj$Gbar(U,mubar,n)
+resGbar
+resGbarSim = sim_obj$Gbar(U,mubar,n)
+resGbarSim
+#
 
-ans = logit_obj$simul(10)

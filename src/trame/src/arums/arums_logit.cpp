@@ -31,35 +31,6 @@
 
 #include "trame.hpp"
 
-double trame::logit::test_add(double x_inp, double y_inp)
-{
-    double ret = x_inp + y_inp;
-
-    return ret;
-}
-
-void trame::logit::test_create(int x_inp, int y_inp)
-{
-    arma::mat ret(x_inp, y_inp);
-}
-
-void trame::logit::test_mat_add(int x_inp, int y_inp)
-{
-    arma::mat ret(x_inp, y_inp);
-    arma::mat mat_1 = arma::randu(x_inp, y_inp);
-    arma::mat mat_2 = arma::randu(x_inp, y_inp);
-    ret = mat_1 + mat_2;
-}
-
-arma::mat trame::logit::test_mat_add_2(int x_inp, int y_inp)
-{
-    arma::mat ret(x_inp, y_inp);
-    arma::mat mat_1 = arma::randu(x_inp, y_inp);
-    arma::mat mat_2 = arma::randu(x_inp, y_inp);
-    ret = mat_1 + mat_2;
-    return ret;
-}
-
 trame::logit::logit(int nbX_inp, int nbY_inp)
 {   
     this->build(nbX_inp,nbY_inp, (double) 1.0, (bool) true);

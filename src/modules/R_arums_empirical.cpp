@@ -34,50 +34,108 @@
 #include "trame.hpp"
 #include "trame_R_modules.hpp"
 
-// wrapper function as Rcpp can't handle memory pointers
-Rcpp::List empirical_R::G_R(arma::vec n, arma::mat U_inp)
+// wrapper functions to catch errors and handle memory pointers (which Rcpp can't do)
+SEXP empirical_R::G_R(arma::vec n)
 {
-    arma::mat mu_out;
-
-    double val_out = this->G(n, U_inp, mu_out);
-
-    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("mu") = mu_out);
+    try {
+        double val_out = this->G(n);
+        //
+        return Rcpp::List::create(Rcpp::Named("val") = val_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
 }
 
-Rcpp::List empirical_R::Gx_R(arma::mat U_x_inp, int x)
+SEXP empirical_R::G_R(arma::vec n, arma::mat U_inp)
 {
-    arma::mat mu_x_out;
-
-    double val_x_out = this->Gx(U_x_inp, mu_x_out, x);
-
-    return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("mu_x") = mu_x_out);
+    try {
+        arma::mat mu_out;
+        double val_out = this->G(n, U_inp, mu_out);
+        //
+        return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("mu") = mu_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
 }
 
-Rcpp::List empirical_R::Gstar_R(arma::vec n, arma::mat mu_inp)
+SEXP empirical_R::Gx_R(arma::mat U_x_inp, int x)
+{
+    try {
+        arma::mat mu_x_out;
+        double val_x_out = this->Gx(U_x_inp, mu_x_out, x);
+        //
+        return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("mu_x") = mu_x_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
+SEXP empirical_R::Gstar_R(arma::vec n)
 {   
-    arma::mat U_out;
-
-    double val_out = this->Gstar(n, mu_inp, U_out);
-
-    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out);
+    try {
+        double val_out = this->Gstar(n);
+        //
+        return Rcpp::List::create(Rcpp::Named("val") = val_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
 }
 
-Rcpp::List empirical_R::Gstarx_R(arma::mat mu_x_inp, int x)
+SEXP empirical_R::Gstar_R(arma::vec n, arma::mat mu_inp)
 {   
-    arma::mat U_x_out;
-
-    double val_x_out = this->Gstarx(mu_x_inp, U_x_out, x);
-
-    return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("U_x") = U_x_out);
+    try {
+        arma::mat U_out;
+        double val_out = this->Gstar(n, mu_inp, U_out);
+        //
+        return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
 }
 
-Rcpp::List empirical_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
+SEXP empirical_R::Gstarx_R(arma::mat mu_x_inp, int x)
+{   
+    try {
+        arma::mat U_x_out;
+        double val_x_out = this->Gstarx(mu_x_inp, U_x_out, x);
+        //
+        return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("U_x") = U_x_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
+SEXP empirical_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
 {
-    arma::mat U_out, mu_out;
-
-    double val_out = this->Gbar(U_bar, mu_bar, n, U_out, mu_out);
-
-    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
+    try {
+        arma::mat U_out, mu_out;
+        double val_out = this->Gbar(U_bar, mu_bar, n, U_out, mu_out);
+        //
+        return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
 }
 
 //RCPP_EXPOSED_CLASS(empirical_R)
@@ -87,8 +145,11 @@ RCPP_MODULE(empirical_module)
     using namespace Rcpp ;
 
     // function overloading requires some trickery
-    double (trame::empirical::*G_1)(arma::vec) = &trame::empirical::G ;
-    double (trame::empirical::*Gstar_1)(arma::vec) = &trame::empirical::Gstar ;
+    SEXP (empirical_R::*G_1)(arma::vec) = &empirical_R::G_R ;
+    SEXP (empirical_R::*G_2)(arma::vec, arma::mat) = &empirical_R::G_R ;
+
+    SEXP (empirical_R::*Gstar_1)(arma::vec) = &empirical_R::Gstar_R ;
+    SEXP (empirical_R::*Gstar_2)(arma::vec, arma::mat) = &empirical_R::Gstar_R ;
     
     // now we can declare the class
     class_<trame::empirical>( "empirical" )
@@ -118,17 +179,17 @@ RCPP_MODULE(empirical_module)
 
         // member functions
         .method( "build", &trame::empirical::build )
-        .method( "G", G_1 )
-        .method( "Gstar", Gstar_1 )
     ;
 
     class_<empirical_R>( "empirical_R" )
         .derives<trame::empirical>( "empirical" )
         .default_constructor()
 
-        .method( "G", &empirical_R::G_R )
+        .method( "G", G_1 )
+        .method( "G", G_2 )
         .method( "Gx", &empirical_R::Gx_R )
-        .method( "Gstar", &empirical_R::Gstar_R )
+        .method( "Gstar", Gstar_1 )
+        .method( "Gstar", Gstar_2 )
         .method( "Gstarx", &empirical_R::Gstarx_R )
         .method( "Gbar", &empirical_R::Gbar_R )
     ;

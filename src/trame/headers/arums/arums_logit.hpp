@@ -55,11 +55,6 @@ class logit
 
         void build(int nbX_inp, int nbY_inp);
         void build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp);
-
-        double test_add(double x_inp, double y_inp);
-        void test_create(int x_inp, int y_inp);
-        void test_mat_add(int x_inp, int y_inp);
-        arma::mat test_mat_add_2(int x_inp, int y_inp);
         
         double G(arma::vec n);
         double G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out);
