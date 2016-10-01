@@ -32,17 +32,7 @@
 //#define TRAME_RCPP_ARMADILLO
 
 #include "trame.hpp"
-
-// derived class to provide wrappers to some functions
-class rusc_R : public trame::rusc
-{
-    public:
-        Rcpp::List G_R(arma::vec n, arma::mat U_inp);
-        Rcpp::List Gx_R(arma::mat U_x_inp, int x);
-        Rcpp::List Gstar_R(arma::vec n, arma::mat mu_inp);
-        Rcpp::List Gstarx_R(arma::mat mu_x_inp, int x);
-        Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
-};
+#include "trame_R_modules.hpp"
 
 // wrapper function as Rcpp can't handle memory pointers
 Rcpp::List rusc_R::G_R(arma::vec n, arma::mat U_inp)
@@ -90,6 +80,18 @@ Rcpp::List rusc_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
     return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
 }
 
+empirical_R rusc_R::simul_R(int nbDraws)
+{
+    trame::empirical emp_obj = this->simul(&nbDraws,NULL);
+
+    empirical_R emp_R_obj = static_cast<empirical_R&>(emp_obj);
+
+    return emp_R_obj;
+}
+
+RCPP_EXPOSED_CLASS(empirical_R)
+RCPP_EXPOSED_CLASS(rusc_R)
+
 RCPP_MODULE(rusc_module)
 {
     using namespace Rcpp ;
@@ -135,5 +137,6 @@ RCPP_MODULE(rusc_module)
         .method( "Gstar", &rusc_R::Gstar_R )
         .method( "Gstarx", &rusc_R::Gstarx_R )
         .method( "Gbar", &rusc_R::Gbar_R )
+        .method( "simul", &rusc_R::simul_R )
     ;
 }

@@ -80,7 +80,7 @@ Rcpp::List empirical_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
     return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
 }
 
-RCPP_EXPOSED_CLASS(empirical_R)
+//RCPP_EXPOSED_CLASS(empirical_R)
 
 RCPP_MODULE(empirical_module)
 {

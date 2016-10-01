@@ -32,6 +32,19 @@
 //#define TRAME_RCPP_ARMADILLO
 
 #include "trame.hpp"
+#include "trame_R_modules.hpp"
+
+empirical_R probit_R::simul_R(int nbDraws)
+{
+    trame::empirical emp_obj = this->simul(&nbDraws,NULL);
+
+    empirical_R emp_R_obj = static_cast<empirical_R&>(emp_obj);
+
+    return emp_R_obj;
+}
+
+RCPP_EXPOSED_CLASS(empirical_R)
+RCPP_EXPOSED_CLASS(probit_R)
 
 RCPP_MODULE(probit_module)
 {
@@ -67,5 +80,12 @@ RCPP_MODULE(probit_module)
         .method( "build", build_2 )
         .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_1 )
         .method( "unifCorrelCovMatrices", unifCorrelCovMatrices_2 )
+    ;
+
+    class_<probit_R>( "probit_R" )
+        .derives<trame::probit>( "probit" )
+        .default_constructor()
+
+        .method( "simul", &probit_R::simul_R )
     ;
 }
