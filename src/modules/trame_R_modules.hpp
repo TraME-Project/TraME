@@ -53,11 +53,14 @@ class logit_R : public trame::logit
 class none_R : public trame::none
 {
     public:
-        Rcpp::List G_R(arma::vec n, arma::mat U_inp);
-        Rcpp::List Gx_R(arma::mat U_x_inp, int x);
-        double Gstar_R(arma::vec n);
-        double Gstarx_R(arma::mat mu_x_inp, int x);
-        Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
+        SEXP G_R(arma::vec n);
+        SEXP G_R(arma::vec n, arma::mat U_inp);
+        SEXP Gx_R(arma::mat U_x_inp, int x);
+        SEXP Gstar_R(arma::vec n);
+        SEXP Gstar_R(arma::vec n, arma::mat mu_inp);
+        SEXP Gstarx_R(arma::mat mu_x_inp, int x);
+        SEXP Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
+
         empirical_R simul_R(int nbDraws);
 };
 
@@ -70,21 +73,27 @@ class probit_R : public trame::probit
 class rsc_R : public trame::rsc
 {
     public:
-        Rcpp::List G_R(arma::vec n, arma::mat U_inp);
-        Rcpp::List Gx_R(arma::mat U_x_inp, int x);
-        Rcpp::List Gstar_R(arma::vec n, arma::mat mu_inp);
-        Rcpp::List Gstarx_R(arma::mat mu_x_inp, int x);
-        Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
+        SEXP G_R(arma::vec n);
+        SEXP G_R(arma::vec n, arma::mat U_inp);
+        SEXP Gx_R(arma::mat U_x_inp, int x);
+        SEXP Gstar_R(arma::vec n);
+        SEXP Gstar_R(arma::vec n, arma::mat mu_inp);
+        SEXP Gstarx_R(arma::mat mu_x_inp, int x);
+        SEXP Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
+
         empirical_R simul_R(int nbDraws);
 };
 
 class rusc_R : public trame::rusc
 {
     public:
-        Rcpp::List G_R(arma::vec n, arma::mat U_inp);
-        Rcpp::List Gx_R(arma::mat U_x_inp, int x);
-        Rcpp::List Gstar_R(arma::vec n, arma::mat mu_inp);
-        Rcpp::List Gstarx_R(arma::mat mu_x_inp, int x);
-        Rcpp::List Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
+        SEXP G_R(arma::vec n);
+        SEXP G_R(arma::vec n, arma::mat U_inp);
+        SEXP Gx_R(arma::mat U_x_inp, int x);
+        SEXP Gstar_R(arma::vec n);
+        SEXP Gstar_R(arma::vec n, arma::mat mu_inp);
+        SEXP Gstarx_R(arma::mat mu_x_inp, int x);
+        SEXP Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n);
+
         empirical_R simul_R(int nbDraws);
 };

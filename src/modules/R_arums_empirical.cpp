@@ -138,8 +138,6 @@ SEXP empirical_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
     return R_NilValue;
 }
 
-//RCPP_EXPOSED_CLASS(empirical_R)
-
 RCPP_MODULE(empirical_module)
 {
     using namespace Rcpp ;

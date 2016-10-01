@@ -34,50 +34,108 @@
 #include "trame.hpp"
 #include "trame_R_modules.hpp"
 
-// wrapper function as Rcpp can't handle memory pointers
-Rcpp::List rusc_R::G_R(arma::vec n, arma::mat U_inp)
+// wrapper functions to catch errors and handle memory pointers (which Rcpp can't do)
+SEXP rusc_R::G_R(arma::vec n)
 {
-    arma::mat mu_out;
-
-    double val_out = this->G(n, U_inp, mu_out);
-
-    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("mu") = mu_out);
+    try {
+        double val_out = this->G(n);
+        //
+        return Rcpp::List::create(Rcpp::Named("val") = val_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
 }
 
-Rcpp::List rusc_R::Gx_R(arma::mat U_x_inp, int x)
+SEXP rusc_R::G_R(arma::vec n, arma::mat U_inp)
 {
-    arma::mat mu_x_out;
-
-    double val_x_out = this->Gx(U_x_inp, mu_x_out, x);
-
-    return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("mu_x") = mu_x_out);
+    try {
+        arma::mat mu_out;
+        double val_out = this->G(n, U_inp, mu_out);
+        //
+        return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("mu") = mu_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
 }
 
-Rcpp::List rusc_R::Gstar_R(arma::vec n, arma::mat mu_inp)
+SEXP rusc_R::Gx_R(arma::mat U_x_inp, int x)
+{
+    try {
+        arma::mat mu_x_out;
+        double val_x_out = this->Gx(U_x_inp, mu_x_out, x);
+        //
+        return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("mu_x") = mu_x_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
+SEXP rusc_R::Gstar_R(arma::vec n)
+{
+    try {
+        double val_out = this->Gstar(n);
+        //
+        return Rcpp::List::create(Rcpp::Named("val") = val_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
+SEXP rusc_R::Gstar_R(arma::vec n, arma::mat mu_inp)
+{
+    try {
+        arma::mat U_out;
+        double val_out = this->Gstar(n, mu_inp, U_out);
+        //
+        return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
+SEXP rusc_R::Gstarx_R(arma::mat mu_x_inp, int x)
 {   
-    arma::mat U_out;
-
-    double val_out = this->Gstar(n, mu_inp, U_out);
-
-    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out);
+    try {
+        arma::mat U_x_out;
+        double val_x_out = this->Gstarx(mu_x_inp, U_x_out, x);
+        //
+        return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("U_x") = U_x_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
 }
 
-Rcpp::List rusc_R::Gstarx_R(arma::mat mu_x_inp, int x)
-{   
-    arma::mat U_x_out;
-
-    double val_x_out = this->Gstarx(mu_x_inp, U_x_out, x);
-
-    return Rcpp::List::create(Rcpp::Named("val_x") = val_x_out, Rcpp::Named("U_x") = U_x_out);
-}
-
-Rcpp::List rusc_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
+SEXP rusc_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
 {
-    arma::mat U_out, mu_out;
+    try {
+        arma::mat U_out, mu_out;
+        double val_out = this->Gbar(U_bar, mu_bar, n, U_out, mu_out);
 
-    double val_out = this->Gbar(U_bar, mu_bar, n, U_out, mu_out);
-
-    return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
+        return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
 }
 
 empirical_R rusc_R::simul_R(int nbDraws)
@@ -97,8 +155,11 @@ RCPP_MODULE(rusc_module)
     using namespace Rcpp ;
 
     // function overloading requires some trickery
-    double (trame::rusc::*G_1)(arma::vec) = &trame::rusc::G ;
-    double (trame::rusc::*Gstar_1)(arma::vec) = &trame::rusc::Gstar ;
+    SEXP (rusc_R::*G_1)(arma::vec) = &rusc_R::G_R ;
+    SEXP (rusc_R::*G_2)(arma::vec, arma::mat) = &rusc_R::G_R ;
+
+    SEXP (rusc_R::*Gstar_1)(arma::vec) = &rusc_R::Gstar_R ;
+    SEXP (rusc_R::*Gstar_2)(arma::vec, arma::mat) = &rusc_R::Gstar_R ;
   
     // now we can declare the class
     class_<trame::rusc>( "rusc" )
@@ -124,17 +185,17 @@ RCPP_MODULE(rusc_module)
 
         // member functions
         .method( "build", &trame::rusc::build )
-        .method( "G", G_1 )
-        .method( "Gstar", Gstar_1 )
     ;
 
     class_<rusc_R>( "rusc_R" )
         .derives<trame::rusc>( "rusc" )
         .default_constructor()
 
-        .method( "G", &rusc_R::G_R )
+        .method( "G", G_1 )
+        .method( "G", G_2 )
         .method( "Gx", &rusc_R::Gx_R )
-        .method( "Gstar", &rusc_R::Gstar_R )
+        .method( "Gstar", Gstar_1 )
+        .method( "Gstar", Gstar_2 )
         .method( "Gstarx", &rusc_R::Gstarx_R )
         .method( "Gbar", &rusc_R::Gbar_R )
         .method( "simul", &rusc_R::simul_R )

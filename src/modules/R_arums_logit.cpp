@@ -158,7 +158,6 @@ RCPP_MODULE(logit_module)
         // member functions
         .method( "build", build_1 )
         .method( "build", build_2 )
-        //.method( "Gstarx", &trame::logit::Gstarx )
     ;
 
     class_<logit_R>( "logit_R" )
