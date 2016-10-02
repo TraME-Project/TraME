@@ -53,28 +53,29 @@ void trame::rusc::build(arma::mat zeta_inp, bool outsideOption_inp)
     //
     aux_ord = arma::zeros(nbX,nbY+1);
 
-    aux_A.set_size(nbY,nbY+1,nbX);
+    aux_A.set_size(nbY,nbY,nbX);
     aux_A.zeros();
 
     aux_b = arma::zeros(nbX,nbY);
     aux_c = arma::zeros(nbY,1);
     //
     double z_0;
-    arma::mat A_x, max_z, max_z0_mat;
+    arma::mat A_x, z_0_mat(nbY,1), max_z, max_z0_mat;
     arma::vec z_x, max_z0;
     arma::uvec ordx_temp;
-    
-    for (i=0; i<nbX; i++) {
-        z_x = zeta.row(i).t();
 
-        z_x.shed_rows(nbY,zeta.n_cols-1);
-        z_0 = z_x(nbY);
+    for (i=0; i<nbX; i++) {
+        z_x = zeta_inp.row(i).t();
+        z_x.shed_rows(nbY,zeta_inp.n_cols-1);
+
+        z_0 = zeta(i,nbY);
+        z_0_mat.fill(z_0);
 
         max_z  = arma::max(z_x * arma::ones(1,nbY), arma::ones(nbY,1) * z_x.t());
-        max_z0 = arma::max(z_x,z_0);
+        max_z0 = arma::max(z_x,z_0_mat);
         max_z0_mat = max_z0 * arma::ones(1,nbY);
 
-        A_x = max_z0_mat + max_z0_mat.t() - max_z - z_0; 
+        A_x = max_z0_mat + max_z0_mat.t() - max_z - z_0;
         //
         aux_A.slice(i) = A_x;
         aux_b.row(i) = z_0 - max_z0.t();
@@ -128,7 +129,6 @@ double trame::rusc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
         run_max = 0.0;
         //
         j = 0;
-        
         while (j < i) {
             z = aux_ord(x,j);
             
@@ -144,7 +144,7 @@ double trame::rusc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
         //
         run_min = 1;
         //
-        j = nbAlt-1;
+        j = nbAlt - 1;
         
         while (j > i) {
             z = aux_ord(x,j);
@@ -162,7 +162,7 @@ double trame::rusc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
     //
     mu_x_out = mu_x_tilde.rows(0,nbAlt-2);
     //
-    val_x = arma::accu(mu_x_out % (U_x_inp - aux_b.row(x))) - arma::as_scalar(mu_x_out.t() * aux_A.slice(x) * mu_x_out/2) - aux_c(x);
+    val_x = arma::accu(mu_x_out % (U_x_inp - aux_b.row(x).t())) - arma::as_scalar(mu_x_out.t() * aux_A.slice(x) * mu_x_out/2) - aux_c(x);
     //
     return val_x;
 }
@@ -196,7 +196,7 @@ double trame::rusc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
 {
     double val_x = 0;
     
-    arma::vec A_mu = arma::trans(aux_A.slice(x) * mu_x_inp); 
+    arma::mat A_mu = arma::vectorise(aux_A.slice(x) * mu_x_inp); 
 
     U_x_out = A_mu + aux_b.row(x).t();
     val_x = arma::accu(mu_x_inp % A_mu)/2 + arma::accu(mu_x_inp % aux_b.row(x).t()) + aux_c(x);
@@ -229,14 +229,14 @@ double trame::rusc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
     int nbAlt = nbY + 1;
     double val_x = 0.0;
 
-    arma::vec obj_grbi = arma::join_cols(aux_b.row(x).t(),arma::zeros(1,1));
+    arma::vec obj_grbi = arma::join_cols(aux_b.row(x).t() - Ubar_x,arma::zeros(1,1));
     arma::mat A_grbi = arma::ones(1,nbAlt);
     arma::vec rhs_grbi = arma::ones(1,1);
 
     arma::mat Q_grbi = arma::zeros(nbAlt,nbAlt);
     Q_grbi.submat(0,0,nbAlt-2,nbAlt-2) = aux_A.slice(x) / 2;
 
-    arma::vec lb_grbi = arma::zeros(1,nbAlt);
+    arma::vec lb_grbi = arma::zeros(nbAlt,1);
     arma::vec ub_grbi = arma::join_cols(mubar_x,arma::ones(1,1));
     
     char* sense_grbi = new char[1];
@@ -256,7 +256,7 @@ double trame::rusc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
         if (LP_optimal) {
             mu_x_out = sol_mat(arma::span(0,nbAlt-2),0);
 
-            arma::mat A_mu = arma::trans(aux_A.slice(x) * mu_x_out);
+            arma::mat A_mu = arma::vectorise(aux_A.slice(x) * mu_x_out);
 
             U_x_out = A_mu + aux_b.row(x).t();
             //

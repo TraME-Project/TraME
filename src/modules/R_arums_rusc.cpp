@@ -128,7 +128,7 @@ SEXP rusc_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
     try {
         arma::mat U_out, mu_out;
         double val_out = this->Gbar(U_bar, mu_bar, n, U_out, mu_out);
-
+        //
         return Rcpp::List::create(Rcpp::Named("val") = val_out, Rcpp::Named("U") = U_out, Rcpp::Named("mu") = mu_out);
     } catch( std::exception &ex ) {
         forward_exception_to_r( ex );
