@@ -29,6 +29,7 @@
  * 08/16/2016
  */
 
+template <class Tm>
 class mfe
 {
     public:
@@ -53,7 +54,7 @@ class mfe
         logit arums_H;
 
         transfers trans_obj;
-        mmf mmf_obj;
+        Tm mmf_obj;
 
         // member functions
         void build_ETU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, arma::mat tau_inp, double* sigma_inp, bool need_norm_inp);
@@ -65,3 +66,5 @@ class mfe
 
     //private:
 };
+
+#include "mfe.tpp"

@@ -37,16 +37,16 @@ int main()
     printf("\n");
     //
     // TU
-    trame::mfe mfe_obj_TU;
+    trame::mfe<trame::mmf> mfe_obj_TU;
     mfe_obj_TU.build_TU(n,m,phi,&sigma,false);
 
-    trame::mfe mfe_obj_NTU;
+    trame::mfe<trame::mmf> mfe_obj_NTU;
     mfe_obj_NTU.build_NTU(n,m,alpha,gamma,&sigma,false);
 
     arma::mat lambda_LTU = lambda/(lambda+zeta);
     arma::mat phi_LTU = (lambda%alpha + zeta%gamma) / (lambda+zeta);
 
-    trame::mfe mfe_obj_LTU;
+    trame::mfe<trame::mmf> mfe_obj_LTU;
     mfe_obj_LTU.build_LTU(n,m,lambda_LTU,phi_LTU,&sigma,false);
     //
     //

@@ -29,9 +29,8 @@
  * 08/16/2016
  */
 
-#include "trame.hpp"
-
-void trame::mfe::build_ETU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, arma::mat tau_inp, double* sigma_inp, bool need_norm_inp)
+template <typename Tm>
+void mfe<Tm>::build_ETU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, arma::mat tau_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -59,7 +58,8 @@ void trame::mfe::build_ETU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp
     mmf_obj.build_ETU(n,m,arma::exp(-alpha_inp/tau_inp),arma::exp(-gamma_inp/tau_inp),-1/tau_inp,need_norm);
 }
 
-void trame::mfe::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, double* sigma_inp, bool need_norm_inp)
+template <typename Tm>
+void mfe<Tm>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -87,7 +87,8 @@ void trame::mfe::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_in
     mmf_obj.build_LTU(n,m,lambda_inp,arma::exp(phi_inp/sigma),need_norm);
 }
 
-void trame::mfe::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, double* sigma_inp, bool need_norm_inp)
+template <typename Tm>
+void mfe<Tm>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -115,7 +116,8 @@ void trame::mfe::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp
     mmf_obj.build_NTU(n,m,arma::exp(alpha_inp/sigma),arma::exp(gamma_inp/sigma),need_norm);
 }
 
-void trame::mfe::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, double* sigma_inp, bool need_norm_inp)
+template <typename Tm>
+void mfe<Tm>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -143,7 +145,8 @@ void trame::mfe::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, d
     mmf_obj.build_TU(n,m,arma::exp(phi_inp/(2*sigma)),need_norm);
 }
 
-void trame::mfe::trans()
+template <typename Tm>
+void mfe<Tm>::trans()
 {
     arma::vec n_temp = n;
     n = m;

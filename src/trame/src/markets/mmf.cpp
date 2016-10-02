@@ -308,6 +308,13 @@ double trame::mmf::marg_x_inv_fn(double z, const trame_zeroin_data& opt_data)
     return ret;
 }
 
+arma::vec trame::mmf::marg_x_inv(arma::mat B_ys)
+{
+    arma::vec ret = this->marg_x_inv(NULL,B_ys);
+    //
+    return ret;
+}
+
 arma::vec trame::mmf::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
 {
     arma::uvec temp_ind;
@@ -390,6 +397,13 @@ double trame::mmf::marg_y_inv_fn(double z, const trame_zeroin_data& opt_data)
     }
 
     double ret = term_1 - m(y_ind) + arma::accu(M(A_xs,z,NULL,&y_ind_temp));
+    //
+    return ret;
+}
+
+arma::vec trame::mmf::marg_y_inv(arma::mat A_xs)
+{
+    arma::vec ret = this->marg_y_inv(NULL,A_xs);
     //
     return ret;
 }

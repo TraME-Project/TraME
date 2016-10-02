@@ -32,6 +32,9 @@
 #ifndef _trame_ipfp_HPP
 #define _trame_ipfp_HPP
 
-bool ipfp(mfe market, bool xFirst, double* tol_inp, arma::vec* by_start, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U, arma::mat& V, arma::vec& u, arma::vec& v);
+template <typename Tm>
+bool ipfp(mfe<Tm> market, bool xFirst, double* tol_inp, arma::vec* by_start, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U, arma::mat& V, arma::vec& u, arma::vec& v);
+
+#include "ipfp.tpp"
 
 #endif

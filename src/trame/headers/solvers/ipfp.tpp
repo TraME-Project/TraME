@@ -29,11 +29,10 @@
  * 08/16/2016
  */
 
-#include "trame.hpp"
-
-bool trame::ipfp(mfe market, bool xFirst, double* tol_inp, arma::vec* by_start, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U, arma::mat& V, arma::vec& u, arma::vec& v)
+template<typename Tm>
+bool ipfp(mfe<Tm> market, bool xFirst, double* tol_inp, arma::vec* by_start, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U, arma::mat& V, arma::vec& u, arma::vec& v)
 {
-    mmf mmf_obj = market.mmf_obj;
+    Tm mmf_obj = market.mmf_obj;
 
     //bool noSingles = market.need_norm;
 
@@ -72,8 +71,8 @@ bool trame::ipfp(mfe market, bool xFirst, double* tol_inp, arma::vec* by_start, 
         val_old = arma::join_cols(ax,by);
 
         // Solve for ax and then by
-        ax = mmf_obj.marg_x_inv(NULL,by);
-        by = mmf_obj.marg_y_inv(NULL,ax);
+        ax = mmf_obj.marg_x_inv(by);
+        by = mmf_obj.marg_y_inv(ax);
 
         /* Keith: need to add this later
         if (noSingles) {
@@ -89,7 +88,7 @@ bool trame::ipfp(mfe market, bool xFirst, double* tol_inp, arma::vec* by_start, 
     bool success = true;
     //
     // Construct the equilibrium outcome based on ax and by obtained from above
-    mu = mmf_obj.M(ax,by,NULL,NULL);
+    mu = mmf_obj.M(ax,by);
     mux0 = mmf_obj.Mx0(ax);
     mu0y = mmf_obj.M0y(by);
 

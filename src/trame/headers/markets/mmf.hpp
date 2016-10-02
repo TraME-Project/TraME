@@ -66,7 +66,9 @@ class mmf
         arma::mat Mx0(arma::mat a_x);
         arma::mat M0y(arma::mat b_y);
 
+        arma::vec marg_x_inv(arma::mat B_ys);
         arma::vec marg_x_inv(arma::uvec* xs, arma::mat B_ys);
+        arma::vec marg_y_inv(arma::mat A_xs);
         arma::vec marg_y_inv(arma::uvec* ys, arma::mat A_xs);
 
         void trans();
