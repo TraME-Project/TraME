@@ -8,7 +8,7 @@ mu = matrix(c(1, 3, 1, 2, 1, 3), nrow=2, byrow=TRUE)
 
 nbX = dim(U)[1]
 nbY = dim(U)[2]
-n = c(apply(mu,1,sum))
+n = c(apply(mu,1,sum)) + 1
 
 zeta = matrix(1,nbX,1) %*% matrix(c(0.1, 0.2, 0.3, 0),1,nbY+1)
 
@@ -36,4 +36,3 @@ resGbar
 resGbarSim = sim_obj$Gbar(U,mubar,n)
 resGbarSim
 #
-

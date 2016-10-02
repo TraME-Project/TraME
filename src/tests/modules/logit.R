@@ -34,4 +34,3 @@ resGbar
 resGbarSim = sim_obj$Gbar(U,mubar,n)
 resGbarSim
 #
-
