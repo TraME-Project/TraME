@@ -41,6 +41,9 @@ namespace trame
     #include "solvers/eap_nash.hpp"
     #include "solvers/jacobi.hpp"
     #include "solvers/cupids_lp.hpp"
+
+    // models
+    #include "models/affinity.hpp"
 }
 
 #endif
