@@ -121,7 +121,7 @@ $(TRAME_DIR)/$(SHLIB): $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_NLOPT) $(OBJECTS_
 # cleanup and install
 .PHONY: clean
 clean:
-	@rm -f *.so ./tests/*.test $(TRAME_SRC_DIR)/*/*.o
+	@rm -f *.so ./tests/*/*.test ./tests/*/*.o $(TRAME_SRC_DIR)/*/*.o
 
 .PHONY: install
 install: $(SHLIB)
