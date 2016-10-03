@@ -48,9 +48,9 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
     m = rep(1,nbY)
   }
   # 
-  if ( sum(n) != sum(n) ) {stop("Unequal mass of individuals in an affinity model.")}
+  if ( sum(n) != sum(m) ) {stop("Unequal mass of individuals in an affinity model.")} # Keith bug? sum(n) != sum(m)
   #
-  neededNorm = defaultNorm(T)
+  neededNorm = defaultNorm(T) # Keith: why set this but then set 'neededNorm = F' in the list?
   #
   ret = list(types = c("itu-rum", "mfe"),
              nbParams=dX*dY,
@@ -73,17 +73,18 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
 }
 #
 parametricMarket.affinity <- function(model, theta) 
+# Keith: shouldn't this have sigma from model$ ? 
   (build_market_TU_logit(model$n,model$m,
                          matrix(model$Phi_xy(model,c(theta)), nrow=model$nbX),
                          neededNorm=F))
 
 dparam.affinity <- function(model, dparams=diag(model$nbParams))
   (list(dparamsPsi = model$Phi_xy(model, dparams),
-        dparamsG   =  matrix(0,nrow=0,ncol=dim(dparams)[2]),
+        dparamsG   = matrix(0,nrow=0,ncol=dim(dparams)[2]),
         dparamsH   = matrix(0,nrow=0,ncol=dim(dparams)[2]))
   )
 #
-#
+# Keith: this function should be specific to the affinity class
 mmeaffinityNoRegul <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, tolIpfp=1E-14, maxiterIpfp = 1e5, print_level=0)
   # mmeaffinityNoRegul should be improved as one should make use of the logit structure and use the ipfp
 {
@@ -134,7 +135,7 @@ mmeaffinityNoRegul <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, tolIpfp
     #print(c("Converged in ", iterIpfp, " iterations."))
     pi = f * g * exp( ( Phi - IX %*% t(v) - u %*% tIY ) / model$sigma )
     if (iterIpfp >= maxiterIpfp ) {stop('maximum number of iterations reached')} 
-    v <<- vnext
+    v <<- vnext # Keith: Global assignment is not allowed in the package!
     #thegrad =  c(    c(pi - pihat) %*% phis)
     thegrad = model$Phi_k(model,pi - pihat)
     theval = sum(thegrad * c(A)) - sigma* sum(pi*log(pi))
@@ -396,7 +397,7 @@ mme.TU_logit <-  function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=
 #
 buildModel_ETU_logit <- function(Xvals, Yvals, n=NULL, m=NULL)
 {
-  nbX = dim(t(t(Xvals)))[1]
+  nbX = dim(t(t(Xvals)))[1] # Keith: double transpose?
   nbY = dim(t(t(Yvals)))[1]
   #
   dX = dim(t(t(Xvals)))[2]
@@ -424,7 +425,7 @@ buildModel_ETU_logit <- function(Xvals, Yvals, n=NULL, m=NULL)
   #
   return(ret)
 }
-
+# Keith: something is wrong here; class should be ETU_logit instead of etu? 
 parametricMarket.etu <- function(model, theta)
   # the theta are the parameters for alpha, gamma and tau
 {
