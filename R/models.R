@@ -133,7 +133,7 @@ mmeaffinityNoRegul <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, tolIpfp
       v=vnext
     }
     #print(c("Converged in ", iterIpfp, " iterations."))
-    pi = f * g * exp( ( Phi - IX %*% t(v) - u %*% tIY ) / model$sigma )
+    pi = f * g * exp( ( Phi - IX %*% t(v) - u %*% tIY ) / model$sigma ) # Keith: don't use names like 'pi' in a function; use 'Pi' instead
     if (iterIpfp >= maxiterIpfp ) {stop('maximum number of iterations reached')} 
     v <<- vnext # Keith: Global assignment is not allowed in the package!
     #thegrad =  c(    c(pi - pihat) %*% phis)
