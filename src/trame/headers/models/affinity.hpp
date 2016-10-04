@@ -66,6 +66,7 @@ class affinity
     
     private:
         void init_param(arma::mat& params);
+        double mme_woregul_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
         bool mme_wregul(const arma::mat& mu_hat, const arma::mat& lambda, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp);
         bool mme_woregul(const arma::mat& mu_hat, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp);
 };

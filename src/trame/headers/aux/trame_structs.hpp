@@ -71,8 +71,44 @@ typedef struct {
     arma::vec (*pot_eps_vec)(arma::vec x, double* dist_pars);
     arma::vec (*quantile_eps_vec)(arma::vec x, double* dist_pars);
     double* dist_pars;
-} trame_nlopt_opt_data;
+} rsc_gbar_opt_data;
 
 typedef struct {
     int nbY;
+} rsc_gbar_constr_data;
+
+typedef struct {
+    int nbX;
+    int nbY;
+
+    int dX;
+    int dY;
+    
+    int max_iter_ipfp;
+    double tol_ipfp;
+
+    double sigma;
+
+    arma::vec p;
+    arma::vec q;
+
+    arma::mat IX;
+    arma::mat tIY;
+
+    arma::mat f;
+    arma::mat g;
+
+    arma::mat v;
+    arma::mat Pi_hat;
+
+    arma::mat phi_xy; // should be (nbX*nbY) x (nbParams)
+} mme_woregal_opt_data;
+
+typedef struct {
+    rsc_gbar_opt_data rsc_gbar;
+    mme_woregal_opt_data mme_woregal;
+} trame_nlopt_opt_data;
+
+typedef struct {
+    rsc_gbar_constr_data rsc_gbar;
 } trame_nlopt_constr_data;
