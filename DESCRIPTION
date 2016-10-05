@@ -3,9 +3,10 @@ Type: Package
 Title: Transportation Methods for Econometrics
 Version: 0.9.1
 Date: 2016-08-04
-Author: Alfred Galichon  [aut, cre],
-    Keith O'Hara [aut]
-    Simon Weber [aut]
+Author: Alfred Galichon [aut, cre],
+    Keith O'Hara [aut],
+    Simon Weber [ctb],
+    Yifei Sun [ctb]
 Maintainer: Alfred Galichon <ag133@nyu.edu>
 Description: A package for solving problems of equilibrium computation and estimation via the Mass Transportation Approach.
 License: GPL (>=2)
