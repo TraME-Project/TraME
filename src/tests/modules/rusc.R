@@ -1,4 +1,5 @@
 library(TraME)
+rm(list=ls())
 #library(gurobi)
 
 rusc_obj <- new(rusc_R)

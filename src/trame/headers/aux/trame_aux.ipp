@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * Aux functions
+ * auxiliary functions
  *
  * Keith O'Hara
  * 08/08/2016
@@ -418,6 +418,19 @@ inline double elem_min(const arma::mat& mat_1)
 inline double elem_max(const arma::mat& mat_1)
 {
     double ret = mat_1.max();
+    //
+    return ret;
+}
+
+inline arma::mat elem_max(const arma::mat& mat_1, const double& comp_val)
+{
+    int rows_1 = mat_1.n_rows;
+    int cols_1 = mat_1.n_cols;
+    //
+    arma::mat comp_mat(rows_1,cols_1);
+    comp_mat.fill(comp_val);
+    
+    arma::mat ret = arma::max(mat_1,comp_mat);
     //
     return ret;
 }

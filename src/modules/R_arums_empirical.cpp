@@ -45,7 +45,7 @@ SEXP empirical_R::G_R(arma::vec n)
         forward_exception_to_r( ex );
     } catch(...) {
         ::Rf_error( "trame: C++ exception (unknown reason)" );
-	}
+    }
     return R_NilValue;
 }
 

@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * Aux functions
+ * auxiliary functions
  *
  * Keith O'Hara
  * 08/08/2016
@@ -40,6 +40,7 @@ inline arma::mat elem_prod(const arma::mat& mat_1, const arma::mat& mat_2);
 inline arma::mat elem_div(const arma::mat& mat_1, const arma::mat& mat_2);
 inline double elem_min(const arma::mat& mat_1);
 inline double elem_max(const arma::mat& mat_1);
+inline arma::mat elem_max(const arma::mat& mat_1, const double& comp_val);
 
 #include "trame_aux.ipp"
 

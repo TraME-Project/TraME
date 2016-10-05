@@ -1,4 +1,5 @@
 library(TraME)
+rm(list=ls())
 #library(gurobi)
 
 probit_obj <- new(probit_R)

@@ -1,4 +1,5 @@
 library(TraME)
+rm(list=ls())
 #library(gurobi)
 
 none_obj <- new(none_R)
