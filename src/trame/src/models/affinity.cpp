@@ -134,8 +134,33 @@ void trame::affinity::init_param(arma::mat& params)
     params.zeros(nbParams,1);
 }
 
-bool trame::affinity::mme_woregul(const arma::mat& mu_hat, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp)
+bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
 {
+    int max_eval, max_iter_ipfp;
+    double xtol_rel, tol_ipfp;
+
+    if (xtol_rel_inp) {
+        xtol_rel = *xtol_rel_inp;
+    } else {
+        xtol_rel = 1E-04;
+    }
+    if (max_eval_inp) {
+        max_eval = *max_eval_inp;
+    } else {
+        max_eval = 1E05;
+    }
+
+    if (tol_ipfp_inp) {
+        tol_ipfp = *tol_ipfp_inp;
+    } else {
+        tol_ipfp = 1E-14;
+    }
+    if (max_iter_ipfp_inp) {
+        max_iter_ipfp = *max_iter_ipfp_inp;
+    } else {
+        max_iter_ipfp = 1E05;
+    }
+    //
     arma::vec theta_0;
     init_param(theta_0);
 
@@ -191,13 +216,15 @@ bool trame::affinity::mme_woregul(const arma::mat& mu_hat, double* xtol_ret, int
     double obj_val = 0;
 
     bool success = generic_nlopt(dX*dY,sol_vec,obj_val,NULL,NULL,trame::affinity::mme_woregul_opt_objfn,opt_data);
-    
-
-    return true;
+    //
+    theta_hat = arma::conv_to< arma::mat >::from(sol_vec);
+    val_ret = obj_val;
+    //
+    return success;
 }
 
 /*
- *
+ * optimization functions
  */
 
 double trame::affinity::mme_woregul_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data)

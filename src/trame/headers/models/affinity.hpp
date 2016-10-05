@@ -62,11 +62,11 @@ class affinity
 
         bool mme(const arma::mat& mu_hat);
         bool mme(const arma::mat& mu_hat, const arma::mat& lambda);
-        bool mme(const arma::mat& mu_hat, const arma::mat* lambda, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp);
+        bool mme(const arma::mat& mu_hat, const arma::mat* lambda, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp);
     
     private:
         void init_param(arma::mat& params);
-        double mme_woregul_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
+        static double mme_woregul_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
         bool mme_wregul(const arma::mat& mu_hat, const arma::mat& lambda, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp);
-        bool mme_woregul(const arma::mat& mu_hat, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp);
+        bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp);
 };
