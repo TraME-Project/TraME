@@ -94,7 +94,7 @@ mmeaffinityNoRegul <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, tolIpfp
   }
   #
   theta0 = initparam(model)$param
-  market = parametricMarket(model,theta0)
+  market = parametricMarket(model,theta0) # Keith: why assign this if it's never used?
   Chat = model$Phi_k(model, muhat)
   nbX = model$nbX
   nbY = model$nbY
@@ -169,7 +169,7 @@ mmeaffinityWithRegul <- function(model, muhat, lambda, xtol_rel=1e-4, maxeval=1e
   }
   #
   theta0 = initparam(model)$param
-  market = parametricMarket(model,theta0)
+  market = parametricMarket(model,theta0) # Keith: why assign this if it's never used?
   Chat = model$Phi_k(model, muhat)
   nbX = model$nbX
   nbY = model$nbY
@@ -230,13 +230,13 @@ mmeaffinityWithRegul <- function(model, muhat, lambda, xtol_rel=1e-4, maxeval=1e
       D = SVD$d
       V = SVD$v
       
-      D = pmax(D - lambda*t_k, 0.)
+      D = pmax(D - lambda*t_k, 0.) # Keith: typo: 0.?
       A = c(U %*% diag(D) %*% t(V))
     } # if lambda = 0 then we are just taking one step of gradient descent
     ### testing optimality
     if (iterCount %% 10 == 0)
     {
-      alpha = 1.
+      alpha = 1. # Keith: typo: 1.? why is this not set outside the loop?
       tmp = svd(matrix(A - alpha * thegrad, nrow=dX))
       tmp_second = sum((A - c(tmp$u %*% diag(pmax(tmp$d - alpha*lambda, 0.)) %*% t(tmp$v)))^2)
       cat("testing optimality ", tmp_second, "\n")
