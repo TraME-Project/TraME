@@ -164,7 +164,7 @@ bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat,
     arma::vec theta_0;
     init_param(theta_0);
 
-    trame::mfe<trame::mmf> mkt_obj = build_market(theta_0);
+    //trame::mfe<trame::mmf> mkt_obj = build_market(theta_0);
 
     arma::mat C_hat = Phi_k(mu_hat);
     //
@@ -253,7 +253,7 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, double& lambda, arma::m
     arma::vec theta_0;
     init_param(theta_0);
 
-    trame::mfe<trame::mmf> mkt_obj = build_market(theta_0);
+    //trame::mfe<trame::mmf> mkt_obj = build_market(theta_0);
 
     arma::mat C_hat = Phi_k(mu_hat);
     //
@@ -334,6 +334,7 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, double& lambda, arma::m
         //
         the_val_old = the_val;
     }
+    //
     theta_hat = arma::vectorise(A);
     val_ret = the_val;
     //
