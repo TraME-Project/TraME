@@ -48,9 +48,9 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
     m = rep(1,nbY)
   }
   # 
-  if ( sum(n) != sum(n) ) {stop("Unequal mass of individuals in an affinity model.")}
+  if ( sum(n) != sum(m) ) {stop("Unequal mass of individuals in an affinity model.")}
   #
-  neededNorm = defaultNorm(T)
+  neededNorm = defaultNorm(TRUE)
   #
   ret = list(types = c("itu-rum", "mfe"),
              nbParams=dX*dY,
@@ -58,7 +58,7 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
              nbX = nbX, nbY = nbY,
              n=n, m=m,
              sigma = sigma,
-             neededNorm = F,
+             neededNorm = neededNorm,
              phi_xyk_aux = kronecker(Yvals,Xvals),
              Phi_xyk = function(model) 
                (model$phi_xyk_aux),
@@ -75,7 +75,7 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
 parametricMarket.affinity <- function(model, theta) 
   (build_market_TU_logit(model$n,model$m,
                          matrix(model$Phi_xy(model,c(theta)), nrow=model$nbX),
-                         neededNorm=F))
+                         sigma=model$sigma,neededNorm=model$neededNorm))
 
 dparam.affinity <- function(model, dparams=diag(model$nbParams))
   (list(dparamsPsi = model$Phi_xy(model, dparams),
@@ -93,7 +93,7 @@ mmeaffinityNoRegul <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, tolIpfp
   }
   #
   theta0 = initparam(model)$param
-  market = parametricMarket(model,theta0)
+  #market = parametricMarket(model,theta0)
   Chat = model$Phi_k(model, muhat)
   nbX = model$nbX
   nbY = model$nbY
@@ -228,15 +228,15 @@ mmeaffinityWithRegul <- function(model, muhat, lambda, xtol_rel=1e-4, maxeval=1e
       D = SVD$d
       V = SVD$v
       
-      D = pmax(D - lambda*t_k, 0.)
+      D = pmax(D - lambda*t_k, 0.0)
       A = c(U %*% diag(D) %*% t(V))
     } # if lambda = 0 then we are just taking one step of gradient descent
     ### testing optimality
     if (iterCount %% 10 == 0)
     {
-      alpha = 1.
+      alpha = 1.0
       tmp = svd(matrix(A - alpha * thegrad, nrow=dX))
-      tmp_second = sum((A - c(tmp$u %*% diag(pmax(tmp$d - alpha*lambda, 0.)) %*% t(tmp$v)))^2)
+      tmp_second = sum((A - c(tmp$u %*% diag(pmax(tmp$d - alpha*lambda, 0.0)) %*% t(tmp$v)))^2)
       cat("testing optimality ", tmp_second, "\n")
     }
     
@@ -441,7 +441,7 @@ parametricMarket.ETU_logit <- function(model, theta)
   return(ret)
 }
 
-dparam.etu <- function(model, dparams=diag(model$nbParams))
+dparam.ETU_logit <- function(model, dparams=diag(model$nbParams))
   # params is simply the affinity matrix
 {
   zero1 = matrix(0,model$nbX*model$nbY,model$dX)
@@ -461,7 +461,7 @@ dparam.etu <- function(model, dparams=diag(model$nbParams))
   return(ret)
 }
 
-initparam.etu <- function(model)
+initparam.ETU_logit <- function(model)
 {
   ret = list(param=c(rep(0,model$nbParams-1),1),
              lb=NULL,ub=NULL)
