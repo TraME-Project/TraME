@@ -168,7 +168,6 @@ mmeaffinityWithRegul <- function(model, muhat, lambda, xtol_rel=1e-4, maxeval=1e
   }
   #
   theta0 = initparam(model)$param
-  market = parametricMarket(model,theta0)
   Chat = model$Phi_k(model, muhat)
   nbX = model$nbX
   nbY = model$nbY
@@ -425,7 +424,7 @@ buildModel_ETU_logit <- function(Xvals, Yvals, n=NULL, m=NULL)
   return(ret)
 }
 
-parametricMarket.etu <- function(model, theta)
+parametricMarket.ETU_logit <- function(model, theta)
   # the theta are the parameters for alpha, gamma and tau
 {
   theta1 = theta[1:model$dX]

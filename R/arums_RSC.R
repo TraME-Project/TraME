@@ -81,7 +81,7 @@ build_RSC <- function(zeta, aux_cdf_eps, aux_quant_eps, aux_pot_eps=NULL, aux_pd
     return(ret)
 }
 
-build_RSCunif <- function(zeta, alpha, beta)
+build_RSCunif <- function()
     # RSC beta errors; 
     # dim(zeta)=c(nbX,nbY+1) and the last column corresponds to singlehood
     # epsilon is a uniform distribution
