@@ -58,7 +58,7 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
              nbX = nbX, nbY = nbY,
              n=n, m=m,
              sigma = sigma,
-             neededNorm = F,
+             neededNorm = neededNorm,
              phi_xyk_aux = kronecker(Yvals,Xvals),
              Phi_xyk = function(model) 
                (model$phi_xyk_aux),
@@ -73,7 +73,7 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
 }
 #
 parametricMarket.affinity <- function(model, theta) 
-# Keith: shouldn't this have sigma from model$ ? 
+# Keith: shouldn't this have sigma from model$  and needed_norm? 
   (build_market_TU_logit(model$n,model$m,
                          matrix(model$Phi_xy(model,c(theta)), nrow=model$nbX),
                          neededNorm=F))
