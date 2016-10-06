@@ -279,7 +279,7 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, double& lambda, arma::m
     double err_ipfp= 2*tol_ipfp;
     double err_val = 1.0;
     double t_k = 0.3; // step size for the prox grad algorithm (or grad descent when lambda=0)
-    double alpha = 1.0;
+    double alpha = 1.0; // for optimality check
     double the_val = 1.0;
     double the_val_old = 1E04;
     arma::vec d, d_opt;
