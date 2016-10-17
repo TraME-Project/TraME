@@ -63,10 +63,10 @@ Gstar.logit <- function(arums, mu, n)
     #
     if(arums$outsideOption){
         mux0 = n - apply(mu,1,sum)  
-        ret = list(val = arums$sigma*(sum(mu*log(mu/n)) + sum(mux0*log(mux0/n))),
+        ret = list(val = arums$sigma*(sum( (mu*log(mu/n))[mu>0] ) + sum( (mux0*log(mux0/n))[mux0>0] )),
                    U   = arums$sigma*log(mu/mux0))
     }else{
-        ret = list(val = arums$sigma*(sum(mu*log(mu/n))),
+        ret = list(val = arums$sigma*(sum( (mu*log(mu/n))[mu>0] )),
                    U   = arums$sigma*log(mu/n))
     }
     #
@@ -79,10 +79,10 @@ Gstarx.logit <- function(arums, mux, x)
     #
     if(arums$outsideOption){
         mu0 = 1 - sum(mux)
-        ret = list(valx = arums$sigma*(mu0*log(mu0) + sum(mux*log(mux))),
+        ret = list(valx = arums$sigma*( (mu0*log(mu0))[mu0>0] + sum( (mux*log(mux) )[mux>0] )),
                    Ux   = arums$sigma*log(mux/mu0))
     }else{
-        ret = list(valx = arums$sigma*(sum(mux*log(mux))),
+        ret = list(valx = arums$sigma*( sum( (mux*log(mux))[mux>0] )),
                    Ux   = arums$sigma*log(mux))
     }
     #
