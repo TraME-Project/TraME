@@ -26,12 +26,29 @@
  * inverse PWA function
  *
  * Keith O'Hara
- * 08/08/2016
+ * 09/06/2016
  */
 
-#ifndef _inv_pwa_HPP
-#define _inv_pwa_HPP
+//#define TRAME_RCPP_ARMADILLO
 
-arma::vec inv_pwa(const arma::vec& a, const arma::mat& B, const arma::mat& C, const double& k);
+#include "inv_pwa_R.hpp"
+using namespace Rcpp;
 
-#endif
+SEXP inv_pwa_R(SEXP a_R, SEXP B_R, SEXP C_R, SEXP k_R)
+{
+    try {
+        arma::vec a = as<arma::vec>(a_R);
+        arma::mat B = as<arma::mat>(B_R);
+        arma::mat C = as<arma::mat>(C_R);
+        double k = as<double>(k_R);
+        
+        arma::vec ret = trame::inv_pwa(a,B,C,k);
+        //
+        return Rcpp::List::create(Rcpp::Named("vals") = ret);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+    return R_NilValue;
+}

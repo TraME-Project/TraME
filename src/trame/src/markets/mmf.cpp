@@ -330,7 +330,7 @@ arma::vec trame::mmf::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
         arma::mat B_NTU = arma::trans( elem_prod(arma::trans(B.rows(temp_ind)/A.rows(temp_ind)), B_ys) );
         arma::mat C_NTU = A.rows(temp_ind);
 
-        arma::vec the_a_xs = invPWA(a_NTU, B_NTU, C_NTU, 1.0);
+        arma::vec the_a_xs = inv_pwa(a_NTU, B_NTU, C_NTU, 1.0);
         //
         return the_a_xs;
     } else if (TU) {
@@ -423,7 +423,7 @@ arma::vec trame::mmf::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
         arma::mat B_NTU = arma::trans( elem_prod(A.cols(temp_ind)/B.cols(temp_ind), A_xs) );
         arma::mat C_NTU = arma::trans(B.cols(temp_ind));
 
-        arma::vec the_b_ys = invPWA(a_NTU, B_NTU, C_NTU, 1.0);
+        arma::vec the_b_ys = inv_pwa(a_NTU, B_NTU, C_NTU, 1.0);
         //
         return the_b_ys;
     } else if (TU) {

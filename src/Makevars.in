@@ -6,10 +6,13 @@ PKG_CPPFLAGS= -std=c++11 -Wall -O2 -DTRAME_RCPP_ARMADILLO -I./trame/headers
 PKG_LIBS= -L./trame/ -ltrame $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 #PKG_LIBS= -L./trame/ -ltrame -framework Accelerate
 
-SOURCES_MODULES= ./modules/R_arums_empirical.cpp ./modules/R_arums_logit.cpp ./modules/R_arums_none.cpp ./modules/R_arums_probit.cpp ./modules/R_arums_rsc.cpp ./modules/R_arums_rusc.cpp
+SOURCES_MODULES= ./R_modules/R_arums_empirical.cpp ./R_modules/R_arums_logit.cpp ./R_modules/R_arums_none.cpp ./R_modules/R_arums_probit.cpp ./R_modules/R_arums_rsc.cpp ./R_modules/R_arums_rusc.cpp
 OBJECTS_MODULES= $(SOURCES_MODULES:.cpp=.o)
 
-OBJECTS=$(OBJECTS_MODULES)
+SOURCES_AUX= ./R_aux/inv_pwa_R.cpp
+OBJECTS_AUX= $(SOURCES_AUX:.cpp=.o)
+
+OBJECTS=$(OBJECTS_MODULES) $(OBJECTS_AUX)
 
 all: $(SHLIB)
 

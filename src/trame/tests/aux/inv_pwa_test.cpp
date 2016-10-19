@@ -20,7 +20,7 @@ int main()
     arma::mat C = arma::ones(1,1);
     double k = 1;
     // this should return a value of 1
-    arma::vec res = trame::invPWA(a,B,C,k);
+    arma::vec res = trame::inv_pwa(a,B,C,k);
     arma::cout << res << arma::endl;
     //
     return 0;

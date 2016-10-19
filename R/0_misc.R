@@ -59,7 +59,7 @@ inversePWA_old <- function(a, B, C, k = 1)
 inversePWA <- function(a, B, C, k=1.0)
 {
     #
-    vals <- .Call("invPWA_R", a,B,C,k, PACKAGE = "TraME")$vals
+    vals <- .Call("inv_pwa_R", a,B,C,k, PACKAGE = "TraME")$vals
     #
     return(c(vals))
 }
