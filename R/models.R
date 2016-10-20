@@ -150,9 +150,12 @@ mmeaffinityNoRegul <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, tolIpfp
                              maxeval=maxeval,
                              print_level = print_level))
   #  AffinityMatrix = matrix(res$solution,nrow=dX)
+  if (resopt$status<0) {warning("nloptr convergence failed.")}
+  #
   thetahat = resopt$solution
   ret =list(thetahat=thetahat,
-            val=resopt$objective)
+            val=resopt$objective,
+            status = resopt$status)
   #
   return(ret)
 }
@@ -381,9 +384,12 @@ mme.TU_logit <-  function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=
   thetahat = resopt$solution[(1+nbX*nbY):(nbParams+nbX*nbY)]
   V = matrix(kron %*% thetahat,nbX,nbY) - U
   #
+  if (resopt$status<0) {warning("nloptr convergence failed.")}
+  #
   ret =list(thetahat=thetahat,
             U=U, V=V,
-            val=resopt$objective)
+            val=resopt$objective,
+            status = resopt$status)
   #
   return(ret)
 }
@@ -823,9 +829,12 @@ mme.TU_rum <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
   thetahat = resopt$solution[(1+nbX*nbY):(nbParams+nbX*nbY)]
   V = matrix(kron %*% thetahat,nbX,nbY) - U
   #
+  if (resopt$status<0) {warning("nloptr convergence failed.")}
+  #
   ret =list(thetahat=thetahat,
             U=U, V=V,
-            val=resopt$objective)
+            val=resopt$objective,
+            status = resopt$status)
   #
   return(ret)
 }
