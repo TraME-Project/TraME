@@ -6,8 +6,7 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/markets
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include mfe_test.cpp -c -o mfe_test.o
- * g++-mp-5 -O2 -Wall -o mfe.test mfe_test.o -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include mfe_test.cpp -o mfe_test.test -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -31,38 +30,39 @@ int main()
     arma::mat zeta   = 1 + arma::randu(nbX,nbY);
 
     arma::mat phi = alpha + gamma;
+
+    arma::mat lambda_LTU = lambda/(lambda+zeta);
+    arma::mat phi_LTU = (lambda%alpha + zeta%gamma) / (lambda+zeta);
     //
     // results
     printf("\n*===================   Start of MFE Test   ===================*\n");
     printf("\n");
     //
-    // TU
+    // TU, 
     trame::mfe<trame::mmf> mfe_obj_TU;
     mfe_obj_TU.build_TU(n,m,phi,&sigma,false);
 
-    trame::mfe<trame::mmf> mfe_obj_NTU;
-    mfe_obj_NTU.build_NTU(n,m,alpha,gamma,&sigma,false);
-
-    arma::mat lambda_LTU = lambda/(lambda+zeta);
-    arma::mat phi_LTU = (lambda%alpha + zeta%gamma) / (lambda+zeta);
-
     trame::mfe<trame::mmf> mfe_obj_LTU;
     mfe_obj_LTU.build_LTU(n,m,lambda_LTU,phi_LTU,&sigma,false);
+
+    trame::mfe<trame::mmf> mfe_obj_NTU;
+    mfe_obj_NTU.build_NTU(n,m,alpha,gamma,&sigma,false);
     //
     //
     arma::vec mux0, mu0y, u, v;
     arma::mat mu_TU, U, V;
-    trame::ipfp(mfe_obj_TU, true, NULL, NULL, mu_TU, mux0, mu0y, U, V, u, v);
+    //trame::ipfp(mfe_obj_TU, NULL, NULL, mu_TU, mux0, mu0y, U, V, u, v);
+    trame::ipfp(mfe_obj_TU,mu_TU);
 
     arma::cout << "Solution of TU-logit problem using ipfp:\n" << mu_TU << arma::endl;
 
     arma::mat mu_NTU;
-    trame::ipfp(mfe_obj_NTU, true, NULL, NULL, mu_NTU, mux0, mu0y, U, V, u, v);
+    trame::ipfp(mfe_obj_NTU,mu_NTU);
 
     arma::cout << "Solution of NTU-logit problem using ipfp:\n" << mu_NTU << arma::endl;
 
     arma::mat mu_LTU;
-    trame::ipfp(mfe_obj_LTU, true, NULL, NULL, mu_LTU, mux0, mu0y, U, V, u, v);
+    trame::ipfp(mfe_obj_LTU,mu_LTU);
 
     arma::cout << "Solution of LTU-logit problem using ipfp:\n" << mu_LTU << arma::endl;
     //

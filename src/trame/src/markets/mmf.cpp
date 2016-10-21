@@ -31,7 +31,7 @@
 
 #include "trame.hpp"
 
-void trame::mmf::build_ETU(arma::vec n_ETU, arma::vec m_ETU, arma::mat C_ETU, arma::mat D_ETU, arma::mat kappa_ETU, bool need_norm_ETU)
+void trame::mmf::build_ETU(const arma::vec& n_ETU, const arma::vec& m_ETU, const arma::mat& C_ETU, const arma::mat& D_ETU, const arma::mat& kappa_ETU, bool need_norm_ETU)
 {
     n = n_ETU;
     m = m_ETU;
@@ -49,7 +49,7 @@ void trame::mmf::build_ETU(arma::vec n_ETU, arma::vec m_ETU, arma::mat C_ETU, ar
     ETU = true;
 }
 
-void trame::mmf::build_LTU(arma::vec n_LTU, arma::vec m_LTU, arma::mat lambda_LTU, arma::mat K_LTU, bool need_norm_LTU)
+void trame::mmf::build_LTU(const arma::vec& n_LTU, const arma::vec& m_LTU, const arma::mat& lambda_LTU, const arma::mat& K_LTU, bool need_norm_LTU)
 {
     n = n_LTU;
     m = m_LTU;
@@ -63,7 +63,7 @@ void trame::mmf::build_LTU(arma::vec n_LTU, arma::vec m_LTU, arma::mat lambda_LT
     LTU = true;
 }
 
-void trame::mmf::build_NTU(arma::vec n_NTU, arma::vec m_NTU, arma::mat A_NTU, arma::mat B_NTU, bool need_norm_NTU)
+void trame::mmf::build_NTU(const arma::vec& n_NTU, const arma::vec& m_NTU, const arma::mat& A_NTU, const arma::mat& B_NTU, bool need_norm_NTU)
 {
     n = n_NTU;
     m = m_NTU;
@@ -76,7 +76,7 @@ void trame::mmf::build_NTU(arma::vec n_NTU, arma::vec m_NTU, arma::mat A_NTU, ar
     NTU = true;
 }
 
-void trame::mmf::build_TU(arma::vec n_TU, arma::vec m_TU, arma::mat K_TU, bool need_norm_TU)
+void trame::mmf::build_TU(const arma::vec& n_TU, const arma::vec& m_TU, const arma::mat& K_TU, bool need_norm_TU)
 {
     n = n_TU;
     m = m_TU;
@@ -87,14 +87,14 @@ void trame::mmf::build_TU(arma::vec n_TU, arma::vec m_TU, arma::mat K_TU, bool n
     TU = true;
 }
 
-arma::mat trame::mmf::M(arma::mat a_xs, arma::mat b_ys)
+arma::mat trame::mmf::M(const arma::mat& a_xs, const arma::mat& b_ys)
 {
     arma::mat ret = this->M(a_xs,b_ys,NULL,NULL);
     //
     return ret;
 }
 
-arma::mat trame::mmf::M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmf::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
 {
     arma::mat ret;
     arma::uvec x_ind, y_ind;
@@ -143,7 +143,7 @@ arma::mat trame::mmf::M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uv
     return ret;
 }
 
-arma::mat trame::mmf::M(double a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmf::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
 {
     arma::mat ret;
     arma::uvec x_ind, y_ind;
@@ -192,7 +192,7 @@ arma::mat trame::mmf::M(double a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec*
     return ret;
 }
 
-arma::mat trame::mmf::M(arma::mat a_xs, double b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmf::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys)
 {
     arma::mat ret;
     arma::uvec x_ind, y_ind;
@@ -241,12 +241,12 @@ arma::mat trame::mmf::M(arma::mat a_xs, double b_ys, arma::uvec* xs, arma::uvec*
     return ret;
 }
 
-arma::mat trame::mmf::Mx0(arma::mat a_x)
+arma::mat trame::mmf::Mx0(const arma::mat& a_x)
 {
     return a_x;
 }
 
-arma::mat trame::mmf::M0y(arma::mat b_y)
+arma::mat trame::mmf::M0y(const arma::mat& b_y)
 {
     return b_y;
 }
@@ -308,14 +308,14 @@ double trame::mmf::marg_x_inv_fn(double z, const trame_zeroin_data& opt_data)
     return ret;
 }
 
-arma::vec trame::mmf::marg_x_inv(arma::mat B_ys)
+arma::vec trame::mmf::marg_x_inv(const arma::mat& B_ys)
 {
-    arma::vec ret = this->marg_x_inv(NULL,B_ys);
+    arma::vec ret = this->marg_x_inv(B_ys,NULL);
     //
     return ret;
 }
 
-arma::vec trame::mmf::marg_x_inv(arma::uvec* xs, arma::mat B_ys)
+arma::vec trame::mmf::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
 {
     arma::uvec temp_ind;
 
@@ -401,14 +401,14 @@ double trame::mmf::marg_y_inv_fn(double z, const trame_zeroin_data& opt_data)
     return ret;
 }
 
-arma::vec trame::mmf::marg_y_inv(arma::mat A_xs)
+arma::vec trame::mmf::marg_y_inv(const arma::mat& A_xs)
 {
-    arma::vec ret = this->marg_y_inv(NULL,A_xs);
+    arma::vec ret = this->marg_y_inv(A_xs,NULL);
     //
     return ret;
 }
 
-arma::vec trame::mmf::marg_y_inv(arma::uvec* ys, arma::mat A_xs)
+arma::vec trame::mmf::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
 {
     arma::uvec temp_ind;
 

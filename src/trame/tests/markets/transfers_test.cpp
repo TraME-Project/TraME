@@ -49,8 +49,8 @@ int main()
     MMF mmf_obj_TU;
     mmf_obj_TU.build_TU(n,m,K,false);
 
-    arma::vec x_inv_TU = mmf_obj_TU.marg_x_inv(NULL,m);
-    arma::vec y_inv_TU = mmf_obj_TU.marg_y_inv(NULL,x_inv_TU);
+    arma::vec x_inv_TU = mmf_obj_TU.marg_x_inv(m);
+    arma::vec y_inv_TU = mmf_obj_TU.marg_y_inv(x_inv_TU);
 
     arma::cout << x_inv_TU << arma::endl;
     arma::cout << y_inv_TU << arma::endl;
@@ -64,8 +64,8 @@ int main()
     MMF mmf_obj_NTU;
     mmf_obj_NTU.build_NTU(n,m,A,B,false);
 
-    arma::vec x_inv_NTU = mmf_obj_NTU.marg_x_inv(NULL,m);
-    arma::vec y_inv_NTU = mmf_obj_NTU.marg_y_inv(NULL,x_inv_NTU);
+    arma::vec x_inv_NTU = mmf_obj_NTU.marg_x_inv(m);
+    arma::vec y_inv_NTU = mmf_obj_NTU.marg_y_inv(x_inv_NTU);
 
     arma::cout << x_inv_NTU << arma::endl;
     arma::cout << y_inv_NTU << arma::endl;
@@ -81,8 +81,8 @@ int main()
     MMF mmf_obj_LTU;
     mmf_obj_LTU.build_LTU(n,m,lambda_LTU,K,false);
 
-    arma::vec x_inv_LTU = mmf_obj_LTU.marg_x_inv(NULL,m);
-    arma::vec y_inv_LTU = mmf_obj_LTU.marg_y_inv(NULL,x_inv_LTU);
+    arma::vec x_inv_LTU = mmf_obj_LTU.marg_x_inv(m);
+    arma::vec y_inv_LTU = mmf_obj_LTU.marg_y_inv(x_inv_LTU);
 
     arma::cout << x_inv_LTU << arma::endl;
     arma::cout << y_inv_LTU << arma::endl;

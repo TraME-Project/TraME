@@ -53,23 +53,23 @@ class mmf
         arma::mat K;
 
         // member functions
-        void build_ETU(arma::vec n_ETU, arma::vec m_ETU, arma::mat C_ETU, arma::mat D_ETU, arma::mat kappa_ETU, bool need_norm_ETU);
-        void build_LTU(arma::vec n_LTU, arma::vec m_LTU, arma::mat lambda_LTU, arma::mat K_LTU, bool need_norm_LTU);
-        void build_NTU(arma::vec n_NTU, arma::vec m_NTU, arma::mat A_NTU, arma::mat B_NTU, bool need_norm_NTU);
-        void build_TU(arma::vec n_TU, arma::vec m_TU, arma::mat K_TU, bool need_norm_TU);
+        void build_ETU(const arma::vec& n_ETU, const arma::vec& m_ETU, const arma::mat& C_ETU, const arma::mat& D_ETU, const arma::mat& kappa_ETU, bool need_norm_ETU);
+        void build_LTU(const arma::vec& n_LTU, const arma::vec& m_LTU, const arma::mat& lambda_LTU, const arma::mat& K_LTU, bool need_norm_LTU);
+        void build_NTU(const arma::vec& n_NTU, const arma::vec& m_NTU, const arma::mat& A_NTU, const arma::mat& B_NTU, bool need_norm_NTU);
+        void build_TU(const arma::vec& n_TU, const arma::vec& m_TU, const arma::mat& K_TU, bool need_norm_TU);
 
-        arma::mat M(arma::mat a_xs, arma::mat b_ys);
-        arma::mat M(arma::mat a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys);
-        arma::mat M(double a_xs, arma::mat b_ys, arma::uvec* xs, arma::uvec* ys);
-        arma::mat M(arma::mat a_xs, double b_ys, arma::uvec* xs, arma::uvec* ys);
+        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys);
+        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys);
+        arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys);
+        arma::mat M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys);
 
-        arma::mat Mx0(arma::mat a_x);
-        arma::mat M0y(arma::mat b_y);
+        arma::mat Mx0(const arma::mat& a_x);
+        arma::mat M0y(const arma::mat& b_y);
 
-        arma::vec marg_x_inv(arma::mat B_ys);
-        arma::vec marg_x_inv(arma::uvec* xs, arma::mat B_ys);
-        arma::vec marg_y_inv(arma::mat A_xs);
-        arma::vec marg_y_inv(arma::uvec* ys, arma::mat A_xs);
+        arma::vec marg_x_inv(const arma::mat& B_ys);
+        arma::vec marg_x_inv(const arma::mat& B_ys, arma::uvec* xs);
+        arma::vec marg_y_inv(const arma::mat& A_xs);
+        arma::vec marg_y_inv(const arma::mat& A_xs, arma::uvec* ys);
 
         void trans();
 

@@ -32,8 +32,25 @@
 #ifndef _trame_ipfp_HPP
 #define _trame_ipfp_HPP
 
+// internal function
 template <typename Tm>
-bool ipfp(mfe<Tm> market, bool xFirst, double* tol_inp, arma::vec* by_start, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U, arma::mat& V, arma::vec& u, arma::vec& v);
+bool ipfp_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, arma::vec* u_out, arma::vec* v_out, double* tol_inp, int* max_iter_inp, arma::vec* by_start);
+
+// wrappers
+template <typename Tm>
+bool ipfp(const mfe<Tm>& market, arma::mat& mu_out);
+
+template <typename Tm>
+bool ipfp(const mfe<Tm>& market, arma::mat& mu_out, const double& tol_inp);
+
+template <typename Tm>
+bool ipfp(const mfe<Tm>& market, arma::mat& mu_out, const arma::vec& by_start);
+
+template <typename Tm>
+bool ipfp(const mfe<Tm>& market, arma::mat& mu_out, const double& tol_inp, const arma::vec& by_start);
+
+template <typename Tm>
+bool ipfp(const mfe<Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, arma::vec& u_out, arma::vec& v_out, double* tol_inp, int* max_iter_inp, arma::vec* by_start);
 
 #include "ipfp.tpp"
 

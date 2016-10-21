@@ -11,6 +11,12 @@ if [ -z ${FC+x} ]; then
     FC=gfortran
 fi
 
+if [[ !(-z ${TRAME_KEITH+x}) ]]; then 
+    CC=gcc-mp-5
+    CXX=g++-mp-5
+    FC=gfortran-mp-5
+fi
+
 if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
     ARMA_INCLUDE_PATH="-I/opt/local/include"
 fi

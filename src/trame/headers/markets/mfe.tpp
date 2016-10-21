@@ -30,7 +30,7 @@
  */
 
 template <typename Tm>
-void mfe<Tm>::build_ETU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, arma::mat tau_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<Tm>::build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -38,7 +38,9 @@ void mfe<Tm>::build_ETU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, a
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
+    need_norm = need_norm_inp;
+
+    if (need_norm_inp) {
         outsideOption = false;
     } else {
         outsideOption = true;
@@ -55,11 +57,13 @@ void mfe<Tm>::build_ETU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, a
     arums_G.build(nbX,nbY,sigma,outsideOption);
     arums_H.build(nbY,nbX,sigma,outsideOption);
 
-    mmf_obj.build_ETU(n,m,arma::exp(-alpha_inp/tau_inp),arma::exp(-gamma_inp/tau_inp),-1/tau_inp,need_norm);
+    mmf_obj.build_ETU(n,m,arma::exp(-alpha_inp/tau_inp),arma::exp(-gamma_inp/tau_inp),-1/tau_inp,need_norm_inp);
+    //
+    ETU = true;
 }
 
 template <typename Tm>
-void mfe<Tm>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -67,7 +71,9 @@ void mfe<Tm>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, 
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
+    need_norm = need_norm_inp;
+
+    if (need_norm_inp) {
         outsideOption = false;
     } else {
         outsideOption = true;
@@ -84,11 +90,13 @@ void mfe<Tm>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, 
     arums_G.build(nbX,nbY,sigma,outsideOption);
     arums_H.build(nbY,nbX,sigma,outsideOption);
 
-    mmf_obj.build_LTU(n,m,lambda_inp,arma::exp(phi_inp/sigma),need_norm);
+    mmf_obj.build_LTU(n,m,lambda_inp,arma::exp(phi_inp/sigma),need_norm_inp);
+    //
+    LTU = true;
 }
 
 template <typename Tm>
-void mfe<Tm>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -96,7 +104,9 @@ void mfe<Tm>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, a
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
+    need_norm = need_norm_inp;
+
+    if (need_norm_inp) {
         outsideOption = false;
     } else {
         outsideOption = true;
@@ -113,11 +123,13 @@ void mfe<Tm>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, a
     arums_G.build(nbX,nbY,sigma,outsideOption);
     arums_H.build(nbY,nbX,sigma,outsideOption);
 
-    mmf_obj.build_NTU(n,m,arma::exp(alpha_inp/sigma),arma::exp(gamma_inp/sigma),need_norm);
+    mmf_obj.build_NTU(n,m,arma::exp(alpha_inp/sigma),arma::exp(gamma_inp/sigma),need_norm_inp);
+    //
+    NTU = true;
 }
 
 template <typename Tm>
-void mfe<Tm>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -125,7 +137,9 @@ void mfe<Tm>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, doub
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
+    need_norm = need_norm_inp;
+
+    if (need_norm_inp) {
         outsideOption = false;
     } else {
         outsideOption = true;
@@ -142,7 +156,9 @@ void mfe<Tm>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, doub
     arums_G.build(nbX,nbY,sigma,outsideOption);
     arums_H.build(nbY,nbX,sigma,outsideOption);
 
-    mmf_obj.build_TU(n,m,arma::exp(phi_inp/(2*sigma)),need_norm);
+    mmf_obj.build_TU(n,m,arma::exp(phi_inp/(2*sigma)),need_norm_inp);
+    //
+    TU = true;
 }
 
 template <typename Tm>
