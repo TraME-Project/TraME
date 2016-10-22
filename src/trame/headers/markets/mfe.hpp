@@ -64,8 +64,9 @@ class mfe
 
         void trans();
 
-    private:
-        bool solve();
+        bool solve(arma::mat& mu_sol);
+        
+    //private:
 };
 
 #include "mfe.tpp"

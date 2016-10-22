@@ -123,6 +123,21 @@ void mfe_mmf_R::build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, 
     }
 }
 
+SEXP mfe_mmf_R::solve_R()
+{
+    try {
+        arma::mat mu_sol;
+        bool success = this->solve(mu_sol);
+        //
+        return Rcpp::List::create(Rcpp::Named("mu") = mu_sol, Rcpp::Named("success") = success);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+    return R_NilValue;
+}
+
 RCPP_MODULE(mfe_module)
 {
     using namespace Rcpp ;
@@ -172,5 +187,6 @@ RCPP_MODULE(mfe_module)
         .method( "build_NTU", build_NTU_2 )
         .method( "build_TU", build_TU_1 )
         .method( "build_TU", build_TU_2 )
+        .method( "solve", &mfe_mmf_R::solve_R )
     ;
 }

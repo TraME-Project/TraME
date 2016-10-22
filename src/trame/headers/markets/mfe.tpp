@@ -177,3 +177,11 @@ void mfe<Tm>::trans()
     arums_H = arums_G_temp;
     //
 }
+
+template <typename Tm>
+bool mfe<Tm>::solve(arma::mat& mu_sol)
+{
+    bool res = ipfp(*this,mu_sol);
+    //
+    return res;
+}
