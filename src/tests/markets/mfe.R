@@ -29,3 +29,6 @@ mfe_mmf_obj_LTU$build_LTU(n,m,lambda_LTU,phi_LTU,sigma,FALSE)
 mfe_mmf_obj_NTU <- new(mfe_mmf_R)
 mfe_mmf_obj_NTU$build_NTU(n,m,alpha,gamma,sigma,FALSE)
 #
+mfe_mmf_obj_TU$solve()
+mfe_mmf_obj_LTU$solve()
+mfe_mmf_obj_NTU$solve()

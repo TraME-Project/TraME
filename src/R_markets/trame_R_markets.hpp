@@ -40,5 +40,7 @@ class mfe_mmf_R : public trame::mfe<trame::mmf>
         
         void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp);
         void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, double sigma_inp, bool need_norm_inp);
+
+        SEXP solve_R();
 };
 

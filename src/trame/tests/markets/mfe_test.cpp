@@ -49,10 +49,18 @@ int main()
     mfe_obj_NTU.build_NTU(n,m,alpha,gamma,&sigma,false);
     //
     //
+    double tol = 1E-06;
+    int max_iter = 5000;
+
     arma::vec mux0, mu0y, u, v;
     arma::mat mu_TU, U, V;
-    //trame::ipfp(mfe_obj_TU, NULL, NULL, mu_TU, mux0, mu0y, U, V, u, v);
+    //trame::ipfp(mfe_obj_TU, mu_TU, mux0, mu0y, U, V, u, v);
     trame::ipfp(mfe_obj_TU,mu_TU);
+    trame::ipfp(mfe_obj_TU,mu_TU,tol);
+    trame::ipfp(mfe_obj_TU,mu_TU,max_iter);
+    trame::ipfp(mfe_obj_TU,mu_TU,tol,max_iter);
+
+    mfe_obj_TU.solve(mu_TU);
 
     arma::cout << "Solution of TU-logit problem using ipfp:\n" << mu_TU << arma::endl;
 
