@@ -50,134 +50,6 @@ void trame::empirical::build(int nbX_inp, int nbY_inp, arma::cube atoms_inp, boo
     outsideOption = outsideOption_inp;
 }
 
-void trame::empirical::presolve_LP_Gstar()
-{
-    /*
-     * Here we build and store (using batch allocation) the 'A' matrix 
-     * that get passed to a linear programming solver in Gstarx.
-     * 
-     * Batch allocation is *much* faster than first allocating the sparse
-     * matrix A_sp_* then consecutively adding elements.
-     */
-
-    int jj, kk, count_val=0;
-
-    arma::umat location_mat(2,aux_nbDraws*nbOptions*2);
-    arma::rowvec vals_mat(aux_nbDraws*nbOptions*2);
-
-    for (kk=0; kk<nbOptions; kk++) {
-        for (jj=0; jj<aux_nbDraws; jj++) {
-            location_mat(0,count_val) = jj + kk*aux_nbDraws;
-            location_mat(1,count_val) = jj;
-            ++count_val;
-        }
-        for (jj=0; jj<aux_nbDraws; jj++) {
-            location_mat(0,count_val) = jj + kk*aux_nbDraws;
-            location_mat(1,count_val) = kk + aux_nbDraws;
-            ++count_val;
-        }
-    }
-
-    vals_mat.fill(1);
-
-    arma::sp_mat A_sp_Gstar_t(location_mat,vals_mat); // this is the transpose of A_sp_Gstar
-
-    k_Gstar = A_sp_Gstar_t.n_cols; // cols as we're working with the transpose
-    n_Gstar = A_sp_Gstar_t.n_rows; // rows as we're working with the transpose
-
-    numnz_Gstar = aux_nbDraws*nbOptions*2;
-
-    const arma::uword* row_vals = &(*A_sp_Gstar_t.row_indices);
-    const arma::uword* col_vals = &(*A_sp_Gstar_t.col_ptrs);
-
-    vind_Gstar = new int[numnz_Gstar];
-    vbeg_Gstar = new int[k_Gstar+1];
-    vval_Gstar = new double[numnz_Gstar];
-
-    for (jj=0; jj<numnz_Gstar; jj++) {
-        vind_Gstar[jj] = row_vals[jj];
-        vval_Gstar[jj] = A_sp_Gstar_t.values[jj];
-    }
-
-    for (jj=0; jj<k_Gstar+1; jj++) {
-        vbeg_Gstar[jj] = col_vals[jj];
-    }
-    //
-    TRAME_PRESOLVED_GSTAR = true;
-}
-
-void trame::empirical::presolve_LP_Gbar()
-{
-    /*
-     * Here we build and store (using batch allocation) the 'A' matrix 
-     * that get passed to a linear programming solver in Gbarx.
-     * 
-     * Batch allocation is *much* faster than first allocating the sparse
-     * matrix A_sp_* then consecutively adding elements.
-     */
-
-    int jj, kk, count_val=0;
-
-    arma::umat location_mat_2(2,nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
-    arma::rowvec vals_mat_2(nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
-
-    for (jj=0; jj<nbY; jj++) {
-        location_mat_2(0,count_val) = jj;
-        location_mat_2(1,count_val) = jj;
-
-        vals_mat_2(count_val) = 1;
-
-        ++count_val;
-    }
-
-    for (kk=0; kk<nbOptions; kk++) {
-        if (kk < nbOptions-1) {
-            for (jj=0; jj<aux_nbDraws; jj++) {
-                location_mat_2(0,count_val) = kk;
-                location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
-
-                vals_mat_2(count_val) = 1;
-
-                ++count_val;
-            }
-        }
-
-        for (jj=0; jj<aux_nbDraws; jj++) { // diagonal terms
-            location_mat_2(0,count_val) = nbY + jj;
-            location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
-
-            vals_mat_2(count_val) = -1;
-
-            ++count_val;
-        }
-    }
-
-    arma::sp_mat A_sp_Gbar_t(location_mat_2,vals_mat_2);
-
-    k_Gbar = A_sp_Gbar_t.n_cols; // cols as we're working with the transpose
-    n_Gbar = A_sp_Gbar_t.n_rows; // rows as we're working with the transpose
-
-    numnz_Gbar = nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws;
-
-    const arma::uword* row_vals_2 = &(*A_sp_Gbar_t.row_indices);
-    const arma::uword* col_vals_2 = &(*A_sp_Gbar_t.col_ptrs);
-
-    vind_Gbar = new int[numnz_Gbar];
-    vbeg_Gbar = new int[k_Gbar+1];
-    vval_Gbar = new double[numnz_Gbar];
-
-    for (jj=0; jj<numnz_Gbar; jj++) {
-        vind_Gbar[jj] = row_vals_2[jj];
-        vval_Gbar[jj] = A_sp_Gbar_t.values[jj];
-    }
-
-    for (jj=0; jj<k_Gbar+1; jj++) {
-        vbeg_Gbar[jj] = col_vals_2[jj];
-    }
-    //
-    TRAME_PRESOLVED_GBAR = true;
-}
-
 double trame::empirical::G(arma::vec n)
 {
     double val = this->G(n,U,mu_sol);
@@ -373,7 +245,7 @@ double trame::empirical::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x
 
     if (!outsideOption) {
         printf("Gbarx not implemented for empirical with outsideOption = false\n");
-        return 0; //Gbarx not implemented for empirical with outsideOption = false
+        return 0;
     }
 
     if (xHomogenous) {
@@ -428,6 +300,138 @@ double trame::empirical::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x
     delete[] sense_grbi;
     //
     return val_x;
+}
+
+/*
+ * presolve functions for Gstar and Gbar
+ */
+
+void trame::empirical::presolve_LP_Gstar()
+{
+    /*
+     * Here we build and store (using batch allocation) the 'A' matrix 
+     * that get passed to a linear programming solver in Gstarx.
+     * 
+     * Batch allocation is *much* faster than first allocating the sparse
+     * matrix A_sp_* then consecutively adding elements.
+     */
+
+    int jj, kk, count_val=0;
+
+    arma::umat location_mat(2,aux_nbDraws*nbOptions*2);
+    arma::rowvec vals_mat(aux_nbDraws*nbOptions*2);
+
+    for (kk=0; kk<nbOptions; kk++) {
+        for (jj=0; jj<aux_nbDraws; jj++) {
+            location_mat(0,count_val) = jj + kk*aux_nbDraws;
+            location_mat(1,count_val) = jj;
+            ++count_val;
+        }
+        for (jj=0; jj<aux_nbDraws; jj++) {
+            location_mat(0,count_val) = jj + kk*aux_nbDraws;
+            location_mat(1,count_val) = kk + aux_nbDraws;
+            ++count_val;
+        }
+    }
+
+    vals_mat.fill(1);
+
+    arma::sp_mat A_sp_Gstar_t(location_mat,vals_mat); // this is the transpose of A_sp_Gstar
+
+    k_Gstar = A_sp_Gstar_t.n_cols; // cols as we're working with the transpose
+    n_Gstar = A_sp_Gstar_t.n_rows; // rows as we're working with the transpose
+
+    numnz_Gstar = aux_nbDraws*nbOptions*2;
+
+    const arma::uword* row_vals = &(*A_sp_Gstar_t.row_indices);
+    const arma::uword* col_vals = &(*A_sp_Gstar_t.col_ptrs);
+
+    vind_Gstar = new int[numnz_Gstar];
+    vbeg_Gstar = new int[k_Gstar+1];
+    vval_Gstar = new double[numnz_Gstar];
+
+    for (jj=0; jj<numnz_Gstar; jj++) {
+        vind_Gstar[jj] = row_vals[jj];
+        vval_Gstar[jj] = A_sp_Gstar_t.values[jj];
+    }
+
+    for (jj=0; jj<k_Gstar+1; jj++) {
+        vbeg_Gstar[jj] = col_vals[jj];
+    }
+    //
+    TRAME_PRESOLVED_GSTAR = true;
+}
+
+void trame::empirical::presolve_LP_Gbar()
+{
+    /*
+     * Here we build and store (using batch allocation) the 'A' matrix 
+     * that get passed to a linear programming solver in Gbarx.
+     * 
+     * Batch allocation is *much* faster than first allocating the sparse
+     * matrix A_sp_* then consecutively adding elements.
+     */
+
+    int jj, kk, count_val=0;
+
+    arma::umat location_mat_2(2,nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
+    arma::rowvec vals_mat_2(nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
+
+    for (jj=0; jj<nbY; jj++) {
+        location_mat_2(0,count_val) = jj;
+        location_mat_2(1,count_val) = jj;
+
+        vals_mat_2(count_val) = 1;
+
+        ++count_val;
+    }
+
+    for (kk=0; kk<nbOptions; kk++) {
+        if (kk < nbOptions-1) {
+            for (jj=0; jj<aux_nbDraws; jj++) {
+                location_mat_2(0,count_val) = kk;
+                location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
+
+                vals_mat_2(count_val) = 1;
+
+                ++count_val;
+            }
+        }
+
+        for (jj=0; jj<aux_nbDraws; jj++) { // diagonal terms
+            location_mat_2(0,count_val) = nbY + jj;
+            location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
+
+            vals_mat_2(count_val) = -1;
+
+            ++count_val;
+        }
+    }
+
+    arma::sp_mat A_sp_Gbar_t(location_mat_2,vals_mat_2);
+
+    k_Gbar = A_sp_Gbar_t.n_cols; // cols as we're working with the transpose
+    n_Gbar = A_sp_Gbar_t.n_rows; // rows as we're working with the transpose
+
+    numnz_Gbar = nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws;
+
+    const arma::uword* row_vals_2 = &(*A_sp_Gbar_t.row_indices);
+    const arma::uword* col_vals_2 = &(*A_sp_Gbar_t.col_ptrs);
+
+    vind_Gbar = new int[numnz_Gbar];
+    vbeg_Gbar = new int[k_Gbar+1];
+    vval_Gbar = new double[numnz_Gbar];
+
+    for (jj=0; jj<numnz_Gbar; jj++) {
+        vind_Gbar[jj] = row_vals_2[jj];
+        vval_Gbar[jj] = A_sp_Gbar_t.values[jj];
+    }
+
+    for (jj=0; jj<k_Gbar+1; jj++) {
+        vbeg_Gbar[jj] = col_vals_2[jj];
+    }
+    //
+    TRAME_PRESOLVED_GBAR = true;
 }
 
 /*
