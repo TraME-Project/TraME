@@ -278,3 +278,22 @@ void dse<Ta>::trans()
     arums_H = arums_G_temp;
     //
 }
+
+template <typename Ta>
+bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
+{
+    const char sig = (solver != NULL) ? solver[0] : char(0);
+
+    bool res = false;
+    if (solver) { // not NULL
+        if (sig=='d') {
+            res = darum(*this,mu_sol);
+        }
+    } else {
+        if (NTU) {
+            res = darum(*this,mu_sol);
+        }
+    }
+    //
+    return res;
+}

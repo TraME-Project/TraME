@@ -71,6 +71,8 @@ class dse
 
         void trans();
 
+        bool solve(arma::mat& mu_sol, const char* solver = "none");
+
     private:
         bool arum_none;
         bool arum_empirical;

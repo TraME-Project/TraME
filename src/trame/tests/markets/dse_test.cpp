@@ -6,8 +6,7 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/markets
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include dse_test.cpp -c -o dse_test.o
- * g++-mp-5 -O2 -Wall -o dse.test dse_test.o -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include dse_test.cpp -o dse.test -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -73,7 +72,10 @@ int main()
     dse_obj_NTU.build_NTU(n_d,m_d,alpha_d,gamma_d,logit_d_1,logit_d_2,false);
     //
     arma::mat mu_NTU, U, V;
-    trame::darum(dse_obj_NTU, true, NULL, mu_NTU, mux0, mu0y, U, V);
+    //trame::darum(dse_obj_NTU, true, NULL, mu_NTU, mux0, mu0y, U, V);
+    trame::darum(dse_obj_NTU, mu_NTU);
+    dse_obj_NTU.solve(mu_NTU);
+    dse_obj_NTU.solve(mu_NTU,(char*) "darum");
 
     std::cout << "Solution of NTU-logit problem using darum:\n" << mu_NTU << std::endl;
     //

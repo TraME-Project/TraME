@@ -32,8 +32,25 @@
 #ifndef _trame_darum_HPP
 #define _trame_darum_HPP
 
-template<typename Ta>
-bool darum(dse<Ta> market, bool xFirst, double* tol_inp, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U, arma::mat& V);
+// internal function
+template <typename Ta>
+bool darum_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp);
+
+// wrappers
+template <typename Ta>
+bool darum(const dse<Ta>& market, arma::mat& mu_out);
+
+template <typename Ta>
+bool darum(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp);
+
+template <typename Ta>
+bool darum(const dse<Ta>& market, arma::mat& mu_out, const int& max_iter_inp);
+
+template <typename Ta>
+bool darum(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+
+template <typename Ta>
+bool darum(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double* tol_inp, int* max_iter_inp);
 
 #include "darum.tpp"
 
