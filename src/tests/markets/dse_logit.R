@@ -32,3 +32,12 @@ dse_logit_obj_NTU$build_NTU(n,m,alpha,gamma,FALSE)
 #dse_logit_obj_TU$solve()
 #dse_logit_obj_LTU$solve()
 dse_logit_obj_NTU$solve()
+#
+arums_G = dse_logit_obj_NTU$get_arums_G()
+arums_H = dse_logit_obj_NTU$get_arums_H()
+
+arums_G$U = matrix(0,nbX,nbY)
+dse_logit_obj_NTU$set_arums_G(arums_G)
+
+arums_G2 = dse_logit_obj_NTU$get_arums_G()
+arums_G2$U

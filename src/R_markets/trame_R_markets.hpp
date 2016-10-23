@@ -48,10 +48,19 @@ class dse_logit_R : public trame::dse<trame::logit>
 {
     public:
         void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp);
+        void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp);
         
         void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp);
+        void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp);
         
         void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp);
+        void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp);
         
         SEXP solve_R();
+
+        logit_R get_arums_G();
+        void set_arums_G(logit_R arums_G_inp);
+        logit_R get_arums_H();
+        void set_arums_H(logit_R arums_H_inp);
+        void set_arums(logit_R arums_G_inp, logit_R arums_H_inp);
 };

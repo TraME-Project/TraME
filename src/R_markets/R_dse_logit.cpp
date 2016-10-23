@@ -50,6 +50,20 @@ void dse_logit_R::build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda
     }
 }
 
+void dse_logit_R::build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp)
+{
+    try {
+        trame::logit logit_1 = static_cast<trame::logit&>(arums_G_inp);
+        trame::logit logit_2 = static_cast<trame::logit&>(arums_H_inp);
+
+        this->build_LTU(n_inp,m_inp,lambda_inp,phi_inp,logit_1,logit_2,need_norm_inp);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+}
+
 void dse_logit_R::build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp)
 {
     try {
@@ -57,6 +71,20 @@ void dse_logit_R::build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_
         int nbY = m_inp.n_elem;
 
         trame::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
+        this->build_NTU(n_inp,m_inp,alpha_inp,gamma_inp,logit_1,logit_2,need_norm_inp);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+}
+
+void dse_logit_R::build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp)
+{
+    try {
+        trame::logit logit_1 = static_cast<trame::logit&>(arums_G_inp);
+        trame::logit logit_2 = static_cast<trame::logit&>(arums_H_inp);
+
         this->build_NTU(n_inp,m_inp,alpha_inp,gamma_inp,logit_1,logit_2,need_norm_inp);
     } catch( std::exception &ex ) {
         forward_exception_to_r( ex );
@@ -80,6 +108,20 @@ void dse_logit_R::build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp
     }
 }
 
+void dse_logit_R::build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp)
+{
+    try {
+        trame::logit logit_1 = static_cast<trame::logit&>(arums_G_inp);
+        trame::logit logit_2 = static_cast<trame::logit&>(arums_H_inp);
+
+        this->build_TU(n_inp,m_inp,phi_inp,logit_1,logit_2,need_norm_inp);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+}
+
 SEXP dse_logit_R::solve_R()
 {
     try {
@@ -95,16 +137,70 @@ SEXP dse_logit_R::solve_R()
     return R_NilValue;
 }
 
+logit_R dse_logit_R::get_arums_G()
+{
+    logit_R arums_obj_out = static_cast<logit_R&>(arums_G);
+
+    return arums_obj_out;
+}
+
+void dse_logit_R::set_arums_G(logit_R arums_G_inp)
+{
+    try {
+        arums_G = static_cast<trame::logit&>(arums_G_inp);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+}
+
+logit_R dse_logit_R::get_arums_H()
+{
+    logit_R arums_obj_out = static_cast<logit_R&>(arums_H);
+
+    return arums_obj_out;
+}
+
+void dse_logit_R::set_arums_H(logit_R arums_H_inp)
+{
+    try {
+        arums_H = static_cast<trame::logit&>(arums_H_inp);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+}
+
+void dse_logit_R::set_arums(logit_R arums_G_inp, logit_R arums_H_inp)
+{
+    try {
+        arums_G = static_cast<trame::logit&>(arums_G_inp);
+        arums_H = static_cast<trame::logit&>(arums_H_inp);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+}
+
+RCPP_EXPOSED_CLASS(logit_R)
+RCPP_EXPOSED_CLASS(dse_logit_R)
+
 RCPP_MODULE(dse_logit_module)
 {
     using namespace Rcpp ;
 
     // function overloading requires some trickery
     void (dse_logit_R::*build_LTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_logit_R::build_LTU_R ;
+    void (dse_logit_R::*build_LTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_logit_R::build_LTU_R ;
     
     void (dse_logit_R::*build_NTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp) = &dse_logit_R::build_NTU_R ;
+    void (dse_logit_R::*build_NTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_logit_R::build_NTU_R ;
     
     void (dse_logit_R::*build_TU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_logit_R::build_TU_R ;
+    void (dse_logit_R::*build_TU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_logit_R::build_TU_R ;
     
     // now we can declare the class
     class_<trame::dse<trame::logit>>( "dse_logit" )
@@ -130,8 +226,18 @@ RCPP_MODULE(dse_logit_module)
         .default_constructor()
 
         .method( "build_LTU", build_LTU_1 )
+        .method( "build_LTU", build_LTU_2 )
         .method( "build_NTU", build_NTU_1 )
+        .method( "build_NTU", build_NTU_2 )
         .method( "build_TU", build_TU_1 )
+        .method( "build_TU", build_TU_2 )
+
         .method( "solve", &dse_logit_R::solve_R )
+
+        .method( "get_arums_G", &dse_logit_R::get_arums_G )
+        .method( "set_arums_G", &dse_logit_R::set_arums_G )
+        .method( "get_arums_H", &dse_logit_R::get_arums_H )
+        .method( "set_arums_H", &dse_logit_R::set_arums_H )
+        .method( "set_arums", &dse_logit_R::set_arums )
     ;
 }
