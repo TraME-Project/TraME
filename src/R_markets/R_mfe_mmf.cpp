@@ -23,10 +23,10 @@
   ################################################################################*/
 
 /*
- * RUSC class module
+ * mfe<mmf> class module
  *
  * Keith O'Hara
- * 08/08/2016
+ * 10/20/2016
  */
 
 //#define TRAME_RCPP_ARMADILLO
@@ -138,7 +138,7 @@ SEXP mfe_mmf_R::solve_R()
     return R_NilValue;
 }
 
-RCPP_MODULE(mfe_module)
+RCPP_MODULE(mfe_mmf_module)
 {
     using namespace Rcpp ;
 

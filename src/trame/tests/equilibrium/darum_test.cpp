@@ -51,6 +51,7 @@ int main()
     arma::mat mu_NTU, U, V;
     //trame::darum(dse_obj_NTU, true, NULL, mu_NTU, mux0, mu0y, U, V);
     trame::darum(dse_obj_NTU, mu_NTU);
+    dse_obj_NTU.solve(mu_NTU);
 
     std::cout << "Solution of NTU-logit problem using darum:\n" << mu_NTU << std::endl;
     //

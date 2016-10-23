@@ -44,3 +44,14 @@ class mfe_mmf_R : public trame::mfe<trame::mmf>
         SEXP solve_R();
 };
 
+class dse_logit_R : public trame::dse<trame::logit>
+{
+    public:
+        void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp);
+        
+        void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp);
+        
+        void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp);
+        
+        SEXP solve_R();
+};

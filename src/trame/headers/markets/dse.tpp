@@ -51,6 +51,7 @@ void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool
     arums_G.build(nbX,nbY);
     arums_H.build(nbY,nbX);
     //
+    TU = true;
     arum_none = true;
 }
 
@@ -77,7 +78,7 @@ void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, Ta a
     arums_G = arums_G_inp;
     arums_H = arums_H_inp;
     //
-    arum_empirical = true;
+    TU = true;
 }
 
 // empirical version
@@ -103,6 +104,7 @@ void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, T ar
     arums_G_inp.simul(arums_G,nbDraws,seed);
     arums_H_inp.simul(arums_H,nbDraws,seed);
     //
+    TU = true;
     arum_empirical = true;
 }
 
@@ -129,6 +131,7 @@ void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, a
     arums_G.build(nbX,nbY);
     arums_H.build(nbY,nbX);
     //
+    NTU = true;
     arum_none = true;
 }
 
@@ -154,6 +157,8 @@ void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, a
 
     arums_G = arums_G_inp;
     arums_H = arums_H_inp;
+    //
+    NTU = true;
 }
 
 // general simulation
@@ -179,6 +184,7 @@ void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, a
     arums_G_inp.simul(arums_G,nbDraws,seed);
     arums_H_inp.simul(arums_H,nbDraws,seed);
     //
+    NTU = true;
     arum_empirical = true;
 }
 
@@ -205,6 +211,7 @@ void dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, 
     arums_G.build(nbX,nbY);
     arums_H.build(nbY,nbX);
     //
+    LTU = true;
     arum_none = true;
 }
 
@@ -230,6 +237,8 @@ void dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, 
 
     arums_G = arums_G_inp;
     arums_H = arums_H_inp;
+    //
+    LTU = true;
 }
 
 // general simulation
@@ -255,6 +264,7 @@ void dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, 
     arums_G_inp.simul(arums_G,nbDraws,seed);
     arums_H_inp.simul(arums_H,nbDraws,seed);
     //
+    LTU = true;
     arum_empirical = true;
 }
 
@@ -291,6 +301,12 @@ bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
         }
         if (sig=='o') {
             res = oap_lp(*this,mu_sol);
+        }
+        // default
+        if (sig=='n') {
+            if (NTU) {
+                res = darum(*this,mu_sol);
+            }
         }
     } else {
         if (NTU) {
