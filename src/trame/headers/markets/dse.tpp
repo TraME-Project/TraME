@@ -282,12 +282,15 @@ void dse<Ta>::trans()
 template <typename Ta>
 bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
 {
-    const char sig = (solver != NULL) ? solver[0] : char(0);
-
     bool res = false;
+    const char sig = (solver != NULL) ? solver[0] : char(0);
+    
     if (solver) { // not NULL
         if (sig=='d') {
             res = darum(*this,mu_sol);
+        }
+        if (sig=='o') {
+            res = oap_lp(*this,mu_sol);
         }
     } else {
         if (NTU) {

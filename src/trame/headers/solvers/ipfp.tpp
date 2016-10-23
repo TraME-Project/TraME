@@ -49,26 +49,9 @@ bool ipfp_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, ar
     arma::vec n = mmf_obj.n;
     arma::vec m = mmf_obj.m;
 
-    double tol;
-    if (tol_inp) {
-        tol = *tol_inp;
-    } else {
-        tol = 1E-12;
-    }
-
-    int max_iter;
-    if (max_iter_inp) {
-        max_iter = *max_iter_inp;
-    } else {
-        max_iter = 10000;
-    }
-
-    arma::vec by;
-    if (by_start) {
-        by = *by_start; 
-    } else {
-        by = m;
-    }
+    double tol = (tol_inp) ? *tol_inp : 1E-12;
+    int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
+    arma::vec by = (by_start) ? *by_start : m;
     //
     // begin loop
     arma::vec ax(nbX);

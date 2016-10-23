@@ -56,19 +56,8 @@ bool darum_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_out, a
 
     arma::mat mu_NR = arma::max(n * arma::ones(1,nbY), arma::ones(nbX,1) * m.t());
     //
-    double tol;
-    if (tol_inp) {
-        tol = *tol_inp;
-    } else {
-        tol = 1E-12;
-    }
-
-    int max_iter;
-    if (max_iter_inp) {
-        max_iter = *max_iter_inp;
-    } else {
-        max_iter = 10000;
-    }
+    double tol = (tol_inp) ? *tol_inp : 1E-12;
+    int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
     //
     int iter = 0;
     double err = 2*tol;
