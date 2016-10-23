@@ -32,8 +32,22 @@
 #ifndef _trame_oap_lp_HPP
 #define _trame_oap_lp_HPP
 
+// internal function
 template<typename Ta>
-bool oap_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::vec& u, arma::vec& v, double& val, arma::mat& residuals);
+bool oap_lp_int(const dse<Ta>& market, arma::mat* mu_out, bool* x_first, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out);
+
+// wrappers
+template <typename Ta>
+bool oap_lp(const dse<Ta>& market, arma::mat& mu_out);
+
+template <typename Ta>
+bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, arma::mat& residuals_out);
+
+template <typename Ta>
+bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, const bool& x_first_inp, arma::mat& residuals_out);
+
+template <typename Ta>
+bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, const bool& x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out);
 
 #include "oap_lp.tpp"
 

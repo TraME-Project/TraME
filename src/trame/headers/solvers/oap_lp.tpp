@@ -29,9 +29,19 @@
  * 08/16/2016
  */
 
+// internal oap_lp
+
 template<typename Ta>
-bool oap_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::vec& u, arma::vec& v, double& val, arma::mat& residuals)
+bool oap_lp_int(const dse<Ta>& market, arma::mat* mu_out, bool* x_first_inp, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out)
 {
+    bool success = false;
+    //
+    // warnings
+    if (!market.trans_obj.TU) {
+        printf("oap_lp only works for TU transfers.\n");
+        return false;
+    }
+    //
     arma::mat phi = market.trans_obj.phi;
 
     int nbX = market.nbX;
@@ -65,21 +75,33 @@ bool oap_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma::v
     arma::mat dual_mat(k_lp, 2);
     //
     double val_lp = 0.0;
-    arma::mat u0, v0;
+    arma::mat mu, u_0, v_0;
+
     try {
         LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, NULL, NULL, NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
         if (LP_optimal) {
             mu = arma::reshape(sol_mat.col(0),nbX,nbY);
 
-            mux0 = n - arma::sum(mu,1);
-            mux0 = m - arma::trans(arma::sum(mu,0));
+            if (mu_out) {
+                *mu_out = mu;
+            }
 
-            u0 = dual_mat.col(0).rows(0,nbX-1);
-            v0 = dual_mat.col(0).rows(nbX,nbX+nbY-1);
+            if (mu_x0_out) {
+                *mu_x0_out = n - arma::sum(mu,1);
+            }
+            if (mu_0y_out) {
+                *mu_0y_out = m - arma::trans(arma::sum(mu,0));
+            }
+
+            u_0 = dual_mat.col(0).rows(0,nbX-1);
+            v_0 = dual_mat.col(0).rows(nbX,nbX+nbY-1);
 
             val_lp = objval;
-            val = objval;
+
+            if (val_out) {
+                *val_out = objval;
+            }
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;
         }
@@ -94,10 +116,17 @@ bool oap_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma::v
     /*
      * step 2
      */
-    if (LP_optimal) {
+    if ( LP_optimal && (u_out || v_out || residuals_out) ) {
         arma::vec obj_bis = arma::join_cols(n,-m);
         
-        if (!xFirst) {
+        bool x_first;
+        if (x_first_inp) {
+            x_first = *x_first_inp;
+        } else {
+            x_first = true;
+        }
+
+        if (!x_first) {
             obj_bis *= -1.0;
         }
         //
@@ -117,7 +146,7 @@ bool oap_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma::v
         sense_bis[k_bis-1] = '=';
         
         int modelSense_bis = 1; // maximize
-        double objval_bis; 
+        double objval_bis;
         
         arma::mat sol_mat_bis(n_bis, 2);
         arma::mat dual_mat_bis(k_bis, 2);
@@ -126,13 +155,22 @@ bool oap_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma::v
             LP_optimal = generic_LP(k_bis, n_bis, obj_bis.memptr(), A_bis.memptr(), modelSense_bis, rhs_bis.memptr(), sense_bis, NULL, NULL, NULL, NULL, objval_bis, sol_mat_bis.colptr(0), sol_mat_bis.colptr(1), dual_mat_bis.colptr(0), dual_mat_bis.colptr(1));
 
             if (LP_optimal) {
-                u = sol_mat_bis.col(0).rows(0,nbX-1);
-                v = sol_mat_bis.col(0).rows(nbX,nbX+nbY-1);
+                arma::mat u = sol_mat_bis.col(0).rows(0,nbX-1);
+                arma::mat v = sol_mat_bis.col(0).rows(nbX,nbX+nbY-1);
 
-                arma::mat u_Psi = arma::repmat(u,1,nbY);
-                arma::mat v_Psi = arma::repmat(v.t(),nbX,1);
+                if (u_out) {
+                    *u_out = u;
+                }
+                if (v_out) {
+                    *v_out = v;
+                }
 
-                residuals = market.trans_obj.Psi(u_Psi,v_Psi,NULL,NULL);
+                if (residuals_out) {
+                    arma::mat u_Psi = arma::repmat(u,1,nbY);
+                    arma::mat v_Psi = arma::repmat(v.t(),nbX,1);
+
+                    *residuals_out = market.trans_obj.Psi(u_Psi,v_Psi);
+                }
             } else {
                 std::cout << "Non-optimal value found during optimization" << std::endl;
             }
@@ -147,5 +185,41 @@ bool oap_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma::v
         //
     }
     //
-    return LP_optimal;
+    success = LP_optimal;
+
+    return success;
+}
+
+// wrappers
+
+template <typename Ta>
+bool oap_lp(const dse<Ta>& market, arma::mat& mu_out)
+{
+    bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+    
+    return res;
+}
+
+template <typename Ta>
+bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, arma::mat& residuals_out)
+{
+    bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&residuals_out);
+    
+    return res;
+}
+
+template <typename Ta>
+bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, const bool& x_first_inp, arma::mat& residuals_out)
+{
+    bool res = oap_lp_int(market,&mu_out,&x_first_inp,NULL,NULL,NULL,NULL,NULL,&residuals_out);
+    
+    return res;
+}
+
+template <typename Ta>
+bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, const bool& x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out)
+{
+    bool res = oap_lp_int(market,&mu_out,&x_first_inp,&mu_x0_out,&mu_0y_out,&u_out,&v_out,&val_out,&residuals_out);
+    
+    return res;
 }
