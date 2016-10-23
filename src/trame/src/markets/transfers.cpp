@@ -141,7 +141,9 @@ void trame::transfers::trans()
     }
 }
 
+// Psi functuons are const because of calls to const market pointers in solvers
 arma::mat trame::transfers::Psi(arma::mat U, arma::mat V)
+const
 {
     arma::mat ret = this->Psi(U,V,NULL,NULL);
     //
@@ -149,6 +151,7 @@ arma::mat trame::transfers::Psi(arma::mat U, arma::mat V)
 }
 
 arma::mat trame::transfers::Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys)
+const
 {
     arma::uvec x_ind, y_ind;
 
@@ -194,6 +197,7 @@ finished:
 }
 
 arma::mat trame::transfers::Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys)
+const
 {
     arma::uvec x_ind, y_ind;
 
@@ -239,6 +243,7 @@ finished:
 }
 
 arma::mat trame::transfers::Psi(arma::mat U, double V, arma::uvec* xs, arma::uvec* ys)
+const
 {
     arma::uvec x_ind, y_ind;
 
@@ -284,6 +289,7 @@ finished:
 }
 
 double trame::transfers::Psi(double U, double V, int x_ind, int y_ind)
+const
 {
     double ret = 0.0;
     //

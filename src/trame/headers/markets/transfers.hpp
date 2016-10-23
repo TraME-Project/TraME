@@ -59,11 +59,12 @@ class transfers
 
         void trans();
 
-        arma::mat Psi(arma::mat U, arma::mat V);
-        arma::mat Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
-        arma::mat Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
-        arma::mat Psi(arma::mat U, double V, arma::uvec* xs, arma::uvec* ys);
-        double Psi(double U, double V, int x_ind, int y_ind);
+        // Psi functuons are const because of calls to const market pointers in solvers
+        arma::mat Psi(arma::mat U, arma::mat V) const;
+        arma::mat Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat Psi(arma::mat U, double V, arma::uvec* xs, arma::uvec* ys) const;
+        double Psi(double U, double V, int x_ind, int y_ind) const;
 
         arma::mat du_Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
         arma::mat du_Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
