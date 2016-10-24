@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 08/16/2016
+ *
+ * This version:
+ * 10/23/2016
  */
 
 #include "trame.hpp"
@@ -41,8 +44,8 @@ void trame::transfers::build_ETU(arma::mat alpha_ETU, arma::mat gamma_ETU, arma:
     nbY = alpha_ETU.n_cols;
     nbParams = 3*nbX*nbY;
 
-    aux_exp_alphaovertau = arma::exp(- elem_div(alpha, tau));
-    aux_exp_gammaovertau = arma::exp(- elem_div(gamma, tau));
+    aux_exp_alphaovertau = arma::exp(- elem_div(alpha_ETU, tau_ETU));
+    aux_exp_gammaovertau = arma::exp(- elem_div(gamma_ETU, tau_ETU));
 
     ETU = true;
     transfers_type = 2;
@@ -57,7 +60,7 @@ void trame::transfers::build_LTU(arma::mat lambda_LTU, arma::mat phi_LTU)
     nbY = lambda_LTU.n_cols;
     nbParams = 2*nbX*nbY;
 
-    aux_zeta = 1 - lambda;
+    aux_zeta = 1 - lambda_LTU;
 
     LTU = true;
     transfers_type = 1;
@@ -451,18 +454,18 @@ arma::mat trame::transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dthe
     arma::mat ret(nbX,nbY);
     //
     if (ETU) {
-        arma::mat dupsi_mat = du_Psi(U,V,NULL,NULL);
-        arma::vec dupsi = arma::vectorise(dupsi_mat);
+        arma::mat du_psi_mat = du_Psi(U,V,NULL,NULL);
+        arma::vec du_psi = arma::vectorise(du_psi_mat);
 
         if (!dtheta) {
             arma::mat term_1, term_2;
-            term_1 = (U - alpha) % dupsi_mat;
-            term_2 = (V - gamma) % (1 - dupsi_mat);
+            term_1 = (U - alpha) % du_psi_mat;
+            term_2 = (V - gamma) % (1 - du_psi_mat);
 
             arma::mat dsigmapsi_mat = (Psi(U,V,NULL,NULL) - term_1 - term_2)/tau;
             arma::vec dsigmapsi = arma::vectorise(dsigmapsi_mat);
             //
-            ret = arma::join_rows(arma::diagmat(-dupsi),arma::join_rows(arma::diagmat(dupsi-1),arma::diagmat(dsigmapsi)));
+            ret = arma::join_rows(arma::diagmat(-du_psi),arma::join_rows(arma::diagmat(du_psi-1),arma::diagmat(dsigmapsi)));
             goto finished;
         } else {
             arma::mat dtheta_1 = dtheta->rows(0,nbX*nbY-1);
@@ -474,15 +477,15 @@ arma::mat trame::transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dthe
 
             if (min_check!=0) {
                 arma::mat term_1, term_2;
-                term_1 = (U - alpha) % dupsi_mat;
-                term_2 = (V - gamma) % (1 - dupsi_mat);
+                term_1 = (U - alpha) % du_psi_mat;
+                term_2 = (V - gamma) % (1 - du_psi_mat);
 
                 arma::mat dsigmapsi_mat = (Psi(U,V,NULL,NULL) - term_1 - term_2)/tau;
 
                 dsigmapsidtheta = dtheta_3 % arma::vectorise(dsigmapsi_mat);
             }
             //
-            ret = arma::vectorise(-dupsi % dtheta_1 - (1-dupsi) % dtheta_2 + dsigmapsidtheta);
+            ret = arma::vectorise(-du_psi % dtheta_1 - (1-du_psi) % dtheta_2 + dsigmapsidtheta);
             goto finished;
         }
     }
@@ -503,16 +506,16 @@ arma::mat trame::transfers::dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dthe
     }
 
     if (NTU) {
-        arma::vec dupsi = arma::vectorise(du_Psi(U,V,NULL,NULL));
+        arma::vec du_psi = arma::vectorise(du_Psi(U,V,NULL,NULL));
 
         if (!dtheta) {
-            ret = - arma::join_rows(arma::diagmat(dupsi),arma::diagmat(1 - dupsi));
+            ret = - arma::join_rows(arma::diagmat(du_psi),arma::diagmat(1 - du_psi));
             goto finished;
         } else {
             arma::mat dtheta_1 = dtheta->rows(0,nbX*nbY-1);
             arma::mat dtheta_2 = dtheta->rows(nbX*nbY,2*nbX*nbY-1);
 
-            ret = - arma::vectorise(dupsi % dtheta_1 + (1 - dupsi) % dtheta_2);
+            ret = - arma::vectorise(du_psi % dtheta_1 + (1 - du_psi) % dtheta_2);
             goto finished;
         }
     }
@@ -803,6 +806,13 @@ arma::mat trame::transfers::du_VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys)
     return ret;
 }
 
+arma::mat trame::transfers::WU(arma::mat Us)
+{
+    arma::mat ret = this->WU(Us,NULL,NULL);
+    //
+    return ret;
+}
+
 arma::mat trame::transfers::WU(arma::mat Us, arma::uvec* xs, arma::uvec* ys)
 {
     arma::uvec x_ind, y_ind;
@@ -846,6 +856,13 @@ arma::mat trame::transfers::WU(arma::mat Us, arma::uvec* xs, arma::uvec* ys)
     }
     //
 finished:
+    return ret;
+}
+
+arma::mat trame::transfers::WV(arma::mat Vs)
+{
+    arma::mat ret = this->WV(Vs,NULL,NULL);
+    //
     return ret;
 }
 

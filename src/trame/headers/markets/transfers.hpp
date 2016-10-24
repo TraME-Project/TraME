@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 08/16/2016
+ *
+ * This version:
+ * 10/23/2016
  */
 
 class transfers
@@ -59,7 +62,7 @@ class transfers
 
         void trans();
 
-        // Psi functuons are const because of calls to const market pointers in solvers
+        // Psi functuons are const restricted because of calls to const market pointers in solvers
         arma::mat Psi(arma::mat U, arma::mat V) const;
         arma::mat Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys) const;
@@ -87,7 +90,9 @@ class transfers
         arma::mat du_UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
         arma::mat du_VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
 
+        arma::mat WU(arma::mat Us);
         arma::mat WU(arma::mat Us, arma::uvec* xs, arma::uvec* ys);
+        arma::mat WV(arma::mat Vs);
         arma::mat WV(arma::mat Vs, arma::uvec* xs, arma::uvec* ys);
 
     private:
