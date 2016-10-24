@@ -27,9 +27,6 @@
  *
  * Keith O'Hara
  * 08/08/2016
- *
- * clang -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp.c -c -o generic_lp.o
- * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp.c -c -o generic_lp.o
  */
 
 #include "trame.hpp"
@@ -37,7 +34,6 @@
 bool trame::generic_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
                           double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
                           trame_nlopt_opt_data opt_data)
-
 {
     bool success = false;
 
@@ -71,7 +67,6 @@ bool trame::generic_nlopt(int n_pars, std::vector<double>& io_val, double& opt_v
                           double (*opt_constr)(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data),
                           trame_nlopt_opt_data opt_data,
                           trame_nlopt_constr_data constr_data)
-
 {
     bool success = false;
 

@@ -299,6 +299,12 @@ bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
         if (sig=='d') {
             res = darum(*this,mu_sol);
         }
+        if (sig=='j') {
+            res = jacobi(*this,mu_sol);
+        }
+        if (sig=='m') {
+            res = max_welfare(*this,mu_sol);
+        }
         if (sig=='o') {
             res = oap_lp(*this,mu_sol);
         }
@@ -306,11 +312,19 @@ bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
         if (sig=='n') {
             if (NTU) {
                 res = darum(*this,mu_sol);
+            } else if (TU) {
+                res = max_welfare(*this,mu_sol);
+            } else {
+                res = jacobi(*this,mu_sol);
             }
         }
     } else {
         if (NTU) {
             res = darum(*this,mu_sol);
+        } else if (TU) {
+            res = max_welfare(*this,mu_sol);
+        } else {
+            res = jacobi(*this,mu_sol);
         }
     }
     //

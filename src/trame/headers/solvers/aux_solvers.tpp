@@ -304,3 +304,35 @@ int build_disaggregate_epsilon (arma::vec n, Ta arums_emp_inp, arma::mat& epsilo
     //
     return nbDraws;
 }
+
+template<typename Ta>
+bool max_welfare_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
+                       double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
+                       trame_market_opt_data<Ta> opt_data)
+{
+    bool success = false;
+
+    nlopt::opt opt_trame(nlopt::LD_LBFGS, n_pars);
+
+    if (lb) {
+        opt_trame.set_lower_bounds(*lb);
+    }
+    if (ub) {
+        opt_trame.set_upper_bounds(*ub);
+    }
+
+    opt_trame.set_min_objective(*opt_objfn, &opt_data);
+    
+    opt_trame.set_xtol_rel(1e-7);
+    opt_trame.set_maxeval(5000);
+
+    double minf;
+    nlopt::result result = opt_trame.optimize(io_val, minf);
+
+    if (result > 0) {
+        opt_val = minf;
+        success = true;
+    }
+
+    return success;
+}

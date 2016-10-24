@@ -39,6 +39,16 @@ arma::mat update_v(transfers trans_obj, arma::mat v, arma::vec n, arma::vec m, b
 template<typename Ta>
 arma::mat w_upper_bound(dse<Ta> market);
 
+template<typename Ta>
+struct trame_market_opt_data {
+    dse<Ta> market;
+};
+
+template<typename Ta>
+bool max_welfare_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
+                       double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
+                       trame_market_opt_data<Ta> opt_data);
+
 #include "aux_solvers.tpp"
 
 #endif
