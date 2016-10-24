@@ -27,11 +27,16 @@
  *
  * Keith O'Hara
  * 08/25/2016
+ *
+ * This version:
+ * 10/23/2016
  */
 
 template<typename Ta>
-bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_inp, double* tol_inp, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U_out, arma::mat& V_out)
+bool jacobi_int(const dse<Ta>& market, const arma::mat* w_low_inp, const arma::mat* w_up_inp, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp)
 {
+    bool success = false;
+    //
     if (market.need_norm) {
         printf("Jacobi does not yet allow for the case without unmatched agents.\n");
         return false;
@@ -47,22 +52,26 @@ bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_i
     Ta arums_H = market.arums_H;
 
     transfers trans_obj = market.trans_obj;
+
+    double tol = (tol_inp) ? *tol_inp : 1E-04;
+    int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
+
+    arma::mat mu_G, mu_H;
     //
+    // w_up setup
     arma::mat w;
     if (!w_up_inp) {
         w = w_upper_bound(market);
     } else {
         w = *w_up_inp;
 
-        arma::mat temp_UW = trans_obj.UW(w,NULL,NULL);
-        arma::mat temp_VW = trans_obj.VW(w,NULL,NULL);
-        arums_G.U = temp_UW;
-        arums_H.U = temp_VW.t();
+        arma::mat temp_UW = trans_obj.UW(w);
+        arma::mat temp_VW = trans_obj.VW(w);
 
-        arums_G.G(n);
-        arums_H.G(m);
+        arums_G.G(n,temp_UW,mu_G);
+        arums_H.G(m,temp_VW.t(),mu_H);
 
-        arma::mat Z = arums_G.mu_sol - arma::trans(arums_H.mu_sol);
+        arma::mat Z = mu_G - mu_H.t();
 
         if (elem_min(Z) < 0) {
             printf("jacobi: w_up provided not an actual upper bound.\n");
@@ -70,6 +79,7 @@ bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_i
         }
     }
     //
+    // w_low setup
     arma::mat w_low;
     if (!w_low_inp) {
         dse<Ta> market_trans = market;
@@ -79,15 +89,13 @@ bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_i
     } else {
         w_low = *w_low_inp;
 
-        arma::mat temp_UW = trans_obj.UW(w_low,NULL,NULL);
-        arma::mat temp_VW = trans_obj.VW(w_low,NULL,NULL);
-        arums_G.U = temp_UW;
-        arums_H.U = temp_VW.t();
+        arma::mat temp_UW = trans_obj.UW(w_low);
+        arma::mat temp_VW = trans_obj.VW(w_low);
 
-        arums_G.G(n);
-        arums_H.G(m);
+        arums_G.G(n,temp_UW,mu_G);
+        arums_H.G(m,temp_VW.t(),mu_H);
 
-        arma::mat Z = arums_G.mu_sol - arma::trans(arums_H.mu_sol);
+        arma::mat Z = mu_G - mu_H.t();
 
         if (elem_max(Z) > 0) {
             printf("jacobi: w_low provided not an actual upper bound.\n");
@@ -95,23 +103,18 @@ bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_i
         }
     }
     //
-    arma::mat U = trans_obj.UW(w,NULL,NULL);
-    arma::mat V = trans_obj.VW(w,NULL,NULL);
+    arma::mat U = trans_obj.UW(w);
+    arma::mat V = trans_obj.VW(w);
 
     arums_G.U = U;
     arums_H.U = V.t();
+    
+    arums_G.G(n,U,mu_G);
+    arums_H.G(m,V.t(),mu_H);
 
-    arums_G.G(n);
-    arums_H.G(m);
-
-    arma::mat Z = arums_G.mu_sol - arma::trans(arums_H.mu_sol);
+    arma::mat Z = mu_G - mu_H.t();
     //
-    bool success = false;
-
     int iter = 0;
-    int max_iter = 10000;
-
-    double tol = 1E-04;
     double err = 2*tol;
 
     arma::mat norm_mat = n * m.t();
@@ -149,27 +152,79 @@ bool jacobi(dse<Ta> market, bool xFirst, arma::mat* w_low_inp, arma::mat* w_up_i
             }
         }
         //
-        arums_G.U = U;
-        arums_H.U = V.t();
+        arums_G.G(n,U,mu_G);
+        arums_H.G(m,V.t(),mu_H);
 
-        arums_G.G(n);
-        arums_H.G(m);
-
-        Z = arums_G.mu_sol - arma::trans(arums_H.mu_sol);
+        Z = mu_G - mu_H.t();
         //
         err = elem_max(arma::abs(elem_div(Z,norm_mat)));
     }
-    success = true;
+
+    if (err <= tol && iter < max_iter) {
+        success = true;
+    }
     //
-    arums_G.U = U;
-    arums_G.G(n);
+    arums_G.G(n,U,mu_G);
 
-    mu = arums_G.mu_sol;
-    mux0 = n - arma::sum(mu,1);
-    mu0y = m - arma::trans(arma::sum(mu,0));
+    if (mu_out) {
+        *mu_out = mu_G;
+    }
 
-    U_out = U;
-    V_out = V;
+    if (mu_x0_out) {
+        *mu_x0_out = n - arma::sum(mu_G,1);
+    }
+    if (mu_0y_out) {
+        *mu_0y_out = m - arma::trans(arma::sum(mu_G,0));
+    }
+
+    if (U_out) {
+        *U_out = U;
+    }
+    if (V_out) {
+        *V_out = V;
+    }
     //
     return success;
+}
+
+// wrappers
+
+template<typename Ta>
+bool jacobi(const dse<Ta>& market, arma::mat& mu_out)
+{
+    bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL);
+    
+    return res;
+}
+
+template<typename Ta>
+bool jacobi(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp)
+{
+    bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,NULL);
+    
+    return res;
+}
+
+template<typename Ta>
+bool jacobi(const dse<Ta>& market, arma::mat& mu_out, const int& max_iter_inp)
+{
+    bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
+    
+    return res;
+}
+
+template<typename Ta>
+bool jacobi(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
+{
+    bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
+    
+    return res;
+}
+
+template<typename Ta>
+bool jacobi(const dse<Ta>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp)
+{
+    bool res = jacobi_int(market,&w_low_inp,&w_up_inp,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,tol_inp,max_iter_inp);
+    
+    return res;
 }
