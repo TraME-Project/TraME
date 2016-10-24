@@ -31,7 +31,7 @@
 
 // internal darum
 
-template <typename Ta>
+template<typename Ta>
 bool darum_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp)
 {
     bool success = false;
@@ -104,7 +104,7 @@ bool darum_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_out, a
 
 // wrappers 
 
-template <typename Ta>
+template<typename Ta>
 bool darum(const dse<Ta>& market, arma::mat& mu_out)
 {
     bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL);
@@ -112,7 +112,7 @@ bool darum(const dse<Ta>& market, arma::mat& mu_out)
     return res;
 }
 
-template <typename Ta>
+template<typename Ta>
 bool darum(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp)
 {
     bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,NULL);
@@ -120,7 +120,7 @@ bool darum(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp)
     return res;
 }
 
-template <typename Ta>
+template<typename Ta>
 bool darum(const dse<Ta>& market, arma::mat& mu_out, const int& max_iter_inp)
 {
     bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
@@ -128,7 +128,7 @@ bool darum(const dse<Ta>& market, arma::mat& mu_out, const int& max_iter_inp)
     return res;
 }
 
-template <typename Ta>
+template<typename Ta>
 bool darum(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
 {
     bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
@@ -136,8 +136,8 @@ bool darum(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp, cons
     return res;
 }
 
-template <typename Ta>
-bool darum(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double* tol_inp, int* max_iter_inp)
+template<typename Ta>
+bool darum(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp)
 {
     bool res = darum_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,tol_inp,max_iter_inp);
     
