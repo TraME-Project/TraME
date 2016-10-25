@@ -65,27 +65,27 @@ class transfers
         // Psi functuons are const restricted because of calls to const market pointers in solvers
         arma::mat Psi(const arma::mat& U, const arma::mat& V) const;
         arma::mat Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat Psi(double U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat Psi(const arma::mat& U, double V, arma::uvec* xs, arma::uvec* ys) const;
-        double Psi(double U, double V, int x_ind, int y_ind) const;
+        arma::mat Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys) const;
+        double Psi(const double& U, const double& V, int x_ind, int y_ind) const;
 
         arma::mat du_Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys);
-        arma::mat du_Psi(double U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys);
-        arma::mat du_Psi(const arma::mat& U, double V, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys);
 
         arma::mat dtheta_Psi(const arma::mat& U, const arma::mat& V, arma::mat* dtheta);
 
         arma::mat Ucal(const arma::mat& vs, arma::uvec* xs, arma::uvec* ys);
-        double Ucal(double vs, int xs, int ys);
+        double Ucal(const double& vs, int xs, int ys);
         arma::mat Vcal(const arma::mat& us, arma::uvec* xs, arma::uvec* ys);
-        double Vcal(double us, int xs, int ys);
+        double Vcal(const double& us, int xs, int ys);
 
         arma::mat UW(const arma::mat& Ws);
         arma::mat UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
-        double UW(double Ws, int x_ind, int y_ind);
+        double UW(const double& Ws, int x_ind, int y_ind);
         arma::mat VW(const arma::mat& Ws);
         arma::mat VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
-        double VW(double Ws, int x_ind, int y_ind);
+        double VW(const double& Ws, int x_ind, int y_ind);
 
         arma::mat du_UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
         arma::mat du_VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);

@@ -29,7 +29,7 @@
  * 08/16/2016
  *
  * This version:
- * 10/23/2016
+ * 10/24/2016
  */
 
 #include "trame.hpp"
@@ -156,19 +156,8 @@ const
 arma::mat trame::transfers::Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
 const
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
 
     arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
@@ -199,22 +188,11 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::Psi(double U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::transfers::Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
 const
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
 
     arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
@@ -245,22 +223,11 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::Psi(const arma::mat& U, double V, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::transfers::Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys)
 const
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
 
     arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
@@ -291,7 +258,7 @@ finished:
     return ret;
 }
 
-double trame::transfers::Psi(double U, double V, int x_ind, int y_ind)
+double trame::transfers::Psi(const double& U, const double& V, int x_ind, int y_ind)
 const
 {
     double ret = 0.0;
@@ -325,19 +292,8 @@ finished:
 
 arma::mat trame::transfers::du_Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
 
     arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
@@ -365,21 +321,10 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::du_Psi(double U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::transfers::du_Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
 
     arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
@@ -407,21 +352,10 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::du_Psi(const arma::mat& U, double V, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::transfers::du_Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
 
     arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
@@ -536,19 +470,8 @@ finished:
 
 arma::mat trame::transfers::Ucal(const arma::mat& vs, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
 
     arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
@@ -581,7 +504,7 @@ finished:
     return ret;
 }
 
-double trame::transfers::Ucal(double vs, int xs, int ys)
+double trame::transfers::Ucal(const double& vs, int xs, int ys)
 {
     double ret = 0;
     //
@@ -616,19 +539,8 @@ finished:
 
 arma::mat trame::transfers::Vcal(const arma::mat& us, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
 
     arma::mat ret(x_ind.n_elem,y_ind.n_elem);
     //
@@ -661,7 +573,7 @@ finished:
     return ret;
 }
 
-double trame::transfers::Vcal(double us, int xs, int ys)
+double trame::transfers::Vcal(const double& us, int xs, int ys)
 {
     double ret = 0;
     //
@@ -703,26 +615,15 @@ arma::mat trame::transfers::UW(const arma::mat& Ws)
 
 arma::mat trame::transfers::UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
     arma::mat ret = - Psi(0.0,-Ws,&x_ind,&y_ind);
 
     return ret;
 }
 
-double trame::transfers::UW(double Ws, int x_ind, int y_ind)
+double trame::transfers::UW(const double& Ws, int x_ind, int y_ind)
 {
     double ret = - Psi((double) 0.0,-Ws,x_ind,y_ind);
     //
@@ -738,26 +639,15 @@ arma::mat trame::transfers::VW(const arma::mat& Ws)
 
 arma::mat trame::transfers::VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
     arma::mat ret = - Psi(Ws,0.0,&x_ind,&y_ind);
 
     return ret;
 }
 
-double trame::transfers::VW(double Ws, int x_ind, int y_ind)
+double trame::transfers::VW(const double& Ws, int x_ind, int y_ind)
 {
     double ret = - Psi(Ws,(double) 0.0,x_ind,y_ind);
     //
@@ -766,19 +656,8 @@ double trame::transfers::VW(double Ws, int x_ind, int y_ind)
 
 arma::mat trame::transfers::du_UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
     arma::mat ret = 1 - du_Psi(0.0,-Ws,&x_ind,&y_ind);
 
@@ -787,19 +666,8 @@ arma::mat trame::transfers::du_UW(const arma::mat& Ws, arma::uvec* xs, arma::uve
 
 arma::mat trame::transfers::du_VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
     arma::mat ret = - du_Psi(Ws,0.0,&x_ind,&y_ind);
 
@@ -815,19 +683,8 @@ arma::mat trame::transfers::WU(const arma::mat& Us)
 
 arma::mat trame::transfers::WU(const arma::mat& Us, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
 
     arma::mat ret;
     //
@@ -868,19 +725,8 @@ arma::mat trame::transfers::WV(const arma::mat& Vs)
 
 arma::mat trame::transfers::WV(const arma::mat& Vs, arma::uvec* xs, arma::uvec* ys)
 {
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, nbX-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, nbY-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     
     arma::mat ret;
     //
