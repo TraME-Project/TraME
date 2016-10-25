@@ -57,6 +57,7 @@ class dse_logit_R : public trame::dse<trame::logit>
         void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp);
         
         SEXP solve_R();
+        SEXP solve_R(Rcpp::CharacterVector solver_inp);
 
         logit_R get_arums_G();
         void set_arums_G(logit_R arums_G_inp);

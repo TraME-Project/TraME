@@ -29,9 +29,9 @@ dse_logit_obj_LTU$build_LTU(n,m,lambda_LTU,phi_LTU,FALSE)
 dse_logit_obj_NTU <- new(dse_logit_R)
 dse_logit_obj_NTU$build_NTU(n,m,alpha,gamma,FALSE)
 #
-#dse_logit_obj_TU$solve()
+dse_logit_obj_TU$solve("jacobi")
 #dse_logit_obj_LTU$solve()
-dse_logit_obj_NTU$solve()
+dse_logit_obj_NTU$solve("darum")
 #
 arums_G = dse_logit_obj_NTU$get_arums_G()
 arums_H = dse_logit_obj_NTU$get_arums_H()

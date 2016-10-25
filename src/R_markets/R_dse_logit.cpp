@@ -137,6 +137,22 @@ SEXP dse_logit_R::solve_R()
     return R_NilValue;
 }
 
+SEXP dse_logit_R::solve_R(Rcpp::CharacterVector solver_inp)
+{
+    try {
+        arma::mat mu_sol;
+        //char* solver = solver_inp[0];
+        bool success = this->solve(mu_sol, solver_inp[0]);
+        //
+        return Rcpp::List::create(Rcpp::Named("mu") = mu_sol, Rcpp::Named("success") = success);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+    return R_NilValue;
+}
+
 logit_R dse_logit_R::get_arums_G()
 {
     logit_R arums_obj_out = static_cast<logit_R&>(arums_G);
@@ -202,6 +218,9 @@ RCPP_MODULE(dse_logit_module)
     void (dse_logit_R::*build_TU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_logit_R::build_TU_R ;
     void (dse_logit_R::*build_TU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_logit_R::build_TU_R ;
     
+    SEXP (dse_logit_R::*solve_R_1)() = &dse_logit_R::solve_R ;
+    SEXP (dse_logit_R::*solve_R_2)(Rcpp::CharacterVector solver_inp) = &dse_logit_R::solve_R ;
+
     // now we can declare the class
     class_<trame::dse<trame::logit>>( "dse_logit" )
         .default_constructor()
@@ -232,7 +251,8 @@ RCPP_MODULE(dse_logit_module)
         .method( "build_TU", build_TU_1 )
         .method( "build_TU", build_TU_2 )
 
-        .method( "solve", &dse_logit_R::solve_R )
+        //.method( "solve", solve_R_1 )
+        .method( "solve", solve_R_2 )
 
         .method( "get_arums_G", &dse_logit_R::get_arums_G )
         .method( "set_arums_G", &dse_logit_R::set_arums_G )
