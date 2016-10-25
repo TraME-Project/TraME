@@ -27,7 +27,7 @@ int main()
     arma::mat phi  = arma::randu(nbX,nbY);
     //
     // results
-    printf("\n*===================   Start of MFE Test   ===================*\n");
+    printf("\n*===================   Start of max_welfare Test   ===================*\n");
     printf("\n");
     //
     // TU
@@ -64,7 +64,7 @@ int main()
 
     arma::cout << "Solution of LTU-logit problem using ipfp:\n" << mu_LTU << arma::endl;*/
     //
-    printf("\n*===================    End of MFE Test    ===================*\n");
+    printf("\n*===================    End of max_welfare Test    ===================*\n");
     printf("\n");
     //
     end = std::chrono::system_clock::now();
