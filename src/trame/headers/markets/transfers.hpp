@@ -55,45 +55,45 @@ class transfers
         arma::mat phi;
 
         // member functions
-        void build_ETU(arma::mat alpha_ETU, arma::mat gamma_ETU, arma::mat tau_ETU);
-        void build_LTU(arma::mat lambda_LTU, arma::mat phi_LTU);
-        void build_NTU(arma::mat alpha_NTU, arma::mat gamma_NTU);
-        void build_TU(arma::mat phi_TU);
+        void build_ETU(const arma::mat& alpha_ETU, const arma::mat& gamma_ETU, const arma::mat& tau_ETU);
+        void build_LTU(const arma::mat& lambda_LTU, const arma::mat& phi_LTU);
+        void build_NTU(const arma::mat& alpha_NTU, const arma::mat& gamma_NTU);
+        void build_TU(const arma::mat& phi_TU);
 
         void trans();
 
         // Psi functuons are const restricted because of calls to const market pointers in solvers
-        arma::mat Psi(arma::mat U, arma::mat V) const;
-        arma::mat Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat Psi(arma::mat U, double V, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat Psi(const arma::mat& U, const arma::mat& V) const;
+        arma::mat Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat Psi(double U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat Psi(const arma::mat& U, double V, arma::uvec* xs, arma::uvec* ys) const;
         double Psi(double U, double V, int x_ind, int y_ind) const;
 
-        arma::mat du_Psi(arma::mat U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
-        arma::mat du_Psi(double U, arma::mat V, arma::uvec* xs, arma::uvec* ys);
-        arma::mat du_Psi(arma::mat U, double V, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_Psi(double U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_Psi(const arma::mat& U, double V, arma::uvec* xs, arma::uvec* ys);
 
-        arma::mat dtheta_Psi(arma::mat U, arma::mat V, arma::mat* dtheta);
+        arma::mat dtheta_Psi(const arma::mat& U, const arma::mat& V, arma::mat* dtheta);
 
-        arma::mat Ucal(arma::mat vs, arma::uvec* xs, arma::uvec* ys);
+        arma::mat Ucal(const arma::mat& vs, arma::uvec* xs, arma::uvec* ys);
         double Ucal(double vs, int xs, int ys);
-        arma::mat Vcal(arma::mat us, arma::uvec* xs, arma::uvec* ys);
+        arma::mat Vcal(const arma::mat& us, arma::uvec* xs, arma::uvec* ys);
         double Vcal(double us, int xs, int ys);
 
-        arma::mat UW(arma::mat Ws);
-        arma::mat UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
+        arma::mat UW(const arma::mat& Ws);
+        arma::mat UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
         double UW(double Ws, int x_ind, int y_ind);
-        arma::mat VW(arma::mat Ws);
-        arma::mat VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
+        arma::mat VW(const arma::mat& Ws);
+        arma::mat VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
         double VW(double Ws, int x_ind, int y_ind);
 
-        arma::mat du_UW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
-        arma::mat du_VW(arma::mat Ws, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
 
-        arma::mat WU(arma::mat Us);
-        arma::mat WU(arma::mat Us, arma::uvec* xs, arma::uvec* ys);
-        arma::mat WV(arma::mat Vs);
-        arma::mat WV(arma::mat Vs, arma::uvec* xs, arma::uvec* ys);
+        arma::mat WU(const arma::mat& Us);
+        arma::mat WU(const arma::mat& Us, arma::uvec* xs, arma::uvec* ys);
+        arma::mat WV(const arma::mat& Vs);
+        arma::mat WV(const arma::mat& Vs, arma::uvec* xs, arma::uvec* ys);
 
     private:
         arma::mat aux_exp_alphaovertau;
