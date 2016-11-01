@@ -27,18 +27,23 @@
  *
  * Keith O'Hara
  * 08/25/2016
+ *
+ * This version:
+ * 11/01/2016
  */
 
+// internal cupids_lp
+
 template<typename Ta>
-bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U_out, arma::mat& V_out)
+bool cupids_lp_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out)
 {
+    bool success = false;
+    //
     if (market.need_norm) {
         printf("CupidsLP does not yet allow for the case without unmatched agents.\n");
         return false;
     }
     //
-    bool success = false;
-
     int nbX = market.nbX;
     int nbY = market.nbY;
 
@@ -71,7 +76,7 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
     int nbI = n_i.n_elem;
     int nbJ = m_j.n_elem;
     //
-    // use batch allocation for sparse matrices to construct the constraint matrix (A)
+    // use batch allocation to construct the sparse constraint matrix (A)
     int jj, kk, ll, count_val = 0;
     int num_non_zero = nbI*nbY + nbJ*nbX + nbDraws_1*(nbX*nbY) + nbX*nbDraws_2*nbY;
 
@@ -126,7 +131,8 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
             }
         }
     }
-    
+    //
+    // now proceed to solve the LP problem
     arma::sp_mat A_sp_t(location_mat,vals_mat); // transpose of A
     
     int k_lp = A_sp_t.n_cols; // cols as we're working with the transpose
@@ -179,15 +185,30 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
         lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_non_zero, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         
         if (lp_optimal) {
-            U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
-            V_out = phi - U_out;
-
             arma::mat mu_iy = arma::reshape(dual_mat(arma::span(0,nbI*nbY-1),0),nbI,nbY);
-            mu = I_ix.t() * mu_iy;
+            arma::mat mu = I_ix.t() * mu_iy;
+            //
+            // package up solution
+            if (mu_out) {
+                *mu_out = mu;
+            }
 
-            mux0 = n - arma::sum(mu,1);
-            mu0y = m - arma::trans(arma::sum(mu,0));
+            if (U_out && V_out) {
+                *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
+                *V_out = phi - *U_out;
+            } else if (U_out) {
+                *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
+            } else if (V_out) {
+                *V_out = phi - arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
+            }
 
+            if (mu_x0_out) {
+                *mu_x0_out = n - arma::sum(mu,1);
+            }
+            if (mu_0y_out) {
+                *mu_0y_out = m - arma::trans(arma::sum(mu,0));
+            }
+            //
             success = true;
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;
@@ -202,4 +223,22 @@ bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma
     }
     //
     return success;
+}
+
+// wrappers
+
+template<typename Ta>
+bool cupids_lp(const dse<Ta>& market, arma::mat& mu_out)
+{
+    bool res = cupids_lp_int(market,&mu_out,NULL,NULL,NULL,NULL);
+
+    return res;
+}
+
+template<typename Ta>
+bool cupids_lp(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out)
+{
+    bool res = cupids_lp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out);
+
+    return res;
 }

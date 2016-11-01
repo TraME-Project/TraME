@@ -27,13 +27,24 @@
  *
  * Keith O'Hara
  * 08/25/2016
+ *
+ * This version:
+ * 11/01/2016
  */
 
 #ifndef _trame_cupids_lp_HPP
 #define _trame_cupids_lp_HPP
 
+// internal function
 template<typename Ta>
-bool cupids_lp(dse<Ta> market, bool xFirst, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& U_out, arma::mat& V_out);
+bool cupids_lp_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out);
+
+// wrappers
+template<typename Ta>
+bool cupids_lp(const dse<Ta>& market, arma::mat& mu_out);
+
+template<typename Ta>
+bool cupids_lp(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out);
 
 #include "cupids_lp.tpp"
 

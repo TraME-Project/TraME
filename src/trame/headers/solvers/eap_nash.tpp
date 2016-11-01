@@ -27,11 +27,18 @@
  *
  * Keith O'Hara
  * 08/16/2016
+ *
+ * This version:
+ * 11/01/2016
  */
 
+// internal eap_nash
+
 template<typename Ta>
-bool eap_nash(dse<Ta> market, bool xFirst, double* tol_inp, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& u, arma::mat& v)
+bool eap_nash_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* u_out, arma::mat* v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp)
 {
+    bool success = false;
+    //
     transfers trans_obj = market.trans_obj;
 
     int nbX = market.nbX;
@@ -39,44 +46,43 @@ bool eap_nash(dse<Ta> market, bool xFirst, double* tol_inp, arma::mat& mu, arma:
 
     arma::vec n = market.n;
     arma::vec m = market.m;
+
+    bool xFirst = (xFirst_inp) ? *xFirst_inp : true;
+    double tol = (tol_inp) ? *tol_inp : 1E-12;
+    int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
     //
     arma::mat v_curr, v_next, v_err;
 
     if (xFirst) {
-        arma::mat subdiff;
-        v_curr = v_from_us(trans_obj,arma::zeros(nbX,1),NULL,&subdiff);
+        v_curr = v_from_us(trans_obj,arma::zeros(nbX,1),NULL,NULL);
     } else {
         v_curr = arma::zeros(nbY,1);
     }
-    //
-    double tol;
-    if (tol_inp) {
-        tol = *tol_inp;
-    } else {
-        tol = 1E-12;
-    }
 
-    bool success = false;
-    double err = 2*tol;
     int iter = 0;
-    int max_iter = 10000;
-    //
+    double err = 2*tol;
+    
     while (err > tol && iter < max_iter) {
         iter++;
 
         v_next = update_v(trans_obj,v_curr,n,m,xFirst);
         v_err = arma::abs(v_next - v_curr);
-        err = arma::as_scalar(arma::max(v_err));
+        err = elem_max(v_err);
 
         v_curr = v_next;
     }
     //
-    v = v_curr;
-
     arma::mat subdiff;
-    u = u_from_vs(trans_obj,v,NULL,&subdiff);
+    arma::mat u = u_from_vs(trans_obj,v_curr,NULL,&subdiff);
 
-    arma::vec uv_vec = arma::join_cols(arma::vectorise(u),arma::vectorise(v)); 
+    arma::vec uv_vec = arma::join_cols(arma::vectorise(u),arma::vectorise(v_curr));
+
+    if (u_out) {
+        *u_out = u;
+    }
+    if (v_out) {
+        *v_out = v_curr;
+    }
     //
     arma::vec obj_lp = arma::vectorise(subdiff);
 
@@ -111,11 +117,19 @@ bool eap_nash(dse<Ta> market, bool xFirst, double* tol_inp, arma::mat& mu, arma:
         LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, NULL, NULL, NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
         if (LP_optimal) {
-            mu = arma::reshape(sol_mat.col(0),nbX,nbY);
+            arma::mat mu = arma::reshape(sol_mat.col(0),nbX,nbY);
+            //
+            if (mu_out) {
+                *mu_out = mu;
+            }
             
-            mux0 = n - arma::sum(mu,1);
-            mu0y = m - arma::trans(arma::sum(mu,0));
-
+            if (mu_x0_out) {
+                *mu_x0_out = n - arma::sum(mu,1);
+            }
+            if (mu_0y_out) {
+                *mu_0y_out = m - arma::trans(arma::sum(mu,0));
+            }
+            //
             success = true;
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;
@@ -130,4 +144,78 @@ bool eap_nash(dse<Ta> market, bool xFirst, double* tol_inp, arma::mat& mu, arma:
     }
     //
     return success;
+}
+
+// wrappers
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out)
+{
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+    
+    return res;
+}
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp)
+{
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&xFirst_inp,NULL,NULL);
+    
+    return res;
+}
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp)
+{
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL);
+    
+    return res;
+}
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const int& max_iter_inp)
+{
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
+    
+    return res;
+}
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp)
+{
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&xFirst_inp,&tol_inp,NULL);
+    
+    return res;
+}
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp, const int& max_iter_inp)
+{
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
+    
+    return res;
+}
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
+{
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
+    
+    return res;
+}
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp, const int& max_iter_inp)
+{
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&xFirst_inp,&tol_inp,&max_iter_inp);
+    
+    return res;
+}
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp)
+{
+    bool res = eap_nash_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&u_out,&v_out,xFirst_inp,tol_inp,max_iter_inp);
+    
+    return res;
 }

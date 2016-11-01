@@ -296,8 +296,14 @@ bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
     const char sig = (solver != NULL) ? solver[0] : char(0);
     
     if (solver) { // not NULL
+        if (sig=='c') {
+            res = cupids_lp(*this,mu_sol);
+        }
         if (sig=='d') {
             res = darum(*this,mu_sol);
+        }
+        if (sig=='e') {
+            res = eap_nash(*this,mu_sol);
         }
         if (sig=='j') {
             res = jacobi(*this,mu_sol);

@@ -27,13 +27,45 @@
  *
  * Keith O'Hara
  * 08/16/2016
+ *
+ * This version:
+ * 11/01/2016
  */
 
 #ifndef _trame_eap_nash_HPP
 #define _trame_eap_nash_HPP
 
+// internal function
 template<typename Ta>
-bool eap_nash(dse<Ta> market, bool xFirst, double* tol_inp, arma::mat& mu, arma::vec& mux0, arma::vec& mu0y, arma::mat& u, arma::mat& v);
+bool eap_nash_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* u_out, arma::mat* v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp);
+
+// wrappers
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out);
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp);
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp);
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const int& max_iter_inp);
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp);
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp, const int& max_iter_inp);
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp, const int& max_iter_inp);
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp);
 
 #include "eap_nash.tpp"
 
