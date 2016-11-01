@@ -27,14 +27,17 @@
  *
  * Keith O'Hara
  * 08/23/2016
+ *
+ * This version:
+ * 11/01/2016
  */
 
 #ifndef _trame_aux_solvers_HPP
 #define _trame_aux_solvers_HPP
 
-arma::mat u_from_vs(transfers trans_obj, arma::mat v, double* tol_inp, arma::mat* subdiff);
-arma::mat v_from_us(transfers trans_obj, arma::mat u, double* tol_inp, arma::mat* subdiff);
-arma::mat update_v(transfers trans_obj, arma::mat v, arma::vec n, arma::vec m, bool xFirst);
+arma::mat u_from_vs(const transfers& trans_obj, const arma::mat& v, double* tol_inp, arma::mat* subdiff);
+arma::mat v_from_us(const transfers& trans_obj, const arma::mat& u, double* tol_inp, arma::mat* subdiff);
+arma::mat update_v(const transfers& trans_obj, const arma::mat& v, arma::vec n, arma::vec m, bool xFirst);
 
 template<typename Ta>
 arma::mat w_upper_bound(dse<Ta> market);

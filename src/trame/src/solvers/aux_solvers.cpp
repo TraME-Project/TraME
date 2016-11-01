@@ -27,23 +27,21 @@
  *
  * Keith O'Hara
  * 08/23/2016
+ *
+ * This version:
+ * 11/01/2016
  */
 
 #include "trame.hpp"
 
-arma::mat trame::u_from_vs(trame::transfers trans_obj, arma::mat v, double* tol_inp, arma::mat* subdiff)
+arma::mat trame::u_from_vs(const transfers& trans_obj, const arma::mat& v, double* tol_inp, arma::mat* subdiff)
 {
     arma::mat us = trans_obj.Ucal(v,NULL,NULL);
-    arma::mat u  = arma::max(arma::max(us,1),arma::zeros(us.n_rows,1));
+    arma::mat u  = elem_max(arma::max(us,1),0.0);
     //
-    double tol;
-    if (tol_inp) {
-        tol = *tol_inp;
-    } else {
-        tol = 0;
-    }
-    
     if (subdiff) {
+        double tol = (tol_inp) ? *tol_inp : 0.0;
+
         *subdiff = arma::zeros(trans_obj.nbX,trans_obj.nbY);
         subdiff->elem( arma::find(arma::abs(elem_sub(u,us)) <= tol) ).ones();
     }
@@ -51,19 +49,14 @@ arma::mat trame::u_from_vs(trame::transfers trans_obj, arma::mat v, double* tol_
     return u;
 }
 
-arma::mat trame::v_from_us(trame::transfers trans_obj, arma::mat u, double* tol_inp, arma::mat* subdiff)
+arma::mat trame::v_from_us(const transfers& trans_obj, const arma::mat& u, double* tol_inp, arma::mat* subdiff)
 {
     arma::mat vs = trans_obj.Vcal(u,NULL,NULL);
-    arma::mat v  = arma::trans(arma::max(arma::max(vs,0),arma::zeros(1,vs.n_cols)));
+    arma::mat v  = arma::trans(elem_max(arma::max(vs,0),0.0));
     //
-    double tol;
-    if (tol_inp) {
-        tol = *tol_inp;
-    } else {
-        tol = 0;
-    }
-
     if (subdiff) {
+        double tol = (tol_inp) ? *tol_inp : 0.0;
+
         *subdiff = arma::zeros(trans_obj.nbY,trans_obj.nbX);
         subdiff->elem( arma::find(arma::abs(elem_sub(v,vs.t())) <= tol) ).ones();
         *subdiff = subdiff->t();
@@ -72,7 +65,7 @@ arma::mat trame::v_from_us(trame::transfers trans_obj, arma::mat u, double* tol_
     return v;
 }
 
-arma::mat trame::update_v(trame::transfers trans_obj, arma::mat v, arma::vec n, arma::vec m, bool xFirst)
+arma::mat trame::update_v(const transfers& trans_obj, const arma::mat& v, arma::vec n, arma::vec m, bool xFirst)
 {
     int nbX = trans_obj.nbX;
     int nbY = trans_obj.nbY;
