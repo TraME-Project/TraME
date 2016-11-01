@@ -6,8 +6,7 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/equilibrium
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include cupids_lp_test.cpp -c -o cupids_lp_test.o
- * g++-mp-5 -O2 -Wall -o cupids_lp.test cupids_lp_test.o -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include cupids_lp_test.cpp -o cupids_lp.test -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -51,7 +50,7 @@ int main()
     arma::vec mux0, mu0y;
     arma::mat mu_TU, U, V;
 
-    trame::cupids_lp(dse_obj_TU, true, mu_TU, mux0, mu0y, U, V);
+    trame::cupids_lp(dse_obj_TU, mu_TU);
 
     std::cout << "Solution of TU-logitSim problem using LP:\n" << std::endl;
     arma::cout << "mu:\n" << mu_TU << arma::endl;
@@ -75,7 +74,7 @@ int main()
     //
     arma::mat mu_TU_2;
 
-    trame::cupids_lp(dse_obj_TU_2, true, mu_TU_2, mux0, mu0y, U, V);
+    trame::cupids_lp(dse_obj_TU_2, mu_TU_2);
 
     std::cout << "Solution of TU-probitSim problem using LP:\n" << std::endl;
     arma::cout << "mu:\n" << mu_TU_2 << arma::endl;
