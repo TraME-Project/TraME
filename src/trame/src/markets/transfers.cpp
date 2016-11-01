@@ -29,7 +29,7 @@
  * 08/16/2016
  *
  * This version:
- * 10/24/2016
+ * 11/01/2016
  */
 
 #include "trame.hpp"
@@ -469,6 +469,7 @@ finished:
 }
 
 arma::mat trame::transfers::Ucal(const arma::mat& vs, arma::uvec* xs, arma::uvec* ys)
+const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
@@ -505,6 +506,7 @@ finished:
 }
 
 double trame::transfers::Ucal(const double& vs, int xs, int ys)
+const
 {
     double ret = 0;
     //
@@ -538,6 +540,7 @@ finished:
 }
 
 arma::mat trame::transfers::Vcal(const arma::mat& us, arma::uvec* xs, arma::uvec* ys)
+const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
@@ -574,6 +577,7 @@ finished:
 }
 
 double trame::transfers::Vcal(const double& us, int xs, int ys)
+const
 {
     double ret = 0;
     //

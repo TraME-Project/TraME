@@ -29,7 +29,7 @@
  * 08/16/2016
  *
  * This version:
- * 10/23/2016
+ * 11/01/2016
  */
 
 class transfers
@@ -62,7 +62,7 @@ class transfers
 
         void trans();
 
-        // Psi functuons are const restricted because of calls to const market pointers in solvers
+        // Psi functions are const restricted because of calls to const market pointers in solvers
         arma::mat Psi(const arma::mat& U, const arma::mat& V) const;
         arma::mat Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
@@ -75,10 +75,11 @@ class transfers
 
         arma::mat dtheta_Psi(const arma::mat& U, const arma::mat& V, arma::mat* dtheta);
 
-        arma::mat Ucal(const arma::mat& vs, arma::uvec* xs, arma::uvec* ys);
-        double Ucal(const double& vs, int xs, int ys);
-        arma::mat Vcal(const arma::mat& us, arma::uvec* xs, arma::uvec* ys);
-        double Vcal(const double& us, int xs, int ys);
+        // Ucal and Vcal functions are const restricted because of calls to const market pointers in solvers
+        arma::mat Ucal(const arma::mat& vs, arma::uvec* xs, arma::uvec* ys) const;
+        double Ucal(const double& vs, int xs, int ys) const;
+        arma::mat Vcal(const arma::mat& us, arma::uvec* xs, arma::uvec* ys) const;
+        double Vcal(const double& us, int xs, int ys) const;
 
         arma::mat UW(const arma::mat& Ws);
         arma::mat UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
