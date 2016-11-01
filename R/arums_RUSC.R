@@ -130,7 +130,7 @@ Gbarx.RUSC <- function (arums, Ubarx, mubarx, x)
     #
     result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense="=",Q=Q,lb=lb,ub=ub)
     #
-    mux = result$solution[1:nbAlt-1]
+    mux = result$solution[1:(nbAlt-1)]
     Amu = c(arums$aux_A[x,,] %*% matrix(mux,ncol=1))
     Ux  = Amu + arums$aux_b[x,]
     #

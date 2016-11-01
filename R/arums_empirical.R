@@ -159,8 +159,8 @@ Gbarx.empirical <- function(arums, Ubarx, mubarx, x)
     valx = sum(mubarx*Ubarx) - result$objval
     #
     ret = list(valx=valx,
-               Ux=Uoptx,
-               mux=mux)
+               mux=mux,
+               Ux=Uoptx)
     #
     return(ret)
 }
