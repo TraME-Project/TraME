@@ -14,4 +14,4 @@ Depends: R (>= 3.2.0), Rcpp, RcppArmadillo, rootSolve, Matrix, numDeriv, nloptr,
 LinkingTo: Rcpp, RcppArmadillo (>= 0.6.400.2)
 SystemRequirements: Gurobi or GLPK library
 RcppModules: empirical_module, logit_module, none_module, probit_module, rsc_module, rusc_module, 
-    mfe_mmf_module, dse_logit_module
+    mfe_mmf_module, dse_logit_module, dse_rsc_module

@@ -218,7 +218,7 @@ RCPP_MODULE(dse_logit_module)
     void (dse_logit_R::*build_TU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_logit_R::build_TU_R ;
     void (dse_logit_R::*build_TU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_logit_R::build_TU_R ;
     
-    SEXP (dse_logit_R::*solve_R_1)() = &dse_logit_R::solve_R ;
+    //SEXP (dse_logit_R::*solve_R_1)() = &dse_logit_R::solve_R ;
     SEXP (dse_logit_R::*solve_R_2)(Rcpp::CharacterVector solver_inp) = &dse_logit_R::solve_R ;
 
     // now we can declare the class

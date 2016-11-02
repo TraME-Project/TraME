@@ -65,3 +65,25 @@ class dse_logit_R : public trame::dse<trame::logit>
         void set_arums_H(logit_R arums_H_inp);
         void set_arums(logit_R arums_G_inp, logit_R arums_H_inp);
 };
+
+class dse_rsc_R : public trame::dse<trame::rsc>
+{
+    public:
+        void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp);
+        void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp);
+        
+        void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp);
+        void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp);
+        
+        void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp);
+        void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp);
+        
+        SEXP solve_R();
+        SEXP solve_R(Rcpp::CharacterVector solver_inp);
+
+        rsc_R get_arums_G();
+        void set_arums_G(rsc_R arums_G_inp);
+        rsc_R get_arums_H();
+        void set_arums_H(rsc_R arums_H_inp);
+        void set_arums(rsc_R arums_G_inp, rsc_R arums_H_inp);
+};

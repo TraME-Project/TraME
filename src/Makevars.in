@@ -12,7 +12,7 @@ OBJECTS_MODULES= $(SOURCES_MODULES:.cpp=.o)
 SOURCES_AUX= ./R_aux/inv_pwa_R.cpp
 OBJECTS_AUX= $(SOURCES_AUX:.cpp=.o)
 
-SOURCES_MARKETS= ./R_markets/R_mfe_mmf.cpp ./R_markets/R_dse_logit.cpp
+SOURCES_MARKETS= ./R_markets/R_mfe_mmf.cpp ./R_markets/R_dse_logit.cpp ./R_markets/R_dse_rsc.cpp
 OBJECTS_MARKETS= $(SOURCES_MARKETS:.cpp=.o)
 
 OBJECTS=$(OBJECTS_MODULES) $(OBJECTS_AUX) $(OBJECTS_MARKETS)
