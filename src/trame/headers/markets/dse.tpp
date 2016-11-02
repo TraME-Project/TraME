@@ -27,10 +27,13 @@
  *
  * Keith O'Hara
  * 08/17/2016
+ *
+ * This version:
+ * 11/02/2016
  */
 
 template<typename Ta>
-void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp)
+void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -57,7 +60,7 @@ void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool
 
 // general arums input
 template<typename Ta>
-void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp)
+void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -83,7 +86,7 @@ void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, Ta a
 
 // empirical version
 template<typename Ta> template<typename T>
-void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -110,7 +113,7 @@ void dse<Ta>::build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, T ar
 
 // arums none
 template<typename Ta>
-void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp)
+void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -137,7 +140,7 @@ void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, a
 
 // general arums input
 template<typename Ta>
-void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp)
+void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -163,7 +166,7 @@ void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, a
 
 // general simulation
 template<typename Ta> template<typename T>
-void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -190,7 +193,7 @@ void dse<Ta>::build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, a
 
 // arums none
 template<typename Ta>
-void dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp)
+void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -217,7 +220,7 @@ void dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, 
 
 // general arums input
 template<typename Ta>
-void dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp)
+void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -243,7 +246,7 @@ void dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, 
 
 // general simulation
 template<typename Ta> template<typename T>
-void dse<Ta>::build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
