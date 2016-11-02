@@ -29,7 +29,7 @@
  * 08/16/2016
  */
 
-template <class Tm>
+template<class Tm>
 class mfe
 {
     public:

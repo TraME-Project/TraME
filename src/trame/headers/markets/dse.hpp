@@ -29,7 +29,7 @@
  * 08/17/2016
  */
 
-template <class Ta>
+template<class Ta>
 class dse
 {
     public:
@@ -59,15 +59,15 @@ class dse
         // member functions
         void build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp);
         void build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp);
-        template <typename T> void build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        template<typename T> void build_TU(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
         void build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp);
         void build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp);
-        template <typename T> void build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        template<typename T> void build_NTU(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
         void build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda, arma::mat phi, bool need_norm_inp);
         void build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp);
-        template <typename T> void build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        template<typename T> void build_LTU(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
         void trans();
 

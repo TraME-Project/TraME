@@ -40,16 +40,16 @@ template<typename Ta>
 bool oap_lp_int(const dse<Ta>& market, arma::mat* mu_out, bool* x_first, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out);
 
 // wrappers
-template <typename Ta>
+template<typename Ta>
 bool oap_lp(const dse<Ta>& market, arma::mat& mu_out);
 
-template <typename Ta>
+template<typename Ta>
 bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, arma::mat& residuals_out);
 
-template <typename Ta>
+template<typename Ta>
 bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, const bool& x_first_inp, arma::mat& residuals_out);
 
-template <typename Ta>
+template<typename Ta>
 bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, const bool& x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out);
 
 #include "oap_lp.tpp"

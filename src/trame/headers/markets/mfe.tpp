@@ -29,7 +29,7 @@
  * 08/16/2016
  */
 
-template <typename Tm>
+template<typename Tm>
 void mfe<Tm>::build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
@@ -62,7 +62,7 @@ void mfe<Tm>::build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     ETU = true;
 }
 
-template <typename Tm>
+template<typename Tm>
 void mfe<Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
@@ -95,7 +95,7 @@ void mfe<Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     LTU = true;
 }
 
-template <typename Tm>
+template<typename Tm>
 void mfe<Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
@@ -128,7 +128,7 @@ void mfe<Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     NTU = true;
 }
 
-template <typename Tm>
+template<typename Tm>
 void mfe<Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
@@ -161,7 +161,7 @@ void mfe<Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arm
     TU = true;
 }
 
-template <typename Tm>
+template<typename Tm>
 void mfe<Tm>::trans()
 {
     arma::vec n_temp = n;
@@ -178,7 +178,7 @@ void mfe<Tm>::trans()
     //
 }
 
-template <typename Tm>
+template<typename Tm>
 bool mfe<Tm>::solve(arma::mat& mu_sol)
 {
     bool res = ipfp(*this,mu_sol);
