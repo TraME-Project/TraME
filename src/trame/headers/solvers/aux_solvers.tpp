@@ -260,51 +260,6 @@ double zeroin_tmp(double ax, double bx, double (*f)(double x, const trame_zeroin
 	return b;
 }
 
-/*
- * build disaggregate epsilon function; used in Cupids_LP
- * takes U_xy and arums as input; returns U_iy as output.
- *
- * This template function only works with empirical arums.
- *
- * Keith O'Hara
- * 08/23/2016
- */
-
-template<typename Ta>
-int build_disaggregate_epsilon (arma::vec n, Ta arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix)
-{
-    int nbX = arums_emp_inp.nbX;
-    int nbY = arums_emp_inp.nbY;
-
-    int nbDraws = arums_emp_inp.aux_nbDraws;
-    int nbI = nbX * nbDraws;
-
-    arma::vec I_01(nbX);
-    arma::mat epsilon;
-    arma::mat epsilons = arma::zeros(nbI,nbY+1);
-    I_ix.zeros(nbI,nbX);
-    //
-    for (int x=0; x < nbX; x++) {
-        if (arums_emp_inp.xHomogenous) {
-            epsilon = arums_emp_inp.atoms;
-        } else {
-            epsilon = arums_emp_inp.atoms.slice(x);
-        }
-        //
-        epsilons.rows(x*nbDraws,(x+1)*nbDraws-1) = epsilon;
-        //
-        I_01.zeros();
-        I_01(x) = 1;
-        
-        I_ix.rows(x*nbDraws,(x+1)*nbDraws-1) = arma::repmat(I_01.t(),nbDraws,1);
-    }
-    //
-    epsilon_iy = epsilons.cols(0,nbY-1);
-    epsilon0_i = epsilons.col(nbY);
-    //
-    return nbDraws;
-}
-
 template<typename Ta>
 bool max_welfare_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
                        double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),

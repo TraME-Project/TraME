@@ -35,6 +35,8 @@
 #ifndef _trame_aux_solvers_HPP
 #define _trame_aux_solvers_HPP
 
+int build_disaggregate_epsilon(arma::vec n, const trame::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix);
+
 arma::mat u_from_vs(const transfers& trans_obj, const arma::mat& v, double* tol_inp, arma::mat* subdiff);
 arma::mat v_from_us(const transfers& trans_obj, const arma::mat& u, double* tol_inp, arma::mat* subdiff);
 arma::mat update_v(const transfers& trans_obj, const arma::mat& v, arma::vec n, arma::vec m, bool xFirst);
