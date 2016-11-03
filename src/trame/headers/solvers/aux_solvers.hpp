@@ -29,7 +29,7 @@
  * 08/23/2016
  *
  * This version:
- * 11/01/2016
+ * 11/02/2016
  */
 
 #ifndef _trame_aux_solvers_HPP
@@ -39,7 +39,7 @@ int build_disaggregate_epsilon(arma::vec n, const trame::empirical& arums_emp_in
 
 arma::mat u_from_vs(const transfers& trans_obj, const arma::mat& v, double* tol_inp, arma::mat* subdiff);
 arma::mat v_from_us(const transfers& trans_obj, const arma::mat& u, double* tol_inp, arma::mat* subdiff);
-arma::mat update_v(const transfers& trans_obj, const arma::mat& v, arma::vec n, arma::vec m, bool xFirst);
+arma::mat update_v(const transfers& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, bool xFirst);
 
 template<typename Ta>
 arma::mat w_upper_bound(dse<Ta> market);

@@ -32,9 +32,11 @@
 
 #include "trame.hpp"
 
+namespace trame
+{
 // we specialize because cupids_lp is only define for empirical classes
 template<>
-bool trame::dse<trame::empirical>::solve(arma::mat& mu_sol, const char* solver)
+bool dse<empirical>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);
@@ -79,4 +81,5 @@ bool trame::dse<trame::empirical>::solve(arma::mat& mu_sol, const char* solver)
     }
     //
     return res;
+}
 }

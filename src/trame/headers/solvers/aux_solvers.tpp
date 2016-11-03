@@ -268,6 +268,7 @@ bool max_welfare_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val,
     bool success = false;
 
     nlopt::opt opt_trame(nlopt::LD_LBFGS, n_pars);
+    nlopt::result result;
 
     if (lb) {
         opt_trame.set_lower_bounds(*lb);
@@ -278,11 +279,34 @@ bool max_welfare_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val,
 
     opt_trame.set_min_objective(*opt_objfn, &opt_data);
     
-    opt_trame.set_xtol_rel(1e-7);
+    opt_trame.set_xtol_rel(1e-8);
+    opt_trame.set_ftol_rel(1e-15);
     opt_trame.set_maxeval(5000);
 
     double minf;
-    nlopt::result result = opt_trame.optimize(io_val, minf);
+    try {
+        result = opt_trame.optimize(io_val, minf);
+    } catch(...) {
+        printf("error in max_welfare optimization (using LBFGS);\n");
+        printf("retrying with MMA\n");
+
+        nlopt::opt opt_trame_2(nlopt::LD_MMA, n_pars);
+
+        if (lb) {
+            opt_trame_2.set_lower_bounds(*lb);
+        }
+        if (ub) {
+            opt_trame_2.set_upper_bounds(*ub);
+        }
+
+        opt_trame_2.set_min_objective(*opt_objfn, &opt_data);
+        
+        opt_trame_2.set_xtol_rel(1e-8);
+        opt_trame_2.set_ftol_rel(1e-15);
+        opt_trame_2.set_maxeval(5000);
+
+        result = opt_trame_2.optimize(io_val, minf);
+    }
 
     if (result > 0) {
         opt_val = minf;

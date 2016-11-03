@@ -4,9 +4,9 @@
  * Keith O'Hara
  * 05/17/2016
  *
- * cd ~/Desktop/SCM/GitHub/TraME/src/tests/arums
+ * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/arums
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include rsc_test.cpp -c -o rsc_test.o
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include rsc_test.cpp -o rsc.test -L/opt/local/lib -ltrame -framework Accelerate
  * g++-mp-5 -O2 -Wall -o rsc.test rsc_test.o -L/opt/local/lib -ltrame -framework Accelerate
  */
 

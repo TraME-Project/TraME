@@ -24,7 +24,7 @@ int main()
     arma::vec n = arma::ones(nbX,1);
     arma::vec m = arma::ones(nbY,1);
 
-    arma::mat phi  = arma::randu(nbX,nbY);
+    arma::mat phi = arma::randu(nbX,nbY);
     //
     // results
     printf("\n*===================   Start of max_welfare Test   ===================*\n");
@@ -45,24 +45,27 @@ int main()
 
     arma::mat mu_TU_1, mu_TU_2;
     trame::ipfp(mfe_obj_TU,mu_TU_1);
-    trame::max_welfare(dse_obj_TU,mu_TU_2);
-    //trame::ipfp(mfe_obj_TU,mu_TU,max_iter);
-    //trame::ipfp(mfe_obj_TU,mu_TU,tol,max_iter);
 
-    //mfe_obj_TU.solve(mu_TU);
+    //trame::max_welfare(dse_obj_TU,mu_TU_2);
+    dse_obj_TU.solve(mu_TU_2,(char*) "maxWelfare");
 
     arma::cout << "Solution of TU-logit problem using ipfp:\n" << mu_TU_1 << arma::endl;
     arma::cout << "Solution of TU-logit problem using max_welfare:\n" << mu_TU_2 << arma::endl;
-    /*
-    arma::mat mu_NTU;
-    trame::ipfp(mfe_obj_NTU,mu_NTU);
+    //
+    // try RSC problem
+    arma::mat zetaG = arma::ones(nbX,1) * arma::randu(1,nbY+1);
+    arma::mat zetaH = arma::ones(nbY,1) * arma::randu(1,nbX+1);
 
-    arma::cout << "Solution of NTU-logit problem using ipfp:\n" << mu_NTU << arma::endl;
+    trame::rsc rsc_1, rsc_2;
+    rsc_1.build_beta(zetaG,2.0,2.0);
+    rsc_2.build_beta(zetaH,2.0,2.0);
+    
+    trame::dse<trame::rsc> dse_obj_TU_2;
 
-    arma::mat mu_LTU;
-    trame::ipfp(mfe_obj_LTU,mu_LTU);
+    dse_obj_TU_2.build_TU(n,m,phi,rsc_1,rsc_2,false);
 
-    arma::cout << "Solution of LTU-logit problem using ipfp:\n" << mu_LTU << arma::endl;*/
+    arma::mat mu_rsc;
+    trame::max_welfare(dse_obj_TU_2,mu_rsc);
     //
     printf("\n*===================    End of max_welfare Test    ===================*\n");
     printf("\n");

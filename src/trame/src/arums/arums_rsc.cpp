@@ -152,7 +152,7 @@ double trame::rsc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
     arma::vec mu_x_tilde = arma::zeros(nbAlt,1);
     arma::vec U_x_tilde = arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1));
     //
-    for (i=0; i<nbAlt; i++) {
+    for (i=0; i < nbAlt; i++) {
         y = aux_ord(x,i);
         run_max = quantile(0);
         //
@@ -177,7 +177,7 @@ double trame::rsc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
 
         while (j > i) {
             z = aux_ord(x,j);
-
+            
             if (zeta(x,z) != zeta(x,y)) {
                 run_temp = (U_x_tilde(y) - U_x_tilde(z)) / (zeta(x,z) - zeta(x,y));
                 run_min = std::min(run_min,run_temp);

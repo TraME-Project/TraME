@@ -53,7 +53,7 @@ bool max_welfare_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_
 
     std::vector<double> sol_vec = arma::conv_to< std::vector<double> >::from(U_init);
     double obj_val = 0;
-
+    
     success = max_welfare_nlopt(n_pars_opt,sol_vec,obj_val,NULL,NULL,max_welfare_opt_objfn<Ta>,opt_data);
     //
     // construct equilibrium objects
@@ -160,6 +160,7 @@ double max_welfare_opt_objfn(const std::vector<double> &x_inp, std::vector<doubl
     }
     //
     double ret = val_G + val_H;
+    //std::cout << "opt val: " << ret << std::endl; 
     //
     return ret;
 }

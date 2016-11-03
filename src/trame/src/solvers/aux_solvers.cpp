@@ -29,7 +29,7 @@
  * 08/23/2016
  *
  * This version:
- * 11/01/2016
+ * 11/02/2016
  */
 
 #include "trame.hpp"
@@ -108,7 +108,7 @@ arma::mat trame::v_from_us(const transfers& trans_obj, const arma::mat& u, doubl
     return v;
 }
 
-arma::mat trame::update_v(const transfers& trans_obj, const arma::mat& v, arma::vec n, arma::vec m, bool xFirst)
+arma::mat trame::update_v(const transfers& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, bool xFirst)
 {
     int nbX = trans_obj.nbX;
     int nbY = trans_obj.nbY;
