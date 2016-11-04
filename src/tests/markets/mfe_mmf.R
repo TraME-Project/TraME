@@ -2,8 +2,8 @@ library(TraME)
 rm(list=ls())
 #library(gurobi)
 #
-nbX = 18
-nbY = 5
+nbX = 180
+nbY = 160
 sigma = 1
 
 n = rep(1,nbX)
@@ -29,6 +29,7 @@ mfe_mmf_obj_LTU$build_LTU(n,m,lambda_LTU,phi_LTU,sigma,FALSE)
 mfe_mmf_obj_NTU <- new(mfe_mmf_R)
 mfe_mmf_obj_NTU$build_NTU(n,m,alpha,gamma,sigma,FALSE)
 #
-mfe_mmf_obj_TU$solve()
-mfe_mmf_obj_LTU$solve()
-mfe_mmf_obj_NTU$solve()
+sol_TU <- mfe_mmf_obj_TU$solve()
+sol_LTU <- mfe_mmf_obj_LTU$solve()
+sol_NTU <- mfe_mmf_obj_NTU$solve()
+
