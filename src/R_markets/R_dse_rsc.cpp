@@ -201,7 +201,26 @@ void dse_rsc_R::set_arums(rsc_R arums_G_inp, rsc_R arums_H_inp)
     }
 }
 
+transfers_R dse_rsc_R::get_transfers_R()
+{
+    transfers_R trans_obj_out = static_cast<transfers_R&>(trans_obj);
+
+    return trans_obj_out;
+}
+
+void dse_rsc_R::set_transfers_R(transfers_R trans_obj_inp)
+{
+    try {
+        trans_obj = static_cast<trame::transfers&>(trans_obj_inp);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+}
+
 RCPP_EXPOSED_CLASS(rsc_R)
+RCPP_EXPOSED_CLASS(transfers_R)
 RCPP_EXPOSED_CLASS(dse_rsc_R)
 
 RCPP_MODULE(dse_rsc_module)
@@ -259,5 +278,8 @@ RCPP_MODULE(dse_rsc_module)
         .method( "get_arums_H", &dse_rsc_R::get_arums_H )
         .method( "set_arums_H", &dse_rsc_R::set_arums_H )
         .method( "set_arums", &dse_rsc_R::set_arums )
+
+        .method( "get_transfers", &dse_rsc_R::get_transfers_R )
+        .method( "set_transfers", &dse_rsc_R::set_transfers_R )
     ;
 }

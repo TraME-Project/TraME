@@ -41,3 +41,5 @@ dse_logit_obj_NTU$set_arums_G(arums_G)
 
 arums_G2 = dse_logit_obj_NTU$get_arums_G()
 arums_G2$U
+
+trans_obj = dse_logit_obj_TU$get_transfers()

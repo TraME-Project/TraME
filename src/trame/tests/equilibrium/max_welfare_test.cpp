@@ -47,7 +47,7 @@ int main()
     trame::ipfp(mfe_obj_TU,mu_TU_1);
 
     //trame::max_welfare(dse_obj_TU,mu_TU_2);
-    dse_obj_TU.solve(mu_TU_2,(char*) "maxWelfare");
+    dse_obj_TU.solve(mu_TU_2, (char*) "maxWelfare");
 
     arma::cout << "Solution of TU-logit problem using ipfp:\n" << mu_TU_1 << arma::endl;
     arma::cout << "Solution of TU-logit problem using max_welfare:\n" << mu_TU_2 << arma::endl;

@@ -26,6 +26,19 @@
  * Derived classes to provide wrappers to the TraME library
  */
 
+class transfers_R : public trame::transfers
+{
+    public:
+        void build_ETU_R(arma::mat alpha_ETU, arma::mat gamma_ETU, arma::mat tau_ETU);
+        void build_LTU_R(arma::mat lambda_LTU, arma::mat phi_LTU);
+        void build_NTU_R(arma::mat alpha_NTU, arma::mat gamma_NTU);
+        void build_TU_R(arma::mat phi_TU);
+
+        void trans_R();
+
+        SEXP Psi_R(arma::mat U, arma::mat V);
+};
+
 class mfe_mmf_R : public trame::mfe<trame::mmf>
 {
     public:
@@ -64,6 +77,9 @@ class dse_logit_R : public trame::dse<trame::logit>
         logit_R get_arums_H();
         void set_arums_H(logit_R arums_H_inp);
         void set_arums(logit_R arums_G_inp, logit_R arums_H_inp);
+
+        transfers_R get_transfers_R();
+        void set_transfers_R(transfers_R trans_obj_inp);
 };
 
 class dse_rsc_R : public trame::dse<trame::rsc>
@@ -86,4 +102,7 @@ class dse_rsc_R : public trame::dse<trame::rsc>
         rsc_R get_arums_H();
         void set_arums_H(rsc_R arums_H_inp);
         void set_arums(rsc_R arums_G_inp, rsc_R arums_H_inp);
+
+        transfers_R get_transfers_R();
+        void set_transfers_R(transfers_R trans_obj_inp);
 };

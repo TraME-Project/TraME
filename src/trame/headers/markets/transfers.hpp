@@ -47,12 +47,12 @@ class transfers
         int nbY;
         int nbParams;
 
+        arma::mat phi;
+
         arma::mat alpha;
         arma::mat gamma;
         arma::mat lambda;
         arma::mat tau;
-
-        arma::mat phi;
 
         // member functions
         void build_ETU(const arma::mat& alpha_ETU, const arma::mat& gamma_ETU, const arma::mat& tau_ETU);

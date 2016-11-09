@@ -425,7 +425,7 @@ arma::mat trame::transfers::dtheta_Psi(const arma::mat& U, const arma::mat& V, a
     }
 
     if (LTU) {
-        arma::vec U_minus_V = arma::vectorise(U-V);
+        arma::vec U_minus_V = arma::vectorise(U - V);
 
         if (!dtheta) {
             ret = arma::join_rows(arma::diagmat(U_minus_V),-arma::eye(nbX*nbY,nbX*nbY));
