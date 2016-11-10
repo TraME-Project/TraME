@@ -441,7 +441,6 @@ arma::vec trame::mmf::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
         //
         return the_b_ys;
     } else { // 'default'
-        int j, y;
         int nb_Y = m.n_elem;
 
         bool coeff;
@@ -460,6 +459,7 @@ arma::vec trame::mmf::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
         root_data.coeff = coeff;
         root_data.A_xs  = A_xs;
         //
+        int j, y;
         arma::vec the_b_ys(temp_ind.n_elem);
         
         for (j=0; j < (int) temp_ind.n_elem; j++) {

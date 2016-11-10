@@ -105,12 +105,53 @@ SEXP transfers_R::Psi_R(arma::mat U, arma::mat V)
     return R_NilValue;
 }
 
+SEXP transfers_R::Psi_R(arma::mat U, arma::mat V, Rcpp::IntegerVector x_ind, Rcpp::IntegerVector y_ind)
+{
+    try {
+        int x_ind_size = x_ind.size();
+        int y_ind_size = y_ind.size();
+
+        arma::mat psi_out;
+        //
+        // default case to mirror NULL
+        if (x_ind_size == 0 && y_ind_size == 0) {
+            psi_out = this->Psi(U,V);
+        }
+        //
+        // correct for zero indexing vs R indexing
+        arma::uvec x_ind_uvec, y_ind_uvec;
+
+        if (x_ind_size != 0) {
+            x_ind_uvec = Rcpp::as<arma::uvec>(x_ind) - 1;
+        }
+        if (y_ind_size != 0) {
+            y_ind_uvec = Rcpp::as<arma::uvec>(y_ind) - 1;
+        }
+        //
+        if (x_ind_size != 0 && y_ind_size == 0) {
+            psi_out = this->Psi(U,V,&x_ind_uvec,NULL);
+        } else if (x_ind_size == 0 && y_ind_size != 0) {
+            psi_out = this->Psi(U,V,NULL,&y_ind_uvec);
+        } else {
+            psi_out = this->Psi(U,V,&x_ind_uvec,&y_ind_uvec);
+        }
+        //
+        return Rcpp::List::create(Rcpp::Named("psi") = psi_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
 RCPP_MODULE(transfers_module)
 {
     using namespace Rcpp ;
 
     // function overloading requires some trickery
     SEXP (transfers_R::*Psi_1)(arma::mat, arma::mat) = &transfers_R::Psi_R ;
+    SEXP (transfers_R::*Psi_2)(arma::mat, arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::Psi_R ;
 
     // now we can declare the class
     class_<trame::transfers>( "transfers" )
@@ -151,5 +192,6 @@ RCPP_MODULE(transfers_module)
         .method( "trans", &transfers_R::trans_R )
 
         .method( "Psi", Psi_1 )
+        .method( "Psi", Psi_2 )
     ;
 }

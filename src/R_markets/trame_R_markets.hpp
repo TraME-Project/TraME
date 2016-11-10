@@ -37,6 +37,7 @@ class transfers_R : public trame::transfers
         void trans_R();
 
         SEXP Psi_R(arma::mat U, arma::mat V);
+        SEXP Psi_R(arma::mat U, arma::mat V, Rcpp::IntegerVector x_ind, Rcpp::IntegerVector y_ind);
 };
 
 class mfe_mmf_R : public trame::mfe<trame::mmf>
