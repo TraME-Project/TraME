@@ -96,7 +96,7 @@ SEXP transfers_R::Psi_R(arma::mat U, arma::mat V)
     try {
         arma::mat psi_out = this->Psi(U,V);
         //
-        return Rcpp::List::create(Rcpp::Named("psi") = psi_out);
+        return Rcpp::wrap(psi_out);
     } catch( std::exception &ex ) {
         forward_exception_to_r( ex );
     } catch(...) {
@@ -136,7 +136,169 @@ SEXP transfers_R::Psi_R(arma::mat U, arma::mat V, Rcpp::IntegerVector x_ind, Rcp
             psi_out = this->Psi(U,V,&x_ind_uvec,&y_ind_uvec);
         }
         //
-        return Rcpp::List::create(Rcpp::Named("psi") = psi_out);
+        return Rcpp::wrap(psi_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
+SEXP transfers_R::du_Psi_R(arma::mat U, arma::mat V)
+{
+    try {
+        arma::mat du_psi_out = this->du_Psi(U,V);
+        //
+        return Rcpp::wrap(du_psi_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
+SEXP transfers_R::du_Psi_R(arma::mat U, arma::mat V, Rcpp::IntegerVector x_ind, Rcpp::IntegerVector y_ind)
+{
+    try {
+        int x_ind_size = x_ind.size();
+        int y_ind_size = y_ind.size();
+
+        arma::mat du_psi_out;
+        //
+        // default case to mirror NULL
+        if (x_ind_size == 0 && y_ind_size == 0) {
+            du_psi_out = this->du_Psi(U,V);
+        }
+        //
+        // correct for zero indexing vs R indexing
+        arma::uvec x_ind_uvec, y_ind_uvec;
+
+        if (x_ind_size != 0) {
+            x_ind_uvec = Rcpp::as<arma::uvec>(x_ind) - 1;
+        }
+        if (y_ind_size != 0) {
+            y_ind_uvec = Rcpp::as<arma::uvec>(y_ind) - 1;
+        }
+        //
+        if (x_ind_size != 0 && y_ind_size == 0) {
+            du_psi_out = this->du_Psi(U,V,&x_ind_uvec,NULL);
+        } else if (x_ind_size == 0 && y_ind_size != 0) {
+            du_psi_out = this->du_Psi(U,V,NULL,&y_ind_uvec);
+        } else {
+            du_psi_out = this->du_Psi(U,V,&x_ind_uvec,&y_ind_uvec);
+        }
+        //
+        return Rcpp::wrap(du_psi_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
+SEXP transfers_R::Ucal_R(arma::mat vs)
+{
+    try {
+        arma::mat ucal_out = this->Ucal(vs);
+        //
+        return Rcpp::wrap(ucal_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
+SEXP transfers_R::Ucal_R(arma::mat vs, Rcpp::IntegerVector x_ind, Rcpp::IntegerVector y_ind)
+{
+    try {
+        int x_ind_size = x_ind.size();
+        int y_ind_size = y_ind.size();
+
+        arma::mat ucal_out;
+        //
+        // default case to mirror NULL
+        if (x_ind_size == 0 && y_ind_size == 0) {
+            ucal_out = this->Ucal(vs);
+        }
+        //
+        // correct for zero indexing vs R indexing
+        arma::uvec x_ind_uvec, y_ind_uvec;
+
+        if (x_ind_size != 0) {
+            x_ind_uvec = Rcpp::as<arma::uvec>(x_ind) - 1;
+        }
+        if (y_ind_size != 0) {
+            y_ind_uvec = Rcpp::as<arma::uvec>(y_ind) - 1;
+        }
+        //
+        if (x_ind_size != 0 && y_ind_size == 0) {
+            ucal_out = this->Ucal(vs,&x_ind_uvec,NULL);
+        } else if (x_ind_size == 0 && y_ind_size != 0) {
+            ucal_out = this->Ucal(vs,NULL,&y_ind_uvec);
+        } else {
+            ucal_out = this->Ucal(vs,&x_ind_uvec,&y_ind_uvec);
+        }
+        //
+        return Rcpp::wrap(ucal_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
+SEXP transfers_R::Vcal_R(arma::mat us)
+{
+    try {
+        arma::mat vcal_out = this->Vcal(us);
+        //
+        return Rcpp::wrap(vcal_out);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+	}
+    return R_NilValue;
+}
+
+SEXP transfers_R::Vcal_R(arma::mat us, Rcpp::IntegerVector x_ind, Rcpp::IntegerVector y_ind)
+{
+    try {
+        int x_ind_size = x_ind.size();
+        int y_ind_size = y_ind.size();
+
+        arma::mat vcal_out;
+        //
+        // default case to mirror NULL
+        if (x_ind_size == 0 && y_ind_size == 0) {
+            vcal_out = this->Vcal(us);
+        }
+        //
+        // correct for zero indexing vs R indexing
+        arma::uvec x_ind_uvec, y_ind_uvec;
+
+        if (x_ind_size != 0) {
+            x_ind_uvec = Rcpp::as<arma::uvec>(x_ind) - 1;
+        }
+        if (y_ind_size != 0) {
+            y_ind_uvec = Rcpp::as<arma::uvec>(y_ind) - 1;
+        }
+        //
+        if (x_ind_size != 0 && y_ind_size == 0) {
+            vcal_out = this->Vcal(us,&x_ind_uvec,NULL);
+        } else if (x_ind_size == 0 && y_ind_size != 0) {
+            vcal_out = this->Vcal(us,NULL,&y_ind_uvec);
+        } else {
+            vcal_out = this->Vcal(us,&x_ind_uvec,&y_ind_uvec);
+        }
+        //
+        return Rcpp::wrap(vcal_out);
     } catch( std::exception &ex ) {
         forward_exception_to_r( ex );
     } catch(...) {
@@ -152,6 +314,15 @@ RCPP_MODULE(transfers_module)
     // function overloading requires some trickery
     SEXP (transfers_R::*Psi_1)(arma::mat, arma::mat) = &transfers_R::Psi_R ;
     SEXP (transfers_R::*Psi_2)(arma::mat, arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::Psi_R ;
+
+    SEXP (transfers_R::*du_Psi_1)(arma::mat, arma::mat) = &transfers_R::du_Psi_R ;
+    SEXP (transfers_R::*du_Psi_2)(arma::mat, arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::du_Psi_R ;
+
+    SEXP (transfers_R::*Ucal_1)(arma::mat) = &transfers_R::Ucal_R ;
+    SEXP (transfers_R::*Ucal_2)(arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::Ucal_R ;
+
+    SEXP (transfers_R::*Vcal_1)(arma::mat) = &transfers_R::Vcal_R ;
+    SEXP (transfers_R::*Vcal_2)(arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::Vcal_R ;
 
     // now we can declare the class
     class_<trame::transfers>( "transfers" )
@@ -193,5 +364,11 @@ RCPP_MODULE(transfers_module)
 
         .method( "Psi", Psi_1 )
         .method( "Psi", Psi_2 )
+        .method( "du_Psi", du_Psi_1 )
+        .method( "du_Psi", du_Psi_2 )
+        .method( "Ucal", Ucal_1 )
+        .method( "Ucal", Ucal_2 )
+        .method( "Vcal", Vcal_1 )
+        .method( "Vcal", Vcal_2 )
     ;
 }

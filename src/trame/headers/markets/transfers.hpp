@@ -69,6 +69,7 @@ class transfers
         arma::mat Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys) const;
         double Psi(const double& U, const double& V, int x_ind, int y_ind) const;
 
+        arma::mat du_Psi(const arma::mat& U, const arma::mat& V);
         arma::mat du_Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys);
         arma::mat du_Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys);
         arma::mat du_Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys);
@@ -76,8 +77,10 @@ class transfers
         arma::mat dtheta_Psi(const arma::mat& U, const arma::mat& V, arma::mat* dtheta);
 
         // Ucal and Vcal functions are const restricted because of calls to const market pointers in solvers
+        arma::mat Ucal(const arma::mat& vs) const;
         arma::mat Ucal(const arma::mat& vs, arma::uvec* xs, arma::uvec* ys) const;
         double Ucal(const double& vs, int xs, int ys) const;
+        arma::mat Vcal(const arma::mat& us) const;
         arma::mat Vcal(const arma::mat& us, arma::uvec* xs, arma::uvec* ys) const;
         double Vcal(const double& us, int xs, int ys) const;
 

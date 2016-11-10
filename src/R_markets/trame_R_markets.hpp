@@ -38,6 +38,15 @@ class transfers_R : public trame::transfers
 
         SEXP Psi_R(arma::mat U, arma::mat V);
         SEXP Psi_R(arma::mat U, arma::mat V, Rcpp::IntegerVector x_ind, Rcpp::IntegerVector y_ind);
+
+        SEXP du_Psi_R(arma::mat U, arma::mat V);
+        SEXP du_Psi_R(arma::mat U, arma::mat V, Rcpp::IntegerVector x_ind, Rcpp::IntegerVector y_ind);
+
+        SEXP Ucal_R(arma::mat vs);
+        SEXP Ucal_R(arma::mat vs, Rcpp::IntegerVector x_ind, Rcpp::IntegerVector y_ind);
+
+        SEXP Vcal_R(arma::mat us);
+        SEXP Vcal_R(arma::mat us, Rcpp::IntegerVector x_ind, Rcpp::IntegerVector y_ind);
 };
 
 class mfe_mmf_R : public trame::mfe<trame::mmf>

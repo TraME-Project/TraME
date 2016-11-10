@@ -290,6 +290,13 @@ finished:
     return ret;
 }
 
+arma::mat trame::transfers::du_Psi(const arma::mat& U, const arma::mat& V)
+{
+    arma::mat ret = this->du_Psi(U,V,NULL,NULL);
+    //
+    return ret;
+}
+
 arma::mat trame::transfers::du_Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -468,6 +475,14 @@ finished:
     return ret;
 }
 
+arma::mat trame::transfers::Ucal(const arma::mat& vs)
+const
+{
+    arma::mat ret = this->Ucal(vs,NULL,NULL);
+    //
+    return ret;
+}
+
 arma::mat trame::transfers::Ucal(const arma::mat& vs, arma::uvec* xs, arma::uvec* ys)
 const
 {
@@ -536,6 +551,14 @@ const
     }
     //
 finished:
+    return ret;
+}
+
+arma::mat trame::transfers::Vcal(const arma::mat& us)
+const
+{
+    arma::mat ret = this->Vcal(us,NULL,NULL);
+    //
     return ret;
 }
 
