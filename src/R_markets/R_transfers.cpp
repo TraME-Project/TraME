@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 11/08/2016
+ *
+ * This version:
+ * 11/10/2016
  */
 
 //#define TRAME_RCPP_ARMADILLO

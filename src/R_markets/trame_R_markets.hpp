@@ -67,6 +67,31 @@ class mfe_mmf_R : public trame::mfe<trame::mmf>
         SEXP solve_R();
 };
 
+class dse_empirical_R : public trame::dse<trame::empirical>
+{
+    public:
+        void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp);
+        template<typename Ta> void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp);
+        
+        void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp);
+        template<typename Ta> void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp);
+        
+        void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp);
+        template<typename Ta> void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp);
+        
+        SEXP solve_R();
+        SEXP solve_R(Rcpp::CharacterVector solver_inp);
+
+        empirical_R get_arums_G();
+        void set_arums_G(empirical_R arums_G_inp);
+        empirical_R get_arums_H();
+        void set_arums_H(empirical_R arums_H_inp);
+        void set_arums(empirical_R arums_G_inp, empirical_R arums_H_inp);
+
+        transfers_R get_transfers_R();
+        void set_transfers_R(transfers_R trans_obj_inp);
+};
+
 class dse_logit_R : public trame::dse<trame::logit>
 {
     public:
@@ -116,3 +141,5 @@ class dse_rsc_R : public trame::dse<trame::rsc>
         transfers_R get_transfers_R();
         void set_transfers_R(transfers_R trans_obj_inp);
 };
+
+#include "trame_R_markets.tpp"
