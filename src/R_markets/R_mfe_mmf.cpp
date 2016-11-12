@@ -29,12 +29,62 @@
  * 10/20/2016
  */
 
-//#define TRAME_RCPP_ARMADILLO
+#include "trameR.hpp"
 
-#include "trame.hpp"
-#include "../R_modules/trame_R_modules.hpp"
-#include "trame_R_markets.hpp"
+RCPP_MODULE(mfe_mmf_module)
+{
+    using namespace Rcpp ;
 
+    // function overloading requires some trickery
+    void (mfe_mmf_R::*build_ETU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, arma::mat tau_inp, bool need_norm_inp) = &mfe_mmf_R::build_ETU_R ;
+    void (mfe_mmf_R::*build_ETU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, arma::mat tau_inp, double sigma_inp, bool need_norm_inp) = &mfe_mmf_R::build_ETU_R ;
+
+    void (mfe_mmf_R::*build_LTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp) = &mfe_mmf_R::build_LTU_R ;
+    void (mfe_mmf_R::*build_LTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, double sigma_inp, bool need_norm_inp) = &mfe_mmf_R::build_LTU_R ;
+
+    void (mfe_mmf_R::*build_NTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp) = &mfe_mmf_R::build_NTU_R ;
+    void (mfe_mmf_R::*build_NTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, double sigma_inp, bool need_norm_inp) = &mfe_mmf_R::build_NTU_R ;
+
+    void (mfe_mmf_R::*build_TU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp) = &mfe_mmf_R::build_TU_R ;
+    void (mfe_mmf_R::*build_TU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, double sigma_inp, bool need_norm_inp) = &mfe_mmf_R::build_TU_R ;
+  
+    // now we can declare the class
+    class_<trame::mfe<trame::mmf>>( "mfe_mmf" )
+        .default_constructor()
+
+        // basic objects
+        .field( "ETU", &trame::mfe<trame::mmf>::ETU )
+        .field( "LTU", &trame::mfe<trame::mmf>::LTU )
+        .field( "NTU", &trame::mfe<trame::mmf>::NTU )
+        .field( "TU", &trame::mfe<trame::mmf>::TU )
+
+        .field( "need_norm", &trame::mfe<trame::mmf>::need_norm )
+        .field( "outsideOption", &trame::mfe<trame::mmf>::outsideOption )
+
+        .field( "nbX", &trame::mfe<trame::mmf>::nbX )
+        .field( "nbY", &trame::mfe<trame::mmf>::nbY )
+
+        // member functions
+        .method( "trans", &trame::mfe<trame::mmf>::trans )
+    ;
+
+    class_<mfe_mmf_R>( "mfe_mmf_R" )
+        .derives<trame::mfe<trame::mmf>>( "mfe_mmf" )
+        .default_constructor()
+
+        .method( "build_ETU", build_ETU_1 )
+        .method( "build_ETU", build_ETU_2 )
+        .method( "build_LTU", build_LTU_1 )
+        .method( "build_LTU", build_LTU_2 )
+        .method( "build_NTU", build_NTU_1 )
+        .method( "build_NTU", build_NTU_2 )
+        .method( "build_TU", build_TU_1 )
+        .method( "build_TU", build_TU_2 )
+        .method( "solve", &mfe_mmf_R::solve_R )
+    ;
+}
+
+// wrapper functions to catch errors and handle memory pointers
 void mfe_mmf_R::build_ETU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, arma::mat tau_inp, bool need_norm_inp)
 {
     try {
@@ -136,57 +186,4 @@ SEXP mfe_mmf_R::solve_R()
         ::Rf_error( "trame: C++ exception (unknown reason)" );
     }
     return R_NilValue;
-}
-
-RCPP_MODULE(mfe_mmf_module)
-{
-    using namespace Rcpp ;
-
-    // function overloading requires some trickery
-    void (mfe_mmf_R::*build_ETU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, arma::mat tau_inp, bool need_norm_inp) = &mfe_mmf_R::build_ETU_R ;
-    void (mfe_mmf_R::*build_ETU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, arma::mat tau_inp, double sigma_inp, bool need_norm_inp) = &mfe_mmf_R::build_ETU_R ;
-
-    void (mfe_mmf_R::*build_LTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp) = &mfe_mmf_R::build_LTU_R ;
-    void (mfe_mmf_R::*build_LTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, double sigma_inp, bool need_norm_inp) = &mfe_mmf_R::build_LTU_R ;
-
-    void (mfe_mmf_R::*build_NTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp) = &mfe_mmf_R::build_NTU_R ;
-    void (mfe_mmf_R::*build_NTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, double sigma_inp, bool need_norm_inp) = &mfe_mmf_R::build_NTU_R ;
-
-    void (mfe_mmf_R::*build_TU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp) = &mfe_mmf_R::build_TU_R ;
-    void (mfe_mmf_R::*build_TU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, double sigma_inp, bool need_norm_inp) = &mfe_mmf_R::build_TU_R ;
-  
-    // now we can declare the class
-    class_<trame::mfe<trame::mmf>>( "mfe_mmf" )
-        .default_constructor()
-
-        // basic objects
-        .field( "ETU", &trame::mfe<trame::mmf>::ETU )
-        .field( "LTU", &trame::mfe<trame::mmf>::LTU )
-        .field( "NTU", &trame::mfe<trame::mmf>::NTU )
-        .field( "TU", &trame::mfe<trame::mmf>::TU )
-
-        .field( "need_norm", &trame::mfe<trame::mmf>::need_norm )
-        .field( "outsideOption", &trame::mfe<trame::mmf>::outsideOption )
-
-        .field( "nbX", &trame::mfe<trame::mmf>::nbX )
-        .field( "nbY", &trame::mfe<trame::mmf>::nbY )
-
-        // member functions
-        .method( "trans", &trame::mfe<trame::mmf>::trans )
-    ;
-
-    class_<mfe_mmf_R>( "mfe_mmf_R" )
-        .derives<trame::mfe<trame::mmf>>( "mfe_mmf" )
-        .default_constructor()
-
-        .method( "build_ETU", build_ETU_1 )
-        .method( "build_ETU", build_ETU_2 )
-        .method( "build_LTU", build_LTU_1 )
-        .method( "build_LTU", build_LTU_2 )
-        .method( "build_NTU", build_NTU_1 )
-        .method( "build_NTU", build_NTU_2 )
-        .method( "build_TU", build_TU_1 )
-        .method( "build_TU", build_TU_2 )
-        .method( "solve", &mfe_mmf_R::solve_R )
-    ;
 }

@@ -29,13 +29,61 @@
  * 08/08/2016
  */
 
+#include "trameR.hpp"
 
-//#define TRAME_RCPP_ARMADILLO
+RCPP_EXPOSED_CLASS(empirical_R)
+RCPP_EXPOSED_CLASS(none_R)
 
-#include "trame.hpp"
-#include "trame_R_modules.hpp"
+RCPP_MODULE(none_module)
+{
+    using namespace Rcpp ;
 
-// wrapper functions to catch errors and handle memory pointers (which Rcpp can't do)
+    // function overloading requires some trickery
+    SEXP (none_R::*G_1)(arma::vec) = &none_R::G_R ;
+    SEXP (none_R::*G_2)(arma::vec, arma::mat) = &none_R::G_R ;
+
+    SEXP (none_R::*Gstar_1)(arma::vec) = &none_R::Gstar_R ;
+    SEXP (none_R::*Gstar_2)(arma::vec, arma::mat) = &none_R::Gstar_R ;
+  
+    // now we can declare the class
+    class_<trame::none>( "none" )
+        .default_constructor()
+
+        // basic objects
+        .field( "nbX", &trame::none::nbX )
+        .field( "nbY", &trame::none::nbY )
+
+        .field( "nbParams", &trame::none::nbParams )
+
+        .field( "mu", &trame::none::mu )
+        .field( "U", &trame::none::U )
+
+        .field( "mu_sol", &trame::none::mu )
+        .field( "U_sol", &trame::none::U )
+
+        // read only objects
+        //.field_readonly( "", &trame::none:: )
+
+        // member functions
+        .method( "build", &trame::none::build )
+    ;
+
+    class_<none_R>( "none_R" )
+        .derives<trame::none>( "none" )
+        .default_constructor()
+
+        .method( "G", G_1 )
+        .method( "G", G_2 )
+        .method( "Gx", &none_R::Gx_R )
+        .method( "Gstar", Gstar_1 )
+        .method( "Gstar", Gstar_2 )
+        .method( "Gstarx", &none_R::Gstarx_R )
+        .method( "Gbar", &none_R::Gbar_R )
+        .method( "simul", &none_R::simul_R )
+    ;
+}
+
+// wrapper functions to catch errors and handle memory pointers
 SEXP none_R::G_R(arma::vec n)
 {
     try {
@@ -123,56 +171,4 @@ empirical_R none_R::simul_R(int nbDraws)
     empirical_R emp_R_obj = static_cast<empirical_R&>(emp_obj);
 
     return emp_R_obj;
-}
-
-RCPP_EXPOSED_CLASS(empirical_R)
-RCPP_EXPOSED_CLASS(none_R)
-
-RCPP_MODULE(none_module)
-{
-    using namespace Rcpp ;
-
-    // function overloading requires some trickery
-    SEXP (none_R::*G_1)(arma::vec) = &none_R::G_R ;
-    SEXP (none_R::*G_2)(arma::vec, arma::mat) = &none_R::G_R ;
-
-    SEXP (none_R::*Gstar_1)(arma::vec) = &none_R::Gstar_R ;
-    SEXP (none_R::*Gstar_2)(arma::vec, arma::mat) = &none_R::Gstar_R ;
-  
-    // now we can declare the class
-    class_<trame::none>( "none" )
-        .default_constructor()
-
-        // basic objects
-        .field( "nbX", &trame::none::nbX )
-        .field( "nbY", &trame::none::nbY )
-
-        .field( "nbParams", &trame::none::nbParams )
-
-        .field( "mu", &trame::none::mu )
-        .field( "U", &trame::none::U )
-
-        .field( "mu_sol", &trame::none::mu )
-        .field( "U_sol", &trame::none::U )
-
-        // read only objects
-        //.field_readonly( "", &trame::none:: )
-
-        // member functions
-        .method( "build", &trame::none::build )
-    ;
-
-    class_<none_R>( "none_R" )
-        .derives<trame::none>( "none" )
-        .default_constructor()
-
-        .method( "G", G_1 )
-        .method( "G", G_2 )
-        .method( "Gx", &none_R::Gx_R )
-        .method( "Gstar", Gstar_1 )
-        .method( "Gstar", Gstar_2 )
-        .method( "Gstarx", &none_R::Gstarx_R )
-        .method( "Gbar", &none_R::Gbar_R )
-        .method( "simul", &none_R::simul_R )
-    ;
 }

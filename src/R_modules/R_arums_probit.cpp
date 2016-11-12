@@ -29,19 +29,7 @@
  * 08/08/2016
  */
 
-//#define TRAME_RCPP_ARMADILLO
-
-#include "trame.hpp"
-#include "trame_R_modules.hpp"
-
-empirical_R probit_R::simul_R(int nbDraws)
-{
-    trame::empirical emp_obj = this->simul(&nbDraws,NULL);
-
-    empirical_R emp_R_obj = static_cast<empirical_R&>(emp_obj);
-
-    return emp_R_obj;
-}
+#include "trameR.hpp"
 
 RCPP_EXPOSED_CLASS(empirical_R)
 RCPP_EXPOSED_CLASS(probit_R)
@@ -88,4 +76,14 @@ RCPP_MODULE(probit_module)
 
         .method( "simul", &probit_R::simul_R )
     ;
+}
+
+// wrapper functions to catch errors and handle memory pointers
+empirical_R probit_R::simul_R(int nbDraws)
+{
+    trame::empirical emp_obj = this->simul(&nbDraws,NULL);
+
+    empirical_R emp_R_obj = static_cast<empirical_R&>(emp_obj);
+
+    return emp_R_obj;
 }

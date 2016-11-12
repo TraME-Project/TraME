@@ -32,12 +32,105 @@
  * 11/11/2016
  */
 
-//#define TRAME_RCPP_ARMADILLO
+#include "trameR.hpp"
 
-#include "trame.hpp"
-#include "../R_modules/trame_R_modules.hpp"
-#include "trame_R_markets.hpp"
+RCPP_EXPOSED_CLASS(empirical_R)
+RCPP_EXPOSED_CLASS(logit_R)
+RCPP_EXPOSED_CLASS(none_R)
+RCPP_EXPOSED_CLASS(probit_R)
+RCPP_EXPOSED_CLASS(rsc_R)
+RCPP_EXPOSED_CLASS(rusc_R)
+RCPP_EXPOSED_CLASS(transfers_R)
+RCPP_EXPOSED_CLASS(dse_empirical_R)
 
+RCPP_MODULE(dse_empirical_module)
+{
+    using namespace Rcpp ;
+
+    // function overloading requires some trickery
+    void (dse_empirical_R::*build_LTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R ;
+    void (dse_empirical_R::*build_LTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<logit_R> ;
+    void (dse_empirical_R::*build_LTU_3)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<none_R> ;
+    void (dse_empirical_R::*build_LTU_4)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, probit_R arums_G_inp, probit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<probit_R> ;
+    void (dse_empirical_R::*build_LTU_5)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<rsc_R> ;
+    void (dse_empirical_R::*build_LTU_6)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<rusc_R> ;
+    
+    void (dse_empirical_R::*build_NTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R ;
+    void (dse_empirical_R::*build_NTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<logit_R> ;
+    void (dse_empirical_R::*build_NTU_3)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<none_R> ;
+    void (dse_empirical_R::*build_NTU_4)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, probit_R arums_G_inp, probit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<probit_R> ;
+    void (dse_empirical_R::*build_NTU_5)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<rsc_R> ;
+    void (dse_empirical_R::*build_NTU_6)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<rusc_R> ;
+    
+    void (dse_empirical_R::*build_TU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R ;
+    void (dse_empirical_R::*build_TU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<logit_R> ;
+    void (dse_empirical_R::*build_TU_3)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<none_R> ;
+    void (dse_empirical_R::*build_TU_4)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, probit_R arums_G_inp, probit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<probit_R> ;
+    void (dse_empirical_R::*build_TU_5)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<rsc_R> ;
+    void (dse_empirical_R::*build_TU_6)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<rusc_R> ;
+    
+    //SEXP (dse_empirical_R::*solve_R_1)() = &dse_empirical_R::solve_R ;
+    SEXP (dse_empirical_R::*solve_R_2)(Rcpp::CharacterVector solver_inp) = &dse_empirical_R::solve_R ;
+
+    // now we can declare the class
+    class_<trame::dse<trame::empirical>>( "dse_empirical" )
+        .default_constructor()
+
+        // basic objects
+        .field( "LTU", &trame::dse<trame::empirical>::LTU )
+        .field( "NTU", &trame::dse<trame::empirical>::NTU )
+        .field( "TU", &trame::dse<trame::empirical>::TU )
+
+        .field( "need_norm", &trame::dse<trame::empirical>::need_norm )
+        .field( "outsideOption", &trame::dse<trame::empirical>::outsideOption )
+
+        .field( "nbX", &trame::dse<trame::empirical>::nbX )
+        .field( "nbY", &trame::dse<trame::empirical>::nbY )
+
+        // member functions
+        .method( "trans", &trame::dse<trame::empirical>::trans )
+    ;
+
+    class_<dse_empirical_R>( "dse_empirical_R" )
+        .derives<trame::dse<trame::empirical>>( "dse_empirical" )
+        .default_constructor()
+
+        .method( "build_LTU", build_LTU_1 )
+        .method( "build_LTU", build_LTU_2 )
+        .method( "build_LTU", build_LTU_3 )
+        .method( "build_LTU", build_LTU_4 )
+        .method( "build_LTU", build_LTU_5 )
+        .method( "build_LTU", build_LTU_6 )
+
+        .method( "build_NTU", build_NTU_1 )
+        .method( "build_NTU", build_NTU_2 )
+        .method( "build_NTU", build_NTU_3 )
+        .method( "build_NTU", build_NTU_4 )
+        .method( "build_NTU", build_NTU_5 )
+        .method( "build_NTU", build_NTU_6 )
+
+        .method( "build_TU", build_TU_1 )
+        .method( "build_TU", build_TU_2 )
+        .method( "build_TU", build_TU_3 )
+        .method( "build_TU", build_TU_4 )
+        .method( "build_TU", build_TU_5 )
+        .method( "build_TU", build_TU_6 )
+
+        //.method( "solve", solve_R_1 )
+        .method( "solve", solve_R_2 )
+
+        .method( "get_arums_G", &dse_empirical_R::get_arums_G )
+        .method( "set_arums_G", &dse_empirical_R::set_arums_G )
+        .method( "get_arums_H", &dse_empirical_R::get_arums_H )
+        .method( "set_arums_H", &dse_empirical_R::set_arums_H )
+        .method( "set_arums", &dse_empirical_R::set_arums )
+
+        .method( "get_transfers", &dse_empirical_R::get_transfers_R )
+        .method( "set_transfers", &dse_empirical_R::set_transfers_R )
+    ;
+}
+
+// wrapper functions to catch errors and handle memory pointers
 void dse_empirical_R::build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp)
 {
     try {
@@ -166,100 +259,4 @@ void dse_empirical_R::set_transfers_R(transfers_R trans_obj_inp)
     } catch(...) {
         ::Rf_error( "trame: C++ exception (unknown reason)" );
     }
-}
-
-RCPP_EXPOSED_CLASS(empirical_R)
-RCPP_EXPOSED_CLASS(logit_R)
-RCPP_EXPOSED_CLASS(none_R)
-RCPP_EXPOSED_CLASS(probit_R)
-RCPP_EXPOSED_CLASS(rsc_R)
-RCPP_EXPOSED_CLASS(rusc_R)
-RCPP_EXPOSED_CLASS(transfers_R)
-RCPP_EXPOSED_CLASS(dse_empirical_R)
-
-RCPP_MODULE(dse_empirical_module)
-{
-    using namespace Rcpp ;
-
-    // function overloading requires some trickery
-    void (dse_empirical_R::*build_LTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R ;
-    void (dse_empirical_R::*build_LTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<logit_R> ;
-    void (dse_empirical_R::*build_LTU_3)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<none_R> ;
-    void (dse_empirical_R::*build_LTU_4)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, probit_R arums_G_inp, probit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<probit_R> ;
-    void (dse_empirical_R::*build_LTU_5)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<rsc_R> ;
-    void (dse_empirical_R::*build_LTU_6)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<rusc_R> ;
-    
-    void (dse_empirical_R::*build_NTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R ;
-    void (dse_empirical_R::*build_NTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<logit_R> ;
-    void (dse_empirical_R::*build_NTU_3)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<none_R> ;
-    void (dse_empirical_R::*build_NTU_4)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, probit_R arums_G_inp, probit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<probit_R> ;
-    void (dse_empirical_R::*build_NTU_5)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<rsc_R> ;
-    void (dse_empirical_R::*build_NTU_6)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<rusc_R> ;
-    
-    void (dse_empirical_R::*build_TU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R ;
-    void (dse_empirical_R::*build_TU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<logit_R> ;
-    void (dse_empirical_R::*build_TU_3)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<none_R> ;
-    void (dse_empirical_R::*build_TU_4)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, probit_R arums_G_inp, probit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<probit_R> ;
-    void (dse_empirical_R::*build_TU_5)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<rsc_R> ;
-    void (dse_empirical_R::*build_TU_6)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<rusc_R> ;
-    
-    //SEXP (dse_empirical_R::*solve_R_1)() = &dse_empirical_R::solve_R ;
-    SEXP (dse_empirical_R::*solve_R_2)(Rcpp::CharacterVector solver_inp) = &dse_empirical_R::solve_R ;
-
-    // now we can declare the class
-    class_<trame::dse<trame::empirical>>( "dse_empirical" )
-        .default_constructor()
-
-        // basic objects
-        .field( "LTU", &trame::dse<trame::empirical>::LTU )
-        .field( "NTU", &trame::dse<trame::empirical>::NTU )
-        .field( "TU", &trame::dse<trame::empirical>::TU )
-
-        .field( "need_norm", &trame::dse<trame::empirical>::need_norm )
-        .field( "outsideOption", &trame::dse<trame::empirical>::outsideOption )
-
-        .field( "nbX", &trame::dse<trame::empirical>::nbX )
-        .field( "nbY", &trame::dse<trame::empirical>::nbY )
-
-        // member functions
-        .method( "trans", &trame::dse<trame::empirical>::trans )
-    ;
-
-    class_<dse_empirical_R>( "dse_empirical_R" )
-        .derives<trame::dse<trame::empirical>>( "dse_empirical" )
-        .default_constructor()
-
-        .method( "build_LTU", build_LTU_1 )
-        .method( "build_LTU", build_LTU_2 )
-        .method( "build_LTU", build_LTU_3 )
-        .method( "build_LTU", build_LTU_4 )
-        .method( "build_LTU", build_LTU_5 )
-        .method( "build_LTU", build_LTU_6 )
-
-        .method( "build_NTU", build_NTU_1 )
-        .method( "build_NTU", build_NTU_2 )
-        .method( "build_NTU", build_NTU_3 )
-        .method( "build_NTU", build_NTU_4 )
-        .method( "build_NTU", build_NTU_5 )
-        .method( "build_NTU", build_NTU_6 )
-
-        .method( "build_TU", build_TU_1 )
-        .method( "build_TU", build_TU_2 )
-        .method( "build_TU", build_TU_3 )
-        .method( "build_TU", build_TU_4 )
-        .method( "build_TU", build_TU_5 )
-        .method( "build_TU", build_TU_6 )
-
-        //.method( "solve", solve_R_1 )
-        .method( "solve", solve_R_2 )
-
-        .method( "get_arums_G", &dse_empirical_R::get_arums_G )
-        .method( "set_arums_G", &dse_empirical_R::set_arums_G )
-        .method( "get_arums_H", &dse_empirical_R::get_arums_H )
-        .method( "set_arums_H", &dse_empirical_R::set_arums_H )
-        .method( "set_arums", &dse_empirical_R::set_arums )
-
-        .method( "get_transfers", &dse_empirical_R::get_transfers_R )
-        .method( "set_transfers", &dse_empirical_R::set_transfers_R )
-    ;
 }

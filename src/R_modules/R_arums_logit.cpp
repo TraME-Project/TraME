@@ -29,12 +29,65 @@
  * 09/06/2016
  */
 
-//#define TRAME_RCPP_ARMADILLO
+#include "trameR.hpp"
 
-#include "trame.hpp"
-#include "trame_R_modules.hpp"
+RCPP_EXPOSED_CLASS(empirical_R)
+RCPP_EXPOSED_CLASS(logit_R)
 
-// wrapper functions to catch errors and handle memory pointers (which Rcpp can't do)
+RCPP_MODULE(logit_module)
+{
+    using namespace Rcpp ;
+
+    // function overloading requires some trickery
+    void (trame::logit::*build_1)(int, int) = &trame::logit::build ;
+    void (trame::logit::*build_2)(int, int, double, bool) = &trame::logit::build ;
+
+    SEXP (logit_R::*G_1)(arma::vec) = &logit_R::G_R ;
+    SEXP (logit_R::*G_2)(arma::vec, arma::mat) = &logit_R::G_R ;
+
+    SEXP (logit_R::*Gstar_1)(arma::vec) = &logit_R::Gstar_R ;
+    SEXP (logit_R::*Gstar_2)(arma::vec, arma::mat) = &logit_R::Gstar_R ;
+
+    // now we can declare the class
+    class_<trame::logit>( "logit" )
+        .default_constructor()
+
+        // basic objects
+        .field( "nbX", &trame::logit::nbX )
+        .field( "nbY", &trame::logit::nbY )
+
+        .field( "nbParams", &trame::logit::nbParams )
+        .field( "sigma", &trame::logit::sigma )
+        .field( "outsideOption", &trame::logit::outsideOption )
+
+        .field( "U", &trame::logit::U )
+        .field( "mu", &trame::logit::mu )
+
+        .field( "U_sol", &trame::logit::U_sol )
+        .field( "mu_sol", &trame::logit::mu_sol )
+
+        // read only objects
+        //.field_readonly( "", &trame::logit:: )
+
+        // member functions
+        .method( "build", build_1 )
+        .method( "build", build_2 )
+    ;
+
+    class_<logit_R>( "logit_R" )
+        .derives<trame::logit>( "logit" )
+        .default_constructor()
+
+        .method( "G", G_1 )
+        .method( "G", G_2 )
+        .method( "Gstar", Gstar_1 )
+        .method( "Gstar", Gstar_2 )
+        .method( "Gbar", &logit_R::Gbar_R )
+        .method( "simul", &logit_R::simul_R )
+    ;
+}
+
+// wrapper functions to catch errors and handle memory pointers
 SEXP logit_R::G_R(arma::vec n)
 {
     try {
@@ -115,60 +168,4 @@ empirical_R logit_R::simul_R(int nbDraws)
     empirical_R emp_R_obj = static_cast<empirical_R&>(emp_obj);
 
     return emp_R_obj;
-}
-
-RCPP_EXPOSED_CLASS(empirical_R)
-RCPP_EXPOSED_CLASS(logit_R)
-
-RCPP_MODULE(logit_module)
-{
-    using namespace Rcpp ;
-
-    // function overloading requires some trickery
-    void (trame::logit::*build_1)(int, int) = &trame::logit::build ;
-    void (trame::logit::*build_2)(int, int, double, bool) = &trame::logit::build ;
-
-    SEXP (logit_R::*G_1)(arma::vec) = &logit_R::G_R ;
-    SEXP (logit_R::*G_2)(arma::vec, arma::mat) = &logit_R::G_R ;
-
-    SEXP (logit_R::*Gstar_1)(arma::vec) = &logit_R::Gstar_R ;
-    SEXP (logit_R::*Gstar_2)(arma::vec, arma::mat) = &logit_R::Gstar_R ;
-
-    // now we can declare the class
-    class_<trame::logit>( "logit" )
-        .default_constructor()
-
-        // basic objects
-        .field( "nbX", &trame::logit::nbX )
-        .field( "nbY", &trame::logit::nbY )
-
-        .field( "nbParams", &trame::logit::nbParams )
-        .field( "sigma", &trame::logit::sigma )
-        .field( "outsideOption", &trame::logit::outsideOption )
-
-        .field( "U", &trame::logit::U )
-        .field( "mu", &trame::logit::mu )
-
-        .field( "U_sol", &trame::logit::U_sol )
-        .field( "mu_sol", &trame::logit::mu_sol )
-
-        // read only objects
-        //.field_readonly( "", &trame::logit:: )
-
-        // member functions
-        .method( "build", build_1 )
-        .method( "build", build_2 )
-    ;
-
-    class_<logit_R>( "logit_R" )
-        .derives<trame::logit>( "logit" )
-        .default_constructor()
-
-        .method( "G", G_1 )
-        .method( "G", G_2 )
-        .method( "Gstar", Gstar_1 )
-        .method( "Gstar", Gstar_2 )
-        .method( "Gbar", &logit_R::Gbar_R )
-        .method( "simul", &logit_R::simul_R )
-    ;
 }

@@ -29,12 +29,64 @@
  * 08/08/2016
  */
 
-//#define TRAME_RCPP_ARMADILLO
+#include "trameR.hpp"
 
-#include "trame.hpp"
-#include "trame_R_modules.hpp"
+RCPP_EXPOSED_CLASS(empirical_R)
+RCPP_EXPOSED_CLASS(rusc_R)
 
-// wrapper functions to catch errors and handle memory pointers (which Rcpp can't do)
+RCPP_MODULE(rusc_module)
+{
+    using namespace Rcpp ;
+
+    // function overloading requires some trickery
+    SEXP (rusc_R::*G_1)(arma::vec) = &rusc_R::G_R ;
+    SEXP (rusc_R::*G_2)(arma::vec, arma::mat) = &rusc_R::G_R ;
+
+    SEXP (rusc_R::*Gstar_1)(arma::vec) = &rusc_R::Gstar_R ;
+    SEXP (rusc_R::*Gstar_2)(arma::vec, arma::mat) = &rusc_R::Gstar_R ;
+  
+    // now we can declare the class
+    class_<trame::rusc>( "rusc" )
+        .default_constructor()
+
+        // basic objects
+        .field( "nbX", &trame::rusc::nbX )
+        .field( "nbY", &trame::rusc::nbY )
+
+        .field( "nbParams", &trame::rusc::nbParams )
+        .field( "outsideOption", &trame::rusc::outsideOption )
+
+        .field( "zeta", &trame::rusc::zeta )
+
+        .field( "U", &trame::rusc::U )
+        .field( "mu", &trame::rusc::mu )
+
+        .field( "U_sol", &trame::rusc::U_sol )
+        .field( "mu_sol", &trame::rusc::mu_sol )
+
+        // read only objects
+        .field_readonly( "aux_ord", &trame::rusc::aux_ord )
+
+        // member functions
+        .method( "build", &trame::rusc::build )
+    ;
+
+    class_<rusc_R>( "rusc_R" )
+        .derives<trame::rusc>( "rusc" )
+        .default_constructor()
+
+        .method( "G", G_1 )
+        .method( "G", G_2 )
+        .method( "Gx", &rusc_R::Gx_R )
+        .method( "Gstar", Gstar_1 )
+        .method( "Gstar", Gstar_2 )
+        .method( "Gstarx", &rusc_R::Gstarx_R )
+        .method( "Gbar", &rusc_R::Gbar_R )
+        .method( "simul", &rusc_R::simul_R )
+    ;
+}
+
+// wrapper functions to catch errors and handle memory pointers
 SEXP rusc_R::G_R(arma::vec n)
 {
     try {
@@ -145,59 +197,4 @@ empirical_R rusc_R::simul_R(int nbDraws)
     empirical_R emp_R_obj = static_cast<empirical_R&>(emp_obj);
 
     return emp_R_obj;
-}
-
-RCPP_EXPOSED_CLASS(empirical_R)
-RCPP_EXPOSED_CLASS(rusc_R)
-
-RCPP_MODULE(rusc_module)
-{
-    using namespace Rcpp ;
-
-    // function overloading requires some trickery
-    SEXP (rusc_R::*G_1)(arma::vec) = &rusc_R::G_R ;
-    SEXP (rusc_R::*G_2)(arma::vec, arma::mat) = &rusc_R::G_R ;
-
-    SEXP (rusc_R::*Gstar_1)(arma::vec) = &rusc_R::Gstar_R ;
-    SEXP (rusc_R::*Gstar_2)(arma::vec, arma::mat) = &rusc_R::Gstar_R ;
-  
-    // now we can declare the class
-    class_<trame::rusc>( "rusc" )
-        .default_constructor()
-
-        // basic objects
-        .field( "nbX", &trame::rusc::nbX )
-        .field( "nbY", &trame::rusc::nbY )
-
-        .field( "nbParams", &trame::rusc::nbParams )
-        .field( "outsideOption", &trame::rusc::outsideOption )
-
-        .field( "zeta", &trame::rusc::zeta )
-
-        .field( "U", &trame::rusc::U )
-        .field( "mu", &trame::rusc::mu )
-
-        .field( "U_sol", &trame::rusc::U_sol )
-        .field( "mu_sol", &trame::rusc::mu_sol )
-
-        // read only objects
-        .field_readonly( "aux_ord", &trame::rusc::aux_ord )
-
-        // member functions
-        .method( "build", &trame::rusc::build )
-    ;
-
-    class_<rusc_R>( "rusc_R" )
-        .derives<trame::rusc>( "rusc" )
-        .default_constructor()
-
-        .method( "G", G_1 )
-        .method( "G", G_2 )
-        .method( "Gx", &rusc_R::Gx_R )
-        .method( "Gstar", Gstar_1 )
-        .method( "Gstar", Gstar_2 )
-        .method( "Gstarx", &rusc_R::Gstarx_R )
-        .method( "Gbar", &rusc_R::Gbar_R )
-        .method( "simul", &rusc_R::simul_R )
-    ;
 }

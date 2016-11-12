@@ -2,7 +2,7 @@
 CXX_STD = CXX11
 
 #PKG_CPPFLAGS= -Wall -O2 @TRAME_INCLUDE_PATH@
-PKG_CPPFLAGS= -std=c++11 -Wall -O2 -DTRAME_RCPP_ARMADILLO -I./trame/headers
+PKG_CPPFLAGS= -std=c++11 -Wall -O2 -DTRAME_RCPP_ARMADILLO -I./ -I./trame/headers
 PKG_LIBS= -L./trame/ -ltrame $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 #PKG_LIBS= -L./trame/ -ltrame -framework Accelerate
 

@@ -29,12 +29,71 @@
  * 08/08/2016
  */
 
-//#define TRAME_RCPP_ARMADILLO
+#include "trameR.hpp"
 
-#include "trame.hpp"
-#include "trame_R_modules.hpp"
+RCPP_EXPOSED_CLASS(empirical_R)
+RCPP_EXPOSED_CLASS(rsc_R)
 
-// wrapper functions to catch errors and handle memory pointers (which Rcpp can't do)
+RCPP_MODULE(rsc_module)
+{
+    using namespace Rcpp ;
+
+    // function overloading requires some trickery
+    SEXP (rsc_R::*G_1)(arma::vec) = &rsc_R::G_R ;
+    SEXP (rsc_R::*G_2)(arma::vec, arma::mat) = &rsc_R::G_R ;
+
+    SEXP (rsc_R::*Gstar_1)(arma::vec) = &rsc_R::Gstar_R ;
+    SEXP (rsc_R::*Gstar_2)(arma::vec, arma::mat) = &rsc_R::Gstar_R ;
+  
+    // now we can declare the class
+    class_<trame::rsc>( "rsc" )
+        .default_constructor()
+
+        // basic objects
+        .field( "nbX", &trame::rsc::nbX )
+        .field( "nbY", &trame::rsc::nbY )
+
+        .field( "nbParams", &trame::rsc::nbParams )
+        .field( "outsideOption", &trame::rsc::outsideOption )
+
+        .field( "zeta", &trame::rsc::zeta )
+
+        .field( "U", &trame::rsc::U )
+        .field( "mu", &trame::rsc::mu )
+
+        .field( "U_sol", &trame::rsc::U_sol )
+        .field( "mu_sol", &trame::rsc::mu_sol )
+
+        // read only objects
+        .field_readonly( "aux_ord", &trame::rsc::aux_ord )
+
+        .field_readonly( "aux_Influence_lhs", &trame::rsc::aux_Influence_lhs )
+        .field_readonly( "aux_Influence_rhs", &trame::rsc::aux_Influence_rhs )
+
+        .field_readonly( "aux_DinvPsigma", &trame::rsc::aux_DinvPsigma )
+        .field_readonly( "aux_Psigma", &trame::rsc::aux_Psigma )
+
+        // member functions
+        .method( "build", &trame::rsc::build )
+        .method( "build_beta", &trame::rsc::build_beta )
+    ;
+
+    class_<rsc_R>( "rsc_R" )
+        .derives<trame::rsc>( "rsc" )
+        .default_constructor()
+
+        .method( "G", G_1 )
+        .method( "G", G_2 )
+        .method( "Gx", &rsc_R::Gx_R )
+        .method( "Gstar", Gstar_1 )
+        .method( "Gstar", Gstar_2 )
+        .method( "Gstarx", &rsc_R::Gstarx_R )
+        .method( "Gbar", &rsc_R::Gbar_R )
+        .method( "simul", &rsc_R::simul_R )
+    ;
+}
+
+// wrapper functions to catch errors and handle memory pointers
 SEXP rsc_R::G_R(arma::vec n)
 {
     try {
@@ -145,66 +204,4 @@ empirical_R rsc_R::simul_R(int nbDraws)
     empirical_R emp_R_obj = static_cast<empirical_R&>(emp_obj);
 
     return emp_R_obj;
-}
-
-RCPP_EXPOSED_CLASS(empirical_R)
-RCPP_EXPOSED_CLASS(rsc_R)
-
-RCPP_MODULE(rsc_module)
-{
-    using namespace Rcpp ;
-
-    // function overloading requires some trickery
-    SEXP (rsc_R::*G_1)(arma::vec) = &rsc_R::G_R ;
-    SEXP (rsc_R::*G_2)(arma::vec, arma::mat) = &rsc_R::G_R ;
-
-    SEXP (rsc_R::*Gstar_1)(arma::vec) = &rsc_R::Gstar_R ;
-    SEXP (rsc_R::*Gstar_2)(arma::vec, arma::mat) = &rsc_R::Gstar_R ;
-  
-    // now we can declare the class
-    class_<trame::rsc>( "rsc" )
-        .default_constructor()
-
-        // basic objects
-        .field( "nbX", &trame::rsc::nbX )
-        .field( "nbY", &trame::rsc::nbY )
-
-        .field( "nbParams", &trame::rsc::nbParams )
-        .field( "outsideOption", &trame::rsc::outsideOption )
-
-        .field( "zeta", &trame::rsc::zeta )
-
-        .field( "U", &trame::rsc::U )
-        .field( "mu", &trame::rsc::mu )
-
-        .field( "U_sol", &trame::rsc::U_sol )
-        .field( "mu_sol", &trame::rsc::mu_sol )
-
-        // read only objects
-        .field_readonly( "aux_ord", &trame::rsc::aux_ord )
-
-        .field_readonly( "aux_Influence_lhs", &trame::rsc::aux_Influence_lhs )
-        .field_readonly( "aux_Influence_rhs", &trame::rsc::aux_Influence_rhs )
-
-        .field_readonly( "aux_DinvPsigma", &trame::rsc::aux_DinvPsigma )
-        .field_readonly( "aux_Psigma", &trame::rsc::aux_Psigma )
-
-        // member functions
-        .method( "build", &trame::rsc::build )
-        .method( "build_beta", &trame::rsc::build_beta )
-    ;
-
-    class_<rsc_R>( "rsc_R" )
-        .derives<trame::rsc>( "rsc" )
-        .default_constructor()
-
-        .method( "G", G_1 )
-        .method( "G", G_2 )
-        .method( "Gx", &rsc_R::Gx_R )
-        .method( "Gstar", Gstar_1 )
-        .method( "Gstar", Gstar_2 )
-        .method( "Gstarx", &rsc_R::Gstarx_R )
-        .method( "Gbar", &rsc_R::Gbar_R )
-        .method( "simul", &rsc_R::simul_R )
-    ;
 }

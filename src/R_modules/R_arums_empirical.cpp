@@ -29,12 +29,64 @@
  * 09/06/2016
  */
 
-//#define TRAME_RCPP_ARMADILLO
+#include "trameR.hpp"
 
-#include "trame.hpp"
-#include "trame_R_modules.hpp"
+RCPP_MODULE(empirical_module)
+{
+    using namespace Rcpp ;
 
-// wrapper functions to catch errors and handle memory pointers (which Rcpp can't do)
+    // function overloading requires some trickery
+    SEXP (empirical_R::*G_1)(arma::vec) = &empirical_R::G_R ;
+    SEXP (empirical_R::*G_2)(arma::vec, arma::mat) = &empirical_R::G_R ;
+
+    SEXP (empirical_R::*Gstar_1)(arma::vec) = &empirical_R::Gstar_R ;
+    SEXP (empirical_R::*Gstar_2)(arma::vec, arma::mat) = &empirical_R::Gstar_R ;
+    
+    // now we can declare the class
+    class_<trame::empirical>( "empirical" )
+        .default_constructor()
+
+        // basic objects
+        .field( "nbX", &trame::empirical::nbX )
+        .field( "nbY", &trame::empirical::nbY )
+
+        .field( "nbParams", &trame::empirical::nbParams )
+        .field( "aux_nbDraws", &trame::empirical::aux_nbDraws )
+        .field( "nbOptions", &trame::empirical::nbOptions )
+
+        .field( "xHomogenous", &trame::empirical::xHomogenous )
+        .field( "outsideOption", &trame::empirical::outsideOption )
+
+        .field( "atoms", &trame::empirical::atoms )
+
+        .field( "U", &trame::empirical::U )
+        .field( "mu", &trame::empirical::mu )
+
+        .field( "U_sol", &trame::empirical::U_sol )
+        .field( "mu_sol", &trame::empirical::mu_sol )
+
+        // read only objects
+        //.field_readonly( "k_Gstar", &empirical::k_Gstar )
+
+        // member functions
+        .method( "build", &trame::empirical::build )
+    ;
+
+    class_<empirical_R>( "empirical_R" )
+        .derives<trame::empirical>( "empirical" )
+        .default_constructor()
+
+        .method( "G", G_1 )
+        .method( "G", G_2 )
+        .method( "Gx", &empirical_R::Gx_R )
+        .method( "Gstar", Gstar_1 )
+        .method( "Gstar", Gstar_2 )
+        .method( "Gstarx", &empirical_R::Gstarx_R )
+        .method( "Gbar", &empirical_R::Gbar_R )
+    ;
+}
+
+// wrapper functions to catch errors and handle memory pointers
 SEXP empirical_R::G_R(arma::vec n)
 {
     try {
@@ -136,59 +188,4 @@ SEXP empirical_R::Gbar_R(arma::mat U_bar, arma::mat mu_bar, arma::vec n)
         ::Rf_error( "trame: C++ exception (unknown reason)" );
 	}
     return R_NilValue;
-}
-
-RCPP_MODULE(empirical_module)
-{
-    using namespace Rcpp ;
-
-    // function overloading requires some trickery
-    SEXP (empirical_R::*G_1)(arma::vec) = &empirical_R::G_R ;
-    SEXP (empirical_R::*G_2)(arma::vec, arma::mat) = &empirical_R::G_R ;
-
-    SEXP (empirical_R::*Gstar_1)(arma::vec) = &empirical_R::Gstar_R ;
-    SEXP (empirical_R::*Gstar_2)(arma::vec, arma::mat) = &empirical_R::Gstar_R ;
-    
-    // now we can declare the class
-    class_<trame::empirical>( "empirical" )
-        .default_constructor()
-
-        // basic objects
-        .field( "nbX", &trame::empirical::nbX )
-        .field( "nbY", &trame::empirical::nbY )
-
-        .field( "nbParams", &trame::empirical::nbParams )
-        .field( "aux_nbDraws", &trame::empirical::aux_nbDraws )
-        .field( "nbOptions", &trame::empirical::nbOptions )
-
-        .field( "xHomogenous", &trame::empirical::xHomogenous )
-        .field( "outsideOption", &trame::empirical::outsideOption )
-
-        .field( "atoms", &trame::empirical::atoms )
-
-        .field( "U", &trame::empirical::U )
-        .field( "mu", &trame::empirical::mu )
-
-        .field( "U_sol", &trame::empirical::U_sol )
-        .field( "mu_sol", &trame::empirical::mu_sol )
-
-        // read only objects
-        //.field_readonly( "k_Gstar", &empirical::k_Gstar )
-
-        // member functions
-        .method( "build", &trame::empirical::build )
-    ;
-
-    class_<empirical_R>( "empirical_R" )
-        .derives<trame::empirical>( "empirical" )
-        .default_constructor()
-
-        .method( "G", G_1 )
-        .method( "G", G_2 )
-        .method( "Gx", &empirical_R::Gx_R )
-        .method( "Gstar", Gstar_1 )
-        .method( "Gstar", Gstar_2 )
-        .method( "Gstarx", &empirical_R::Gstarx_R )
-        .method( "Gbar", &empirical_R::Gbar_R )
-    ;
 }

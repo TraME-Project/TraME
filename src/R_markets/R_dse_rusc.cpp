@@ -29,12 +29,74 @@
  * 11/11/2016
  */
 
-//#define TRAME_RCPP_ARMADILLO
+#include "trameR.hpp"
 
-#include "trame.hpp"
-#include "../R_modules/trame_R_modules.hpp"
-#include "trame_R_markets.hpp"
+RCPP_EXPOSED_CLASS(rusc_R)
+RCPP_EXPOSED_CLASS(transfers_R)
+RCPP_EXPOSED_CLASS(dse_rusc_R)
 
+RCPP_MODULE(dse_rusc_module)
+{
+    using namespace Rcpp ;
+
+    // function overloading requires some trickery
+    void (dse_rusc_R::*build_LTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_rusc_R::build_LTU_R ;
+    void (dse_rusc_R::*build_LTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_rusc_R::build_LTU_R ;
+    
+    void (dse_rusc_R::*build_NTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp) = &dse_rusc_R::build_NTU_R ;
+    void (dse_rusc_R::*build_NTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_rusc_R::build_NTU_R ;
+    
+    void (dse_rusc_R::*build_TU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_rusc_R::build_TU_R ;
+    void (dse_rusc_R::*build_TU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_rusc_R::build_TU_R ;
+    
+    //SEXP (dse_rusc_R::*solve_R_1)() = &dse_rusc_R::solve_R ;
+    SEXP (dse_rusc_R::*solve_R_2)(Rcpp::CharacterVector solver_inp) = &dse_rusc_R::solve_R ;
+
+    // now we can declare the class
+    class_<trame::dse<trame::rusc>>( "dse_rusc" )
+        .default_constructor()
+
+        // basic objects
+        .field( "LTU", &trame::dse<trame::rusc>::LTU )
+        .field( "NTU", &trame::dse<trame::rusc>::NTU )
+        .field( "TU", &trame::dse<trame::rusc>::TU )
+
+        .field( "need_norm", &trame::dse<trame::rusc>::need_norm )
+        .field( "outsideOption", &trame::dse<trame::rusc>::outsideOption )
+
+        .field( "nbX", &trame::dse<trame::rusc>::nbX )
+        .field( "nbY", &trame::dse<trame::rusc>::nbY )
+
+        // member functions
+        .method( "trans", &trame::dse<trame::rusc>::trans )
+    ;
+
+    class_<dse_rusc_R>( "dse_rusc_R" )
+        .derives<trame::dse<trame::rusc>>( "dse_rusc" )
+        .default_constructor()
+
+        .method( "build_LTU", build_LTU_1 )
+        .method( "build_LTU", build_LTU_2 )
+        .method( "build_NTU", build_NTU_1 )
+        .method( "build_NTU", build_NTU_2 )
+        .method( "build_TU", build_TU_1 )
+        .method( "build_TU", build_TU_2 )
+
+        //.method( "solve", solve_R_1 )
+        .method( "solve", solve_R_2 )
+
+        .method( "get_arums_G", &dse_rusc_R::get_arums_G )
+        .method( "set_arums_G", &dse_rusc_R::set_arums_G )
+        .method( "get_arums_H", &dse_rusc_R::get_arums_H )
+        .method( "set_arums_H", &dse_rusc_R::set_arums_H )
+        .method( "set_arums", &dse_rusc_R::set_arums )
+
+        .method( "get_transfers", &dse_rusc_R::get_transfers_R )
+        .method( "set_transfers", &dse_rusc_R::set_transfers_R )
+    ;
+}
+
+// wrapper functions to catch errors and handle memory pointers
 void dse_rusc_R::build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp)
 {
     try {
@@ -217,69 +279,4 @@ void dse_rusc_R::set_transfers_R(transfers_R trans_obj_inp)
     } catch(...) {
         ::Rf_error( "trame: C++ exception (unknown reason)" );
     }
-}
-
-RCPP_EXPOSED_CLASS(rusc_R)
-RCPP_EXPOSED_CLASS(transfers_R)
-RCPP_EXPOSED_CLASS(dse_rusc_R)
-
-RCPP_MODULE(dse_rusc_module)
-{
-    using namespace Rcpp ;
-
-    // function overloading requires some trickery
-    void (dse_rusc_R::*build_LTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_rusc_R::build_LTU_R ;
-    void (dse_rusc_R::*build_LTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_rusc_R::build_LTU_R ;
-    
-    void (dse_rusc_R::*build_NTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp) = &dse_rusc_R::build_NTU_R ;
-    void (dse_rusc_R::*build_NTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_rusc_R::build_NTU_R ;
-    
-    void (dse_rusc_R::*build_TU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_rusc_R::build_TU_R ;
-    void (dse_rusc_R::*build_TU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_rusc_R::build_TU_R ;
-    
-    //SEXP (dse_rusc_R::*solve_R_1)() = &dse_rusc_R::solve_R ;
-    SEXP (dse_rusc_R::*solve_R_2)(Rcpp::CharacterVector solver_inp) = &dse_rusc_R::solve_R ;
-
-    // now we can declare the class
-    class_<trame::dse<trame::rusc>>( "dse_rusc" )
-        .default_constructor()
-
-        // basic objects
-        .field( "LTU", &trame::dse<trame::rusc>::LTU )
-        .field( "NTU", &trame::dse<trame::rusc>::NTU )
-        .field( "TU", &trame::dse<trame::rusc>::TU )
-
-        .field( "need_norm", &trame::dse<trame::rusc>::need_norm )
-        .field( "outsideOption", &trame::dse<trame::rusc>::outsideOption )
-
-        .field( "nbX", &trame::dse<trame::rusc>::nbX )
-        .field( "nbY", &trame::dse<trame::rusc>::nbY )
-
-        // member functions
-        .method( "trans", &trame::dse<trame::rusc>::trans )
-    ;
-
-    class_<dse_rusc_R>( "dse_rusc_R" )
-        .derives<trame::dse<trame::rusc>>( "dse_rusc" )
-        .default_constructor()
-
-        .method( "build_LTU", build_LTU_1 )
-        .method( "build_LTU", build_LTU_2 )
-        .method( "build_NTU", build_NTU_1 )
-        .method( "build_NTU", build_NTU_2 )
-        .method( "build_TU", build_TU_1 )
-        .method( "build_TU", build_TU_2 )
-
-        //.method( "solve", solve_R_1 )
-        .method( "solve", solve_R_2 )
-
-        .method( "get_arums_G", &dse_rusc_R::get_arums_G )
-        .method( "set_arums_G", &dse_rusc_R::set_arums_G )
-        .method( "get_arums_H", &dse_rusc_R::get_arums_H )
-        .method( "set_arums_H", &dse_rusc_R::set_arums_H )
-        .method( "set_arums", &dse_rusc_R::set_arums )
-
-        .method( "get_transfers", &dse_rusc_R::get_transfers_R )
-        .method( "set_transfers", &dse_rusc_R::set_transfers_R )
-    ;
 }

@@ -32,11 +32,73 @@
  * 11/10/2016
  */
 
-//#define TRAME_RCPP_ARMADILLO
+#include "trameR.hpp"
 
-#include "trame.hpp"
-#include "../R_modules/trame_R_modules.hpp"
-#include "trame_R_markets.hpp"
+RCPP_MODULE(transfers_module)
+{
+    using namespace Rcpp ;
+
+    // function overloading requires some trickery
+    SEXP (transfers_R::*Psi_1)(arma::mat, arma::mat) = &transfers_R::Psi_R ;
+    SEXP (transfers_R::*Psi_2)(arma::mat, arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::Psi_R ;
+
+    SEXP (transfers_R::*du_Psi_1)(arma::mat, arma::mat) = &transfers_R::du_Psi_R ;
+    SEXP (transfers_R::*du_Psi_2)(arma::mat, arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::du_Psi_R ;
+
+    SEXP (transfers_R::*Ucal_1)(arma::mat) = &transfers_R::Ucal_R ;
+    SEXP (transfers_R::*Ucal_2)(arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::Ucal_R ;
+
+    SEXP (transfers_R::*Vcal_1)(arma::mat) = &transfers_R::Vcal_R ;
+    SEXP (transfers_R::*Vcal_2)(arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::Vcal_R ;
+
+    // now we can declare the class
+    class_<trame::transfers>( "transfers" )
+        .default_constructor()
+
+        // basic objects
+        .field( "ETU", &trame::transfers::ETU )
+        .field( "LTU", &trame::transfers::LTU )
+        .field( "NTU", &trame::transfers::NTU )
+        .field( "TU", &trame::transfers::TU )
+
+        .field( "nbX", &trame::transfers::nbX )
+        .field( "nbY", &trame::transfers::nbY )
+        .field( "nbParams", &trame::transfers::nbParams )
+
+        .field( "phi", &trame::transfers::phi )
+        
+        .field( "alpha", &trame::transfers::alpha )
+        .field( "gamma", &trame::transfers::gamma )
+        .field( "lambda", &trame::transfers::lambda )
+        .field( "tau", &trame::transfers::tau )
+
+        // read only objects
+        //.field_readonly( "", &trame::transfers:: )
+
+        // member functions
+    ;
+
+    class_<transfers_R>( "transfers_R" )
+        .derives<trame::transfers>( "transfers" )
+        .default_constructor()
+
+        .method( "build_ETU", &transfers_R::build_ETU_R )
+        .method( "build_LTU", &transfers_R::build_LTU_R )
+        .method( "build_NTU", &transfers_R::build_NTU_R )
+        .method( "build_TU", &transfers_R::build_TU_R )
+
+        .method( "trans", &transfers_R::trans_R )
+
+        .method( "Psi", Psi_1 )
+        .method( "Psi", Psi_2 )
+        .method( "du_Psi", du_Psi_1 )
+        .method( "du_Psi", du_Psi_2 )
+        .method( "Ucal", Ucal_1 )
+        .method( "Ucal", Ucal_2 )
+        .method( "Vcal", Vcal_1 )
+        .method( "Vcal", Vcal_2 )
+    ;
+}
 
 // wrapper functions to catch errors and handle memory pointers (which Rcpp can't do)
 void transfers_R::build_ETU_R(arma::mat alpha_ETU, arma::mat gamma_ETU, arma::mat tau_ETU)
@@ -308,70 +370,4 @@ SEXP transfers_R::Vcal_R(arma::mat us, Rcpp::IntegerVector x_ind, Rcpp::IntegerV
         ::Rf_error( "trame: C++ exception (unknown reason)" );
 	}
     return R_NilValue;
-}
-
-RCPP_MODULE(transfers_module)
-{
-    using namespace Rcpp ;
-
-    // function overloading requires some trickery
-    SEXP (transfers_R::*Psi_1)(arma::mat, arma::mat) = &transfers_R::Psi_R ;
-    SEXP (transfers_R::*Psi_2)(arma::mat, arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::Psi_R ;
-
-    SEXP (transfers_R::*du_Psi_1)(arma::mat, arma::mat) = &transfers_R::du_Psi_R ;
-    SEXP (transfers_R::*du_Psi_2)(arma::mat, arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::du_Psi_R ;
-
-    SEXP (transfers_R::*Ucal_1)(arma::mat) = &transfers_R::Ucal_R ;
-    SEXP (transfers_R::*Ucal_2)(arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::Ucal_R ;
-
-    SEXP (transfers_R::*Vcal_1)(arma::mat) = &transfers_R::Vcal_R ;
-    SEXP (transfers_R::*Vcal_2)(arma::mat, Rcpp::IntegerVector, Rcpp::IntegerVector) = &transfers_R::Vcal_R ;
-
-    // now we can declare the class
-    class_<trame::transfers>( "transfers" )
-        .default_constructor()
-
-        // basic objects
-        .field( "ETU", &trame::transfers::ETU )
-        .field( "LTU", &trame::transfers::LTU )
-        .field( "NTU", &trame::transfers::NTU )
-        .field( "TU", &trame::transfers::TU )
-
-        .field( "nbX", &trame::transfers::nbX )
-        .field( "nbY", &trame::transfers::nbY )
-        .field( "nbParams", &trame::transfers::nbParams )
-
-        .field( "phi", &trame::transfers::phi )
-        
-        .field( "alpha", &trame::transfers::alpha )
-        .field( "gamma", &trame::transfers::gamma )
-        .field( "lambda", &trame::transfers::lambda )
-        .field( "tau", &trame::transfers::tau )
-
-        // read only objects
-        //.field_readonly( "", &trame::transfers:: )
-
-        // member functions
-    ;
-
-    class_<transfers_R>( "transfers_R" )
-        .derives<trame::transfers>( "transfers" )
-        .default_constructor()
-
-        .method( "build_ETU", &transfers_R::build_ETU_R )
-        .method( "build_LTU", &transfers_R::build_LTU_R )
-        .method( "build_NTU", &transfers_R::build_NTU_R )
-        .method( "build_TU", &transfers_R::build_TU_R )
-
-        .method( "trans", &transfers_R::trans_R )
-
-        .method( "Psi", Psi_1 )
-        .method( "Psi", Psi_2 )
-        .method( "du_Psi", du_Psi_1 )
-        .method( "du_Psi", du_Psi_2 )
-        .method( "Ucal", Ucal_1 )
-        .method( "Ucal", Ucal_2 )
-        .method( "Vcal", Vcal_1 )
-        .method( "Vcal", Vcal_2 )
-    ;
 }
