@@ -23,14 +23,17 @@
   ################################################################################*/
 
 /*
- * Derived classes to provide wrappers to the TraME library
+ * Derived market classes to provide wrappers to the TraME library
  *
  * Keith O'Hara
  * 11/10/2016
+ *
+ * This version:
+ * 11/11/2016
  */
 
 template<typename Ta>
-void dse_empirical_R::build_ETU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp)
+void dse_empirical_R::build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp)
 {
     try {
         trame::empirical empirical_1 = arums_G_inp.simul();
@@ -63,8 +66,8 @@ template<typename Ta>
 void dse_empirical_R::build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp)
 {
     try {
-        trame::empirical empirical_1 = static_cast<trame::empirical&>(arums_G_inp);
-        trame::empirical empirical_2 = static_cast<trame::empirical&>(arums_H_inp);
+        trame::empirical empirical_1 = arums_G_inp.simul();
+        trame::empirical empirical_2 = arums_H_inp.simul();
 
         this->build_TU(n_inp,m_inp,phi_inp,empirical_1,empirical_2,need_norm_inp);
     } catch( std::exception &ex ) {

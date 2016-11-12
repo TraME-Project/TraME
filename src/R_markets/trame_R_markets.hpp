@@ -23,7 +23,13 @@
   ################################################################################*/
 
 /*
- * Derived classes to provide wrappers to the TraME library
+ * Derived market classes to provide wrappers to the TraME library
+ *
+ * Keith O'Hara
+ * 10/20/2016
+ *
+ * This version:
+ * 11/11/2016
  */
 
 class transfers_R : public trame::transfers
@@ -117,6 +123,31 @@ class dse_logit_R : public trame::dse<trame::logit>
         void set_transfers_R(transfers_R trans_obj_inp);
 };
 
+class dse_none_R : public trame::dse<trame::none>
+{
+    public:
+        void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp);
+        void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp);
+        
+        void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp);
+        void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp);
+        
+        void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp);
+        void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp);
+        
+        SEXP solve_R();
+        SEXP solve_R(Rcpp::CharacterVector solver_inp);
+
+        none_R get_arums_G();
+        void set_arums_G(none_R arums_G_inp);
+        none_R get_arums_H();
+        void set_arums_H(none_R arums_H_inp);
+        void set_arums(none_R arums_G_inp, none_R arums_H_inp);
+
+        transfers_R get_transfers_R();
+        void set_transfers_R(transfers_R trans_obj_inp);
+};
+
 class dse_rsc_R : public trame::dse<trame::rsc>
 {
     public:
@@ -137,6 +168,31 @@ class dse_rsc_R : public trame::dse<trame::rsc>
         rsc_R get_arums_H();
         void set_arums_H(rsc_R arums_H_inp);
         void set_arums(rsc_R arums_G_inp, rsc_R arums_H_inp);
+
+        transfers_R get_transfers_R();
+        void set_transfers_R(transfers_R trans_obj_inp);
+};
+
+class dse_rusc_R : public trame::dse<trame::rusc>
+{
+    public:
+        void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp);
+        void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp);
+        
+        void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp);
+        void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp);
+        
+        void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp);
+        void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp);
+        
+        SEXP solve_R();
+        SEXP solve_R(Rcpp::CharacterVector solver_inp);
+
+        rusc_R get_arums_G();
+        void set_arums_G(rusc_R arums_G_inp);
+        rusc_R get_arums_H();
+        void set_arums_H(rusc_R arums_H_inp);
+        void set_arums(rusc_R arums_G_inp, rusc_R arums_H_inp);
 
         transfers_R get_transfers_R();
         void set_transfers_R(transfers_R trans_obj_inp);
