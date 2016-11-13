@@ -29,7 +29,7 @@
  * 10/20/2016
  *
  * This version:
- * 11/11/2016
+ * 11/13/2016
  */
 
 class transfers_R : public trame::transfers
@@ -77,13 +77,16 @@ class dse_empirical_R : public trame::dse<trame::empirical>
 {
     public:
         void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp);
-        template<typename Ta> void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp);
+        void build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp);
+        template<typename Ta> void build_LTU_R_int(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp);
         
         void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp);
-        template<typename Ta> void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp);
+        void build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp);
+        template<typename Ta> void build_NTU_R_int(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp);
         
         void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp);
-        template<typename Ta> void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, Ta arums_G_inp, Ta arums_H_inp, bool need_norm_inp);
+        void build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp);
+        template<typename Ta> void build_TU_R_int(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp);
         
         SEXP solve_R();
         SEXP solve_R(Rcpp::CharacterVector solver_inp);

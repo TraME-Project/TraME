@@ -29,7 +29,7 @@
  * 11/10/2016
  *
  * This version:
- * 11/11/2016
+ * 11/13/2016
  */
 
 #include "trameR.hpp"
@@ -49,26 +49,14 @@ RCPP_MODULE(dse_empirical_module)
 
     // function overloading requires some trickery
     void (dse_empirical_R::*build_LTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R ;
-    void (dse_empirical_R::*build_LTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<logit_R> ;
-    void (dse_empirical_R::*build_LTU_3)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<none_R> ;
-    void (dse_empirical_R::*build_LTU_4)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, probit_R arums_G_inp, probit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<probit_R> ;
-    void (dse_empirical_R::*build_LTU_5)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<rsc_R> ;
-    void (dse_empirical_R::*build_LTU_6)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R<rusc_R> ;
+    void (dse_empirical_R::*build_LTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_LTU_R ;
     
     void (dse_empirical_R::*build_NTU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R ;
-    void (dse_empirical_R::*build_NTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<logit_R> ;
-    void (dse_empirical_R::*build_NTU_3)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<none_R> ;
-    void (dse_empirical_R::*build_NTU_4)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, probit_R arums_G_inp, probit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<probit_R> ;
-    void (dse_empirical_R::*build_NTU_5)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<rsc_R> ;
-    void (dse_empirical_R::*build_NTU_6)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R<rusc_R> ;
+    void (dse_empirical_R::*build_NTU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_NTU_R;
     
     void (dse_empirical_R::*build_TU_1)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R ;
-    void (dse_empirical_R::*build_TU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, logit_R arums_G_inp, logit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<logit_R> ;
-    void (dse_empirical_R::*build_TU_3)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, none_R arums_G_inp, none_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<none_R> ;
-    void (dse_empirical_R::*build_TU_4)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, probit_R arums_G_inp, probit_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<probit_R> ;
-    void (dse_empirical_R::*build_TU_5)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, rsc_R arums_G_inp, rsc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<rsc_R> ;
-    void (dse_empirical_R::*build_TU_6)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, rusc_R arums_G_inp, rusc_R arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<rusc_R> ;
-    
+    void (dse_empirical_R::*build_TU_2)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R ;
+
     //SEXP (dse_empirical_R::*solve_R_1)() = &dse_empirical_R::solve_R ;
     SEXP (dse_empirical_R::*solve_R_2)(Rcpp::CharacterVector solver_inp) = &dse_empirical_R::solve_R ;
 
@@ -97,24 +85,10 @@ RCPP_MODULE(dse_empirical_module)
 
         .method( "build_LTU", build_LTU_1 )
         .method( "build_LTU", build_LTU_2 )
-        .method( "build_LTU", build_LTU_3 )
-        .method( "build_LTU", build_LTU_4 )
-        .method( "build_LTU", build_LTU_5 )
-        .method( "build_LTU", build_LTU_6 )
-
         .method( "build_NTU", build_NTU_1 )
         .method( "build_NTU", build_NTU_2 )
-        .method( "build_NTU", build_NTU_3 )
-        .method( "build_NTU", build_NTU_4 )
-        .method( "build_NTU", build_NTU_5 )
-        .method( "build_NTU", build_NTU_6 )
-
         .method( "build_TU", build_TU_1 )
         .method( "build_TU", build_TU_2 )
-        .method( "build_TU", build_TU_3 )
-        .method( "build_TU", build_TU_4 )
-        .method( "build_TU", build_TU_5 )
-        .method( "build_TU", build_TU_6 )
 
         //.method( "solve", solve_R_1 )
         .method( "solve", solve_R_2 )
@@ -142,6 +116,34 @@ void dse_empirical_R::build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat la
     }
 }
 
+void dse_empirical_R::build_LTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat lambda_inp, arma::mat phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp)
+{
+    try {
+        if (Rf_inherits(arums_G_inp, "Rcpp_logit_R")) {
+            this->build_LTU_R_int<logit_R>(n_inp, m_inp, lambda_inp, phi_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        } 
+        else if (Rf_inherits(arums_G_inp, "Rcpp_none_R")) {
+            this->build_LTU_R_int<none_R>(n_inp, m_inp, lambda_inp, phi_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else if (Rf_inherits(arums_G_inp, "Rcpp_probit_R")) {
+            this->build_LTU_R_int<probit_R>(n_inp, m_inp, lambda_inp, phi_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else if (Rf_inherits(arums_G_inp, "Rcpp_rsc_R")) {
+            this->build_LTU_R_int<rsc_R>(n_inp, m_inp, lambda_inp, phi_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else if (Rf_inherits(arums_G_inp, "Rcpp_rusc_R")) {
+            this->build_LTU_R_int<rusc_R>(n_inp, m_inp, lambda_inp, phi_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else {
+            ::Rf_error( "trame: unrecognized arums type" );
+        }
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+}
+
 void dse_empirical_R::build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, bool need_norm_inp)
 {
     try {
@@ -153,10 +155,72 @@ void dse_empirical_R::build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat al
     }
 }
 
+void dse_empirical_R::build_NTU_R(arma::vec n_inp, arma::vec m_inp, arma::mat alpha_inp, arma::mat gamma_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp)
+{
+    try {
+        if (Rf_inherits(arums_G_inp, "Rcpp_logit_R")) {
+            this->build_NTU_R_int<logit_R>(n_inp, m_inp, alpha_inp, gamma_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        } 
+        else if (Rf_inherits(arums_G_inp, "Rcpp_none_R")) {
+            this->build_NTU_R_int<none_R>(n_inp, m_inp, alpha_inp, gamma_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else if (Rf_inherits(arums_G_inp, "Rcpp_probit_R")) {
+            this->build_NTU_R_int<probit_R>(n_inp, m_inp, alpha_inp, gamma_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else if (Rf_inherits(arums_G_inp, "Rcpp_rsc_R")) {
+            this->build_NTU_R_int<rsc_R>(n_inp, m_inp, alpha_inp, gamma_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else if (Rf_inherits(arums_G_inp, "Rcpp_rusc_R")) {
+            this->build_NTU_R_int<rusc_R>(n_inp, m_inp, alpha_inp, gamma_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else {
+            ::Rf_error( "trame: unrecognized arums type" );
+        }
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+}
+
 void dse_empirical_R::build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, bool need_norm_inp)
 {
     try {
         this->build_TU(n_inp,m_inp,phi_inp,need_norm_inp);
+    } catch( std::exception &ex ) {
+        forward_exception_to_r( ex );
+    } catch(...) {
+        ::Rf_error( "trame: C++ exception (unknown reason)" );
+    }
+}
+
+/*void (dse_empirical_R::*build_TU_logit) (arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<logit_R>;
+void (dse_empirical_R::*build_TU_none)  (arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<none_R>;
+void (dse_empirical_R::*build_TU_probit)(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<probit_R>;
+void (dse_empirical_R::*build_TU_rsc)   (arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<rsc_R>;
+void (dse_empirical_R::*build_TU_rusc)  (arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp) = &dse_empirical_R::build_TU_R<rusc_R>;*/
+
+void dse_empirical_R::build_TU_R(arma::vec n_inp, arma::vec m_inp, arma::mat phi_inp, SEXP arums_G_inp, SEXP arums_H_inp, bool need_norm_inp)
+{
+    try {
+        if (Rf_inherits(arums_G_inp, "Rcpp_logit_R")) {
+            this->build_TU_R_int<logit_R>(n_inp, m_inp, phi_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        } 
+        else if (Rf_inherits(arums_G_inp, "Rcpp_none_R")) {
+            this->build_TU_R_int<none_R>(n_inp, m_inp, phi_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else if (Rf_inherits(arums_G_inp, "Rcpp_probit_R")) {
+            this->build_TU_R_int<probit_R>(n_inp, m_inp, phi_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else if (Rf_inherits(arums_G_inp, "Rcpp_rsc_R")) {
+            this->build_TU_R_int<rsc_R>(n_inp, m_inp, phi_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else if (Rf_inherits(arums_G_inp, "Rcpp_rusc_R")) {
+            this->build_TU_R_int<rusc_R>(n_inp, m_inp, phi_inp, arums_G_inp, arums_H_inp, need_norm_inp);
+        }
+        else {
+            ::Rf_error( "trame: unrecognized arums type" );
+        }
     } catch( std::exception &ex ) {
         forward_exception_to_r( ex );
     } catch(...) {

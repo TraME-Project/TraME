@@ -23,6 +23,9 @@ dse_rsc_obj_TU$build_TU(n,m,phi,rscG,rscH,FALSE)
 
 dse_rsc_obj_TU$solve("maxWelfare")
 
+dse_emp_obj_TU <- new(dse_empirical_R)
+dse_emp_obj_TU$build_TU(n,m,phi,rscG,rscH,FALSE)
+
 m2 = build_market_TU_general(n,m,phi,rscG,rscH,FALSE)
 m2Sim = build_market_TU_empirical(n,m,phi,rscG,rscH,nbDraws,seed)  
 
