@@ -232,7 +232,7 @@ SEXP dse_empirical_R::solve_R()
 {
     try {
         arma::mat mu_sol;
-        bool success = this->solve(mu_sol, (char*) "darum");
+        bool success = this->solve_R_int(mu_sol, (char*) "darum");
         //
         return Rcpp::List::create(Rcpp::Named("mu") = mu_sol, Rcpp::Named("success") = success);
     } catch( std::exception &ex ) {
@@ -248,7 +248,7 @@ SEXP dse_empirical_R::solve_R(Rcpp::CharacterVector solver_inp)
     try {
         arma::mat mu_sol;
         //char* solver = solver_inp[0];
-        bool success = this->solve(mu_sol, solver_inp[0]);
+        bool success = this->solve_R_int(mu_sol, solver_inp[0]);
         //
         return Rcpp::List::create(Rcpp::Named("mu") = mu_sol, Rcpp::Named("success") = success);
     } catch( std::exception &ex ) {
@@ -257,6 +257,54 @@ SEXP dse_empirical_R::solve_R(Rcpp::CharacterVector solver_inp)
         ::Rf_error( "trame: C++ exception (unknown reason)" );
     }
     return R_NilValue;
+}
+
+// this is just a copy of the dse<empirical>::solve function
+bool dse_empirical_R::solve_R_int(arma::mat& mu_sol, const char* solver)
+{
+    bool res = false;
+    const char sig = (solver != NULL) ? solver[0] : char(0);
+    
+    if (solver) { // not NULL
+        if (sig=='c') {
+            res = cupids_lp(*this,mu_sol);
+        }
+        if (sig=='d') {
+            res = darum(*this,mu_sol);
+        }
+        if (sig=='e') {
+            res = eap_nash(*this,mu_sol);
+        }
+        if (sig=='j') {
+            res = jacobi(*this,mu_sol);
+        }
+        if (sig=='m') {
+            res = max_welfare(*this,mu_sol);
+        }
+        if (sig=='o') {
+            res = oap_lp(*this,mu_sol);
+        }
+        // default
+        if (sig=='n') {
+            if (NTU) {
+                res = darum(*this,mu_sol);
+            } else if (TU) {
+                res = max_welfare(*this,mu_sol);
+            } else {
+                res = jacobi(*this,mu_sol);
+            }
+        }
+    } else {
+        if (NTU) {
+            res = darum(*this,mu_sol);
+        } else if (TU) {
+            res = max_welfare(*this,mu_sol);
+        } else {
+            res = jacobi(*this,mu_sol);
+        }
+    }
+    //
+    return res;
 }
 
 empirical_R dse_empirical_R::get_arums_G()

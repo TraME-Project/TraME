@@ -90,6 +90,7 @@ class dse_empirical_R : public trame::dse<trame::empirical>
         
         SEXP solve_R();
         SEXP solve_R(Rcpp::CharacterVector solver_inp);
+        bool solve_R_int(arma::mat& mu_sol, const char* solver);
 
         empirical_R get_arums_G();
         void set_arums_G(empirical_R arums_G_inp);

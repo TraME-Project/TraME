@@ -21,13 +21,8 @@ rscH$build_beta(zetaH,2,2)
 dse_rsc_obj_TU <- new(dse_rsc_R)
 dse_rsc_obj_TU$build_TU(n,m,phi,rscG,rscH,FALSE)
 
-dse_rsc_obj_TU$solve("maxWelfare")
-
 dse_emp_obj_TU <- new(dse_empirical_R)
 dse_emp_obj_TU$build_TU(n,m,phi,rscG,rscH,FALSE)
 
-m2 = build_market_TU_general(n,m,phi,rscG,rscH,FALSE)
-m2Sim = build_market_TU_empirical(n,m,phi,rscG,rscH,nbDraws,seed)  
-
-r2 = maxWelfare(m2,xFirst=T,notifications=T)
-r2Sim = CupidsLP(m2Sim,xFirst=T,notifications=T)
+dse_rsc_obj_TU$solve("maxWelfare")
+dse_emp_obj_TU$solve("cupidsLP")
