@@ -41,6 +41,12 @@ dse_logit_obj_NTU$set_arums_G(arums_G)
 
 arums_G2 = dse_logit_obj_NTU$get_arums_G()
 arums_G2$U
-
+#
+# get transfers object
 trans_obj = dse_logit_obj_TU$get_transfers()
 trans_obj$Psi(phi,phi)
+#
+# test empirical object
+dse_emp_obj_TU <- new(dse_empirical_R)
+dse_emp_obj_TU$build_TU(n,m,phi,arums_G,arums_H,FALSE)
+dse_emp_obj_TU$solve("cupidsLP")

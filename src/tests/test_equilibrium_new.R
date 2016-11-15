@@ -160,14 +160,20 @@ test_maxWelfare = function(seed=777, nbX=5, nbY=3, nbDraws=1e3)
     #
     message('*===================   Start of test_maxWelfare   ===================*\n')
     #
+    sigma = 1
     n=rep(1,nbX)
     m=rep(1,nbY)  
     
     phi =  matrix(runif(nbX*nbY),nrow=nbX)
     #
-    m1 = build_market_TU_logit(n,m,phi)
-    r1 = ipfp(m1,xFirst=TRUE,notifications=TRUE)
-    r1bis = maxWelfare(m1,xFirst=TRUE,notifications=TRUE)
+    m1_1 <- new(mfe_mmf_R)
+    m1_1$build_TU(n,m,phi,sigma,FALSE)
+    
+    m1_2 <- new(dse_logit_R)
+    m1_2$build_TU(n,m,phi,FALSE)
+    
+    r1 = m1_1$solve()
+    r1bis = m1_2$solve("maxWelfare")
     #
     message("Solution of TU-logit:")
     #
