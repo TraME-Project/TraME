@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 09/20/2016
+ *
+ * This version:
+ * 11/19/2016
  */
 
 #include "trame.hpp"
@@ -53,11 +56,7 @@ void trame::affinity::build(const arma::mat& X_inp, const arma::mat& Y_inp, cons
 
     nbParams = dX*dY;
 
-    if (sigma_inp) {
-        sigma = *sigma_inp;
-    } else {
-        sigma = 1.0;
-    }
+    sigma = (sigma_inp) ? *sigma_inp : 1.0;
     //
     if (n_inp) {
         n = *n_inp;
@@ -100,13 +99,7 @@ arma::mat trame::affinity::Phi_k(const arma::mat& mu_hat)
 
 void trame::affinity::dparam(arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out)
 {
-    arma::mat dparams_mat;
-    
-    if (dparams_inp) {
-        dparams_mat = *dparams_inp;
-    } else {
-        dparams_mat = arma::eye(nbParams,nbParams);
-    }
+    arma::mat dparams_mat = (dparams_inp) ? *dparams_inp : arma::eye(nbParams,nbParams);
     //
     dparamsPsi_out = Phi_xy(dparams_mat);
     //
@@ -136,30 +129,11 @@ void trame::affinity::init_param(arma::mat& params)
 
 bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
 {
-    int max_eval, max_iter_ipfp;
-    double xtol_rel, tol_ipfp;
+    //double xtol_rel = (xtol_rel_inp) ? *xtol_rel_inp : 1E-04;
+    //int max_eval = (max_eval_inp) ? *max_eval_inp : 1E05;
 
-    if (xtol_rel_inp) {
-        xtol_rel = *xtol_rel_inp;
-    } else {
-        xtol_rel = 1E-04;
-    }
-    if (max_eval_inp) {
-        max_eval = *max_eval_inp;
-    } else {
-        max_eval = 1E05;
-    }
-
-    if (tol_ipfp_inp) {
-        tol_ipfp = *tol_ipfp_inp;
-    } else {
-        tol_ipfp = 1E-14;
-    }
-    if (max_iter_ipfp_inp) {
-        max_iter_ipfp = *max_iter_ipfp_inp;
-    } else {
-        max_iter_ipfp = 1E05;
-    }
+    double tol_ipfp = (tol_ipfp_inp) ? *tol_ipfp_inp : 1E-14;
+    int max_iter_ipfp = (max_iter_ipfp_inp) ? *max_iter_ipfp_inp : 1E05;
     //
     arma::vec theta_0;
     init_param(theta_0);
@@ -180,10 +154,11 @@ bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat,
     arma::mat g = IX * q.t();
 
     arma::mat Pi_hat = mu_hat / total_mass;
-    arma::mat v = arma::zeros(nbY,1);
+    arma::mat v = arma::zeros(1,nbY);
 
     arma::mat phi_xy = arma::resize(phi_xyk_aux,nbX*nbY,nbParams);
     //
+    // add optimization data
     trame_nlopt_opt_data opt_data;
 
     opt_data.mme_woregal.nbX = nbX;
@@ -223,32 +198,13 @@ bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat,
     return success;
 }
 
-bool trame::affinity::mme_regul(const arma::mat& mu_hat, double& lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
+bool trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
 {
-    int max_eval, max_iter_ipfp;
-    double xtol_rel, tol_ipfp;
+    double xtol_rel = (xtol_rel_inp) ? *xtol_rel_inp : 1E-04;
+    int max_eval = (max_eval_inp) ? *max_eval_inp : 1E05;
 
-    if (xtol_rel_inp) {
-        xtol_rel = *xtol_rel_inp;
-    } else {
-        xtol_rel = 1E-04;
-    }
-    if (max_eval_inp) {
-        max_eval = *max_eval_inp;
-    } else {
-        max_eval = 1E05;
-    }
-
-    if (tol_ipfp_inp) {
-        tol_ipfp = *tol_ipfp_inp;
-    } else {
-        tol_ipfp = 1E-14;
-    }
-    if (max_iter_ipfp_inp) {
-        max_iter_ipfp = *max_iter_ipfp_inp;
-    } else {
-        max_iter_ipfp = 1E05;
-    }
+    double tol_ipfp = (tol_ipfp_inp) ? *tol_ipfp_inp : 1E-14;
+    int max_iter_ipfp = (max_iter_ipfp_inp) ? *max_iter_ipfp_inp : 1E05;
     //
     arma::vec theta_0;
     init_param(theta_0);
@@ -269,10 +225,10 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, double& lambda, arma::m
     arma::mat g = IX * q.t();
 
     arma::mat Pi_hat = mu_hat / total_mass;
-    arma::mat v = arma::zeros(nbY,1);
+    arma::mat v = arma::zeros(1,nbY);
     arma::mat A = arma::zeros(dX*dY,1);
 
-    arma::mat Phi = Phi_xy(arma::vectorise(A));
+    arma::mat Phi = arma::reshape(Phi_xy(arma::vectorise(A)),nbX,nbY);
     //
     int iter_ipfp = 0;
     int iter_count = 0;
@@ -288,21 +244,21 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, double& lambda, arma::m
     while (err_val > xtol_rel && iter_count < max_eval) {
         iter_count++;
 
-        Phi = Phi_xy(arma::vectorise(A));
+        Phi = arma::reshape(Phi_xy(arma::vectorise(A)),nbX,nbY);
         err_ipfp= 2*tol_ipfp;
         iter_ipfp = 0;
 
         while (err_ipfp > tol_ipfp && iter_ipfp < max_iter_ipfp) {
             iter_ipfp++;
 
-            u = sigma * arma::log(arma::sum(g % arma::exp((Phi - IX * v.t())/sigma),1));
-            v_next = sigma * arma::log(arma::sum( f % arma::exp((Phi - u * tIY)/sigma), 2));
+            u = sigma * arma::log(arma::sum(g % arma::exp((Phi - IX * v)/sigma),1));
+            v_next = sigma * arma::log(arma::sum(f % arma::exp((Phi - u * tIY)/sigma),0));
 
-            err_ipfp = elem_max(arma::abs( arma::sum(g % arma::exp((Phi - IX * v_next.t() - u*tIY)/sigma),1) - 1.0 ));
+            err_ipfp = elem_max(arma::abs( arma::sum(g % arma::exp((Phi - IX * v_next - u*tIY)/sigma),1) - 1.0 ));
             v = v_next;
         }
         //
-        Pi = f % g % arma::exp( (Phi - IX*v.t() - u*tIY)/sigma );
+        Pi = f % g % arma::exp( (Phi - IX*v - u*tIY)/sigma );
         the_grad = Phi_k(Pi - Pi_hat);
 
         A -= t_k*the_grad;
@@ -321,7 +277,7 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, double& lambda, arma::m
             arma::svd(U,d_opt,V,svd_mat);
             D_opt = arma::diagmat(elem_max(d_opt,alpha*lambda));
 
-            opt_mat = arma::accu(arma::pow( A - arma::vectorise(U * D_opt *V.t()) ,2));
+            opt_mat = arma::accu(arma::pow( A - arma::vectorise(U * D_opt *V.t()) , 2));
         }
         //
         if (lambda > 0) {
@@ -387,14 +343,14 @@ double trame::affinity::mme_woregul_opt_objfn(const std::vector<double> &x_inp, 
     while (err_ipfp > tol_ipfp && iter_ipfp < max_iter_ipfp) {
         iter_ipfp++;
 
-        u = sigma * arma::log(arma::sum(g % arma::exp((Phi - IX * v.t())/sigma),1));
+        u = sigma * arma::log(arma::sum(g % arma::exp((Phi - IX * v)/sigma),1));
         v_next = sigma * arma::log(arma::sum( f % arma::exp((Phi - u * tIY)/sigma), 2));
 
-        err_ipfp = elem_max(arma::abs( arma::sum(g % arma::exp((Phi - IX * v_next.t() - u*tIY)/sigma),1) - 1.0 ));
+        err_ipfp = elem_max(arma::abs( arma::sum(g % arma::exp((Phi - IX * v_next - u*tIY)/sigma),1) - 1.0 ));
         v = v_next;
     }
     //
-    arma::mat Pi = f % g % arma::exp( (Phi - IX*v.t() - u*tIY)/sigma );
+    arma::mat Pi = f % g % arma::exp( (Phi - IX*v - u*tIY)/sigma );
     arma::mat the_grad = phi_xy.t() * arma::vectorise(Pi - Pi_hat);
 
     if (!grad.empty()) {
