@@ -426,7 +426,7 @@ buildModel_ETU_logit <- function(Xvals, Yvals, n=NULL, m=NULL)
   return(ret)
 }
 # Keith: something is wrong here; class should be ETU_logit instead of etu? 
-parametricMarket.etu <- function(model, theta)
+parametricMarket.ETU_logit <- function(model, theta)
   # the theta are the parameters for alpha, gamma and tau
 {
   theta1 = theta[1:model$dX]
