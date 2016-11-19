@@ -48,7 +48,7 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
     m = rep(1,nbY)
   }
   # 
-  if ( sum(n) != sum(m) ) {stop("Unequal mass of individuals in an affinity model.")} # Keith bug? sum(n) != sum(m)
+  if ( sum(n) != sum(m) ) {stop("Unequal mass of individuals in an affinity model.")}
   #
   neededNorm = defaultNorm(T) # Keith: why set this but then set 'neededNorm = F' in the list?
   #
@@ -63,7 +63,7 @@ buildModel_affinity <- function(Xvals, Yvals, n=NULL, m=NULL, sigma = 1 )
              Phi_xyk = function(model) 
                (model$phi_xyk_aux),
              Phi_xy = function(model ,lambda) 
-               ( array(model$phi_xyk_aux,dim=c(model$nbX*model$nbY,model$nbParams)) %*% lambda ),
+               ( array(model$phi_xyk_aux,dim=c(model$nbX*model$nbY,model$nbParams)) %*% lambda ), # Keith: lambda is a matrix here but a scalar elsewhere?
              Phi_k = function(model, muhat) 
                (c(c(muhat) %*% array(model$phi_xyk_aux,dim=c(model$nbX*model$nbY,model$nbParams))))
                )
