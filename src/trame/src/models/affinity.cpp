@@ -230,14 +230,12 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, a
 
     arma::mat Phi = arma::reshape(Phi_xy(arma::vectorise(A)),nbX,nbY);
     //
-    int iter_ipfp = 0;
-    int iter_count = 0;
-    double err_ipfp= 2*tol_ipfp;
-    double err_val = 1.0;
+    int iter_ipfp = 0, iter_count = 0;
+    double err_ipfp = 2*tol_ipfp, err_val = 1.0;
     double t_k = 0.3; // step size for the prox grad algorithm (or grad descent when lambda=0)
     double alpha = 1.0; // for optimality check
-    double the_val = 1.0;
-    double the_val_old = 1E04;
+    
+    double the_val = 1.0, the_val_old = 1E04;
     arma::vec d, d_opt;
     arma::mat v_next = v, u, Pi, the_grad, A_mat, U, V, D, svd_mat, D_opt, opt_mat;
 
