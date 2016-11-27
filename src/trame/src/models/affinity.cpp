@@ -69,6 +69,8 @@ void trame::affinity::build(const arma::mat& X_inp, const arma::mat& Y_inp, cons
         m.ones(nbY,1);
     }
 
+    phi_xyk_aux = arma::kron(Y_inp,X_inp);
+    //
     if (arma::accu(n) != arma::accu(m)) {
         printf("Unequal mass of individuals in an affinity model.\n");
     }
