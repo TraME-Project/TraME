@@ -158,7 +158,6 @@ mmeaffinityNoRegul <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, tolIpfp
   return(ret)
 }
 #
-#
 mmeaffinityWithRegul <- function(model, muhat, lambda, xtol_rel=1e-4, maxeval=1e5, tolIpfp=1E-14, maxiterIpfp = 1e5, print_level=0)
   # Reference: Arnaud Dupuy, Alfred Galichon, Yifei Sun (2016). "Learning Optimal Transport Costs under Low-Rank Constraints."
   # Implementation by Yifei Sun.
@@ -277,6 +276,7 @@ mme.affinity <- function(model, muhat, lambda = NULL, xtol_rel=1e-4, maxeval=1e5
 ########################       TU_logit model            #######################
 ################################################################################
 # The TU_logit and the affinity models should be merged
+# Keith: where is sigma here? is it not used in build?
 buildModel_TU_logit <- function(phi_xyk, n=NULL, m=NULL,noSingles=FALSE)
 {
   dims = dim(phi_xyk)
@@ -831,4 +831,3 @@ mme.TU_rum <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
   #
   return(ret)
 }
-
