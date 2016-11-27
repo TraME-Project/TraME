@@ -29,7 +29,7 @@
  * 08/17/2016
  *
  * This version:
- * 11/02/2016
+ * 11/26/2016
  */
 
 template<typename Ta>
@@ -55,7 +55,7 @@ void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arm
     //arums_H.build(nbY,nbX);
     //
     TU = true;
-    arum_none = true;
+    //arum_none = true;
 }
 
 // general arums input
@@ -135,7 +135,7 @@ void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     //arums_H.build(nbY,nbX);
     //
     NTU = true;
-    arum_none = true;
+    //arum_none = true;
 }
 
 // general arums input
@@ -215,7 +215,7 @@ void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     //arums_H.build(nbY,nbX);
     //
     LTU = true;
-    arum_none = true;
+    //arum_none = true;
 }
 
 // general arums input
