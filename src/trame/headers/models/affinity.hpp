@@ -29,7 +29,7 @@
  * 09/20/2016
  *
  * This version:
- * 11/26/2016
+ * 11/27/2016
  */
 
 class affinity
@@ -54,7 +54,7 @@ class affinity
         // member functions
         void build(const arma::mat& X_inp, const arma::mat& Y_inp);
         void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp);
-        void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp, const double* sigma_inp);
+        void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp, double sigma_inp);
 
         mfe<mmf> build_market(const arma::mat& theta);
 
@@ -68,6 +68,8 @@ class affinity
         bool mme(const arma::mat& mu_hat, const arma::mat* lambda, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp);
     
     private:
+        void build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp, const double* sigma_inp);
+
         arma::mat Phi_xyk();
         arma::mat Phi_xy(const arma::mat& lambda);
         arma::mat Phi_k(const arma::mat& mu_hat);
