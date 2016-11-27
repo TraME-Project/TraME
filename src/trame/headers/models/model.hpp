@@ -29,8 +29,16 @@
  * 11/19/2016
  *
  * This version:
- * 11/26/2016
+ * 11/27/2016
  */
+
+template<typename Tm>
+struct trame_model_opt_data {
+    int nbParams;
+    arma::mat C_hat;
+    arma::mat kron_term;
+    dse<Tm> market;
+};
 
 template<class Ta>
 class model
@@ -49,10 +57,12 @@ class model
         arma::vec n;
         arma::vec m;
 
-        arma::mat phi_xyk;
+        arma::cube phi_xyk;
 
         dse<Ta> market_obj;
         // member functions
+        void build(const arma::cube& phi_xyk_inp);
+        void build(const arma::cube& phi_xyk_inp, const arma::vec& n_inp, const arma::vec& m_inp);
         void build(const arma::mat& X_inp, const arma::mat& Y_inp);
         void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp);
 
@@ -60,11 +70,26 @@ class model
         void build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Ta& arums_H_inp);
         template<typename T> void build_market_TU(const arma::mat& theta, T arums_G_inp, T arums_H_inp, int nbDraws, int seed);
 
-        void dparam(arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out);
+        void dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out);
+        void dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out);
         
-        bool mme(const arma::mat& mu_hat);
+        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
         
     private:
+        // internal build functions
+        void build_int(const arma::cube& phi_xyk_inp, const arma::vec* n_inp, const arma::vec* m_inp);
+        void build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp);
+
+        arma::mat Phi_xy();
+        arma::mat Phi_xy_theta(const arma::mat& theta);
         void init_param(arma::mat& params);
-        static double mme_woregul_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
+
+        // optimization-related objects
+        bool model_mme_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
+                             double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
+                             trame_model_opt_data<Ta> opt_data);
+        
+        double model_mme_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
 };
+
+#include "model.tpp"

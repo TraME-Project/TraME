@@ -45,6 +45,7 @@ namespace trame
 
     // models
     #include "models/affinity.hpp"
+    #include "models/model.hpp"
 }
 
 #endif
