@@ -259,7 +259,7 @@ SEXP dse_empirical_R::solve_R(Rcpp::CharacterVector solver_inp)
     return R_NilValue;
 }
 
-// this is just a copy of the dse<empirical>::solve function
+// this is just a copy of the function dse<empirical>::solve
 bool dse_empirical_R::solve_R_int(arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
