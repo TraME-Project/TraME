@@ -551,7 +551,7 @@ mme.TU_empirical <- function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_lev
   nbI = length(ni)
   nbJ = length(mj)
   #
-  # based on this, can compute aggregated equilibrium in LP 
+  # based on this, can compute aggregated equilibrium in LP
   #
   A_11 = kronecker(matrix(1,nbY,1),sparseMatrix(1:nbI,1:nbI,x=1))
   A_12 = sparseMatrix(i=NULL,j=NULL,dims=c(nbI*nbY,nbJ),x=0)
@@ -660,10 +660,12 @@ MARP_min <-function(model, muhat, xtol_rel=1e-4, maxeval=1e5, print_level=0)
   #
   nbconstr = dim(A)[1]
   nbvar = dim(A)[2]
-  #
+  
   rhs = c(rep(0,nbX*nbY),1)
   obj = c(model$n,model$m,c(-Chat))
+
   result = genericLP(obj=obj,A=A,modelsense="min",rhs=rhs,sense=c(rep(">",nbconstr-1),"="),lb=c(rep(0,nbX+nbY),rep(-Inf, model$nbParams) ))
+  #
   u = result$solution[1:nbX]
   v = result$solution[(nbX+1):(nbX+nbY)]
   thetahat = result$solution[(1+nbX+nbY):(model$nbParams+nbX+nbY)]

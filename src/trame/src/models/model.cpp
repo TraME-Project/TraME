@@ -30,7 +30,7 @@
  * 11/19/2016
  *
  * This version:
- * 11/27/2016
+ * 11/28/2016
  */
 
 #include "trame.hpp"
@@ -38,80 +38,202 @@
 namespace trame
 {
 template<>
-bool model<logit>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
+bool model<empirical>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out)
 {
     bool success = false;
     //
-    double xtol_rel = (xtol_rel_inp) ? *xtol_rel_inp : 1E-04;
-    int max_eval = (max_eval_inp) ? *max_eval_inp : 1E05;
+    arma::mat kron_mat = Phi_xy();
+    arma::mat kron_mat_2 = arma::reshape(kron_mat.t(),nbParams*nbX,nbY);
 
-    arma::vec theta_0;
-    init_param(theta_0);
-
-    arma::mat dtheta_Psi;
-    dparam(NULL,dtheta_Psi);
-
-    build_market_TU(theta_0);
-
-    arma::mat kron_term = dtheta_Psi;
-    arma::mat C_hat = arma::vectorise(arma::vectorise(mu_hat) * kron_term);
-
-    //trame::mfe<trame::mmf> mkt_obj = build_market(theta_0);
-
-    arma::mat C_hat = Phi_k(mu_hat);
+    arma::vec C_hat = arma::vectorise(arma::vectorise(mu_hat)*kron_mat);
     //
-    double total_mass = arma::accu(n);
+    arma::mat epsilon_iy, epsilon0_i, I_ix;
+    arma::mat eta_xj, eta0_j, I_yj;
 
-    arma::vec p = n / total_mass;
-    arma::vec q = m / total_mass;
+    int nbDraws_1 = build_disaggregate_epsilon(n,market_obj.arums_G,epsilon_iy,epsilon0_i,I_ix);
+    int nbDraws_2 = build_disaggregate_epsilon(m,market_obj.arums_H,eta_xj,eta0_j,I_yj);
 
-    arma::mat IX = arma::ones(nbX,1);
-    arma::mat tIY = arma::ones(1,nbY);
+    epsilon0_i = arma::vectorise(epsilon0_i);
 
-    arma::mat f = p * tIY;
-    arma::mat g = IX * q.t();
-
-    arma::mat Pi_hat = mu_hat / total_mass;
-    arma::mat v = arma::zeros(1,nbY);
-
-    arma::mat phi_xy = arma::reshape(phi_xyk_aux,nbX*nbY,nbParams);
-    //
-    // add optimization data
-    trame_nlopt_opt_data opt_data;
-
-    opt_data.mme_woregal.nbX = nbX;
-    opt_data.mme_woregal.nbY = nbY;
-
-    opt_data.mme_woregal.dX = dX;
-    opt_data.mme_woregal.dY = dY;
+    eta_xj = eta_xj.t();
+    eta0_j = arma::vectorise(eta0_j);
+    I_yj = I_yj.t();
     
-    opt_data.mme_woregal.max_iter_ipfp = max_iter_ipfp;
-    opt_data.mme_woregal.tol_ipfp = tol_ipfp;
+    arma::vec n_i = arma::vectorise(I_ix * n) / (double) nbDraws_1;
+    arma::vec m_j = arma::vectorise(m.t() * I_yj) / (double) nbDraws_2;
 
-    opt_data.mme_woregal.sigma = sigma;
+    int nbI = n_i.n_elem;
+    int nbJ = m_j.n_elem;
 
-    opt_data.mme_woregal.p = p;
-    opt_data.mme_woregal.q = q;
+    arma::mat kron_data_mat = - arma::reshape(kron_mat_2*I_yj,nbParams,nbX*nbJ);
+    /*
+     * use batch allocation to construct the sparse constraint matrix (A)
+     *
+     * A_sp_t size: (nbI + nbJ + nbX*nbY + nbParams) x (nbI*nbY + nbJ*nbX)
+     *
+     * first block involves nbY blocks of nbI diagonal matrices, so nbI x (nbY*nbI) 
+     *
+     * second block begins on row nbI+1 and ends on row nbI+nbJ (inclusive); from column 
+     * 1 to nbI*nbY nothing but zeros; then nbJ blocks of nbX-length row vectors of ones 
+     *
+     * third block begins on row nbI+nbJ+1 and ends on nbI+nbJ+nbX*nbY; 
+     * there are nbX*nbY blocks of length nbDraws_1 from columns (1,nbI*nbY);
+     * for columns (nbI+1)
+     *
+     * fourth block is filled from (nbI*nbY+1,nbI*nbY + nbJ*nbX) with kron_data_mat
+     */
+    int jj, kk, ll, count_val = 0;
+    int num_nonzero_elem = nbI*nbY + nbJ*nbX + nbX*nbY*nbDraws_1 + nbY*nbDraws_2*nbX + nbParams*nbJ*nbX;
 
-    opt_data.mme_woregal.IX = IX;
-    opt_data.mme_woregal.tIY = tIY;
+    arma::umat location_mat_1(2,num_nonzero_elem);
+    arma::rowvec vals_mat_1(num_nonzero_elem);
 
-    opt_data.mme_woregal.f = f;
-    opt_data.mme_woregal.g = g;
+    for (jj=0; jj < nbY; jj++) { // first block
+        for (kk=0; kk < nbI; kk++) {
+            location_mat_1(0,count_val) = kk; // rows
+            location_mat_1(1,count_val) = kk + jj*nbI; // columns
 
-    opt_data.mme_woregal.v = v;
-    opt_data.mme_woregal.Pi_hat = Pi_hat;
+            vals_mat_1(count_val) = 1.0;
 
-    opt_data.mme_woregal.phi_xy = phi_xy; // should be (nbX*nbY) x (nbParams)
+            ++count_val;
+        }
+    }
+
+    for (jj=0; jj < nbJ; jj++) { // second block
+        for (kk=0; kk < nbX; kk++) {
+            location_mat_1(0,count_val) = nbI + jj;
+            location_mat_1(1,count_val) = nbI*nbY + kk + jj*nbX;
+
+            vals_mat_1(count_val) = 1.0;
+
+            ++count_val;
+        }
+    }
+
+    for (jj=0; jj < nbX*nbY; jj++) { // third block, part 1
+        for (kk=0; kk < nbDraws_1; kk++) {
+            location_mat_1(0,count_val) = nbI + nbJ + jj;
+            location_mat_1(1,count_val) = kk + jj*nbDraws_1;
+
+            vals_mat_1(count_val) = -1.0;
+
+            ++count_val;
+        }
+    }
+
+    for (jj=0; jj < nbY; jj++) { // third block, part 2
+        for (kk=0; kk < nbDraws_2; kk++) {
+            for (ll=0; ll < nbX; ll++) {
+                location_mat_1(0,count_val) = nbI + nbJ + jj*nbX + ll;
+                location_mat_1(1,count_val) = nbI*nbY + jj*(nbDraws_2*nbX) + kk*nbX + ll;
+
+                vals_mat_1(count_val) = 1.0;
+
+                ++count_val;
+            }
+        }
+    }
+
+    for (jj=0; jj < nbParams; jj++) { // fourth block, data
+        for (kk=0; kk < nbJ*nbX; kk++) {
+            location_mat_1(0,count_val) = nbI + nbJ + nbX*nbY + jj;
+            location_mat_1(1,count_val) = nbI*nbY + kk;
+
+            vals_mat_1(count_val) = kron_data_mat(jj,kk);
+
+            ++count_val;
+        }
+    }
     //
-    arma::mat A0 = arma::zeros(dX*dY,1);
-    std::vector<double> sol_vec = arma::conv_to< std::vector<double> >::from(A0);
-    double obj_val = 0;
+    // now proceed to solve the LP problem
+    arma::sp_mat A_sp_t(location_mat_1,vals_mat_1); // transpose of A
 
-    bool success = generic_nlopt(dX*dY,sol_vec,obj_val,NULL,NULL,trame::affinity::mme_woregul_opt_objfn,opt_data);
+    int k_lp = A_sp_t.n_cols; // cols as we're working with the transpose
+    int n_lp = A_sp_t.n_rows; // rows as we're working with the transpose
+
+    const arma::uword* row_vals = &(*A_sp_t.row_indices);
+    const arma::uword* col_vals = &(*A_sp_t.col_ptrs);
+
+    int* vind_lp = new int[num_nonzero_elem];
+    int* vbeg_lp = new int[k_lp+1];
+    double* vval_lp = new double[num_nonzero_elem];
+
+    for (jj=0; jj<num_nonzero_elem; jj++) {
+        vind_lp[jj] = row_vals[jj];
+        vval_lp[jj] = A_sp_t.values[jj];
+    }
+
+    for (jj=0; jj<k_lp+1; jj++) {
+        vbeg_lp[jj] = col_vals[jj];
+    }
     //
-    theta_hat = arma::conv_to< arma::mat >::from(sol_vec);
-    val_ret = obj_val;
+    char* sense_lp = new char[k_lp];
+    for (jj=0; jj<k_lp; jj++) {
+        sense_lp[jj] = '>';
+    }
+
+    arma::vec lb_lp(epsilon0_i.n_elem + eta0_j.n_elem + nbX*nbY + nbParams);
+    lb_lp.rows(0,epsilon0_i.n_elem-1) = arma::vectorise(epsilon0_i);
+    lb_lp.rows(epsilon0_i.n_elem,epsilon0_i.n_elem + eta0_j.n_elem - 1) = eta0_j;
+    lb_lp.rows(epsilon0_i.n_elem + eta0_j.n_elem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
+
+    arma::vec rhs_lp(epsilon_iy.n_elem + eta_xj.n_elem);
+    rhs_lp.rows(0,epsilon_iy.n_elem-1) = arma::vectorise(epsilon_iy);
+    rhs_lp.rows(epsilon_iy.n_elem,rhs_lp.n_elem-1) = arma::vectorise(eta_xj);
+
+    arma::vec obj_lp(nbI + nbJ + nbX*nbY + C_hat.n_elem);
+    obj_lp.rows(0,nbI-1) = n_i;
+    obj_lp.rows(nbI, nbI + nbJ - 1) = m_j;
+    obj_lp.rows(nbI + nbJ, nbI + nbJ + nbX*nbY - 1).zeros();
+    obj_lp.rows(nbI + nbJ + nbX*nbY, obj_lp.n_elem-1) = - C_hat;
+
+    int modelSense = 0; // minimize
+    
+    arma::mat sol_mat(n_lp, 2);
+    arma::mat dual_mat(k_lp, 2);
+
+    bool lp_optimal = false;
+    double val_lp = 0.0;
+    //
+    try {
+        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_nonzero_elem, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        
+        if (lp_optimal) {
+            arma::mat mu_iy = arma::reshape(dual_mat(arma::span(0,nbI*nbY-1),0),nbI,nbY);
+            arma::mat mu = I_ix.t() * mu_iy;
+
+            theta_hat = sol_mat(arma::span(nbI+nbJ+nbX*nbY,nbI+nbJ+nbX*nbY+nbParams-1),0);
+            //
+            // package up solution
+            if (mu_out) {
+                *mu_out = mu;
+            }
+
+            if (U_out && V_out) {
+                *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
+                *V_out = arma::reshape(kron_mat*theta_hat,nbX,nbY) - *U_out;
+            } else if (U_out) {
+                *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
+            } else if (V_out) {
+                *V_out = arma::reshape(kron_mat*theta_hat,nbX,nbY) - arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
+            }
+
+            if (val_out) {
+                *val_out = val_lp;
+            }
+            //
+            success = true;
+        } else {
+            std::cout << "Non-optimal value found during optimization" << std::endl;
+        }
+#if !defined(TRAME_USE_GUROBI_C)
+    } catch(GRBException e) {
+        std::cout << "Error code = " << e.getErrorCode() << std::endl;
+        std::cout << e.getMessage() << std::endl;
+#endif
+    } catch(...) {
+        std::cout << "Exception during optimization" << std::endl;
+    }
     //
     return success;
 }

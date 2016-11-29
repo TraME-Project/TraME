@@ -60,7 +60,7 @@ OBJECTS_TRAME_ARUMS= $(SOURCES_TRAME_ARUMS:.cpp=.o)
 SOURCES_TRAME_MKTS= $(TRAME_SRC_DIR)/markets/dse.cpp $(TRAME_SRC_DIR)/markets/mmf.cpp $(TRAME_SRC_DIR)/markets/transfers.cpp
 OBJECTS_TRAME_MKTS= $(SOURCES_TRAME_MKTS:.cpp=.o)
 
-SOURCES_TRAME_MDLS= $(TRAME_SRC_DIR)/models/affinity.cpp
+SOURCES_TRAME_MDLS= $(TRAME_SRC_DIR)/models/affinity.cpp $(TRAME_SRC_DIR)/models/model.cpp
 OBJECTS_TRAME_MDLS= $(SOURCES_TRAME_MDLS:.cpp=.o)
 
 SOURCES_TRAME_SLVRS= $(TRAME_SRC_DIR)/solvers/aux_solvers.cpp
