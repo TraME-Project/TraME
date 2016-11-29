@@ -215,14 +215,17 @@ double trame::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, i
 
 double trame::empirical::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {
-    int i;
+    if (!TRAME_PRESOLVED_GBAR) {
+        presolve_LP_Gbar();
+    }
+    //
     double val=0.0, val_temp;
 
     U_out.set_size(nbX,nbY);
     mu_out.set_size(nbX,nbY);
     arma::mat U_x_temp, mu_x_temp;
     //
-    for (i=0; i<nbX; i++) {
+    for (int i=0; i<nbX; i++) {
         val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
 
         val += n(i)*val_temp;
@@ -309,11 +312,14 @@ double trame::empirical::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x
 void trame::empirical::presolve_LP_Gstar()
 {
     /*
-     * Here we build and store (using batch allocation) the 'A' matrix 
-     * that get passed to a linear programming solver in Gstarx.
+     * Here we build and store the linear constraint matrix ('A') used in Gstarx.
+     *
+     * (Note: we actually construct A-transpose because Armadillo sparse matrices
+     * are stored in compressed sparse column (CSC) format, whereas  Gurobi 
+     * requires inputs to be in compressed sparse row (CSR) format.)
      * 
-     * Batch allocation is *much* faster than first allocating the sparse
-     * matrix A_sp_* then consecutively adding elements.
+     * We use batch allocation because this is *much* faster than first 
+     * constructing a sparse matrix and then (ex-post) inserting values.
      */
 
     int jj, kk, count_val=0;
@@ -365,19 +371,22 @@ void trame::empirical::presolve_LP_Gstar()
 void trame::empirical::presolve_LP_Gbar()
 {
     /*
-     * Here we build and store (using batch allocation) the 'A' matrix 
-     * that get passed to a linear programming solver in Gbarx.
+     * Here we build and store the linear constraint matrix ('A') used in Gbarx.
+     *
+     * (Note: we actually construct A-transpose because Armadillo sparse matrices
+     * are stored in compressed sparse column (CSC) format, whereas  Gurobi 
+     * requires inputs to be in compressed sparse row (CSR) format.)
      * 
-     * Batch allocation is *much* faster than first allocating the sparse
-     * matrix A_sp_* then consecutively adding elements.
+     * We use batch allocation because this is *much* faster than first 
+     * constructing a sparse matrix and then (ex-post) inserting values.
      */
 
     int jj, kk, count_val=0;
 
-    arma::umat location_mat_2(2,nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
-    arma::rowvec vals_mat_2(nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws);
+    arma::umat location_mat_2(2,nbY + aux_nbDraws*nbY + aux_nbDraws*(nbY+1));
+    arma::rowvec vals_mat_2(nbY + aux_nbDraws*nbY + aux_nbDraws*(nbY+1));
 
-    for (jj=0; jj<nbY; jj++) {
+    for (jj=0; jj < nbY; jj++) { // top-left diagonal block
         location_mat_2(0,count_val) = jj;
         location_mat_2(1,count_val) = jj;
 
@@ -386,8 +395,8 @@ void trame::empirical::presolve_LP_Gbar()
         ++count_val;
     }
 
-    for (kk=0; kk<nbOptions; kk++) {
-        if (kk < nbOptions-1) {
+    for (kk=0; kk < (nbY+1); kk++) {
+        if (kk < nbY-1) { // top section 
             for (jj=0; jj<aux_nbDraws; jj++) {
                 location_mat_2(0,count_val) = kk;
                 location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
@@ -398,7 +407,7 @@ void trame::empirical::presolve_LP_Gbar()
             }
         }
 
-        for (jj=0; jj<aux_nbDraws; jj++) { // diagonal terms
+        for (jj=0; jj<aux_nbDraws; jj++) { // diagonal terms (nbY+1 number of blocks)
             location_mat_2(0,count_val) = nbY + jj;
             location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
 
@@ -413,7 +422,7 @@ void trame::empirical::presolve_LP_Gbar()
     k_Gbar = A_sp_Gbar_t.n_cols; // cols as we're working with the transpose
     n_Gbar = A_sp_Gbar_t.n_rows; // rows as we're working with the transpose
 
-    numnz_Gbar = nbY + aux_nbDraws*nbOptions*2 - aux_nbDraws;
+    numnz_Gbar = nbY + aux_nbDraws*nbY*2 - aux_nbDraws;
 
     const arma::uword* row_vals_2 = &(*A_sp_Gbar_t.row_indices);
     const arma::uword* col_vals_2 = &(*A_sp_Gbar_t.col_ptrs);
