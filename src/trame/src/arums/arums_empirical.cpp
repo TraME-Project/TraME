@@ -125,13 +125,16 @@ double trame::empirical::Gstar(arma::vec n)
 
 double trame::empirical::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out)
 {
-    int i;
+    if (!TRAME_PRESOLVED_GSTAR) {
+        presolve_LP_Gstar();
+    }
+    //
     double val = 0.0, val_x = 0.0;
 
     U_out.set_size(nbX,nbY);
     arma::mat U_x;
     //
-    for (i=0; i<nbX; i++) {
+    for (int i=0; i<nbX; i++) {
         val_x = Gstarx((mu_inp.row(i).t())/n(i),U_x,i);
 
         val += n(i)*val_x;
