@@ -42,4 +42,4 @@ Alfred Galichon and the TraME team.
 
 ### License
 
-GPL (>= 2)
+GPL (>= 2) 
