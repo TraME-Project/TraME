@@ -34,15 +34,9 @@
  * 01/11/2017
  */
 
-double sup_norm(double a, double b, double c)
-{
-    double ret = std::max(std::abs(a), std::abs(b));
-    ret = std::max(ret, std::abs(c));
+#include "trame.hpp"
 
-    return ret;
-}
-
-double line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::vec& direc, double* wolfe_cons_1_inp, double* wolfe_cons_2_inp, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data)
+double trame::line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::vec& direc, double* wolfe_cons_1_inp, double* wolfe_cons_2_inp, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data)
 {
     int max_iter = 100;
 
@@ -162,8 +156,16 @@ double line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::ve
     return step;
 }
 
+double trame::mt_sup_norm(double a, double b, double c)
+{
+    double ret = std::max(std::abs(a), std::abs(b));
+    ret = std::max(ret, std::abs(c));
+
+    return ret;
+}
+
 // update 'interval of uncertainty'
-int mt_step(double& st_best, double& f_best, double& d_best, double& st_other, double& f_other, double& d_other, double& step, double& f_step, double& d_step, bool& bracket, double step_min, double step_max)
+int trame::mt_step(double& st_best, double& f_best, double& d_best, double& st_other, double& f_other, double& d_other, double& step, double& f_step, double& d_step, bool& bracket, double step_min, double step_max)
 {
     bool bound = false;
     int info = 0;
@@ -176,7 +178,7 @@ int mt_step(double& st_best, double& f_best, double& d_best, double& st_other, d
         bound = true;
 
         theta = 3*(f_best - f_step)/(step - st_best) + d_best + d_step;
-        s = sup_norm(theta,d_best,d_step); // sup norm
+        s = mt_sup_norm(theta,d_best,d_step); // sup norm
 
         gamma = s*std::sqrt(std::pow(theta/s,2) - (d_best/s)*(d_step/s));
         if (step < st_best) {
@@ -202,7 +204,7 @@ int mt_step(double& st_best, double& f_best, double& d_best, double& st_other, d
         bound = false;
      
         theta = 3*(f_best - f_step)/(step - st_best) + d_best + d_step;
-        s = sup_norm(theta,d_best,d_step); // sup norm
+        s = mt_sup_norm(theta,d_best,d_step); // sup norm
 
         gamma = s*std::sqrt(std::pow(theta/s,2) - (d_best/s)*(d_step/s));
         if (step > st_best) {
@@ -228,7 +230,7 @@ int mt_step(double& st_best, double& f_best, double& d_best, double& st_other, d
         bound = true;
 
         theta = 3*(f_best - f_step)/(step - st_best) + d_best + d_step;
-        s = sup_norm(theta,d_best,d_step); // sup norm
+        s = mt_sup_norm(theta,d_best,d_step); // sup norm
 
         gamma = s*std::sqrt(std::max(0.0,std::pow(theta/s,2) - (d_best/s)*(d_step/s)));
         if (step > st_best) {
@@ -268,7 +270,7 @@ int mt_step(double& st_best, double& f_best, double& d_best, double& st_other, d
 
         if (bracket) {
             theta = 3*(f_step - f_other)/(st_other - step) + d_other + d_step;
-            s = sup_norm(theta,d_other,d_step);
+            s = mt_sup_norm(theta,d_other,d_step);
 
             gamma = s*std::sqrt(std::pow(theta/s,2) - (d_other/s)*(d_step/s));
             if (step > st_other) {

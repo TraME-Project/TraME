@@ -160,6 +160,7 @@ bool model<Ta>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     //
     // add optimization data
     trame_model_opt_data<Ta> opt_data;
+    
     opt_data.market = market_obj;
     opt_data.nbParams = nbParams;
     opt_data.C_hat = C_hat;

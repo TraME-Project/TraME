@@ -23,18 +23,20 @@
   ################################################################################*/
 
 /*
- * Moré and Thuente line search
- *
- * Based on MINPACK fortran code and Dianne P. O'Leary's Matlab translation of MINPACK
+ * Optimization-related functions
  *
  * Keith O'Hara
- * 01/03/2017
+ * 01/11/2017
  *
  * This version:
  * 01/11/2017
  */
 
-double sup_norm(double a, double b, double c);
+#ifndef _optim_HPP
+#define _optim_HPP
 
-double line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::vec& direc, double* wolfe_cons_1_inp, double* wolfe_cons_2_inp, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data);
-int mt_step(double& st_best, double& f_best, double& d_best, double& st_other, double& f_other, double& d_other, double& step, double& f_step, double& d_step, bool& bracket, double step_min, double step_max);
+#include "bfgs.hpp"
+#include "broyden.hpp"
+#include "line_search.hpp"
+
+#endif

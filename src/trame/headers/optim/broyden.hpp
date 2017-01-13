@@ -32,5 +32,9 @@
  * 01/11/2017
  */
 
-arma::vec unit_vec(int j, int n);
+#ifndef _broyden_HPP
+#define _broyden_HPP
+
 bool broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data);
+
+#endif

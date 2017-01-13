@@ -19,6 +19,8 @@ namespace trame
     #include "lp/generic_lp.hpp"
     #include "nlopt/generic_nlopt.hpp"
 
+    #include "optim/optim.hpp"
+
     // heterogeneity
     #include "arums/arums_empirical.hpp"
     #include "arums/arums_logit.hpp"

@@ -73,6 +73,15 @@ inline arma::uvec which_max(const arma::mat& X, int which_dim)
     return max_vec;
 }
 
+// unit vector
+arma::vec unit_vec(int j, int n)
+{
+    arma::vec ret = arma::zeros(n,1);
+    ret(j) = 1;
+
+    return ret;
+}
+
 // Generate an equi-spaced grid of integers
 inline arma::uvec uvec_linspace (int a, int b)
 {

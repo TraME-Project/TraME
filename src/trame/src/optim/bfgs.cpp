@@ -32,7 +32,9 @@
  * 01/11/2017
  */
 
-bool bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data)
+#include "trame.hpp"
+
+bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data)
 {
     // notation: 'p' stands for '+1'.
     //
