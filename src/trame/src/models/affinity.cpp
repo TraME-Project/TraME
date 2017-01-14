@@ -141,14 +141,14 @@ bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat,
     // add optimization data
     trame_nlopt_opt_data opt_data;
 
+    opt_data.mme_woregal.max_iter_ipfp = max_iter_ipfp;
+    opt_data.mme_woregal.tol_ipfp = tol_ipfp;
+
     opt_data.mme_woregal.nbX = nbX;
     opt_data.mme_woregal.nbY = nbY;
 
     opt_data.mme_woregal.dX = dX;
     opt_data.mme_woregal.dY = dY;
-    
-    opt_data.mme_woregal.max_iter_ipfp = max_iter_ipfp;
-    opt_data.mme_woregal.tol_ipfp = tol_ipfp;
 
     opt_data.mme_woregal.sigma = sigma;
 
@@ -166,14 +166,20 @@ bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat,
 
     opt_data.mme_woregal.phi_xy = phi_xy; // should be (nbX*nbY) x (nbParams)
     //
+    /*
     arma::mat A0 = arma::zeros(dX*dY,1);
     std::vector<double> sol_vec = arma::conv_to< std::vector<double> >::from(A0);
     double obj_val = 0;
 
     bool success = generic_nlopt(dX*dY,sol_vec,obj_val,NULL,NULL,trame::affinity::mme_woregul_opt_objfn,opt_data);
+    */
+    arma::vec opt_vec = arma::zeros(dX*dY,1);
+
+    bool success = generic_optim(opt_vec,trame::affinity::mme_woregul_opt_objfn_2,&opt_data);
     //
-    theta_hat = arma::conv_to< arma::mat >::from(sol_vec);
-    val_ret = obj_val;
+    theta_hat = opt_vec;
+    //val_ret = obj_val;
+    val_ret = 0.0;
     //
     return success;
 }
@@ -222,12 +228,14 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, a
     arma::mat v_next = v, u, Pi, the_grad, A_mat, U, V, D, svd_mat, D_opt, opt_mat;
 
     while (err_val > xtol_rel && iter_count < max_eval) {
+        std::cout << "iter_count: " << iter_count << std::endl;
         iter_count++;
 
         Phi = arma::reshape(Phi_xy(arma::vectorise(A)),nbX,nbY);
         err_ipfp= 2*tol_ipfp;
         iter_ipfp = 0;
 
+        std::cout << "begin ipfp loop" << std::endl;
         while (err_ipfp > tol_ipfp && iter_ipfp < max_iter_ipfp) {
             iter_ipfp++;
 
@@ -243,6 +251,7 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, a
 
         A -= t_k*the_grad;
         //
+        std::cout << "compute SVD" << std::endl;
         if (lambda > 0) {
             // compute the proximal operator
             A_mat = arma::reshape(A,dX,dY);
@@ -369,6 +378,68 @@ double trame::affinity::mme_woregul_opt_objfn(const std::vector<double> &x_inp, 
     if (!grad.empty()) {
         grad = arma::conv_to< std::vector<double> >::from(the_grad);
     }
+    //
+    // update v for the next opt call
+    d->mme_woregal.v = v;
+    opt_data = reinterpret_cast<void*>(d);
+    //
+    double ret = arma::accu(the_grad % arma::vectorise(A)) - sigma*arma::accu(Pi%arma::log(Pi));
+    //
+    return ret;
+}
+
+double trame::affinity::mme_woregul_opt_objfn_2(const arma::vec& vals_inp, arma::vec& grad, void* opt_data)
+{
+    trame_nlopt_opt_data *d = reinterpret_cast<trame_nlopt_opt_data*>(opt_data);
+    //
+    //int nbX = d->mme_woregal.nbX;
+    //int nbY = d->mme_woregal.nbY;
+
+    int dX = d->mme_woregal.dX;
+    int dY = d->mme_woregal.dY;
+    
+    int max_iter_ipfp = d->mme_woregal.max_iter_ipfp;
+    double tol_ipfp = d->mme_woregal.tol_ipfp;
+
+    double sigma = d->mme_woregal.sigma;
+
+    arma::vec p = d->mme_woregal.p;
+    arma::vec q = d->mme_woregal.q;
+
+    arma::mat IX = d->mme_woregal.IX;
+    arma::mat tIY = d->mme_woregal.tIY;
+
+    arma::mat f = d->mme_woregal.f;
+    arma::mat g = d->mme_woregal.g;
+
+    arma::mat v = d->mme_woregal.v;
+    arma::mat Pi_hat = d->mme_woregal.Pi_hat;
+
+    arma::mat phi_xy = d->mme_woregal.phi_xy; // should be (nbX*nbY) x (nbParams), replaces a member function call
+    //
+    arma::mat A = vals_inp;
+
+    //arma::mat Phi = Phi_xy(arma::vectorise(A));
+    arma::mat Phi = phi_xy * arma::vectorise(A);
+    //
+    int iter_ipfp = 0;
+    double err_ipfp= 2*tol_ipfp;
+    arma::mat v_next = v, u;
+
+    while (err_ipfp > tol_ipfp && iter_ipfp < max_iter_ipfp) {
+        iter_ipfp++;
+
+        u = sigma * arma::log(arma::sum(g % arma::exp((Phi - IX * v)/sigma),1));
+        v_next = sigma * arma::log(arma::sum( f % arma::exp((Phi - u * tIY)/sigma), 2));
+
+        err_ipfp = elem_max(arma::abs( arma::sum(g % arma::exp((Phi - IX * v_next - u*tIY)/sigma),1) - 1.0 ));
+        v = v_next;
+    }
+    //
+    arma::mat Pi = f % g % arma::exp( (Phi - IX*v - u*tIY)/sigma );
+    arma::mat the_grad = phi_xy.t() * arma::vectorise(Pi - Pi_hat);
+
+    grad = the_grad;
     //
     // update v for the next opt call
     d->mme_woregal.v = v;

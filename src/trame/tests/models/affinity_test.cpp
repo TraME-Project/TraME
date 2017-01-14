@@ -34,6 +34,8 @@ int main()
     arma::mat mu_hat = arma::ones(nbX,nbY), theta_hat;
 
     aff_model.mme_regul(mu_hat,lambda,theta_hat,val_hat,NULL,NULL,NULL,NULL);
+    printf("don with regul\n");
+    aff_model.mme_woregul(mu_hat,theta_hat,val_hat,NULL,NULL,NULL,NULL);
 
     //
     printf("\n*===================    End of affinity model Test    ===================*\n");
