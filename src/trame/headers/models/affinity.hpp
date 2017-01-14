@@ -75,5 +75,6 @@ class affinity
         arma::mat Phi_k(const arma::mat& mu_hat);
 
         void init_param(arma::mat& params);
+        static double mme_woregul_opt_objfn_2(const arma::vec& vals_inp, arma::vec& grad, void* opt_data);
         static double mme_woregul_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
 };

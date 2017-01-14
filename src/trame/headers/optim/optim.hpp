@@ -38,5 +38,6 @@
 #include "bfgs.hpp"
 #include "broyden.hpp"
 #include "line_search.hpp"
+#include "generic_optim.hpp"
 
 #endif
