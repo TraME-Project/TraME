@@ -18,8 +18,10 @@ int main()
     int nbX = 100;
     int nbY = 100;
 
-    arma::mat X_vals = arma::randu(nbX,10);
-    arma::mat Y_vals = arma::randu(nbY,10);
+    //arma::mat X_vals = arma::randu(nbX,10);
+    arma::mat X_vals(nbX,10); X_vals.fill(0.5);
+    //arma::mat Y_vals = arma::randu(nbY,10);
+    arma::mat Y_vals(nbY,10); Y_vals.fill(0.3);
     //
     // results
     printf("\n*===================   Start of affinity model Test   ===================*\n");
@@ -28,15 +30,16 @@ int main()
     // TU
     trame::affinity aff_model;
     aff_model.build(X_vals,Y_vals);
-
+    
     double lambda = 0.15;
     double val_hat;
-    arma::mat mu_hat = arma::ones(nbX,nbY), theta_hat;
+    arma::mat mu_hat = arma::ones(nbX,nbY)/(nbX), theta_hat;
 
     aff_model.mme_regul(mu_hat,lambda,theta_hat,val_hat,NULL,NULL,NULL,NULL);
-    printf("don with regul\n");
+    std::cout << "the_val with regularization: " << val_hat << std::endl;
     aff_model.mme_woregul(mu_hat,theta_hat,val_hat,NULL,NULL,NULL,NULL);
-
+    std::cout << "the_val without regularization: " << val_hat << std::endl;
+    arma::cout << "theta_hat: \n" << theta_hat << arma::endl;
     //
     printf("\n*===================    End of affinity model Test    ===================*\n");
     printf("\n");

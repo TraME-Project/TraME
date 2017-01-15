@@ -63,16 +63,8 @@ void trame::affinity::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, 
 
     sigma = (sigma_inp) ? *sigma_inp : 1.0;
     //
-    if (n_inp) {
-        n = *n_inp;
-    } else {
-        n.ones(nbX,1);
-    }
-    if (m_inp) {
-        m = *m_inp;
-    } else {
-        m.ones(nbY,1);
-    }
+    n = (n_inp) ? *n_inp : arma::ones(nbX,1);
+    m = (m_inp) ? *m_inp : arma::ones(nbY,1);
 
     phi_xyk_aux = arma::kron(Y_inp,X_inp);
     //
@@ -85,7 +77,7 @@ void trame::affinity::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, 
 trame::mfe<trame::mmf> trame::affinity::build_market(const arma::mat& theta)
 {
     arma::mat Phi_mkt = Phi_xy(arma::vectorise(theta));
-    Phi_mkt.resize(nbX,nbY);
+    Phi_mkt.reshape(nbX,nbY);
 
     trame::mfe<trame::mmf> mkt_ret;
     mkt_ret.build_TU(n,m,Phi_mkt,&sigma,false);
@@ -109,9 +101,8 @@ void trame::affinity::dparam(arma::mat* dparams_inp, arma::mat& dparamsPsi_out, 
 
 bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
 {
-    //double xtol_rel = (xtol_rel_inp) ? *xtol_rel_inp : 1E-04;
-    //int max_eval = (max_eval_inp) ? *max_eval_inp : 1E05;
-
+    bool success = false;
+    //
     double tol_ipfp = (tol_ipfp_inp) ? *tol_ipfp_inp : 1E-14;
     int max_iter_ipfp = (max_iter_ipfp_inp) ? *max_iter_ipfp_inp : 1E05;
     //
@@ -124,6 +115,11 @@ bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat,
     //
     double total_mass = arma::accu(n);
 
+    if (std::abs(arma::accu(mu_hat) - total_mass) > 1E-06) { // we use this instead of a raw '!=' to account for rounding error
+        printf("Total number of couples does not coincide with margins.\n");
+        return success;
+    }
+    //
     arma::vec p = n / total_mass;
     arma::vec q = m / total_mass;
 
@@ -166,20 +162,15 @@ bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat,
 
     opt_data.mme_woregal.phi_xy = phi_xy; // should be (nbX*nbY) x (nbParams)
     //
-    /*
-    arma::mat A0 = arma::zeros(dX*dY,1);
-    std::vector<double> sol_vec = arma::conv_to< std::vector<double> >::from(A0);
-    double obj_val = 0;
-
-    bool success = generic_nlopt(dX*dY,sol_vec,obj_val,NULL,NULL,trame::affinity::mme_woregul_opt_objfn,opt_data);
-    */
     arma::vec opt_vec = arma::zeros(dX*dY,1);
 
-    bool success = generic_optim(opt_vec,trame::affinity::mme_woregul_opt_objfn_2,&opt_data);
+    success = generic_optim(opt_vec,trame::affinity::mme_woregul_opt_objfn,&opt_data);
     //
-    theta_hat = opt_vec;
-    //val_ret = obj_val;
-    val_ret = 0.0;
+    if (success) {
+        theta_hat = opt_vec;
+        arma::vec grad_temp;
+        val_ret = trame::affinity::mme_woregul_opt_objfn(opt_vec,grad_temp,&opt_data);
+    }
     //
     return success;
 }
@@ -203,6 +194,11 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, a
     //
     double total_mass = arma::accu(n);
 
+    if (std::abs(arma::accu(mu_hat) - total_mass) > 1E-06) { // we use this instead of a raw '!=' to account for rounding error
+        printf("Total number of couples does not coincide with margins.\n");
+        return success;
+    }
+    //
     arma::vec p = n / total_mass;
     arma::vec q = m / total_mass;
 
@@ -228,14 +224,12 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, a
     arma::mat v_next = v, u, Pi, the_grad, A_mat, U, V, D, svd_mat, D_opt, opt_mat;
 
     while (err_val > xtol_rel && iter_count < max_eval) {
-        std::cout << "iter_count: " << iter_count << std::endl;
         iter_count++;
 
         Phi = arma::reshape(Phi_xy(arma::vectorise(A)),nbX,nbY);
         err_ipfp= 2*tol_ipfp;
         iter_ipfp = 0;
 
-        std::cout << "begin ipfp loop" << std::endl;
         while (err_ipfp > tol_ipfp && iter_ipfp < max_iter_ipfp) {
             iter_ipfp++;
 
@@ -251,12 +245,11 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, a
 
         A -= t_k*the_grad;
         //
-        std::cout << "compute SVD" << std::endl;
         if (lambda > 0) {
             // compute the proximal operator
             A_mat = arma::reshape(A,dX,dY);
             arma::svd(U,d,V,A_mat);
-            D = arma::diagmat(elem_max(d,lambda*t_k));
+            D = arma::diagmat(elem_max(d - lambda*t_k,0.0));
             A = arma::vectorise(U * D * V.t());
         } // if lambda = 0 then we are just taking one step of gradient descent
         //
@@ -264,9 +257,9 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, a
             //alpha = 1.0;
             svd_mat = arma::reshape(A - alpha*the_grad,dX,dY);
             arma::svd(U,d_opt,V,svd_mat);
-            D_opt = arma::diagmat(elem_max(d_opt,alpha*lambda));
+            D_opt = arma::diagmat(elem_max(d_opt - alpha*lambda, 0.0));
 
-            opt_mat = arma::accu(arma::pow( A - arma::vectorise(U * D_opt *V.t()) , 2));
+            opt_mat = arma::accu(arma::pow(A - arma::vectorise(U * D_opt *V.t()), 2));
         }
         //
         if (lambda > 0) {
@@ -308,8 +301,8 @@ arma::mat trame::affinity::Phi_xy(const arma::mat& lambda)
 arma::mat trame::affinity::Phi_k(const arma::mat& mu_hat)
 {
     arma::mat phi_xyk_temp = arma::reshape(phi_xyk_aux,nbX*nbY,nbParams); 
-    //arma::mat ret = arma::vectorise(arma::trans(arma::vectorise(mu_hat))*phi_xyk_temp);
-    arma::mat ret = phi_xyk_temp.t() * arma::vectorise(mu_hat);
+    arma::mat ret = arma::vectorise(arma::trans(arma::vectorise(mu_hat))*phi_xyk_temp);
+    //arma::mat ret = phi_xyk_temp.t() * arma::vectorise(mu_hat);
     //
     return ret;
 }
@@ -323,15 +316,15 @@ void trame::affinity::init_param(arma::mat& params)
  * optimization-related functions
  */
 
-double trame::affinity::mme_woregul_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data)
+double trame::affinity::mme_woregul_opt_objfn(const arma::vec& vals_inp, arma::vec& grad, void* opt_data)
 {
     trame_nlopt_opt_data *d = reinterpret_cast<trame_nlopt_opt_data*>(opt_data);
     //
-    //int nbX = d->mme_woregal.nbX;
-    //int nbY = d->mme_woregal.nbY;
+    int nbX = d->mme_woregal.nbX;
+    int nbY = d->mme_woregal.nbY;
 
-    int dX = d->mme_woregal.dX;
-    int dY = d->mme_woregal.dY;
+    //int dX = d->mme_woregal.dX;
+    //int dY = d->mme_woregal.dY;
     
     int max_iter_ipfp = d->mme_woregal.max_iter_ipfp;
     double tol_ipfp = d->mme_woregal.tol_ipfp;
@@ -352,11 +345,7 @@ double trame::affinity::mme_woregul_opt_objfn(const std::vector<double> &x_inp, 
 
     arma::mat phi_xy = d->mme_woregal.phi_xy; // should be (nbX*nbY) x (nbParams), replaces a member function call
     //
-    arma::mat A(dX*dY,1);
-    A = arma::conv_to< arma::mat >::from(x_inp);
-
-    //arma::mat Phi = Phi_xy(arma::vectorise(A));
-    arma::mat Phi = phi_xy * arma::vectorise(A);
+    arma::mat Phi = arma::reshape(phi_xy * vals_inp,nbX,nbY);
     //
     int iter_ipfp = 0;
     double err_ipfp= 2*tol_ipfp;
@@ -366,71 +355,7 @@ double trame::affinity::mme_woregul_opt_objfn(const std::vector<double> &x_inp, 
         iter_ipfp++;
 
         u = sigma * arma::log(arma::sum(g % arma::exp((Phi - IX * v)/sigma),1));
-        v_next = sigma * arma::log(arma::sum( f % arma::exp((Phi - u * tIY)/sigma), 2));
-
-        err_ipfp = elem_max(arma::abs( arma::sum(g % arma::exp((Phi - IX * v_next - u*tIY)/sigma),1) - 1.0 ));
-        v = v_next;
-    }
-    //
-    arma::mat Pi = f % g % arma::exp( (Phi - IX*v - u*tIY)/sigma );
-    arma::mat the_grad = phi_xy.t() * arma::vectorise(Pi - Pi_hat);
-
-    if (!grad.empty()) {
-        grad = arma::conv_to< std::vector<double> >::from(the_grad);
-    }
-    //
-    // update v for the next opt call
-    d->mme_woregal.v = v;
-    opt_data = reinterpret_cast<void*>(d);
-    //
-    double ret = arma::accu(the_grad % arma::vectorise(A)) - sigma*arma::accu(Pi%arma::log(Pi));
-    //
-    return ret;
-}
-
-double trame::affinity::mme_woregul_opt_objfn_2(const arma::vec& vals_inp, arma::vec& grad, void* opt_data)
-{
-    trame_nlopt_opt_data *d = reinterpret_cast<trame_nlopt_opt_data*>(opt_data);
-    //
-    //int nbX = d->mme_woregal.nbX;
-    //int nbY = d->mme_woregal.nbY;
-
-    int dX = d->mme_woregal.dX;
-    int dY = d->mme_woregal.dY;
-    
-    int max_iter_ipfp = d->mme_woregal.max_iter_ipfp;
-    double tol_ipfp = d->mme_woregal.tol_ipfp;
-
-    double sigma = d->mme_woregal.sigma;
-
-    arma::vec p = d->mme_woregal.p;
-    arma::vec q = d->mme_woregal.q;
-
-    arma::mat IX = d->mme_woregal.IX;
-    arma::mat tIY = d->mme_woregal.tIY;
-
-    arma::mat f = d->mme_woregal.f;
-    arma::mat g = d->mme_woregal.g;
-
-    arma::mat v = d->mme_woregal.v;
-    arma::mat Pi_hat = d->mme_woregal.Pi_hat;
-
-    arma::mat phi_xy = d->mme_woregal.phi_xy; // should be (nbX*nbY) x (nbParams), replaces a member function call
-    //
-    arma::mat A = vals_inp;
-
-    //arma::mat Phi = Phi_xy(arma::vectorise(A));
-    arma::mat Phi = phi_xy * arma::vectorise(A);
-    //
-    int iter_ipfp = 0;
-    double err_ipfp= 2*tol_ipfp;
-    arma::mat v_next = v, u;
-
-    while (err_ipfp > tol_ipfp && iter_ipfp < max_iter_ipfp) {
-        iter_ipfp++;
-
-        u = sigma * arma::log(arma::sum(g % arma::exp((Phi - IX * v)/sigma),1));
-        v_next = sigma * arma::log(arma::sum( f % arma::exp((Phi - u * tIY)/sigma), 2));
+        v_next = sigma * arma::log(arma::sum( f % arma::exp((Phi - u * tIY)/sigma),0));
 
         err_ipfp = elem_max(arma::abs( arma::sum(g % arma::exp((Phi - IX * v_next - u*tIY)/sigma),1) - 1.0 ));
         v = v_next;
@@ -445,7 +370,7 @@ double trame::affinity::mme_woregul_opt_objfn_2(const arma::vec& vals_inp, arma:
     d->mme_woregal.v = v;
     opt_data = reinterpret_cast<void*>(d);
     //
-    double ret = arma::accu(the_grad % arma::vectorise(A)) - sigma*arma::accu(Pi%arma::log(Pi));
+    double ret = arma::accu(the_grad % arma::vectorise(vals_inp)) - sigma*arma::accu(Pi%arma::log(Pi));
     //
     return ret;
 }
