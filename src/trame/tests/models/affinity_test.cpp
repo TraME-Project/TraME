@@ -18,10 +18,10 @@ int main()
     int nbX = 100;
     int nbY = 100;
 
-    //arma::mat X_vals = arma::randu(nbX,10);
-    arma::mat X_vals(nbX,10); X_vals.fill(0.5);
-    //arma::mat Y_vals = arma::randu(nbY,10);
-    arma::mat Y_vals(nbY,10); Y_vals.fill(0.3);
+    arma::mat X_vals = arma::randu(nbX,10);
+    //arma::mat X_vals(nbX,10); X_vals.fill(0.5);
+    arma::mat Y_vals = arma::randu(nbY,10);
+    //arma::mat Y_vals(nbY,10); Y_vals.fill(0.3);
     //
     // results
     printf("\n*===================   Start of affinity model Test   ===================*\n");

@@ -124,13 +124,12 @@ double trame::rsc::G(arma::vec n)
 
 double trame::rsc::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
 {
-    int i;
     double val=0.0, val_x;
 
     mu_out.set_size(nbX,nbY);
     arma::mat mu_x_temp;
     //
-    for (i=0; i<nbX; i++) {
+    for (int i=0; i<nbX; i++) {
         val_x = Gx(U_inp.row(i).t(), mu_x_temp, i);
         //
         val += n(i)*val_x;
