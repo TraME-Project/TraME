@@ -41,13 +41,14 @@ if [[ $OSTYPE == darwin* ]] ; then
         TRAME_BLAS_LAPACK="-framework Accelerate"
     fi
 
-    # look for any Gurobi directories, and choose the latest one
+    # look for any Gurobi directories, then choose the latest one
     grb_dirs=( /Library/gurobi* )
     nmb_dirs=${#grb_dirs[@]}
     grb_latest=${grb_dirs[$nmb_dirs-1]}
 
-    # grb_dirs will always be non-empty; in the case where no Gurobi directories are detected,
-    # grb_dirs will contain '/Library/gurobi*' which is not a directory, so we need the following check
+    # 'grb_dirs' will always be non-empty; in the case where no Gurobi directories are detected,
+    # grb_dirs will contain just '/Library/gurobi*', which is not an actual directory, so we need 
+    # the following sanity check
     if [ -d $grb_latest ] ; then
 
         grb_lib_path=( "$grb_latest/mac64/lib/libgurobi*.so" )
@@ -56,15 +57,15 @@ if [[ $OSTYPE == darwin* ]] ; then
         grb_lib_name=$(basename ${grb_lib_latest})
         grb_lib_num=${grb_lib_name//[^0-9]/}
 
-        GRB_INCLUDE_PATH="-I$grb_latest/mac64/include"
-        GRB_LIB_PATH="-L$grb_latest/mac64/lib"
-        GRB_LIBS="-lgurobi${grb_lib_num}"
-        GRB_LIB_RPATH="-Wl,-rpath,$grb_latest/mac64/lib"
+        LP_INCLUDE_PATH="-I$grb_latest/mac64/include"
+        LP_LIB_PATH="-L$grb_latest/mac64/lib"
+        LP_LIBS="-lgurobi${grb_lib_num}"
+        LP_LIB_RPATH="-Wl,-rpath,$grb_latest/mac64/lib"
     else
-        GRB_INCLUDE_PATH=
-        GRB_LIB_PATH=
-        GRB_LIBS=
-        GRB_LIB_RPATH=
+        LP_INCLUDE_PATH=
+        LP_LIB_PATH=
+        LP_LIBS=
+        LP_LIB_RPATH=
     fi
 elif [[ $OSTYPE == *linux* ]] ; then
     TRAME_BLAS_LAPACK="${TRAME_LAPACK_LIBS} ${TRAME_BLAS_LIBS}"
@@ -73,23 +74,23 @@ elif [[ $OSTYPE == *linux* ]] ; then
         grb_dirs=( /opt/gurobi* )
         nmb_dirs=${#grb_dirs[@]}
 
-        GRB_INCLUDE_PATH="-I${grb_dirs[$nmb_dirs-1]}/linux64/include"
-        GRB_LIB_PATH="-L${grb_dirs[$nmb_dirs-1]}/linux64/lib"
-        GRB_LIBS="-lgurobi65"
-        GRB_LIB_RPATH="-Wl,-rpath,${grb_dirs[$nmb_dirs-1]}/linux64/lib"
+        LP_INCLUDE_PATH="-I${grb_dirs[$nmb_dirs-1]}/linux64/include"
+        LP_LIB_PATH="-L${grb_dirs[$nmb_dirs-1]}/linux64/lib"
+        LP_LIBS="-lgurobi65"
+        LP_LIB_RPATH="-Wl,-rpath,${grb_dirs[$nmb_dirs-1]}/linux64/lib"
     else
-        GRB_INCLUDE_PATH=
-        GRB_LIB_PATH=
-        GRB_LIBS=
-        GRB_LIB_RPATH=
+        LP_INCLUDE_PATH=
+        LP_LIB_PATH=
+        LP_LIBS=
+        LP_LIB_RPATH=
     fi
 else
     TRAME_BLAS_LAPACK=
 
-    GRB_INCLUDE_PATH=
-    GRB_LIB_PATH=
-    GRB_LIBS=
-    GRB_LIB_RPATH=
+    LP_INCLUDE_PATH=
+    LP_LIB_PATH=
+    LP_LIBS=
+    LP_LIB_RPATH=
 fi
 
 sed -e "s|@CC@|${CC}|" \
@@ -103,8 +104,8 @@ sed -e "s|@CC@|${CC}|" \
     -e "s|@NLOPT_INCLUDE_PATH@|${NLOPT_INCLUDE_PATH}|" \
     -e "s|@NLOPT_LIB_PATH@|${NLOPT_LIB_PATH}|" \
     -e "s|@NLOPT_LIBS@|${NLOPT_LIBS}|" \
-    -e "s|@GRB_INCLUDE_PATH@|${GRB_INCLUDE_PATH}|" \
-    -e "s|@GRB_LIB_PATH@|${GRB_LIB_PATH}|" \
-    -e "s|@GRB_LIBS@|${GRB_LIBS}|" \
-    -e "s|@GRB_LIB_RPATH@|${GRB_LIB_RPATH}|" \
+    -e "s|@LP_INCLUDE_PATH@|${LP_INCLUDE_PATH}|" \
+    -e "s|@LP_LIB_PATH@|${LP_LIB_PATH}|" \
+    -e "s|@LP_LIBS@|${LP_LIBS}|" \
+    -e "s|@LP_LIB_RPATH@|${LP_LIB_RPATH}|" \
     Makefile.in > Makefile

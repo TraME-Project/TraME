@@ -28,9 +28,6 @@
  *
  * Keith O'Hara
  * 05/08/2016
- *
- * clang -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_c.c -c -o generic_lp_c.o
- * gcc-mp-5 -O2 -Wall -I/opt/local/include -I/Library/gurobi650/mac64/include generic_lp_c.c -c -o generic_lp_c.o
  */
  
 #include <string.h>
@@ -38,7 +35,7 @@
 #include "lp/generic_lp_c.h"
 
 //
-// Dense setup; NOT to be used with Armadillo memptr based passing 
+// Dense setup; NOT to be used with Armadillo memptr-based passing 
 int generic_LP_C(int rows, int cols, double* obj, double* A, int model_opt_sense, 
                  double* rhs, char* constr_sense, double* Q, double* lb, double* ub, 
                  double* objval, double* sol_mat_X, double* sol_mat_RC, 
@@ -159,7 +156,7 @@ QUIT:
 }
 
 //
-// Dense setup; should be used with Armadillo memptr based passing 
+// Dense setup; to be used with Armadillo memptr-based passing 
 int generic_LP_C_switch(int rows, int cols, double* obj, double* A, int model_opt_sense, 
                         double* rhs, char* constr_sense, double* Q, double* lb, double* ub, 
                         double* objval, double* sol_mat_X, double* sol_mat_RC, 
