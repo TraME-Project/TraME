@@ -23,22 +23,23 @@
   ################################################################################*/
 
 /*
- * Optimization-related functions
+ * Sequential unconstrained minimization technique (SUMT)
  *
  * Keith O'Hara
- * 01/11/2017
+ * 01/15/2016
  *
  * This version:
- * 01/11/2017
+ * 01/17/2017
  */
 
-#ifndef _optim_HPP
-#define _optim_HPP
+#ifndef _sumt_HPP
+#define _sumt_HPP
 
-#include "bfgs.hpp"
-#include "broyden.hpp"
-#include "line_search.hpp"
-#include "sumt.hpp"
-#include "generic_optim.hpp"
+struct sumt_struct {
+    double c_pen;
+};
+
+bool sumt(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data,
+          std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* constr_data)> constr_fn, void* constr_data);
 
 #endif

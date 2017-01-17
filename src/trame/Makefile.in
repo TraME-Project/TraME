@@ -63,7 +63,7 @@ OBJECTS_TRAME_MKTS= $(SOURCES_TRAME_MKTS:.cpp=.o)
 SOURCES_TRAME_MDLS= $(TRAME_SRC_DIR)/models/affinity.cpp $(TRAME_SRC_DIR)/models/model.cpp
 OBJECTS_TRAME_MDLS= $(SOURCES_TRAME_MDLS:.cpp=.o)
 
-SOURCES_TRAME_OPTIM= $(TRAME_SRC_DIR)/optim/bfgs.cpp $(TRAME_SRC_DIR)/optim/broyden.cpp $(TRAME_SRC_DIR)/optim/line_search.cpp $(TRAME_SRC_DIR)/optim/generic_optim.cpp
+SOURCES_TRAME_OPTIM= $(TRAME_SRC_DIR)/optim/bfgs.cpp $(TRAME_SRC_DIR)/optim/broyden.cpp $(TRAME_SRC_DIR)/optim/line_search.cpp $(TRAME_SRC_DIR)/optim/sumt.cpp $(TRAME_SRC_DIR)/optim/generic_optim.cpp
 OBJECTS_TRAME_OPTIM= $(SOURCES_TRAME_OPTIM:.cpp=.o)
 
 SOURCES_TRAME_SLVRS= $(TRAME_SRC_DIR)/solvers/aux_solvers.cpp

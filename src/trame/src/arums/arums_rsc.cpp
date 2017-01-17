@@ -359,6 +359,57 @@ double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma
     return ret;
 }
 
+double trame::rsc::Gbarx_2(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+{
+    if (!outsideOption) {
+        printf("Gbarx not implemented yet when outsideOption==false");
+        return 0.0;
+    }
+    //
+    arma::vec lb = arma::zeros(nbY,1);
+    arma::vec ub = mubar_x;
+
+    arma::vec sol_vec = mubar_x/2.0;
+    double obj_val = 0;
+    double ret = 0;
+    //
+    // opt data
+    trame_nlopt_opt_data opt_data;
+
+    opt_data.rsc_gbar.x = x;
+    opt_data.rsc_gbar.nbY = nbY;
+    opt_data.rsc_gbar.Ubar_x = Ubar_x;
+    opt_data.rsc_gbar.zeta = zeta;
+
+    opt_data.rsc_gbar.aux_DinvPsigma = aux_DinvPsigma.slice(x);
+    opt_data.rsc_gbar.aux_Psigma = aux_Psigma.slice(x);
+    opt_data.rsc_gbar.aux_Influence_lhs = aux_Influence_lhs.slice(x);
+    opt_data.rsc_gbar.aux_Influence_rhs = aux_Influence_rhs.slice(x);
+
+    opt_data.rsc_gbar.pot_eps_vec = aux_pot_eps_vec;
+    opt_data.rsc_gbar.quantile_eps_vec = aux_quant_eps_vec;
+
+    opt_data.rsc_gbar.dist_pars = dist_pars;
+
+    //
+    // constr data
+    trame_nlopt_constr_data constr_data;
+    constr_data.rsc_gbar.nbY = nbY;
+    //
+    bool success = generic_nlopt(nbY,sol_vec,obj_val,lb.memptr(),ub.memptr(),trame::rsc::Gbar_opt_objfn,trame::rsc::Gbar_opt_constr,opt_data,constr_data);
+    //
+    arma::vec U_x_temp;
+    arma::vec sol_temp = arma::conv_to<arma::vec>::from(sol_vec);
+
+    if (success) {
+        mu_x_out = sol_temp;
+        Gstarx(sol_temp,U_x_temp,x);
+        U_x_out = U_x_temp;
+        ret = -obj_val;
+    }
+    return ret;
+}
+
 void trame::rsc::D2Gstar(arma::mat& hess, arma::vec n, bool x_first)
 {
     int i,j;
@@ -558,6 +609,38 @@ double trame::rsc::Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<
     return ret;
 }
 
+double trame::rsc::Gbar_opt_objfn_2(const arma::vec& vals_inp, arma::vec& grad, void* opt_data)
+{
+    trame_nlopt_opt_data *d = reinterpret_cast<trame_nlopt_opt_data*>(opt_data);
+
+    int x = d->rsc_gbar.x;
+    arma::mat Ubar_x = d->rsc_gbar.Ubar_x;
+    arma::mat zeta = d->rsc_gbar.zeta;
+    arma::mat aux_DinvPsigma = d->rsc_gbar.aux_DinvPsigma;
+    arma::mat aux_Psigma = d->rsc_gbar.aux_Psigma;
+    arma::mat aux_Influence_lhs = d->rsc_gbar.aux_Influence_lhs;
+    arma::mat aux_Influence_rhs = d->rsc_gbar.aux_Influence_rhs;
+
+    double* dist_pars = d->rsc_gbar.dist_pars;
+
+    int nbY = d->rsc_gbar.nbY;
+    //
+    arma::vec U_x_temp;
+    arma::vec mu_x_inp = vals_inp;
+
+	double val_x = Gstarx(U_x_temp, mu_x_inp, zeta,
+                          aux_DinvPsigma,aux_Psigma,
+                          aux_Influence_lhs,aux_Influence_rhs,
+                          d->rsc_gbar.pot_eps_vec,d->rsc_gbar.quantile_eps_vec,
+                          dist_pars,nbY,x);
+
+    double ret = val_x - arma::accu(mu_x_inp % Ubar_x);
+    //
+    grad = U_x_temp - Ubar_x;
+    //
+    return ret;
+}
+
 double trame::rsc::Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data)
 {
     trame_nlopt_constr_data *d = reinterpret_cast<trame_nlopt_constr_data*>(constr_data);
@@ -571,6 +654,19 @@ double trame::rsc::Gbar_opt_constr(const std::vector<double> &x_inp, std::vector
     if (!grad.empty()) {
         grad = arma::conv_to< std::vector<double> >::from(arma::ones<arma::vec>(nbY,1));
     }
+    //
+    return ret;
+}
+
+double trame::rsc::Gbar_opt_constr_2(const arma::vec& vals_inp, arma::vec& grad, void* constr_data)
+{
+    trame_nlopt_constr_data *d = reinterpret_cast<trame_nlopt_constr_data*>(constr_data);
+
+    int nbY = d->rsc_gbar.nbY;
+    //
+    double ret = arma::accu(vals_inp) - 1;
+    //
+    grad = arma::ones(nbY,1);
     //
     return ret;
 }

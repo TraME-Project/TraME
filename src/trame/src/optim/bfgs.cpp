@@ -51,16 +51,28 @@ bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec
     arma::mat W = arma::eye(n_vals,n_vals); // initial approx. to (inverse) Hessian 
     //
     // initialization
-    double t_init = 1;
-
     arma::vec grad(n_vals); // gradient
     double f_val = opt_objfn(x,grad,opt_data);
-    
-    arma::vec d = - W*grad;
+
+    double err = arma::as_scalar(arma::sum(arma::abs(grad)));
+    if (err <= err_tol) {
+        success = true;
+        return success;
+    }
+    // if ||gradient(initial values)|| > tolerance, then continue
+    double t_init = 1; // initial line search value
+    arma::vec d = - W*grad; // direction
 
     arma::vec x_p = x, grad_p = grad;
     double t = line_search_mt(t_init, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
 
+    err = arma::as_scalar(arma::sum(arma::abs(grad_p))); // check updated values
+    if (err <= err_tol) {
+        init_out_vals = x_p;
+        success = true;
+        return success;
+    }
+    // if ||gradient(x_p)|| > tolerance, then continue
     arma::vec s = x_p - x;
     arma::vec y = grad_p - grad;
 
@@ -76,26 +88,32 @@ bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec
     //
     // begin loop
     int iter = 0;
-    double err = 2*err_tol;
 
     while (err > err_tol && iter < max_iter) {
         iter++;
-
+        //
         d = - W*grad;
         t = line_search_mt(t_init, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
-
+        
+        err = arma::as_scalar(arma::sum(arma::abs(grad_p)));
+        if (err <= err_tol) {
+            break;
+        }
+        // if ||gradient(x_p)|| > tolerance, then continue
         s = x_p - x;
         y = grad_p - grad;
         // update W
         W_denom_term = arma::dot(y,s);
+
+        if (std::abs(W_denom_term) < 1E-08) {
+            W_denom_term = 1E-08;
+        }
 
         W_term_1 = s*y.t()*W + W*y*s.t();
         W_term_2 = (1.0 + arma::dot(y,W*y) / W_denom_term) * s*s.t();
 
         W -= (W_term_1 - W_term_2) / W_denom_term;
         //
-        err = arma::as_scalar(arma::sum(arma::abs(grad_p)));
-
         x = x_p;
         grad = grad_p;
     }
