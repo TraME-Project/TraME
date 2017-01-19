@@ -29,7 +29,7 @@
  * 12/23/2016
  *
  * This version:
- * 01/11/2017
+ * 01/19/2017
  */
 
 #include "trame.hpp"
@@ -41,36 +41,34 @@ bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec
     bool success = false;
     int max_iter = 1000;
     double err_tol = 1e-08;
+
     double wolfe_cons_1 = 1E-03; // line search tuning parameters
     double wolfe_cons_2 = 0.90;
     //
     int n_vals = init_out_vals.n_elem;
-
     arma::vec x = init_out_vals;
 
     arma::mat W = arma::eye(n_vals,n_vals); // initial approx. to (inverse) Hessian 
     //
     // initialization
     arma::vec grad(n_vals); // gradient
-    double f_val = opt_objfn(x,grad,opt_data);
+    opt_objfn(x,grad,opt_data);
 
-    double err = arma::as_scalar(arma::sum(arma::abs(grad)));
+    double err = arma::accu(arma::abs(grad));
     if (err <= err_tol) {
-        success = true;
-        return success;
+        return true;
     }
     // if ||gradient(initial values)|| > tolerance, then continue
     double t_init = 1; // initial line search value
     arma::vec d = - W*grad; // direction
 
     arma::vec x_p = x, grad_p = grad;
-    double t = line_search_mt(t_init, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
+    line_search_mt(t_init, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
 
-    err = arma::as_scalar(arma::sum(arma::abs(grad_p))); // check updated values
+    err = arma::accu(arma::abs(grad_p)); // check updated values
     if (err <= err_tol) {
         init_out_vals = x_p;
-        success = true;
-        return success;
+        return true;
     }
     // if ||gradient(x_p)|| > tolerance, then continue
     arma::vec s = x_p - x;
@@ -93,9 +91,9 @@ bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec
         iter++;
         //
         d = - W*grad;
-        t = line_search_mt(t_init, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
+        line_search_mt(t_init, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
         
-        err = arma::as_scalar(arma::sum(arma::abs(grad_p)));
+        err = arma::accu(arma::abs(grad_p));
         if (err <= err_tol) {
             break;
         }
@@ -130,3 +128,4 @@ bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec
     //
     return success;
 }
+
