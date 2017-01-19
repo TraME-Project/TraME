@@ -134,9 +134,10 @@ double trame::line_search_mt(double step, arma::vec& x, arma::vec& grad, const a
             dgrad_other_mod = dgrad_other - dgrad_test;
 
             infoc = mt_step(st_best,f_best_mod,dgrad_best_mod,st_other,f_other_mod,dgrad_other_mod,step,f_mod,dgrad_mod,bracket,st_min,st_max);
-
+            //
             f_best = f_best_mod + st_best*dgrad_test;
             f_other = f_other_mod + st_other*dgrad_test;
+            
             dgrad_best = dgrad_best_mod + dgrad_test;
             dgrad_other = dgrad_other_mod + dgrad_test;
         } else {
