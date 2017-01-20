@@ -29,7 +29,7 @@
  * 11/19/2016
  *
  * This version:
- * 11/27/2016
+ * 01/20/2016
  */
 
 template<typename Tm>
@@ -90,7 +90,7 @@ class model
                              double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
                              trame_model_opt_data<Ta> opt_data);
         
-        double model_mme_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
+        static double model_mme_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
 };
 
 #include "model.tpp"
