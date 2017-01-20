@@ -1,0 +1,86 @@
+/*################################################################################
+  ##
+  ##   Copyright (C) 2015 - 2017 the TraME Team:
+  ##      Alfred Galichon
+  ##      Keith O'Hara
+  ##      Simon Weber
+  ##
+  ##   This file is part of TraME.
+  ##
+  ##   TraME is free software: you can redistribute it and/or modify
+  ##   it under the terms of the GNU General Public License as published by
+  ##   the Free Software Foundation, either version 2 of the License, or
+  ##   (at your option) any later version.
+  ##
+  ##   TraME is distributed in the hope that it will be useful,
+  ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ##   GNU General Public License for more details.
+  ##
+  ##   You should have received a copy of the GNU General Public License
+  ##   along with TraME. If not, see <http://www.gnu.org/licenses/>.
+  ##
+  ################################################################################*/
+
+/*
+ * Generalized logit transform
+ *
+ * Keith O'Hara
+ * 11/28/2014
+ */
+
+#include "trame.hpp"
+
+arma::vec trame::logit_trans(const arma::vec& pars, const arma::vec& lower_bounds, const arma::vec& upper_bounds)
+{
+	//
+	arma::vec pars_trans = arma::log((pars - lower_bounds)/(upper_bounds - pars));
+	//
+	return pars_trans;
+}
+
+// logit_trans with [0,1] support
+arma::vec trame::logit_trans(const arma::vec& pars)
+{
+	//
+	arma::vec pars_trans = arma::log(pars/(1 - pars));
+	//
+	return pars_trans;
+}
+
+double trame::logit_trans(const double& pars, const double& lower_bounds, const double& upper_bounds)
+{
+	//
+	double pars_trans = std::log((pars - lower_bounds)/(upper_bounds - pars));
+	//
+	return pars_trans;
+}
+
+/*
+ * inverse transform
+ */
+
+arma::vec trame::logit_inv_trans(const arma::vec& pars_trans, const arma::vec& lower_bounds, const arma::vec& upper_bounds)
+{
+	//
+	arma::vec pars = (lower_bounds + upper_bounds % arma::exp(pars_trans)) / (1 + arma::exp(pars_trans));
+	//
+	return pars;
+}
+
+// logit_inv_trans with [0,1] support
+arma::vec trame::logit_inv_trans(const arma::vec& pars_trans)
+{
+	//
+	arma::vec pars = arma::exp(pars_trans) / (1 + arma::exp(pars_trans));
+	//
+	return pars;
+}
+
+double trame::logit_inv_trans(const double& pars_trans, const double& lower_bounds, const double& upper_bounds)
+{
+	//
+	double pars = (lower_bounds + upper_bounds * std::exp(pars_trans)) / (1 + std::exp(pars_trans));
+	//
+	return pars;
+}

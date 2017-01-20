@@ -12,6 +12,7 @@ namespace trame
     #include "aux/trame_structs.hpp"
     #include "aux/trame_aux.hpp"
     #include "aux/trame_stats.hpp"
+    #include "aux/logit_transform.hpp"
 
     #include "aux/inv_pwa.hpp"
     #include "aux/zeroin.hpp"

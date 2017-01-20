@@ -11,7 +11,7 @@ if [ -z ${FC+x} ]; then
     FC=gfortran
 fi
 
-if [[ !(-z ${TRAME_KEITH+x}) ]]; then 
+if [[ !(-z ${TRAME_KEITH+x}) ]] || [[ $USER == keith* ]]; then 
     CC=gcc-mp-5
     CXX=g++-mp-5
     FC=gfortran-mp-5
