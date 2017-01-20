@@ -209,12 +209,12 @@ bool trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const 
     return success;
 }
 
-double optim::df_eta(int k)
+double trame::df_eta(int k)
 {
     return 1.0 / (k*k);
 }
 
-double optim::df_proc_1(const arma::vec& x_vals, const arma::vec& direc, double sigma_1, int k, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
+double trame::df_proc_1(const arma::vec& x_vals, const arma::vec& direc, double sigma_1, int k, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
 {
     double beta = 0.9, lambda = 1.0;
     double eta_k = df_eta(k);

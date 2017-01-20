@@ -23,23 +23,23 @@
   ################################################################################*/
 
 /*
- * Optimization-related functions
+ * Generic input to constrained optimization routines
  *
  * Keith O'Hara
  * 01/11/2017
  *
  * This version:
- * 01/11/2017
+ * 01/19/2017
  */
 
-#ifndef _optim_HPP
-#define _optim_HPP
+#ifndef _generic_constr_optim_HPP
+#define _generic_constr_optim_HPP
 
-#include "bfgs.hpp"
-#include "broyden.hpp"
-#include "line_search.hpp"
-#include "sumt.hpp"
-#include "generic_optim.hpp"
-#include "generic_constr_optim.hpp"
+bool generic_constr_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data,
+                          std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* constr_data)> constr_fn, void* constr_data);
+
+bool generic_constr_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
+						  std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data,
+                          std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* constr_data)> constr_fn, void* constr_data);
 
 #endif
