@@ -34,8 +34,8 @@
 
 #include "trame.hpp"
 
-bool trame::generic_constr_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data,
-                                 std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* constr_data)> constr_fn, void* constr_data)
+bool trame::generic_constr_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data,
+                                 std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* constr_data)> constr_fn, void* constr_data)
 {
     bool success = sumt(init_out_vals,opt_objfn,opt_data,constr_fn,constr_data);
     //
@@ -45,8 +45,8 @@ bool trame::generic_constr_optim(arma::vec& init_out_vals, std::function<double 
 // box constraints
 
 bool trame::generic_constr_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
-								 std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data,
-                                 std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* constr_data)> constr_fn, void* constr_data)
+								 std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data,
+                                 std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* constr_data)> constr_fn, void* constr_data)
 {
     // notation: 'p' stands for '+1'.
     //
@@ -58,7 +58,7 @@ bool trame::generic_constr_optim(arma::vec& init_out_vals, const arma::vec& lowe
     arma::vec x = init_out_vals;
     //
     // lambda function that combines the objective function with the constraints
-    std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* sumt_data)> sumt_objfn = [opt_objfn, opt_data, constr_fn, constr_data] (const arma::vec& vals_inp, arma::vec& grad, void* sumt_data) -> double {
+    std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* sumt_data)> sumt_objfn = [opt_objfn, opt_data, constr_fn, constr_data] (const arma::vec& vals_inp, arma::vec* grad, void* sumt_data) -> double {
         sumt_struct *d = reinterpret_cast<sumt_struct*>(sumt_data);
         double c_pen = d->c_pen;
         //
@@ -67,14 +67,18 @@ bool trame::generic_constr_optim(arma::vec& init_out_vals, const arma::vec& lowe
         //
         //double ret = opt_objfn(vals_inp,grad_obj,opt_data) + c_pen*(std::pow(std::max(0.0,constr_fn(vals_inp,grad_constr,constr_data)),2) / 2.0);
         double ret;
-        double constr_val = constr_fn(vals_inp,grad_constr,constr_data);
+        double constr_val = constr_fn(vals_inp,&grad_constr,constr_data);
 
         if (constr_val < 0.0) {
-            ret = opt_objfn(vals_inp,grad_obj,opt_data);
-            grad = grad_obj;
+            ret = opt_objfn(vals_inp,&grad_obj,opt_data);
+            if (grad) {
+                *grad = grad_obj;
+            }
         } else {
-            ret = opt_objfn(vals_inp,grad_obj,opt_data) + c_pen*(constr_val*constr_val / 2.0);
-            grad = grad_obj + c_pen*grad_constr;
+            ret = opt_objfn(vals_inp,&grad_obj,opt_data) + c_pen*(constr_val*constr_val / 2.0);
+            if (grad) {
+                *grad = grad_obj + c_pen*grad_constr;
+            }
         }
         //
         return ret;

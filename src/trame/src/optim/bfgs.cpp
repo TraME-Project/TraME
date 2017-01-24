@@ -34,7 +34,7 @@
 
 #include "trame.hpp"
 
-bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data)
+bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
     // notation: 'p' stands for '+1'.
     //
@@ -52,7 +52,7 @@ bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec
     //
     // initialization
     arma::vec grad(n_vals); // gradient
-    opt_objfn(x,grad,opt_data);
+    opt_objfn(x,&grad,opt_data);
 
     double err = arma::accu(arma::abs(grad));
     if (err <= err_tol) {
@@ -128,4 +128,3 @@ bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec
     //
     return success;
 }
-

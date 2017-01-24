@@ -168,8 +168,7 @@ bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat,
     //
     if (success) {
         theta_hat = opt_vec;
-        arma::vec grad_temp;
-        val_ret = trame::affinity::mme_woregul_opt_objfn(opt_vec,grad_temp,&opt_data);
+        val_ret = trame::affinity::mme_woregul_opt_objfn(opt_vec,NULL,&opt_data);
     }
     //
     return success;
@@ -316,7 +315,7 @@ void trame::affinity::init_param(arma::mat& params)
  * optimization-related functions
  */
 
-double trame::affinity::mme_woregul_opt_objfn(const arma::vec& vals_inp, arma::vec& grad, void* opt_data)
+double trame::affinity::mme_woregul_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
 {
     trame_nlopt_opt_data *d = reinterpret_cast<trame_nlopt_opt_data*>(opt_data);
     //
@@ -364,7 +363,9 @@ double trame::affinity::mme_woregul_opt_objfn(const arma::vec& vals_inp, arma::v
     arma::mat Pi = f % g % arma::exp( (Phi - IX*v - u*tIY)/sigma );
     arma::mat the_grad = phi_xy.t() * arma::vectorise(Pi - Pi_hat);
 
-    grad = the_grad;
+    if (grad) {
+        *grad = the_grad;
+    }
     //
     // update v for the next opt call
     d->mme_woregal.v = v;

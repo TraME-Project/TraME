@@ -36,7 +36,7 @@
 
 #include "trame.hpp"
 
-double trame::line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::vec& direc, double* wolfe_cons_1_inp, double* wolfe_cons_2_inp, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data)
+double trame::line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::vec& direc, double* wolfe_cons_1_inp, double* wolfe_cons_2_inp, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
     int max_iter = 100;
 
@@ -53,7 +53,7 @@ double trame::line_search_mt(double step, arma::vec& x, arma::vec& grad, const a
 
     arma::vec x_0 = x;
 
-    double f_step = opt_objfn(x,grad,opt_data); // q(0)
+    double f_step = opt_objfn(x,&grad,opt_data); // q(0)
 
     double dgrad_init = arma::dot(grad,direc);
     if (dgrad_init >= 0.0) {
@@ -92,7 +92,7 @@ double trame::line_search_mt(double step, arma::vec& x, arma::vec& grad, const a
         }
 
         x = x_0 + step * direc;
-        f_step = opt_objfn(x,grad,opt_data);
+        f_step = opt_objfn(x,&grad,opt_data);
 
         dgrad = arma::dot(grad,direc);
         armijo_check = f_init + step*dgrad_test;
@@ -137,7 +137,7 @@ double trame::line_search_mt(double step, arma::vec& x, arma::vec& grad, const a
             //
             f_best = f_best_mod + st_best*dgrad_test;
             f_other = f_other_mod + st_other*dgrad_test;
-            
+
             dgrad_best = dgrad_best_mod + dgrad_test;
             dgrad_other = dgrad_other_mod + dgrad_test;
         } else {

@@ -34,7 +34,7 @@
 
 #include "trame.hpp"
 
-bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data)
+bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
     bool success = bfgs(init_out_vals,opt_objfn,opt_data);
     //
@@ -43,22 +43,30 @@ bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const 
 
 // box constraints
 
-bool trame::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* opt_data)> opt_objfn, void* opt_data)
+bool trame::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
+                          std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
-    std::function<double (const arma::vec& vals_inp, arma::vec& grad, void* box_data)> box_objfn = [opt_objfn, lower_bounds, upper_bounds] (const arma::vec& vals_inp, arma::vec& grad, void* opt_data) -> double {
+    //
+    std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* box_data)> box_objfn = [opt_objfn, lower_bounds, upper_bounds] (const arma::vec& vals_inp, arma::vec* grad, void* opt_data) -> double {
         //
         arma::vec vals_inv_trans = logit_inv_trans(vals_inp,lower_bounds,upper_bounds);
         //
-        double ret = opt_objfn(vals_inv_trans,grad,opt_data);
-        arma::mat jacob_correct = jacob_matrix_logit(vals_inp,lower_bounds,upper_bounds);
+        double ret;
+        if (grad) {
+            arma::vec grad_obj = *grad;
+            ret = opt_objfn(vals_inv_trans,&grad_obj,opt_data);
 
-        grad = jacob_correct.t() * grad; // correct gradient for transformation
+            arma::mat jacob_correct = jacob_matrix_logit(vals_inp,lower_bounds,upper_bounds);
+            *grad = jacob_correct.t() * grad_obj; // correct gradient for transformation
+        } else {
+            ret = opt_objfn(vals_inv_trans,NULL,opt_data);
+        }
         //
         return ret;
     };
-    
-    arma::vec initial_vals = logit_trans(init_out_vals,lower_bounds,upper_bounds);
     //
+    arma::vec initial_vals = logit_trans(init_out_vals,lower_bounds,upper_bounds);
+    
     bool success = bfgs(initial_vals,box_objfn,opt_data);
     init_out_vals = logit_inv_trans(initial_vals,lower_bounds,upper_bounds);
     //
