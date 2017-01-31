@@ -298,7 +298,8 @@ double trame::rsc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arm
     arma::mat U_x_temp, mu_x_temp;
     //
     for (i=0; i<nbX; i++) {
-        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
+        //val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
+        val_temp = Gbarx_2(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
 
         val += n(i)*val_temp;
         U_out.row(i) = arma::trans(U_x_temp);
@@ -663,12 +664,11 @@ double trame::rsc::Gbar_opt_constr(const std::vector<double> &x_inp, std::vector
 double trame::rsc::Gbar_opt_constr_2(const arma::vec& vals_inp, arma::vec* grad, void* constr_data)
 {
     trame_nlopt_constr_data *d = reinterpret_cast<trame_nlopt_constr_data*>(constr_data);
-
-    int nbY = d->rsc_gbar.nbY;
     //
     double ret = arma::accu(vals_inp) - 1;
     //
     if (grad) {
+        int nbY = d->rsc_gbar.nbY;
         *grad = arma::ones(nbY,1);
     }
     //
