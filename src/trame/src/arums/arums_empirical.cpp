@@ -402,7 +402,7 @@ void trame::empirical::presolve_LP_Gbar()
     }
 
     for (kk=0; kk < (nbY+1); kk++) {
-        if (kk < nbY-1) { // top section 
+        if (kk < nbY) { // top section 
             for (jj=0; jj<aux_nbDraws; jj++) {
                 location_mat_2(0,count_val) = kk;
                 location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
@@ -428,7 +428,7 @@ void trame::empirical::presolve_LP_Gbar()
     k_Gbar = A_sp_Gbar_t.n_cols; // cols as we're working with the transpose
     n_Gbar = A_sp_Gbar_t.n_rows; // rows as we're working with the transpose
 
-    numnz_Gbar = nbY + aux_nbDraws*nbY*2 - aux_nbDraws;
+    numnz_Gbar = vals_mat_2.n_elem;
 
     const arma::uword* row_vals_2 = &(*A_sp_Gbar_t.row_indices);
     const arma::uword* col_vals_2 = &(*A_sp_Gbar_t.col_ptrs);
