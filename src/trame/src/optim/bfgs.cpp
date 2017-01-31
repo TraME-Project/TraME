@@ -36,6 +36,13 @@
 
 bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
+    bool success = bfgs(init_out_vals,opt_objfn,opt_data,NULL);
+    //
+    return success;
+}
+
+bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out)
+{
     // notation: 'p' stands for '+1'.
     //
     bool success = false;
@@ -119,6 +126,10 @@ bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec
     if (err <= err_tol && iter <= max_iter) {
         init_out_vals = x_p;
         success = true;
+
+        if (value_out) {
+            *value_out = opt_objfn(init_out_vals,NULL,opt_data);
+        }
     } else {
         printf("bfgs failure: max_iter reached before convergence could be achieved.\n");
         printf("bfgs failure: best guess:\n");

@@ -36,7 +36,14 @@
 
 bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
-    bool success = bfgs(init_out_vals,opt_objfn,opt_data);
+    bool success = bfgs(init_out_vals,opt_objfn,opt_data,NULL);
+    //
+    return success;
+}
+
+bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out)
+{
+    bool success = bfgs(init_out_vals,opt_objfn,opt_data,value_out);
     //
     return success;
 }
@@ -45,6 +52,15 @@ bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const 
 
 bool trame::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
                           std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
+{
+    bool success = generic_optim(init_out_vals,lower_bounds,upper_bounds,opt_objfn,opt_data,NULL);
+    //
+    return success;
+}
+
+bool trame::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
+                          std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data,
+                          double* value_out)
 {
     //
     std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* box_data)> box_objfn = [opt_objfn, lower_bounds, upper_bounds] (const arma::vec& vals_inp, arma::vec* grad, void* opt_data) -> double {
@@ -67,8 +83,15 @@ bool trame::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bound
     //
     arma::vec initial_vals = logit_trans(init_out_vals,lower_bounds,upper_bounds);
     
-    bool success = bfgs(initial_vals,box_objfn,opt_data);
-    init_out_vals = logit_inv_trans(initial_vals,lower_bounds,upper_bounds);
+    bool success = bfgs(initial_vals,box_objfn,opt_data,NULL);
+    //
+    if (success) {
+        init_out_vals = logit_inv_trans(initial_vals,lower_bounds,upper_bounds);
+
+        if (value_out) {
+            *value_out = opt_objfn(init_out_vals,NULL,opt_data);
+        }
+    }
     //
     return success;
 }

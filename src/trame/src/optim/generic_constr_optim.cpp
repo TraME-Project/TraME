@@ -35,9 +35,10 @@
 #include "trame.hpp"
 
 bool trame::generic_constr_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data,
-                                 std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* constr_data)> constr_fn, void* constr_data)
+                                 std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* constr_data)> constr_fn, void* constr_data,
+                                 double* value_out)
 {
-    bool success = sumt(init_out_vals,opt_objfn,opt_data,constr_fn,constr_data);
+    bool success = sumt(init_out_vals,opt_objfn,opt_data,constr_fn,constr_data,value_out);
     //
     return success;
 }
@@ -46,7 +47,8 @@ bool trame::generic_constr_optim(arma::vec& init_out_vals, std::function<double 
 
 bool trame::generic_constr_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
 								 std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data,
-                                 std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* constr_data)> constr_fn, void* constr_data)
+                                 std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* constr_data)> constr_fn, void* constr_data,
+                                 double* value_out)
 {
     // notation: 'p' stands for '+1'.
     //
@@ -109,6 +111,10 @@ bool trame::generic_constr_optim(arma::vec& init_out_vals, const arma::vec& lowe
     if (err <= err_tol && iter <= max_iter) {
         init_out_vals = x_p;
         success = true;
+
+        if (value_out) {
+            *value_out = opt_objfn(x_p,NULL,opt_data);
+        }
     } else {
         printf("sumt_box failure: max_iter reached before convergence could be achieved.\n");
         printf("sumt_box failure: best guess:\n");

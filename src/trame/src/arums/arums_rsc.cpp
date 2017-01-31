@@ -397,7 +397,7 @@ double trame::rsc::Gbarx_2(const arma::vec& Ubar_x, const arma::vec& mubar_x, ar
     trame_nlopt_constr_data constr_data;
     constr_data.rsc_gbar.nbY = nbY;
     //
-    bool success = generic_constr_optim(sol_vec,lb,ub,trame::rsc::Gbar_opt_objfn_2,&opt_data,trame::rsc::Gbar_opt_constr_2,&constr_data);
+    bool success = generic_constr_optim(sol_vec,lb,ub,trame::rsc::Gbar_opt_objfn_2,&opt_data,trame::rsc::Gbar_opt_constr_2,&constr_data,&obj_val);
     //
     arma::vec U_x_temp;
     arma::vec sol_temp = arma::conv_to<arma::vec>::from(sol_vec);
