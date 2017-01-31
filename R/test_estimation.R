@@ -137,7 +137,7 @@ test_mme <- function(seed=777, nbX=80, nbY=72, noiseScale=0.1, dX=3, dY=3)
     logitM = build_logit(nbX,nbY,1)
     logitW = build_logit(nbY,nbX,1)
     
-    logitSimM = simul(logitM,50,seed)
+    logitSimM = simul(logitM,50,seed) # why are these here?
     logitSimW = simul(logitW,50,seed)
     #
     A = matrix(1,nrow=dX,ncol=dY)
