@@ -298,8 +298,7 @@ double trame::rsc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arm
     arma::mat U_x_temp, mu_x_temp;
     //
     for (i=0; i<nbX; i++) {
-        //val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
-        val_temp = Gbarx_2(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
+        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
 
         val += n(i)*val_temp;
         U_out.row(i) = arma::trans(U_x_temp);
@@ -308,7 +307,7 @@ double trame::rsc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arm
     //
     return val;
 }
-
+/*
 double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     if (!outsideOption) {
@@ -358,9 +357,9 @@ double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma
         ret = -obj_val;
     }
     return ret;
-}
+}*/
 
-double trame::rsc::Gbarx_2(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     if (!outsideOption) {
         printf("Gbarx not implemented yet when outsideOption==false");
@@ -397,7 +396,7 @@ double trame::rsc::Gbarx_2(const arma::vec& Ubar_x, const arma::vec& mubar_x, ar
     trame_nlopt_constr_data constr_data;
     constr_data.rsc_gbar.nbY = nbY;
     //
-    bool success = generic_constr_optim(sol_vec,lb,ub,trame::rsc::Gbar_opt_objfn_2,&opt_data,trame::rsc::Gbar_opt_constr_2,&constr_data,&obj_val);
+    bool success = generic_constr_optim(sol_vec,lb,ub,trame::rsc::Gbar_opt_objfn,&opt_data,trame::rsc::Gbar_opt_constr,&constr_data,&obj_val);
     //
     arma::vec U_x_temp;
     arma::vec sol_temp = arma::conv_to<arma::vec>::from(sol_vec);
@@ -575,7 +574,7 @@ void trame::rsc::simul(empirical& obj_out, int* nbDraws, int* seed_val)
 /*
  * optimization-related functions
  */
-
+/*
 double trame::rsc::Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data)
 {
     trame_nlopt_opt_data *d = reinterpret_cast<trame_nlopt_opt_data*>(opt_data);
@@ -608,9 +607,9 @@ double trame::rsc::Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<
     }
     //
     return ret;
-}
+}*/
 
-double trame::rsc::Gbar_opt_objfn_2(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
+double trame::rsc::Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
 {
     trame_nlopt_opt_data *d = reinterpret_cast<trame_nlopt_opt_data*>(opt_data);
 
@@ -643,7 +642,7 @@ double trame::rsc::Gbar_opt_objfn_2(const arma::vec& vals_inp, arma::vec* grad, 
     //
     return ret;
 }
-
+/*
 double trame::rsc::Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data)
 {
     trame_nlopt_constr_data *d = reinterpret_cast<trame_nlopt_constr_data*>(constr_data);
@@ -659,9 +658,9 @@ double trame::rsc::Gbar_opt_constr(const std::vector<double> &x_inp, std::vector
     }
     //
     return ret;
-}
+}*/
 
-double trame::rsc::Gbar_opt_constr_2(const arma::vec& vals_inp, arma::vec* grad, void* constr_data)
+double trame::rsc::Gbar_opt_constr(const arma::vec& vals_inp, arma::vec* grad, void* constr_data)
 {
     trame_nlopt_constr_data *d = reinterpret_cast<trame_nlopt_constr_data*>(constr_data);
     //

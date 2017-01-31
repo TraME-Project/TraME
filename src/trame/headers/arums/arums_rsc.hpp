@@ -95,7 +95,6 @@ class rsc
 
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out);
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
-        double Gbarx_2(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
         
         void D2Gstar (arma::mat& hess, arma::vec n, bool x_first);
         void dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first);
@@ -115,8 +114,6 @@ class rsc
         double pot (double x);
         arma::vec pot (arma::vec x);
 
-        static double Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
-        static double Gbar_opt_objfn_2(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
-        static double Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data);
-        static double Gbar_opt_constr_2(const arma::vec& vals_inp, arma::vec* grad, void* constr_data);
+        static double Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
+        static double Gbar_opt_constr(const arma::vec& vals_inp, arma::vec* grad, void* constr_data);
 };
