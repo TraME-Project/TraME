@@ -36,14 +36,21 @@
 
 bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
-    bool success = bfgs(init_out_vals,opt_objfn,opt_data,NULL);
+    bool success = bfgs(init_out_vals,opt_objfn,opt_data);
     //
     return success;
 }
 
 bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out)
 {
-    bool success = bfgs(init_out_vals,opt_objfn,opt_data,value_out);
+    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,value_out,NULL,NULL);
+    //
+    return success;
+}
+
+bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
+{
+    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
     //
     return success;
 }
@@ -83,7 +90,7 @@ bool trame::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bound
     //
     arma::vec initial_vals = logit_trans(init_out_vals,lower_bounds,upper_bounds);
     
-    bool success = bfgs(initial_vals,box_objfn,opt_data,NULL);
+    bool success = bfgs(initial_vals,box_objfn,opt_data);
     //
     if (success) {
         init_out_vals = logit_inv_trans(initial_vals,lower_bounds,upper_bounds);

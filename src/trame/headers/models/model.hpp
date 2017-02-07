@@ -90,7 +90,7 @@ class model
         bool model_mme_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
                              double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
                              trame_model_opt_data<Ta> opt_data);
-        bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out);
+        bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
         
         static double model_mme_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
         static double model_mme_opt_objfn_2(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);

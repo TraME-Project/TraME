@@ -193,6 +193,8 @@ bool model<Ta>::mme_2(const arma::mat& mu_hat, arma::mat& theta_hat)
     //
     //double xtol_rel = (xtol_rel_inp) ? *xtol_rel_inp : 1E-04;
     //int max_eval = (max_eval_inp) ? *max_eval_inp : 1E05;
+    double err_tol = 1E-06;
+    int max_iter = 5000;
 
     arma::vec theta_0;
     init_param(theta_0);
@@ -217,7 +219,7 @@ bool model<Ta>::mme_2(const arma::mat& mu_hat, arma::mat& theta_hat)
 
     double obj_val = 0;
 
-    success = model_mme_optim(sol_vec,model_mme_opt_objfn_2,&opt_data,&obj_val);
+    success = model_mme_optim(sol_vec,model_mme_opt_objfn_2,&opt_data,&obj_val,&err_tol,&max_iter);
     //
     arma::mat U = arma::reshape(sol_vec.rows(0,nbX*nbY-1),nbX,nbY);
     theta_hat = sol_vec.rows(nbX*nbY,nbX*nbY+nbParams-1);
@@ -370,9 +372,9 @@ double model<Ta>::model_mme_opt_objfn(const std::vector<double> &x_inp, std::vec
 }
 
 template<typename Ta>
-bool model<Ta>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out)
+bool model<Ta>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
 {
-    bool success = generic_optim(init_out_vals,opt_objfn,opt_data,value_out);
+    bool success = generic_optim(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
     //
     return success;
 }

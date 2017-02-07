@@ -29,25 +29,39 @@
  * 12/23/2016
  *
  * This version:
- * 01/19/2017
+ * 02/07/2017
  */
 
 #include "trame.hpp"
 
 bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
-    bool success = bfgs(init_out_vals,opt_objfn,opt_data,NULL);
+    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,NULL,NULL,NULL);
     //
     return success;
 }
 
-bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out)
+bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double& value_out)
+{
+    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,&value_out,NULL,NULL);
+    //
+    return success;
+}
+
+bool trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double& value_out, double err_tol_inp, int max_iter_inp)
+{
+    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,&value_out,&err_tol_inp,&max_iter_inp);
+    //
+    return success;
+}
+
+bool trame::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
 {
     // notation: 'p' stands for '+1'.
     //
     bool success = false;
-    int max_iter = 1000;
-    double err_tol = 1e-08;
+    int max_iter = (max_iter_inp) ? *max_iter_inp : 1000;
+    double err_tol = (err_tol_inp) ? *err_tol_inp : 1e-08;
 
     double wolfe_cons_1 = 1E-03; // line search tuning parameters
     double wolfe_cons_2 = 0.90;
