@@ -142,7 +142,6 @@ void model<Ta>::build_market_TU(const arma::mat& theta, T arums_G_inp, T arums_H
 template<typename Ta>
 bool model<Ta>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
 {
-    std::cout << "begin mme!" << std::endl;
     bool success = false;
     //
     //double xtol_rel = (xtol_rel_inp) ? *xtol_rel_inp : 1E-04;
@@ -151,27 +150,13 @@ bool model<Ta>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     arma::vec theta_0;
     init_param(theta_0);
 
-    arma::cout << "mu_hat_inp: \n" << mu_hat << arma::endl;
-
-    arma::cout << "theta_0: \n" << theta_0 << arma::endl;
-
-    arma::cout << "Phi_xyk \n" << phi_xyk << arma::endl;
-    arma::cout << "Phi_xy() \n" << Phi_xy() << arma::endl;
-
     arma::mat dtheta_Psi;
     dparam(NULL,dtheta_Psi);
 
-    arma::cout << "dtheta: \n" << dtheta_Psi << arma::endl;
-    std::cout << "dtheta dims: " << dtheta_Psi.n_rows << " " << dtheta_Psi.n_cols << std::endl;
-
-    std::cout << "build market!" << std::endl;
     build_market_TU(theta_0);
 
-    std::cout << "finished market!" << std::endl;
     arma::mat kron_term = dtheta_Psi;
     arma::mat C_hat = arma::vectorise(arma::trans(arma::vectorise(mu_hat)) * kron_term);
-    arma::cout << "C_hat: \n" << C_hat << arma::endl;
-    std::cout << "finished setup!" << std::endl;
     //
     // add optimization data
     trame_model_opt_data<Ta> opt_data;
@@ -182,22 +167,21 @@ bool model<Ta>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     opt_data.kron_term = kron_term;
     //
     arma::vec A_0 = arma::join_cols(arma::vectorise(kron_term * theta_0)/2.0,theta_0);
-    arma::cout << "A_0: \n" << A_0 << arma::endl;
     int n_pars_opt = A_0.n_elem;
 
     std::vector<double> sol_vec = arma::conv_to< std::vector<double> >::from(A_0);
     double obj_val = 0;
 
-    std::vector<double> grad_vec;
-    double val_ret = model_mme_opt_objfn(sol_vec,grad_vec,&opt_data);
+    //std::vector<double> grad_vec;
+    //double val_ret = model_mme_opt_objfn(sol_vec,grad_vec,&opt_data);
 
-    //success = model_mme_nlopt(n_pars_opt,sol_vec,obj_val,NULL,NULL,model_mme_opt_objfn,opt_data);
+    success = model_mme_nlopt(n_pars_opt,sol_vec,obj_val,NULL,NULL,model_mme_opt_objfn,opt_data);
     //
-    //arma::mat sol_mat = arma::conv_to< arma::mat >::from(sol_vec);
+    arma::mat sol_mat = arma::conv_to< arma::mat >::from(sol_vec);
 
-    //arma::mat U = arma::reshape(sol_mat.rows(0,nbX*nbY-1),nbX,nbY);
-    //theta_hat = sol_mat.rows(nbX*nbY,nbX*nbY+nbParams-1);
-    //double val_ret = obj_val;
+    arma::mat U = arma::reshape(sol_mat.rows(0,nbX*nbY-1),nbX,nbY);
+    theta_hat = sol_mat.rows(nbX*nbY,nbX*nbY+nbParams-1);
+    double val_ret = obj_val;
     //
     return success;
 }
@@ -219,7 +203,7 @@ bool model<Ta>::mme_2(const arma::mat& mu_hat, arma::mat& theta_hat)
     build_market_TU(theta_0);
 
     arma::mat kron_term = dtheta_Psi;
-    arma::mat C_hat = arma::vectorise(arma::vectorise(mu_hat) * kron_term);
+    arma::mat C_hat = arma::vectorise(arma::trans(arma::vectorise(mu_hat)) * kron_term);
     //
     // add optimization data
     trame_model_opt_data<Ta> opt_data;
@@ -340,10 +324,10 @@ bool model<Ta>::model_mme_nlopt(int n_pars, std::vector<double>& io_val, double&
         result = opt_trame_2.optimize(io_val, minf);
     }
 
-    //if (result > 0) {
+    if (result > 0) {
         opt_val = minf;
         success = true;
-    //}
+    }
 
     return success;
 }
@@ -362,23 +346,15 @@ double model<Ta>::model_mme_opt_objfn(const std::vector<double> &x_inp, std::vec
 
     arma::mat x_mat = arma::conv_to< arma::mat >::from(x_inp);
     
-    arma::mat U = x_mat.rows(0,nbX*nbY-1);
-    U.reshape(nbX,nbY);
-    arma::cout << "U objfn: \n" << U << arma::endl;
+    arma::mat U = arma::reshape(x_mat.rows(0,nbX*nbY-1),nbX,nbY);
 
     arma::mat theta = x_mat.rows(nbX*nbY,nbParams + nbX*nbY - 1);
     arma::mat phi_mat = arma::reshape(kron_term * theta,nbX,nbY);
-    arma::cout << "phi_mat objfn: \n" << phi_mat << arma::endl;
     //
     arma::mat mu_G, mu_H;
 
-    std::cout << "sigma: " << d->market.arums_G.sigma << std::endl;
-
     double val_G = d->market.arums_G.G(d->market.n,U,mu_G);
     double val_H = d->market.arums_H.G(d->market.m,arma::trans(phi_mat - U),mu_H);
-    arma::cout << "mu_G objfn: \n" << mu_G << arma::endl;
-    arma::cout << "mu_H objfn: \n" << mu_H << arma::endl;
-    std::cout << "val_G: " << val_G << ". val_H: " << val_H << std::endl;
     //
     if (!grad.empty()) {
         arma::vec grad_U = arma::vectorise(mu_G - mu_H.t());
@@ -389,7 +365,6 @@ double model<Ta>::model_mme_opt_objfn(const std::vector<double> &x_inp, std::vec
     }
     //
     double ret = val_G + val_H - arma::accu(theta%C_hat);
-    std::cout << "ret val " << ret << std::endl;
     //
     return ret;
 }
@@ -413,8 +388,7 @@ double model<Ta>::model_mme_opt_objfn_2(const arma::vec& vals_inp, arma::vec* gr
     arma::mat C_hat = d->C_hat;
     arma::mat kron_term = d->kron_term;
     //    
-    arma::mat U = vals_inp.rows(0,nbX*nbY-1);
-    U.reshape(nbX,nbY);
+    arma::mat U = arma::reshape(vals_inp.rows(0,nbX*nbY-1),nbX,nbY);
 
     arma::mat theta = vals_inp.rows(nbX*nbY,nbParams + nbX*nbY - 1);
     arma::mat phi_mat = arma::reshape(kron_term * theta,nbX,nbY);
@@ -424,13 +398,13 @@ double model<Ta>::model_mme_opt_objfn_2(const arma::vec& vals_inp, arma::vec* gr
     double val_G = d->market.arums_G.G(d->market.n,U,mu_G);
     double val_H = d->market.arums_H.G(d->market.m,arma::trans(phi_mat - U),mu_H);
     //
-    double ret = val_G + val_H - arma::accu(theta*C_hat);
+    double ret = val_G + val_H - arma::accu(theta%C_hat);
 
     if (grad) {
         arma::vec grad_U = arma::vectorise(mu_G - mu_H.t());
-        arma::vec grad_theta = arma::vectorise( arma::vectorise(mu_H.t()) * kron_term ) - C_hat;
+        arma::vec grad_theta = arma::vectorise( arma::trans(arma::vectorise(mu_H.t())) * kron_term ) - C_hat;
         
-        *grad = arma::join_rows(grad_U,grad_theta);
+        *grad = arma::join_cols(grad_U,grad_theta);
     }
     //
     return ret;
