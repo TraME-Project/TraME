@@ -15,13 +15,19 @@ int main()
     start = std::chrono::system_clock::now();
     //
     // inputs:
-    int nbX = 80;
-    int nbY = 72;
+    int nbX = 6;
+    int nbY = 5;
     int dX = 3;
     int dY = 3;
 
     arma::mat X_vals = arma::randu(nbX,dX);
     arma::mat Y_vals = arma::randu(nbY,dY);
+
+    X_vals.fill(0.1);
+    Y_vals.fill(0.2);
+
+    arma::cout << "X_vals \n" << X_vals << arma::endl;
+    arma::cout << "Y_vals \n" << Y_vals << arma::endl;
 
     arma::vec n = arma::ones(nbX,1);
     arma::vec m = arma::ones(nbY,1);
@@ -35,6 +41,7 @@ int main()
 
     arma::mat A = arma::ones(dX,dY);
     arma::mat phi = X_vals*A*Y_vals.t();
+    arma::cout << "phi: " << phi << std::endl;
 
     trame::mfe<trame::mmf> mfe_obj_TU;
     mfe_obj_TU.build_TU(n,m,phi,&sigma,false);
@@ -44,6 +51,8 @@ int main()
     mfe_obj_TU.solve(mu_mfe);
 
     arma::mat mu_hat = mu_mfe % noise;
+    arma::cout << mu_hat << arma::endl;
+    std::cout << "mu_hat dims: " << mu_hat.n_rows << " " << mu_hat.n_cols << std::endl;
     //
     trame::model<trame::logit> TU_logit_model;
     TU_logit_model.build(X_vals,Y_vals,n,m);
