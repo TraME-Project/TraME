@@ -84,12 +84,13 @@ class transfers
         arma::mat Vcal(const arma::mat& us, arma::uvec* xs, arma::uvec* ys) const;
         double Vcal(const double& us, int xs, int ys) const;
 
-        arma::mat UW(const arma::mat& Ws);
-        arma::mat UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
-        double UW(const double& Ws, int x_ind, int y_ind);
-        arma::mat VW(const arma::mat& Ws);
-        arma::mat VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
-        double VW(const double& Ws, int x_ind, int y_ind);
+        // UW and VW functions are const restricted because of calls to const market pointers in solvers
+        arma::mat UW(const arma::mat& Ws) const;
+        arma::mat UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys) const;
+        double UW(const double& Ws, int x_ind, int y_ind) const;
+        arma::mat VW(const arma::mat& Ws) const;
+        arma::mat VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys) const;
+        double VW(const double& Ws, int x_ind, int y_ind) const;
 
         arma::mat du_UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
         arma::mat du_VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
