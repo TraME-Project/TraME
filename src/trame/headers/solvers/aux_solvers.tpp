@@ -38,7 +38,7 @@
  */
 
 template<typename Ta>
-arma::mat w_upper_bound(dse<Ta> market)
+arma::mat w_upper_bound(const dse<Ta>& market)
 {
     int nbX = market.nbX;
     int nbY = market.nbY;

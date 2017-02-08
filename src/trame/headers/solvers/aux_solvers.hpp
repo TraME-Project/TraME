@@ -42,7 +42,7 @@ arma::mat v_from_us(const transfers& trans_obj, const arma::mat& u, double* tol_
 arma::mat update_v(const transfers& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, bool xFirst);
 
 template<typename Ta>
-arma::mat w_upper_bound(dse<Ta> market);
+arma::mat w_upper_bound(const dse<Ta>& market);
 
 template<typename Ta>
 struct trame_market_opt_data {
