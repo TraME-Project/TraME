@@ -47,7 +47,8 @@ bool arc_newton_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
     arma::vec sol_vec = arma::vectorise(w_upper_bound(market));
     
-    success = arc_newton_optim(sol_vec,arc_newton_opt_objfn<Ta>,&opt_data);
+    //success = arc_newton_optim(sol_vec,arc_newton_opt_objfn<Ta>,&opt_data);
+    success = arc_newton_optim(sol_vec,arc_newton_opt_objfn<Ta>,&opt_data,arc_newton_jacobian<Ta>,&opt_data);
     //
     // construct equilibrium objects
     arma::mat sol_mat = arma::reshape(sol_vec,nbX,nbY);
