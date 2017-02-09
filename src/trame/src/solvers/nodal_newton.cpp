@@ -36,7 +36,7 @@
 
 bool trame::nodal_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
 {
-    bool success = broyden_df(init_out_vals,opt_objfn,opt_data);
+    bool success = broyden(init_out_vals,opt_objfn,opt_data);
     //
     return success;
 }
