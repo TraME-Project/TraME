@@ -46,6 +46,7 @@ namespace trame
     #include "solvers/cupids_lp.hpp"
     #include "solvers/max_welfare.hpp"
     #include "solvers/arc_newton.hpp"
+    #include "solvers/nodal_newton.hpp"
 
     // models
     #include "models/affinity.hpp"

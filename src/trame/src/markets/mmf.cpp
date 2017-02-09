@@ -97,22 +97,12 @@ arma::mat trame::mmf::M(const arma::mat& a_xs, const arma::mat& b_ys)
 arma::mat trame::mmf::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
 {
     arma::mat ret;
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, (int) n.n_elem-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, (int) m.n_elem-1);
-    }
+    
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) n.n_elem-1); 
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) m.n_elem-1);
     //
     if (ETU) {
-        arma::mat term_1 = arma::exp(aux_log_C(x_ind,y_ind) + kappa(x_ind,y_ind) % arma::log(a_xs));
+        arma::mat term_1 = arma::exp(aux_log_C(x_ind,y_ind) + elem_prod(kappa(x_ind,y_ind), arma::log(a_xs)));
         arma::mat term_2 = arma::exp(aux_log_D(x_ind,y_ind) + arma::trans(arma::trans(kappa(x_ind,y_ind)) % arma::log(b_ys)));
 
         ret = arma::exp((1/kappa(x_ind,y_ind)) % arma::log((term_1+term_2)/2)); 
@@ -146,19 +136,9 @@ arma::mat trame::mmf::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec
 arma::mat trame::mmf::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
 {
     arma::mat ret;
-    arma::uvec x_ind, y_ind;
 
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, (int) n.n_elem-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, (int) m.n_elem-1);
-    }
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) n.n_elem-1); 
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) m.n_elem-1);
     //
     if (ETU) {
         arma::mat term_1 = arma::exp(aux_log_C(x_ind,y_ind) + kappa(x_ind,y_ind) * std::log(a_xs));
@@ -195,19 +175,9 @@ arma::mat trame::mmf::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* x
 arma::mat trame::mmf::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys)
 {
     arma::mat ret;
-    arma::uvec x_ind, y_ind;
-
-    if (xs) {
-        x_ind = *xs;
-    } else {
-        x_ind = uvec_linspace(0, (int) n.n_elem-1);
-    }
-
-    if (ys) {
-        y_ind = *ys;
-    } else {
-        y_ind = uvec_linspace(0, (int) m.n_elem-1);
-    }
+    
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) n.n_elem-1); 
+    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) m.n_elem-1);
     //
     if (ETU) {
         arma::mat term_1 = arma::exp(aux_log_C(x_ind,y_ind) + kappa(x_ind,y_ind) % arma::log(a_xs));
@@ -317,13 +287,7 @@ arma::vec trame::mmf::marg_x_inv(const arma::mat& B_ys)
 
 arma::vec trame::mmf::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
 {
-    arma::uvec temp_ind;
-
-    if (xs) {
-        temp_ind = *xs;
-    } else {
-        temp_ind = uvec_linspace(0, (int) n.n_elem-1);
-    }
+    arma::uvec temp_ind = (xs) ? *xs : uvec_linspace(0, (int) n.n_elem-1);
     //
     if (NTU) {
         arma::vec a_NTU = n.elem(temp_ind);

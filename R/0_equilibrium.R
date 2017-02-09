@@ -341,7 +341,7 @@ arcNewton <- function(market, xFirst=TRUE, notifications=TRUE, wup=NULL, xtol=1e
                   control = list(xtol=xtol,maxit = 200)
     )
     #
-    w = sol$x
+    w = sol$x # Keith: this should be reshaped into a matrix 
     #
     U = UW(tr,w)
     V = VW(tr,w)
