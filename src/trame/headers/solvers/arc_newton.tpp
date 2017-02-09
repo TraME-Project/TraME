@@ -42,12 +42,13 @@ bool arc_newton_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     trame_market_opt_data<Ta> opt_data;
     opt_data.market = market;
 
-    arma::vec sol_vec = w_upper_bound(market);
+    arma::vec sol_vec = arma::vectorise(w_upper_bound(market));
     
-    success = arc_newton_optim(sol_vec,arc_newton_opt_objfn<Ta>,opt_data);
+    success = arc_newton_optim(sol_vec,arc_newton_opt_objfn<Ta>,&opt_data);
     //
     // construct equilibrium objects
-    arma::mat U = market.trans_obj.UW(sol_vec);
+    arma::mat sol_mat = arma::reshape(sol_vec,nbX,nbY);
+    arma::mat U = market.trans_obj.UW(sol_mat);
 
     Ta* arums_G = const_cast<Ta*>(&market.arums_G); // Keith: this recast is unsafe, change later
     
@@ -73,9 +74,9 @@ bool arc_newton_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_o
         *V_out = market.trans_obj.VW(sol_vec);
     }
 
-    if (val_out) {
+    /*if (val_out) {
         *val_out = val;
-    }
+    }*/
     //
     return success;
 }
@@ -125,14 +126,6 @@ bool arc_newton(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out, 
 // optimization function
 
 template<typename Ta>
-bool arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
-{
-    bool success = broyden_df(init_out_vals,opt_objfn,opt_data);
-    //
-    return success;
-}
-
-template<typename Ta>
 arma::vec arc_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
 {
     trame_market_opt_data<Ta> *d = reinterpret_cast<trame_market_opt_data<Ta>*>(opt_data);
@@ -142,8 +135,8 @@ arma::vec arc_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
 
     arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
 
-    arma::mat U = d->market.arums_G.trans_obj.UW(inp_mat);
-    arma::mat V = d->market.arums_G.trans_obj.VW(inp_mat);
+    arma::mat U = d->market.trans_obj.UW(inp_mat);
+    arma::mat V = d->market.trans_obj.VW(inp_mat);
 
     arma::mat mu_G, mu_H;
     d->market.arums_G.G(d->market.n,U,mu_G);

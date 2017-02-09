@@ -48,6 +48,7 @@ int main()
 
     //trame::max_welfare(dse_obj_TU,mu_TU_2);
     //dse_obj_TU.solve(mu_TU_2, (char*) "maxWelfare");
+    std::cout << "begin arc_newton" << std::endl;
     trame::arc_newton(dse_obj_TU,mu_TU_2);
 
     arma::cout << "Solution of TU-logit problem using ipfp:\n" << mu_TU_1 << arma::endl;

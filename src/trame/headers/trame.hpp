@@ -45,6 +45,7 @@ namespace trame
     #include "solvers/jacobi.hpp"
     #include "solvers/cupids_lp.hpp"
     #include "solvers/max_welfare.hpp"
+    #include "solvers/arc_newton.hpp"
 
     // models
     #include "models/affinity.hpp"

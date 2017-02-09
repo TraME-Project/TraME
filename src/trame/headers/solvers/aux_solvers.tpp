@@ -31,7 +31,7 @@
 
 /*
  * w upper bound
- * used in 'jacobi' solver
+ * used in 'jacobi' solver and arc_newton
  *
  * Keith O'Hara
  * 08/25/2016
