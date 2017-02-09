@@ -108,6 +108,81 @@ bool trame::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arm
     return success;
 }
 
+bool trame::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
+                    std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data)
+{
+    // notation: 'p' stands for '+1'.
+    //
+    bool success = false;
+    int max_iter = 1000;
+    double err_tol = 1e-08;
+    //
+    //int n_vals = init_out_vals.n_elem;
+
+    arma::vec x = init_out_vals;
+
+    arma::mat B = arma::inv(jacob_objfn(x,jacob_data)); // initial approx. to (inverse) Jacobian
+    //
+    // initialization
+    arma::vec f_val = opt_objfn(x,opt_data);
+
+    double err = arma::as_scalar(arma::sum(arma::abs(f_val)));
+    if (err <= err_tol) {
+        return true;
+    }
+    //
+    arma::vec d = - B*f_val;
+
+    arma::vec x_p = x + d;
+    arma::vec f_val_p = opt_objfn(x_p,opt_data);
+
+    err = arma::as_scalar(arma::sum(arma::abs(f_val_p)));
+    if (err <= err_tol) {
+        init_out_vals = x_p;
+        return true;
+    }
+    //
+    arma::vec s = x_p - x;
+    arma::vec y = f_val_p - f_val;
+
+    B += (s - B*y) * y.t() / arma::dot(y,y); // update B
+
+    f_val = f_val_p;
+    //
+    // begin loop
+    int iter = 0;
+
+    while (err > err_tol && iter < max_iter) {
+        iter++;
+        //
+        d = - B*f_val;
+
+        x_p = x + d;
+        f_val_p = opt_objfn(x_p,opt_data);
+
+        err = arma::as_scalar(arma::sum(arma::abs(f_val_p)));
+
+        if (err <= err_tol) {
+            break;
+        }
+        //
+        s = x_p - x;
+        y = f_val_p - f_val;
+        
+        B += (s - B*y) * y.t() / arma::dot(y,y); // update B
+        //
+        x = x_p;
+        f_val = f_val_p;
+    }
+    //
+    if (err <= err_tol && iter <= max_iter) {
+        init_out_vals = x_p;
+        success = true;
+    }
+    //
+    return success;
+}
+
 // derivative-free method of Li and Fukushima (2000)
 
 bool trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
@@ -137,6 +212,106 @@ bool trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const 
     double Fx = arma::norm(f_val,2);
     //
     arma::vec d = -f_val; // step 1
+
+    arma::vec f_val_p = opt_objfn(x + d,opt_data);
+    err = arma::as_scalar(arma::sum(arma::abs(f_val_p)));
+
+    if (err <= err_tol) {
+        init_out_vals = x + d;
+        return true;
+    }
+    //
+    double lambda;
+    double Fx_p = arma::norm(f_val_p,2);
+
+    if (Fx_p <= rho*Fx - sigma_2*arma::dot(d,d)) { // step 2
+        lambda = 1.0;
+    } else {
+        lambda = df_proc_1(x,d,sigma_1,0,opt_objfn,opt_data); // step 3
+    }
+    //
+    arma::vec x_p = x + lambda*d; // step 4
+
+    arma::vec s = x_p - x;
+    arma::vec y = f_val_p - f_val;
+
+    B += (y - B*s) * s.t() / arma::dot(s,s); // step 5
+    //
+    x = x_p;
+    f_val = f_val_p;
+    Fx = Fx_p;
+    //
+    // begin loop
+    int iter = 0;
+
+    while (err > err_tol && iter < max_iter) {
+        iter++;
+
+        d = arma::solve(B,-f_val);
+        f_val_p = opt_objfn(x + d,opt_data);
+
+        err = arma::as_scalar(arma::sum(arma::abs(f_val)));
+
+        if (err <= err_tol) {
+            break;
+        }
+        //
+        Fx_p = arma::norm(f_val_p,2);
+
+        if (Fx_p <= rho*Fx - sigma_2*arma::dot(d,d)) {
+            lambda = 1.0;
+        } else {
+            lambda = df_proc_1(x,d,sigma_1,iter,opt_objfn,opt_data);
+        }
+        //
+        x_p = x + lambda*d;
+
+        arma::vec s = x_p - x;
+        arma::vec y = f_val_p - f_val;
+
+        B += (y - B*s) * s.t() / arma::dot(s,s);
+        //
+        x = x_p;
+        f_val = f_val_p;
+        Fx = Fx_p;
+    }
+    //
+    if (err <= err_tol && iter <= max_iter) {
+        init_out_vals = x_p;
+        success = true;
+    }
+    //
+    return success;
+}
+
+bool trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
+                       std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data)
+{
+    // notation: 'p' stands for '+1'.
+    //
+    bool success = false;
+    int max_iter = 1000;
+    double err_tol = 1e-08;
+    
+    double rho = 0.9, sigma_1 = 0.001, sigma_2 = 0.001; // tuning parameters
+    //
+    //int n_vals = init_out_vals.n_elem;
+
+    arma::vec x = init_out_vals;
+
+    arma::mat B = jacob_objfn(x,jacob_data); // Jacobian
+    //
+    // initialization
+    arma::vec f_val = opt_objfn(x,opt_data);
+    double err = arma::as_scalar(arma::sum(arma::abs(f_val)));
+
+    if (err <= err_tol) {
+        return true;
+    }
+
+    double Fx = arma::norm(f_val,2);
+    //
+    arma::vec d = arma::solve(B,-f_val); // step 1
 
     arma::vec f_val_p = opt_objfn(x + d,opt_data);
     err = arma::as_scalar(arma::sum(arma::abs(f_val_p)));
