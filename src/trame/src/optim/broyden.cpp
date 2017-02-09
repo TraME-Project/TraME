@@ -169,7 +169,11 @@ bool trame::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arm
         s = x_p - x;
         y = f_val_p - f_val;
         
-        B += (s - B*y) * y.t() / arma::dot(y,y); // update B
+        if (iter % 5 == 0) {
+            arma::mat B = arma::inv(jacob_objfn(x_p,jacob_data)); // initial approx. to (inverse) Jacobian
+        } else {
+            B += (s - B*y) * y.t() / arma::dot(y,y); // update B
+        }
         //
         x = x_p;
         f_val = f_val_p;
@@ -369,7 +373,11 @@ bool trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const 
         arma::vec s = x_p - x;
         arma::vec y = f_val_p - f_val;
 
-        B += (y - B*s) * s.t() / arma::dot(s,s);
+        if (iter % 5 == 0) {
+            B = jacob_objfn(x_p,jacob_data);
+        } else {
+            B += (y - B*s) * s.t() / arma::dot(s,s);
+        }
         //
         x = x_p;
         f_val = f_val_p;

@@ -45,7 +45,8 @@ bool nodal_newton_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0
 
     arma::vec sol_vec = -sigma*arma::join_cols(arma::log(market.n/2.0),arma::log(market.m/2.0));
     
-    success = nodal_newton_optim(sol_vec,nodal_newton_opt_objfn<Tm>,&opt_data);
+    //success = nodal_newton_optim(sol_vec,nodal_newton_opt_objfn<Tm>,&opt_data);
+    success = nodal_newton_optim(sol_vec,nodal_newton_opt_objfn<Tm>,&opt_data,nodal_newton_jacobian<Tm>,&opt_data);
     //
     // construct equilibrium objects
     arma::vec us = sol_vec.rows(0,nbX-1);

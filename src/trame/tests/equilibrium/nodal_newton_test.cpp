@@ -17,18 +17,18 @@ int main()
     start = std::chrono::system_clock::now();
     //
     // inputs:
-    int nbX = 5;
-    int nbY = 3;
+    int nbX = 17;
+    int nbY = 15;
     double sigma = 1;
 
     arma::vec n = arma::ones(nbX,1);
     arma::vec m = arma::ones(nbY,1);
 
-    //arma::mat phi = 1.0 + arma::randu(nbX,nbY);
-    arma::mat phi = arma::ones(nbX,nbY);
+    arma::mat phi = 1.0 + arma::randu(nbX,nbY);
+    //arma::mat phi = arma::ones(nbX,nbY);
     //
     // results
-    printf("\n*===================   Start of arc_newton Test   ===================*\n");
+    printf("\n*===================   Start of nodal_newton Test   ===================*\n");
     printf("\n");
     //
     // TU
@@ -51,7 +51,7 @@ int main()
     arma::cout << "Solution of TU-logit problem using ipfp:\n" << mu_TU_1 << arma::endl;
     arma::cout << "Solution of TU-logit problem using arc_newton:\n" << mu_TU_2 << arma::endl;
     //
-    printf("\n*===================    End of arc_newton Test    ===================*\n");
+    printf("\n*===================    End of nodal_newton Test    ===================*\n");
     printf("\n");
     //
     end = std::chrono::system_clock::now();
