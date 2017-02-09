@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 08/08/2016
+ *
+ * This version:
+ * 02/09/2017
  */
 
 class logit
@@ -56,12 +59,12 @@ class logit
         void build(int nbX_inp, int nbY_inp);
         void build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp);
         
-        double G(arma::vec n);
-        double G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out);
+        double G(const arma::vec& n);
+        double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out);
         //double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x);
         
-        double Gstar(arma::vec n);
-        double Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out);
+        double Gstar(const arma::vec& n);
+        double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out);
         double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out);
         double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
         
@@ -69,9 +72,14 @@ class logit
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out);
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
         
-        void D2G(arma::mat &H, arma::vec n, bool xFirst);
-        void D2Gstar(arma::mat &H, arma::vec n, bool xFirst);
-        void dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, bool xFirst);
+        arma::mat D2G(const arma::vec& n, bool xFirst);
+        void D2G(arma::mat &H, const arma::vec& n, bool xFirst);
+        void D2G(arma::mat &H, const arma::mat& U_inp, const arma::vec& n, bool xFirst);
+
+        arma::mat D2Gstar(const arma::vec& n, bool xFirst);
+        void D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst);
+        arma::mat dtheta_NablaGstar(const arma::vec& n, arma::mat* dtheta_inp, bool xFirst);
+        void dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dtheta_inp, bool xFirst);
         
         empirical simul();
         empirical simul(int* nbDraws, int* seed);

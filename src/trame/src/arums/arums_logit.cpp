@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 08/08/2016
+ *
+ * This version:
+ * 02/09/2017
  */
 
 #include "trame.hpp"
@@ -55,14 +58,14 @@ void trame::logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsid
     outsideOption = outsideOption_inp;
 }
 
-double trame::logit::G(arma::vec n)
+double trame::logit::G(const arma::vec& n)
 {   
     double val = this->G(n,U,mu_sol);
     //
     return val;
 }
 
-double trame::logit::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
+double trame::logit::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
 {   
     arma::mat denom;
     
@@ -80,14 +83,14 @@ double trame::logit::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
     return val;
 }
 
-double trame::logit::Gstar(arma::vec n)
+double trame::logit::Gstar(const arma::vec& n)
 {
     double val = this->Gstar(n,mu_sol,U_sol);
     //
     return val;
 }
 
-double trame::logit::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out)
+double trame::logit::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
 {
     double val = 0.0;
 
@@ -197,7 +200,16 @@ double trame::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, ar
     return val_x;
 }
 
-void trame::logit::D2G(arma::mat &H, arma::vec n, bool xFirst)
+arma::mat trame::logit::D2G(const arma::vec& n, bool xFirst)
+{
+    arma::mat ret;
+
+    this->D2G(ret,n,xFirst);
+    //
+    return ret;
+}
+
+void trame::logit::D2G(arma::mat& H, const arma::vec& n, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption is true
     int x, y, yprime;
@@ -226,7 +238,47 @@ void trame::logit::D2G(arma::mat &H, arma::vec n, bool xFirst)
     }
 }
 
-void trame::logit::D2Gstar(arma::mat &H, arma::vec n, bool xFirst)
+void trame::logit::D2G(arma::mat& H, const arma::mat& U_inp, const arma::vec& n, bool xFirst)
+{
+    // NOTE: the formula is the same regardless of whether outsideOption is true
+    int x, y, yprime;
+
+    arma::mat mu_xy;
+    this->G(n,U_inp,mu_xy);
+    
+    H.zeros(nbX*nbY,nbX*nbY);
+    //
+    for (x = 0; x < nbX; x++) {
+        for (y = 0; y < nbY; y++) {
+            for (yprime = 0; yprime < nbY; yprime++) {
+                if (xFirst) {
+                    if (y==yprime) {
+                        H(x + nbX*y, x + nbX*yprime) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
+                    } else {
+                        H(x + nbX*y, x + nbX*yprime) = - mu_xy(x,y)*mu_xy(x,yprime) / (n(x)*sigma);
+                    }
+                } else {
+                    if (y==yprime) {
+                        H(y + nbY*x, yprime + nbY*x) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
+                    } else {
+                        H(y + nbY*x, yprime + nbY*x) = - mu_xy(x,y)*mu_xy(x,yprime) / (n(x)*sigma);
+                    }
+                }
+            }
+        }
+    }
+}
+
+arma::mat trame::logit::D2Gstar(const arma::vec& n, bool xFirst)
+{
+    arma::mat ret;
+
+    this->D2Gstar(ret,n,xFirst);
+    //
+    return ret;
+}
+
+void trame::logit::D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption == 1 or 0
     int x, y, yprime;
@@ -259,9 +311,20 @@ void trame::logit::D2Gstar(arma::mat &H, arma::vec n, bool xFirst)
     H *= sigma;
 }
 
-void trame::logit::dtheta_NablaGstar(arma::mat &ret, arma::vec n, arma::mat dtheta, bool xFirst)
+arma::mat trame::logit::dtheta_NablaGstar(const arma::vec& n, arma::mat* dtheta_inp, bool xFirst)
+{
+    arma::mat ret;
+
+    this->dtheta_NablaGstar(ret,n,dtheta_inp,xFirst);
+    //
+    return ret;
+}
+
+void trame::logit::dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dtheta_inp, bool xFirst)
 {
     arma::mat logmu_temp, mu_x_0;
+
+    arma::mat dtheta = (dtheta_inp) ? *dtheta_inp : arma::ones(1,1);
     
     if (dtheta.n_elem==0) {
         ret.zeros(nbX*nbY,0);
