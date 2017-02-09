@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 01/17/2016
+ *
+ * This version:
+ * 02/09/2017
  */
 
 #ifndef _trame_nodal_newton_HPP
@@ -68,7 +71,7 @@ template<typename Tm>
 arma::vec nodal_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data);
 
 template<typename Tm>
-arma::mat nodal_newton_jacobian(const arma::vec& vals_inp, void *opt_data);
+arma::mat nodal_newton_jacobian(const arma::vec& vals_inp, void *jacob_data);
 
 #include "nodal_newton.tpp"
 

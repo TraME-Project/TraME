@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 01/17/2016
+ *
+ * This version:
+ * 02/09/2017
  */
 
 // internal nodal_newton
@@ -150,9 +153,9 @@ arma::vec nodal_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
 }
 
 template<typename Tm>
-arma::mat nodal_newton_jacobian(const arma::vec& vals_inp, void *opt_data)
+arma::mat nodal_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
 {
-    trame_mfe_opt_data<Tm> *d = reinterpret_cast<trame_mfe_opt_data<Tm>*>(opt_data);
+    trame_mfe_opt_data<Tm> *d = reinterpret_cast<trame_mfe_opt_data<Tm>*>(jacob_data);
     //
     int nbX = d->market.nbX;
     int nbY = d->market.nbY;
