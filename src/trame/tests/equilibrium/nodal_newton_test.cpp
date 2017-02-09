@@ -24,7 +24,8 @@ int main()
     arma::vec n = arma::ones(nbX,1);
     arma::vec m = arma::ones(nbY,1);
 
-    arma::mat phi = arma::randu(nbX,nbY);
+    //arma::mat phi = 1.0 + arma::randu(nbX,nbY);
+    arma::mat phi = arma::ones(nbX,nbY);
     //
     // results
     printf("\n*===================   Start of arc_newton Test   ===================*\n");
