@@ -97,10 +97,10 @@ double trame::logit::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::ma
     arma::mat n_repd = arma::repmat(n,1,nbY);
     //
     if (outsideOption) {
-        arma::mat mu_x_0 = n - arma::sum(mu_inp,1);
+        arma::mat mu_x0 = n - arma::sum(mu_inp,1);
         
-        val   = sigma * ( arma::accu(mu_inp % arma::log(mu_inp/n_repd)) + arma::accu(mu_x_0 % arma::log(mu_x_0/n)) );
-        U_out = sigma * arma::log(elem_div(mu_inp, mu_x_0));
+        val   = sigma * ( arma::accu(mu_inp % arma::log(mu_inp/n_repd)) + arma::accu(mu_x0 % arma::log(mu_x0/n)) );
+        U_out = sigma * arma::log(elem_div(mu_inp, mu_x0));
     } else {
         val   = sigma * arma::accu(mu_inp % arma::log(mu_inp/n_repd));
         U_out = sigma * arma::log(mu_inp / n_repd);
@@ -181,12 +181,12 @@ double trame::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, ar
         root_data.exp_Ubar_X = exp_Ubar_X;
         root_data.mubar_X = mubar_x;
         
-        double mu_x_0 = zeroin(0.0, 1.0, differMargX, root_data, NULL, NULL);
+        double mu_x0 = zeroin(0.0, 1.0, differMargX, root_data, NULL, NULL);
         //
-        mu_x_out = arma::min(mu_x_0 * exp_Ubar_X, mubar_x);
-        U_x_out  = sigma * arma::log(mu_x_out/mu_x_0);
+        mu_x_out = arma::min(mu_x0 * exp_Ubar_X, mubar_x);
+        U_x_out  = sigma * arma::log(mu_x_out/mu_x0);
         //
-        valx = arma::accu(mu_x_out % Ubar_x) - sigma*(mu_x_0*std::log(mu_x_0) + arma::accu(mu_x_out % arma::log(mu_x_out)));
+        valx = arma::accu(mu_x_out % Ubar_x) - sigma*(mu_x0*std::log(mu_x0) + arma::accu(mu_x_out % arma::log(mu_x_out)));
     }
     //
     return valx;
@@ -238,7 +238,7 @@ void trame::logit::D2G(arma::mat& H, const arma::vec& n, bool xFirst)
     }
 }
 
-void trame::logit::D2G(arma::mat& H, const arma::mat& U_inp, const arma::vec& n, bool xFirst)
+void trame::logit::D2G(arma::mat& H, const arma::vec& n, const arma::mat& U_inp, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption is true
     int x, y, yprime;
@@ -283,8 +283,8 @@ void trame::logit::D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst)
     // NOTE: the formula is the same regardless of whether outsideOption == 1 or 0
     int x, y, yprime;
     
-    arma::mat mu_x_0 = n - arma::sum(mu_sol,1);
-    arma::mat mu_x_0_recip = arma::ones(mu_x_0.n_rows,mu_x_0.n_cols) / mu_x_0; // reciprocal of mu_x_0
+    arma::mat mu_x0 = n - arma::sum(mu_sol,1);
+    arma::mat mu_x0_recip = arma::ones(mu_x0.n_rows,mu_x0.n_cols) / mu_x0; // reciprocal of mu_x0
     arma::mat mu_xy_recip = arma::ones(mu_sol.n_rows,mu_sol.n_cols) / mu_sol;
     
     H.zeros(nbX*nbY,nbX*nbY);
@@ -294,15 +294,48 @@ void trame::logit::D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst)
             for (yprime = 0; yprime < nbY; yprime++) {
                 if (xFirst) {
                     if (y==yprime) {
-                        H(x + nbX*y, x + nbX*yprime) = mu_x_0_recip(x) + mu_xy_recip(x,y);
+                        H(x + nbX*y, x + nbX*yprime) = mu_x0_recip(x) + mu_xy_recip(x,y);
                     }else{
-                        H(x + nbX*y, x + nbX*yprime) = mu_x_0_recip(x);
+                        H(x + nbX*y, x + nbX*yprime) = mu_x0_recip(x);
                     }
                 } else {
                     if (y==yprime) {
-                        H(y + nbY*x, yprime + nbY*x) = mu_x_0_recip(x) + mu_xy_recip(x,y);
+                        H(y + nbY*x, yprime + nbY*x) = mu_x0_recip(x) + mu_xy_recip(x,y);
                     } else {
-                        H(y + nbY*x, yprime + nbY*x) = mu_x_0_recip(x);
+                        H(y + nbY*x, yprime + nbY*x) = mu_x0_recip(x);
+                    }
+                }
+            }
+        }
+    }
+    H *= sigma;
+}
+
+void trame::logit::D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, bool xFirst)
+{
+    // NOTE: the formula is the same regardless of whether outsideOption == 1 or 0
+    int x, y, yprime;
+    
+    arma::mat mu_x0 = n - arma::sum(mu_inp,1);
+    arma::mat mu_x0_recip = arma::ones(mu_x0.n_rows,mu_x0.n_cols) / mu_x0; // reciprocal of mu_x0
+    arma::mat mu_xy_recip = arma::ones(mu_inp.n_rows,mu_inp.n_cols) / mu_inp;
+    
+    H.zeros(nbX*nbY,nbX*nbY);
+    //
+    for (x = 0; x < nbX; x++) {
+        for (y = 0; y < nbY; y++) {
+            for (yprime = 0; yprime < nbY; yprime++) {
+                if (xFirst) {
+                    if (y==yprime) {
+                        H(x + nbX*y, x + nbX*yprime) = mu_x0_recip(x) + mu_xy_recip(x,y);
+                    }else{
+                        H(x + nbX*y, x + nbX*yprime) = mu_x0_recip(x);
+                    }
+                } else {
+                    if (y==yprime) {
+                        H(y + nbY*x, yprime + nbY*x) = mu_x0_recip(x) + mu_xy_recip(x,y);
+                    } else {
+                        H(y + nbY*x, yprime + nbY*x) = mu_x0_recip(x);
                     }
                 }
             }
@@ -322,7 +355,7 @@ arma::mat trame::logit::dtheta_NablaGstar(const arma::vec& n, arma::mat* dtheta_
 
 void trame::logit::dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dtheta_inp, bool xFirst)
 {
-    arma::mat logmu_temp, mu_x_0;
+    arma::mat logmu_temp, mu_x0;
 
     arma::mat dtheta = (dtheta_inp) ? *dtheta_inp : arma::ones(1,1);
     
@@ -330,12 +363,12 @@ void trame::logit::dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, arma::m
         ret.zeros(nbX*nbY,0);
     } else {
         if (outsideOption) {
-            mu_x_0 = arma::repmat(n - arma::sum(mu,1),1,mu.n_cols);
+            mu_x0 = arma::repmat(n - arma::sum(mu,1),1,mu.n_cols);
             
             if (xFirst) {
-                logmu_temp = arma::vectorise(arma::log(mu/mu_x_0));
+                logmu_temp = arma::vectorise(arma::log(mu/mu_x0));
             } else {
-                logmu_temp = arma::vectorise(arma::trans(arma::log(mu/mu_x_0)));
+                logmu_temp = arma::vectorise(arma::trans(arma::log(mu/mu_x0)));
             }
             //
             ret = arma::vectorise(dtheta) % logmu_temp;

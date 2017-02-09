@@ -74,10 +74,12 @@ class logit
         
         arma::mat D2G(const arma::vec& n, bool xFirst);
         void D2G(arma::mat &H, const arma::vec& n, bool xFirst);
-        void D2G(arma::mat &H, const arma::mat& U_inp, const arma::vec& n, bool xFirst);
+        void D2G(arma::mat &H, const arma::vec& n, const arma::mat& U_inp, bool xFirst);
 
         arma::mat D2Gstar(const arma::vec& n, bool xFirst);
         void D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst);
+        void D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, bool xFirst);
+
         arma::mat dtheta_NablaGstar(const arma::vec& n, arma::mat* dtheta_inp, bool xFirst);
         void dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dtheta_inp, bool xFirst);
         

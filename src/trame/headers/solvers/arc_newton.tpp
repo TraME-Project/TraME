@@ -168,8 +168,8 @@ arma::mat arc_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
     arma::mat dwVW = d->market.trans_obj.dw_VW(inp_mat);
 
     arma::mat D2G_mat, D2H_mat;
-    d->market.arums_G.D2G(D2G_mat,U,d->market.n,true);
-    d->market.arums_H.D2G(D2H_mat,V.t(),d->market.m,false);
+    d->market.arums_G.D2G(D2G_mat,d->market.n,U,true);
+    d->market.arums_H.D2G(D2H_mat,d->market.m,V.t(),false);
 
     arma::mat term_1 = elem_prod(arma::vectorise(dwUW),D2G_mat);
     arma::mat term_2 = elem_prod(arma::vectorise(dwVW),D2H_mat);
