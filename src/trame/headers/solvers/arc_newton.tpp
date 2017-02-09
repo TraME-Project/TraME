@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 01/17/2016
+ *
+ * This version:
+ * 02/09/2017
  */
 
 // internal arc_newton
@@ -143,6 +146,34 @@ arma::vec arc_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
     d->market.arums_H.G(d->market.m,V.t(),mu_H);
     //
     arma::vec ret = arma::vectorise(mu_G - mu_H.t());
+    //
+    return ret;
+}
+
+template<typename Ta>
+arma::mat arc_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
+{
+    trame_market_opt_data<Ta> *d = reinterpret_cast<trame_market_opt_data<Ta>*>(jacob_data);
+    //
+    int nbX = d->market.nbX;
+    int nbY = d->market.nbY;
+
+    arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
+
+    arma::mat U = d->market.trans_obj.UW(inp_mat);
+    arma::mat V = d->market.trans_obj.VW(inp_mat);
+
+    arma::mat dwUW = d->market.trans_obj.dw_UW(inp_mat);
+    arma::mat dwVW = d->market.trans_obj.dw_VW(inp_mat);
+
+    arma::mat D2G_mat, D2H_mat;
+    d->market.arums_G.D2G(D2G_mat,U,d->market.n,true);
+    d->market.arums_H.D2G(D2H_mat,V.t(),d->market.m,false);
+
+    arma::mat term_1 = elem_prod(arma::vectorise(dwUW),D2G_mat);
+    arma::mat term_2 = elem_prod(arma::vectorise(dwVW),D2H_mat);
+
+    arma::mat ret = term_1 - term_2;
     //
     return ret;
 }
