@@ -69,10 +69,10 @@ class transfers
         arma::mat Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys) const;
         double Psi(const double& U, const double& V, int x_ind, int y_ind) const;
 
-        arma::mat du_Psi(const arma::mat& U, const arma::mat& V);
-        arma::mat du_Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys);
-        arma::mat du_Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys);
-        arma::mat du_Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys);
+        arma::mat du_Psi(const arma::mat& U, const arma::mat& V) const;
+        arma::mat du_Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat du_Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat du_Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys) const;
 
         arma::mat dtheta_Psi(const arma::mat& U, const arma::mat& V, arma::mat* dtheta);
 
@@ -92,8 +92,10 @@ class transfers
         arma::mat VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys) const;
         double VW(const double& Ws, int x_ind, int y_ind) const;
 
-        arma::mat du_UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
-        arma::mat du_VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys);
+        arma::mat dw_UW(const arma::mat& Ws) const;
+        arma::mat dw_UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat dw_VW(const arma::mat& Ws) const;
+        arma::mat dw_VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys) const;
 
         arma::mat WU(const arma::mat& Us);
         arma::mat WU(const arma::mat& Us, arma::uvec* xs, arma::uvec* ys);
