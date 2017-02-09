@@ -88,6 +88,7 @@ void trame::mmf::build_TU(const arma::vec& n_TU, const arma::vec& m_TU, const ar
 }
 
 arma::mat trame::mmf::M(const arma::mat& a_xs, const arma::mat& b_ys)
+const
 {
     arma::mat ret = this->M(a_xs,b_ys,NULL,NULL);
     //
@@ -95,6 +96,7 @@ arma::mat trame::mmf::M(const arma::mat& a_xs, const arma::mat& b_ys)
 }
 
 arma::mat trame::mmf::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+const
 {
     arma::mat ret;
     
@@ -134,6 +136,7 @@ arma::mat trame::mmf::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec
 }
 
 arma::mat trame::mmf::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+const
 {
     arma::mat ret;
 
@@ -173,6 +176,7 @@ arma::mat trame::mmf::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* x
 }
 
 arma::mat trame::mmf::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys)
+const
 {
     arma::mat ret;
     
@@ -212,11 +216,13 @@ arma::mat trame::mmf::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* x
 }
 
 arma::mat trame::mmf::Mx0(const arma::mat& a_x)
+const
 {
     return a_x;
 }
 
 arma::mat trame::mmf::M0y(const arma::mat& b_y)
+const
 {
     return b_y;
 }

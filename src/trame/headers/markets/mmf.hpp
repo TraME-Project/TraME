@@ -58,13 +58,14 @@ class mmf
         void build_NTU(const arma::vec& n_NTU, const arma::vec& m_NTU, const arma::mat& A_NTU, const arma::mat& B_NTU, bool need_norm_NTU);
         void build_TU(const arma::vec& n_TU, const arma::vec& m_TU, const arma::mat& K_TU, bool need_norm_TU);
 
-        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys);
-        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys);
-        arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys);
-        arma::mat M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys);
+        // M functions are const restricted because of calls to const market pointers in solvers
+        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys) const;
+        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys) const;
 
-        arma::mat Mx0(const arma::mat& a_x);
-        arma::mat M0y(const arma::mat& b_y);
+        arma::mat Mx0(const arma::mat& a_x) const;
+        arma::mat M0y(const arma::mat& b_y) const;
 
         arma::vec marg_x_inv(const arma::mat& B_ys);
         arma::vec marg_x_inv(const arma::mat& B_ys, arma::uvec* xs);
