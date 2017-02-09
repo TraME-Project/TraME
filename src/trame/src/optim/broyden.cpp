@@ -124,7 +124,7 @@ bool trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const 
 
     arma::vec x = init_out_vals;
 
-    arma::mat B = arma::eye(n_vals,n_vals); // initial approx. to (inverse) Jacobian
+    arma::mat B = arma::eye(n_vals,n_vals); // initial approx. to Jacobian
     //
     // initialization
     arma::vec f_val = opt_objfn(x,opt_data);
