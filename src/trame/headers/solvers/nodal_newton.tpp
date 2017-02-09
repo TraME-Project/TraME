@@ -147,3 +147,36 @@ arma::vec nodal_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
     //
     return ret;
 }
+
+template<typename Tm>
+arma::mat nodal_newton_jacobian(const arma::vec& vals_inp, void *opt_data)
+{
+    trame_mfe_opt_data<Tm> *d = reinterpret_cast<trame_mfe_opt_data<Tm>*>(opt_data);
+    //
+    int nbX = d->market.nbX;
+    int nbY = d->market.nbY;
+    double sigma = d->market.sigma;
+
+    arma::vec us = vals_inp.rows(0,nbX-1);
+    arma::vec vs = vals_inp.rows(nbX,nbX+nbY-1);
+
+    arma::vec mu_x0_s = arma::exp(-us/sigma);
+    arma::vec mu_0y_s = arma::exp(-vs/sigma);
+
+    arma::mat mu = d->market.mmf_obj.M(mu_x0_s,mu_0y_s);
+    //
+    arma::mat du_s = d->market.trans_obj.du_Psi(us,vs);
+    arma::mat dv_s = 1.0 - du_s;
+
+    arma::mat Delta_11 = arma::diagmat(mu_x0_s + arma::sum(mu%du_s,1));
+    arma::mat Delta_12 = mu%dv_s;
+
+    arma::mat Delta_21 = arma::trans(mu%du_s);
+    arma::mat Delta_22 = arma::diagmat(mu_0y_s + arma::trans(arma::sum(mu%dv_s,0)));
+
+    arma::mat Delta = arma::join_cols( arma::join_rows(Delta_11,Delta_12), arma::join_rows(Delta_21,Delta_22) );
+
+    arma::mat ret = - Delta / sigma;
+    //
+    return ret;
+}

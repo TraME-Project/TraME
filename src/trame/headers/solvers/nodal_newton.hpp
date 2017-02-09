@@ -61,8 +61,14 @@ bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out
 
 bool nodal_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data);
 
+bool nodal_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
+                               std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data);
+
 template<typename Tm>
 arma::vec nodal_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data);
+
+template<typename Tm>
+arma::mat nodal_newton_jacobian(const arma::vec& vals_inp, void *opt_data);
 
 #include "nodal_newton.tpp"
 
