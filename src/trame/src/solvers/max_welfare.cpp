@@ -23,40 +23,20 @@
   ################################################################################*/
 
 /*
- * auxiliary functions for equilibrium solvers
+ * max_welfare
  *
  * Keith O'Hara
- * 08/23/2016
+ * 01/17/2017
  *
  * This version:
- * 11/02/2016
+ * 02/09/2017
  */
 
-#ifndef _trame_aux_solvers_HPP
-#define _trame_aux_solvers_HPP
+#include "trame.hpp"
 
-template<typename Ta>
-struct trame_market_opt_data {
-    dse<Ta> market;
-};
-
-template<typename Tm>
-struct trame_mfe_opt_data {
-    mfe<Tm> market;
-};
-
-//
-
-int build_disaggregate_epsilon(arma::vec n, const trame::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix);
-
-template<typename Ta>
-arma::mat w_upper_bound(const dse<Ta>& market);
-
-template<typename Ta>
-bool max_welfare_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
-                       double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
-                       trame_market_opt_data<Ta> opt_data);
-
-#include "aux_solvers.tpp"
-
-#endif
+bool trame::eap_nash_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
+{
+    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
+    //
+    return success;
+}
