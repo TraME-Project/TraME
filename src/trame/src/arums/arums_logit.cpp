@@ -162,9 +162,11 @@ double trame::logit::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const a
     return val;
 }
 
-double differMargX(double z, const trame::trame_zeroin_data& opt_data)
+double trame::logit::differMargX(double z, void* opt_data)
 {
-    arma::mat temp_mat = arma::min(z * opt_data.exp_Ubar_X, opt_data.mubar_X);
+    trame_logit_zeroin_data *d = reinterpret_cast<trame_logit_zeroin_data*>(opt_data);
+
+    arma::mat temp_mat = arma::min(z * d->exp_Ubar_X, d->mubar_X);
     double ret = z + arma::accu(temp_mat) - 1;
     //
     return ret;
@@ -177,11 +179,11 @@ double trame::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, ar
     if (outsideOption) {
         arma::mat exp_Ubar_X = arma::exp(Ubar_x/sigma);
         
-        trame_zeroin_data root_data;
+        trame_logit_zeroin_data root_data;
         root_data.exp_Ubar_X = exp_Ubar_X;
         root_data.mubar_X = mubar_x;
         
-        double mu_x0 = zeroin(0.0, 1.0, differMargX, root_data, NULL, NULL);
+        double mu_x0 = zeroin(0.0, 1.0, differMargX, &root_data, NULL, NULL);
         //
         mu_x_out = arma::min(mu_x0 * exp_Ubar_X, mubar_x);
         U_x_out  = sigma * arma::log(mu_x_out/mu_x0);

@@ -263,27 +263,6 @@ void trame::mmf::trans()
     //
 }
 
-double trame::mmf::marg_x_inv_fn(double z, const trame_zeroin_data& opt_data)
-{
-    double term_1;
-    bool coeff = opt_data.coeff;
-    int x_ind = opt_data.x_ind;
-    arma::mat B_ys = opt_data.B_ys;
-
-    arma::uvec x_ind_temp(1);
-    x_ind_temp(0) = x_ind;
-    //
-    if (coeff) {
-        term_1 = z;
-    } else {
-        term_1 = 0;
-    }
-    
-    double ret = term_1 - n(x_ind) + arma::accu(M(z,B_ys,&x_ind_temp,NULL));
-    //
-    return ret;
-}
-
 arma::vec trame::mmf::marg_x_inv(const arma::mat& B_ys)
 {
     arma::vec ret = this->marg_x_inv(B_ys,NULL);
@@ -318,7 +297,7 @@ arma::vec trame::mmf::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
         //
         return the_a_xs;
     } else { // 'default'
-        int j, x;
+        int x;
         int nb_X = n.n_elem;
 
         bool coeff;
@@ -332,41 +311,36 @@ arma::vec trame::mmf::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
             ubs = n;
         }
         //
-        trame_zeroin_data root_data;
+        trame_mmf_zeroin_data root_data;
+
+        root_data.mmf_obj = *this;
 
         root_data.coeff = coeff;
         root_data.B_ys  = B_ys;
         //
         arma::vec the_a_xs(temp_ind.n_elem);
 
-        for (j=0; j < (int) temp_ind.n_elem; j++) {
+        for (int j=0; j < (int) temp_ind.n_elem; j++) {
             x = temp_ind(j);
             root_data.x_ind = x;
 
-            the_a_xs(j) = zeroin_mmf(0.0, ubs(x), &trame::mmf::marg_x_inv_fn, root_data, NULL, NULL);
+            the_a_xs(j) = zeroin(0.0, ubs(x), marg_x_inv_fn, &root_data, NULL, NULL);
         }
         //
         return the_a_xs;
     }
 }
 
-double trame::mmf::marg_y_inv_fn(double z, const trame_zeroin_data& opt_data)
+double trame::mmf::marg_x_inv_fn(double z, void* opt_data)
 {
-    double term_1;
-    bool coeff = opt_data.coeff;
-    int y_ind = opt_data.y_ind;
-    arma::mat A_xs = opt_data.A_xs;
-
-    arma::uvec y_ind_temp(1);
-    y_ind_temp(0) = y_ind;
+    trame_mmf_zeroin_data *d = reinterpret_cast<trame_mmf_zeroin_data*>(opt_data);
     //
-    if (coeff) {
-        term_1 = z;
-    } else {
-        term_1 = 0;
-    }
-
-    double ret = term_1 - m(y_ind) + arma::accu(M(A_xs,z,NULL,&y_ind_temp));
+    arma::uvec x_ind_temp(1);
+    x_ind_temp(0) = d->x_ind;
+    
+    double term_1 = (d->coeff) ? z : 0;
+    //
+    double ret = term_1 - d->mmf_obj.n(d->x_ind) + arma::accu(d->mmf_obj.M(z,d->B_ys,&x_ind_temp,NULL));
     //
     return ret;
 }
@@ -424,7 +398,9 @@ arma::vec trame::mmf::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
             ubs = m;
         }
         //
-        trame_zeroin_data root_data;
+        trame_mmf_zeroin_data root_data;
+
+        root_data.mmf_obj = *this;
 
         root_data.coeff = coeff;
         root_data.A_xs  = A_xs;
@@ -436,108 +412,23 @@ arma::vec trame::mmf::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
             y = temp_ind(j);
             root_data.y_ind = y;
 
-            the_b_ys(j) = zeroin_mmf(0.0, ubs(y), &trame::mmf::marg_y_inv_fn, root_data, NULL, NULL);
+            the_b_ys(j) = zeroin(0.0, ubs(y), marg_y_inv_fn, &root_data, NULL, NULL);
         }
         //
         return the_b_ys;
     }
 }
 
-double trame::mmf::zeroin_mmf(double ax, double bx, double (trame::mmf::*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol_inp, int* max_iter_inp)
+double trame::mmf::marg_y_inv_fn(double z, void* opt_data)
 {
-	double a,b,c;
-	double fa;
-	double fb;
-	double fc;
-
-    double tol;
-    int max_iter;
+    trame_mmf_zeroin_data *d = reinterpret_cast<trame_mmf_zeroin_data*>(opt_data);
+    //
+    arma::uvec y_ind_temp(1);
+    y_ind_temp(0) = d->y_ind;
     
-    if (tol_inp) {
-        tol = *tol_inp;
-    } else {
-        tol = 1E-12;
-    }
-
-    if (max_iter_inp) {
-        max_iter = *max_iter_inp;
-    } else {
-        max_iter = 10000;
-    }
-
-	a = ax;  b = bx;  fa = (this->*f)(a,zeroin_data);  fb = (this->*f)(b,zeroin_data);
-	c = a;   fc = fa;
-	
-	// check endpoints
-	if (fa == 0.0) {
-		return b;
-	}
-	if (fb == 0.0) {
-		return b;
-	}
-	
-	// otherwise begin iterations
-	int iter = 0;
-	
-	double eps_temp = std::numeric_limits<double>::epsilon();
-	double tol_act = 2*eps_temp*fabs(b) + tol/2;
-
-	double p, q, prev_step, new_step;
-	//register double t1,cb,t2;
-	double t1,cb,t2; // Keith: register is deprecated as of C++-11
-	
-	new_step = (c - b)/2;
-	
-	while (fabs(new_step) > tol_act && iter < max_iter) {
-		iter++;
-		prev_step = b-a;
-			
-		if( fabs(fc) < fabs(fb) ){
-			a = b;  b = c;  c = a;
-			fa=fb;  fb=fc;  fc=fa;
-		}
-		
-		new_step = (c-b)/2;
-
-		if ( fabs(prev_step) >= tol_act	&& fabs(fa) > fabs(fb) ) {
-			
-			cb = c - b;
-						
-			if ( a==c ) {
-				t1 = fb/fa;
-				p = cb*t1;
-				q = 1.0 - t1;
-			} else {
-				q = fa/fc;  t1 = fb/fc;  t2 = fb/fa;
-				p = t2 * ( cb*q*(q-t1) - (b-a)*(t1-1.0) );
-				q = (q-1.0) * (t1-1.0) * (t2-1.0);
-			}
-						
-			if ( p > 0.0 ) {
-				q = -q;
-			} else {
-				p = -p;
-			}
-
-			if ( p < (0.75*cb*q-fabs(tol_act*q)/2) && p < fabs(prev_step*q/2) ) {
-				new_step = p/q;
-			}
-		}
-				
-		if ( fabs(new_step) < tol_act ) {
-			if ( new_step > 0.0 ) {
-				new_step = tol_act;
-			} else {
-				new_step = -tol_act;
-			}
-		}
-						
-		a = b;  fa = fb;
-		b += new_step;  fb = (this->*f)(b,zeroin_data);
-		if ( (fb > 0.0 && fc > 0.0) || (fb < 0.0 && fc < 0.0) ) {
-			c = a;  fc = fa;
-		}
-	}
-	//
-	return b;
+    double term_1 = (d->coeff) ? z : 0;
+    //
+    double ret = term_1 - d->mmf_obj.m(d->y_ind) + arma::accu(d->mmf_obj.M(d->A_xs,z,NULL,&y_ind_temp));
+    //
+    return ret;
 }

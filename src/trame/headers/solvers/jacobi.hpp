@@ -29,11 +29,28 @@
  * 08/25/2016
  *
  * This version:
- * 10/23/2016
+ * 02/09/2017
  */
 
 #ifndef _trame_jacobi_HPP
 #define _trame_jacobi_HPP
+
+template<typename Ta>
+struct trame_jacobi_zeroin_data {
+    int x_ind;
+    int y_ind;
+
+    arma::vec n;
+    arma::vec m;
+
+    arma::mat U;
+    arma::mat V;
+
+    Ta arums_G;
+    Ta arums_H;
+
+    transfers trans_obj;
+};
 
 // internal
 template<typename Ta>
@@ -55,6 +72,10 @@ bool jacobi(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp, con
 template<typename Ta>
 bool jacobi(const dse<Ta>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp);
 
+// zeroin function
+
+template<typename Ta>
+double jacobi_zeroin_fn(double z, void* opt_data);
 
 #include "jacobi.tpp"
 

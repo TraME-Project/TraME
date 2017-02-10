@@ -35,6 +35,6 @@
 //#include <cmath> // for abs value
 //#include <limits>
 
-double zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol_inp, int* max_iter_inp);
+double zeroin(double ax, double bx, double (*f)(double x, void* opt_data), void* opt_data, double* tol_inp, int* max_iter_inp);
 
 #endif

@@ -87,4 +87,12 @@ class logit
         empirical simul(int* nbDraws, int* seed);
         void simul(empirical& obj_out);
         void simul(empirical& obj_out, int* nbDraws, int* seed);
+
+    private:
+        static double differMargX(double z, void* opt_data);
+};
+
+struct trame_logit_zeroin_data {
+    arma::mat exp_Ubar_X;
+    arma::mat mubar_X;
 };

@@ -31,7 +31,7 @@
 
 #include "trame.hpp"
 
-double trame::zeroin(double ax, double bx, double (*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol_inp, int* max_iter_inp)
+double trame::zeroin(double ax, double bx, double (*f)(double x, void* opt_data), void* opt_data, double* tol_inp, int* max_iter_inp)
 {
 	double a,b,c;
 	double fa;
@@ -53,7 +53,7 @@ double trame::zeroin(double ax, double bx, double (*f)(double x, const trame_zer
         max_iter = 10000;
     }
 		
-	a = ax;  b = bx;  fa = (*f)(a,zeroin_data);  fb = (*f)(b,zeroin_data);
+	a = ax;  b = bx;  fa = (*f)(a,opt_data);  fb = (*f)(b,opt_data);
 	c = a;   fc = fa;
 	
 	// check endpoints
@@ -121,7 +121,7 @@ double trame::zeroin(double ax, double bx, double (*f)(double x, const trame_zer
 		}
 						
 		a = b;  fa = fb;
-		b += new_step;  fb = (*f)(b,zeroin_data);
+		b += new_step;  fb = (*f)(b,opt_data);
 		if( (fb > 0.0 && fc > 0.0) || (fb < 0.0 && fc < 0.0) ){
 			c = a;  fc = fa;
 		}

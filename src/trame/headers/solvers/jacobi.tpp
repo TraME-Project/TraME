@@ -29,7 +29,7 @@
  * 08/25/2016
  *
  * This version:
- * 10/23/2016
+ * 02/09/2017
  */
 
 template<typename Ta>
@@ -106,8 +106,8 @@ bool jacobi_int(const dse<Ta>& market, const arma::mat* w_low_inp, const arma::m
     arma::mat U = trans_obj.UW(w);
     arma::mat V = trans_obj.VW(w);
 
-    arums_G.U = U;
-    arums_H.U = V.t();
+    //arums_G.U = U;
+    //arums_H.U = V.t();
     
     arums_G.G(n,U,mu_G);
     arums_H.G(m,V.t(),mu_H);
@@ -119,7 +119,7 @@ bool jacobi_int(const dse<Ta>& market, const arma::mat* w_low_inp, const arma::m
 
     arma::mat norm_mat = n * m.t();
 
-    trame_zeroin_data_tmp<Ta> root_data;
+    trame_jacobi_zeroin_data<Ta> root_data;
     root_data.n = n;
     root_data.m = m;
     root_data.U = U;
@@ -143,7 +143,7 @@ bool jacobi_int(const dse<Ta>& market, const arma::mat* w_low_inp, const arma::m
             for (y=0; y < nbY; y++) {
                 root_data.y_ind = y;
         
-                w(x,y) = zeroin_tmp(w_low(x,y), w(x,y), jacobi_zeroin_fn, root_data, NULL, NULL);
+                w(x,y) = zeroin(w_low(x,y), w(x,y), jacobi_zeroin_fn<Ta>, &root_data, NULL, NULL);
                 U(x,y) = trans_obj.UW(w(x,y),x,y);
                 V(x,y) = trans_obj.VW(w(x,y),x,y);
 
@@ -227,4 +227,32 @@ bool jacobi(const dse<Ta>& market, const arma::mat& w_low_inp, const arma::mat& 
     bool res = jacobi_int(market,&w_low_inp,&w_up_inp,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,tol_inp,max_iter_inp);
     
     return res;
+}
+
+// root-finding function
+
+template<typename Ta>
+double jacobi_zeroin_fn(double z, void* opt_data)
+{
+    trame_jacobi_zeroin_data<Ta> *d = reinterpret_cast<trame_jacobi_zeroin_data<Ta>*>(opt_data);
+    //
+    double ret = 1.0;
+
+    int x_ind = d->x_ind;
+    int y_ind = d->y_ind;
+
+    arma::mat U = d->U;
+    arma::mat V = d->V;
+    //
+    U(x_ind,y_ind) = d->trans_obj.UW(z,x_ind,y_ind);
+    V(x_ind,y_ind) = d->trans_obj.VW(z,x_ind,y_ind);
+    
+    arma::mat mu_G, mu_H;
+    d->arums_G.G(d->n,U,mu_G);
+    d->arums_H.G(d->m,V.t(),mu_H);
+
+    arma::mat Z = mu_G - mu_H.t();
+    ret = Z(x_ind,y_ind);
+    //
+    return ret;
 }

@@ -80,8 +80,18 @@ class mmf
         arma::mat aux_log_D;
 
         // member functions
-        double marg_x_inv_fn(double z, const trame_zeroin_data& opt_data);
-        double marg_y_inv_fn(double z, const trame_zeroin_data& opt_data);
+        static double marg_x_inv_fn(double z, void* opt_data);
+        static double marg_y_inv_fn(double z, void* opt_data);
+};
 
-        double zeroin_mmf(double ax, double bx, double (mmf::*f)(double x, const trame_zeroin_data& opt_data), const trame_zeroin_data& zeroin_data, double* tol_inp, int* max_iter_inp);
+struct trame_mmf_zeroin_data {
+    bool coeff;
+
+    int x_ind;
+    int y_ind;
+
+    arma::mat A_xs;
+    arma::mat B_ys;
+
+    mmf mmf_obj;
 };
