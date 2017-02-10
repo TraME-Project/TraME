@@ -6,8 +6,7 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/arums
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include logit_test.cpp -c -o logit_test.o
- * g++-mp-5 -O2 -Wall -o logit.test logit_test.o -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include logit_test.cpp -o logit.test -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
