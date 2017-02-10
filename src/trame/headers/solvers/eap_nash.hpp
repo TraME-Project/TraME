@@ -29,7 +29,7 @@
  * 08/16/2016
  *
  * This version:
- * 11/01/2016
+ * 02/09/2017
  */
 
 #ifndef _trame_eap_nash_HPP
@@ -66,6 +66,12 @@ bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp, 
 
 template<typename Ta>
 bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp);
+
+// aux functions
+
+arma::mat u_from_vs(const transfers& trans_obj, const arma::mat& v, double* tol_inp, arma::mat* subdiff);
+arma::mat v_from_us(const transfers& trans_obj, const arma::mat& u, double* tol_inp, arma::mat* subdiff);
+arma::mat update_v(const transfers& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, bool xFirst);
 
 #include "eap_nash.tpp"
 

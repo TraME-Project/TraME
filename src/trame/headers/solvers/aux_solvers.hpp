@@ -35,19 +35,22 @@
 #ifndef _trame_aux_solvers_HPP
 #define _trame_aux_solvers_HPP
 
-int build_disaggregate_epsilon(arma::vec n, const trame::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix);
-
-arma::mat u_from_vs(const transfers& trans_obj, const arma::mat& v, double* tol_inp, arma::mat* subdiff);
-arma::mat v_from_us(const transfers& trans_obj, const arma::mat& u, double* tol_inp, arma::mat* subdiff);
-arma::mat update_v(const transfers& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, bool xFirst);
-
-template<typename Ta>
-arma::mat w_upper_bound(const dse<Ta>& market);
-
 template<typename Ta>
 struct trame_market_opt_data {
     dse<Ta> market;
 };
+
+template<typename Tm>
+struct trame_mfe_opt_data {
+    mfe<Tm> market;
+};
+
+//
+
+int build_disaggregate_epsilon(arma::vec n, const trame::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix);
+
+template<typename Ta>
+arma::mat w_upper_bound(const dse<Ta>& market);
 
 template<typename Ta>
 bool max_welfare_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,

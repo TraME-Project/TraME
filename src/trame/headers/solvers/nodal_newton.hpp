@@ -35,11 +35,6 @@
 #ifndef _trame_nodal_newton_HPP
 #define _trame_nodal_newton_HPP
 
-template<typename Tm>
-struct trame_mfe_opt_data {
-    mfe<Tm> market;
-};
-
 // internal function
 template<typename Tm>
 bool nodal_newton_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp);
