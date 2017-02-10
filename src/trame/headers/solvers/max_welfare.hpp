@@ -54,7 +54,7 @@ bool max_welfare(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out,
 
 // optimization-related functions
 
-bool eap_nash_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
+bool max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
 
 template<typename Ta>
 double max_welfare_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);

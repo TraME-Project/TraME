@@ -53,7 +53,7 @@ int main()
     arma::cout << "Solution of TU-logit problem using max_welfare:\n" << mu_TU_2 << arma::endl;
     //
     // try RSC problem
-    arma::mat zetaG = arma::ones(nbX,1) * arma::randu(1,nbY+1);
+    /*arma::mat zetaG = arma::ones(nbX,1) * arma::randu(1,nbY+1);
     arma::mat zetaH = arma::ones(nbY,1) * arma::randu(1,nbX+1);
 
     trame::rsc rsc_1, rsc_2;
@@ -65,7 +65,7 @@ int main()
     dse_obj_TU_2.build_TU(n,m,phi,rsc_1,rsc_2,false);
 
     arma::mat mu_rsc;
-    trame::max_welfare(dse_obj_TU_2,mu_rsc);
+    trame::max_welfare(dse_obj_TU_2,mu_rsc);*/
     //
     printf("\n*===================    End of max_welfare Test    ===================*\n");
     printf("\n");

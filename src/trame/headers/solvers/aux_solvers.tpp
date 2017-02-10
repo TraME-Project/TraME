@@ -109,6 +109,7 @@ arma::mat w_upper_bound(const dse<Ta>& market)
     return w;
 }
 
+/*
 template<typename Ta>
 bool max_welfare_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
                        double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
@@ -164,3 +165,4 @@ bool max_welfare_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val,
 
     return success;
 }
+*/
