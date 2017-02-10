@@ -164,3 +164,27 @@ double max_welfare_opt_objfn(const std::vector<double> &x_inp, std::vector<doubl
     //
     return ret;
 }
+
+template<typename Ta>
+double max_welfare_opt_objfn_2(const arma::vec& vals_inp, arma::vec* grad, void *opt_data)
+{
+    trame_market_opt_data<Ta> *d = reinterpret_cast<trame_market_opt_data<Ta>*>(opt_data);
+    //
+    int nbX = d->market.nbX;
+    int nbY = d->market.nbY;
+    
+    arma::mat U = arma::reshape(vals_inp,nbX,nbY);
+
+    arma::mat mu_G, mu_H;
+    double val_G = d->market.arums_G.G(d->market.n,U,mu_G);
+    double val_H = d->market.arums_H.G(d->market.m,arma::trans(d->market.trans_obj.phi - U),mu_H);
+    //
+    if (grad) {
+        *grad = arma::vectorise(mu_G - mu_H.t());
+    }
+    //
+    double ret = val_G + val_H;
+    //std::cout << "opt val: " << ret << std::endl; 
+    //
+    return ret;
+}
