@@ -135,32 +135,32 @@ bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat,
     arma::mat phi_xy = arma::reshape(phi_xyk_aux,nbX*nbY,nbParams);
     //
     // add optimization data
-    trame_nlopt_opt_data opt_data;
+    trame_mme_woregal_opt_data opt_data;
 
-    opt_data.mme_woregal.max_iter_ipfp = max_iter_ipfp;
-    opt_data.mme_woregal.tol_ipfp = tol_ipfp;
+    opt_data.max_iter_ipfp = max_iter_ipfp;
+    opt_data.tol_ipfp = tol_ipfp;
 
-    opt_data.mme_woregal.nbX = nbX;
-    opt_data.mme_woregal.nbY = nbY;
+    opt_data.nbX = nbX;
+    opt_data.nbY = nbY;
 
-    opt_data.mme_woregal.dX = dX;
-    opt_data.mme_woregal.dY = dY;
+    opt_data.dX = dX;
+    opt_data.dY = dY;
 
-    opt_data.mme_woregal.sigma = sigma;
+    opt_data.sigma = sigma;
 
-    opt_data.mme_woregal.p = p;
-    opt_data.mme_woregal.q = q;
+    opt_data.p = p;
+    opt_data.q = q;
 
-    opt_data.mme_woregal.IX = IX;
-    opt_data.mme_woregal.tIY = tIY;
+    opt_data.IX = IX;
+    opt_data.tIY = tIY;
 
-    opt_data.mme_woregal.f = f;
-    opt_data.mme_woregal.g = g;
+    opt_data.f = f;
+    opt_data.g = g;
 
-    opt_data.mme_woregal.v = v;
-    opt_data.mme_woregal.Pi_hat = Pi_hat;
+    opt_data.v = v;
+    opt_data.Pi_hat = Pi_hat;
 
-    opt_data.mme_woregal.phi_xy = phi_xy; // should be (nbX*nbY) x (nbParams)
+    opt_data.phi_xy = phi_xy; // should be (nbX*nbY) x (nbParams)
     //
     arma::vec opt_vec = arma::zeros(dX*dY,1);
 
@@ -317,32 +317,32 @@ void trame::affinity::init_param(arma::mat& params)
 
 double trame::affinity::mme_woregul_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
 {
-    trame_nlopt_opt_data *d = reinterpret_cast<trame_nlopt_opt_data*>(opt_data);
+    trame_mme_woregal_opt_data *d = reinterpret_cast<trame_mme_woregal_opt_data*>(opt_data);
     //
-    int nbX = d->mme_woregal.nbX;
-    int nbY = d->mme_woregal.nbY;
+    int nbX = d->nbX;
+    int nbY = d->nbY;
 
-    //int dX = d->mme_woregal.dX;
-    //int dY = d->mme_woregal.dY;
+    //int dX = d->dX;
+    //int dY = d->dY;
     
-    int max_iter_ipfp = d->mme_woregal.max_iter_ipfp;
-    double tol_ipfp = d->mme_woregal.tol_ipfp;
+    int max_iter_ipfp = d->max_iter_ipfp;
+    double tol_ipfp = d->tol_ipfp;
 
-    double sigma = d->mme_woregal.sigma;
+    double sigma = d->sigma;
 
-    arma::vec p = d->mme_woregal.p;
-    arma::vec q = d->mme_woregal.q;
+    arma::vec p = d->p;
+    arma::vec q = d->q;
 
-    arma::mat IX = d->mme_woregal.IX;
-    arma::mat tIY = d->mme_woregal.tIY;
+    arma::mat IX = d->IX;
+    arma::mat tIY = d->tIY;
 
-    arma::mat f = d->mme_woregal.f;
-    arma::mat g = d->mme_woregal.g;
+    arma::mat f = d->f;
+    arma::mat g = d->g;
 
-    arma::mat v = d->mme_woregal.v;
-    arma::mat Pi_hat = d->mme_woregal.Pi_hat;
+    arma::mat v = d->v;
+    arma::mat Pi_hat = d->Pi_hat;
 
-    arma::mat phi_xy = d->mme_woregal.phi_xy; // should be (nbX*nbY) x (nbParams), replaces a member function call
+    arma::mat phi_xy = d->phi_xy; // should be (nbX*nbY) x (nbParams), replaces a member function call
     //
     arma::mat Phi = arma::reshape(phi_xy * vals_inp,nbX,nbY);
     //
@@ -368,7 +368,7 @@ double trame::affinity::mme_woregul_opt_objfn(const arma::vec& vals_inp, arma::v
     }
     //
     // update v for the next opt call
-    d->mme_woregal.v = v;
+    d->v = v;
     opt_data = reinterpret_cast<void*>(d);
     //
     double ret = arma::accu(the_grad % arma::vectorise(vals_inp)) - sigma*arma::accu(Pi%arma::log(Pi));

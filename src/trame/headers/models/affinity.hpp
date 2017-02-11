@@ -77,3 +77,30 @@ class affinity
         void init_param(arma::mat& params);
         static double mme_woregul_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
+
+struct trame_mme_woregal_opt_data {
+    int nbX;
+    int nbY;
+
+    int dX;
+    int dY;
+    
+    int max_iter_ipfp;
+    double tol_ipfp;
+
+    double sigma;
+
+    arma::vec p;
+    arma::vec q;
+
+    arma::mat IX;
+    arma::mat tIY;
+
+    arma::mat f;
+    arma::mat g;
+
+    arma::mat v;
+    arma::mat Pi_hat;
+
+    arma::mat phi_xy; // should be (nbX*nbY) x (nbParams)
+};

@@ -9,7 +9,6 @@
 
 namespace trame
 {
-    #include "aux/trame_structs.hpp"
     #include "aux/trame_aux.hpp"
     #include "aux/trame_stats.hpp"
     #include "aux/logit_transform.hpp"
@@ -18,8 +17,6 @@ namespace trame
     #include "aux/zeroin.hpp"
 
     #include "lp/generic_lp.hpp"
-    #include "nlopt/generic_nlopt.hpp"
-
     #include "optim/optim.hpp"
 
     // heterogeneity

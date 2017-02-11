@@ -29,7 +29,7 @@
  * 11/19/2016
  *
  * This version:
- * 01/20/2016
+ * 02/11/2017
  */
 
 template<typename Tm>
@@ -74,7 +74,6 @@ class model
         void dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out);
         
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
-        bool mme_2(const arma::mat& mu_hat, arma::mat& theta_hat);
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
         
     private:
@@ -87,13 +86,9 @@ class model
         void init_param(arma::mat& params);
 
         // optimization-related objects
-        bool model_mme_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
-                             double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
-                             trame_model_opt_data<Ta> opt_data);
         bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
         
-        static double model_mme_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data);
-        static double model_mme_opt_objfn_2(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
+        static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 
 #include "model.tpp"

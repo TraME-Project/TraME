@@ -156,7 +156,6 @@ double max_welfare_opt_objfn(const std::vector<double> &x_inp, std::vector<doubl
     }
     //
     double ret = val_G + val_H;
-    //std::cout << "opt val: " << ret << std::endl; 
     //
     return ret;
 }
@@ -180,7 +179,6 @@ double max_welfare_opt_objfn_2(const arma::vec& vals_inp, arma::vec* grad, void 
     }
     //
     double ret = val_G + val_H;
-    //std::cout << "opt val: " << ret << std::endl; 
     //
     return ret;
 }

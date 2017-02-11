@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 08/08/2016
+ * 
+ * This version:
+ * 02/11/2017
  */
 
 class rsc
@@ -116,4 +119,20 @@ class rsc
 
         static double Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
         static double Gbar_opt_constr(const arma::vec& vals_inp, arma::vec* grad, void* constr_data);
+};
+
+struct trame_rsc_gbar_opt_data {
+    int x;
+    int nbY;
+
+    arma::vec Ubar_x;
+    arma::mat zeta;
+    arma::mat aux_DinvPsigma;
+    arma::mat aux_Psigma;
+    arma::mat aux_Influence_lhs;
+    arma::mat aux_Influence_rhs;
+
+    arma::vec (*pot_eps_vec)(arma::vec x, double* dist_pars);
+    arma::vec (*quantile_eps_vec)(arma::vec x, double* dist_pars);
+    double* dist_pars;
 };
