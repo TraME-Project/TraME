@@ -32,14 +32,6 @@
  * 02/11/2017
  */
 
-template<typename Tm>
-struct trame_model_opt_data {
-    int nbParams;
-    arma::mat C_hat;
-    arma::mat kron_term;
-    dse<Tm> market;
-};
-
 template<class Ta>
 class model
 {
@@ -89,6 +81,14 @@ class model
         bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
         
         static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
+};
+
+template<typename Tm>
+struct trame_model_opt_data {
+    int nbParams;
+    arma::mat C_hat;
+    arma::mat kron_term;
+    dse<Tm> market;
 };
 
 #include "model.tpp"

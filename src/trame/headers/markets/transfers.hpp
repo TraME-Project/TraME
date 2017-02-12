@@ -62,7 +62,7 @@ class transfers
 
         void trans();
 
-        // Psi functions are const restricted because of calls to const market pointers in solvers
+        // Psi functions are const restricted because of calls to const market pointers in equilibrium solvers
         arma::mat Psi(const arma::mat& U, const arma::mat& V) const;
         arma::mat Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
@@ -76,7 +76,7 @@ class transfers
 
         arma::mat dtheta_Psi(const arma::mat& U, const arma::mat& V, arma::mat* dtheta);
 
-        // Ucal and Vcal functions are const restricted because of calls to const market pointers in solvers
+        // Ucal and Vcal functions are const restricted because of calls to const market pointers in equilibrium solvers
         arma::mat Ucal(const arma::mat& vs) const;
         arma::mat Ucal(const arma::mat& vs, arma::uvec* xs, arma::uvec* ys) const;
         double Ucal(const double& vs, int xs, int ys) const;
@@ -84,7 +84,7 @@ class transfers
         arma::mat Vcal(const arma::mat& us, arma::uvec* xs, arma::uvec* ys) const;
         double Vcal(const double& us, int xs, int ys) const;
 
-        // UW and VW functions are const restricted because of calls to const market pointers in solvers
+        // UW and VW functions are const restricted because of calls to const market pointers in equilibrium solvers
         arma::mat UW(const arma::mat& Ws) const;
         arma::mat UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys) const;
         double UW(const double& Ws, int x_ind, int y_ind) const;
@@ -105,6 +105,5 @@ class transfers
     private:
         arma::mat aux_exp_alphaovertau;
         arma::mat aux_exp_gammaovertau;
-
         arma::mat aux_zeta;
 };

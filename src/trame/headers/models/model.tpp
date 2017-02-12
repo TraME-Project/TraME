@@ -105,16 +105,11 @@ void model<Ta>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const 
     } else {
         m.ones(nbY,1);
     }
-
+    //
     arma::mat phi_xy_temp = arma::kron(Y_inp,X_inp);
     arma::cube phi_xyk_temp(phi_xy_temp.memptr(),nbX,nbY,nbParams,false); // share memory
 
     phi_xyk = phi_xyk_temp;
-
-    //phi_xyk.set_size(nbX,nbY,nbParams);
-    //phi_xyk.memptr() = phi_xy_temp.memptr();
-    //phi_xyk(phi_xy_temp.memptr(),nbX,nbY,nbParams);
-    //
 }
 
 //

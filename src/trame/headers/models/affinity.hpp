@@ -79,14 +79,14 @@ class affinity
 };
 
 struct trame_mme_woregal_opt_data {
+    int max_iter_ipfp;
+    double tol_ipfp;
+    
     int nbX;
     int nbY;
 
     int dX;
     int dY;
-    
-    int max_iter_ipfp;
-    double tol_ipfp;
 
     double sigma;
 
