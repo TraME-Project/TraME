@@ -1,12 +1,12 @@
 /*
- * MMF class test
+ * MFE class test
  *
  * Keith O'Hara
  * 08/01/2016
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/markets
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include mfe_test.cpp -o mfe_test.test -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include mfe_test.cpp -o mfe.test -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"

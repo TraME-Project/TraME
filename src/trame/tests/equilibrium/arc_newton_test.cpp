@@ -17,8 +17,8 @@ int main()
     start = std::chrono::system_clock::now();
     //
     // inputs:
-    int nbX = 5;
-    int nbY = 3;
+    int nbX = 30;
+    int nbY = 28;
     double sigma = 1;
 
     arma::vec n = arma::ones(nbX,1);
@@ -48,7 +48,6 @@ int main()
 
     //trame::max_welfare(dse_obj_TU,mu_TU_2);
     //dse_obj_TU.solve(mu_TU_2, (char*) "maxWelfare");
-    std::cout << "begin arc_newton" << std::endl;
     trame::arc_newton(dse_obj_TU,mu_TU_2);
 
     arma::cout << "Solution of TU-logit problem using ipfp:\n" << mu_TU_1 << arma::endl;
