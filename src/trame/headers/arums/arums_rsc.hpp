@@ -82,25 +82,22 @@ class rsc
 
         void build_beta(arma::mat zeta_inp, double alpha, double beta);
         
-        double G(arma::vec n);
-        double G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out);
+        double G(const arma::vec& n);
+        double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out);
         double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x);
         
-        double Gstar(arma::vec n);
-        double Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out);
+        double Gstar(const arma::vec& n);
+        double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out);
         double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
-        static double Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta, 
-                             arma::mat aux_DinvPsigma, arma::mat aux_Psigma, 
-                             arma::mat aux_Influence_lhs, arma::mat aux_Influence_rhs,
-                             arma::vec (*pot_eps_vec)(arma::vec pot_inp, double* dist_pars),
-                             arma::vec (*quantile_eps_vec)(arma::vec quant_inp, double* dist_pars),
-                             double* dist_pars, int nbY, int x);
 
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out);
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
         
-        void D2Gstar (arma::mat& hess, arma::vec n, bool x_first);
-        void dtheta_NablaGstar (arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first);
+        arma::mat D2Gstar(const arma::vec& n, bool xFirst);
+        void D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst);
+        void D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, bool xFirst);
+
+        void dtheta_NablaGstar(arma::mat& ret, const arma::vec& n, arma::mat* dtheta, bool x_first);
         
         empirical simul();
         empirical simul(int* nbDraws, int* seed);
@@ -119,6 +116,13 @@ class rsc
 
         static double Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
         static double Gbar_opt_constr(const arma::vec& vals_inp, arma::vec* grad, void* constr_data);
+
+        static double Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta, 
+                             arma::mat aux_DinvPsigma, arma::mat aux_Psigma, 
+                             arma::mat aux_Influence_lhs, arma::mat aux_Influence_rhs,
+                             arma::vec (*pot_eps_vec)(arma::vec pot_inp, double* dist_pars),
+                             arma::vec (*quantile_eps_vec)(arma::vec quant_inp, double* dist_pars),
+                             double* dist_pars, int nbY, int x);
 };
 
 struct trame_rsc_gbar_opt_data {

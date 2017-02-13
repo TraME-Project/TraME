@@ -205,7 +205,6 @@ double trame::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, ar
 arma::mat trame::logit::D2G(const arma::vec& n, bool xFirst)
 {
     arma::mat ret;
-
     this->D2G(ret,n,xFirst);
     //
     return ret;
@@ -274,7 +273,6 @@ void trame::logit::D2G(arma::mat& H, const arma::vec& n, const arma::mat& U_inp,
 arma::mat trame::logit::D2Gstar(const arma::vec& n, bool xFirst)
 {
     arma::mat ret;
-
     this->D2Gstar(ret,n,xFirst);
     //
     return ret;

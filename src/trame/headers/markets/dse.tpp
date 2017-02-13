@@ -293,12 +293,23 @@ void dse<Ta>::trans()
 }
 
 template<typename Ta>
+bool dse<Ta>::solve(arma::mat& mu_sol)
+{
+    bool res = this->solve(mu_sol,NULL);
+    //
+    return res;
+}
+
+template<typename Ta>
 bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);
     
     if (solver) { // not NULL
+        if (sig=='a') {
+            res = arc_newton(*this,mu_sol);
+        }
         /*if (sig=='c') { // only works with empirical case
             res = cupids_lp(*this,mu_sol);
         }*/
@@ -317,17 +328,7 @@ bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
         if (sig=='o') {
             res = oap_lp(*this,mu_sol);
         }
-        // default
-        if (sig=='n') {
-            if (NTU) {
-                res = darum(*this,mu_sol);
-            } else if (TU) {
-                res = max_welfare(*this,mu_sol);
-            } else {
-                res = jacobi(*this,mu_sol);
-            }
-        }
-    } else {
+    } else { // default
         if (NTU) {
             res = darum(*this,mu_sol);
         } else if (TU) {

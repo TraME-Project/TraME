@@ -118,14 +118,14 @@ void trame::rsc::build_beta(arma::mat zeta_inp, double alpha, double beta)
     build(zeta_inp,true);
 }
 
-double trame::rsc::G(arma::vec n)
+double trame::rsc::G(const arma::vec& n)
 {   
     double val = this->G(n,U,mu_sol);
     //
     return val;
 }
 
-double trame::rsc::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
+double trame::rsc::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
 {
     double val=0.0, val_x;
 
@@ -213,14 +213,14 @@ double trame::rsc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
     return val_x;
 }
 
-double trame::rsc::Gstar(arma::vec n)
+double trame::rsc::Gstar(const arma::vec& n)
 {
     double val = this->Gstar(n,mu_sol,U_sol);
     //
     return val;
 }
 
-double trame::rsc::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out)
+double trame::rsc::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
 {
     int i;
     double val=0.0, val_x_temp;
@@ -293,14 +293,13 @@ double trame::rsc::Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta,
 
 double trame::rsc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {
-    int i;
-    double val=0.0, val_temp;
+    double val = 0.0, val_temp;
 
     U_out.set_size(nbX,nbY);
     mu_out.set_size(nbX,nbY);
     arma::mat U_x_temp, mu_x_temp;
     //
-    for (i=0; i<nbX; i++) {
+    for (int i=0; i<nbX; i++) {
         val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
 
         val += n(i)*val_temp;
@@ -322,8 +321,7 @@ double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma
     arma::vec ub = mubar_x;
 
     arma::vec sol_vec = mubar_x/2.0;
-    double obj_val = 0;
-    double ret = 0;
+    double obj_val = 0, ret = 0;
     //
     // opt data
     trame_rsc_gbar_opt_data opt_data;
@@ -345,26 +343,34 @@ double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma
     //
     bool success = generic_constr_optim(sol_vec,lb,ub,Gbar_opt_objfn,&opt_data,Gbar_opt_constr,&opt_data,&obj_val);
     //
-    arma::vec U_x_temp;
-    arma::vec sol_temp = arma::conv_to<arma::vec>::from(sol_vec);
-
     if (success) {
-        mu_x_out = sol_temp;
-        Gstarx(sol_temp,U_x_temp,x);
+        mu_x_out = sol_vec;
+
+        arma::vec U_x_temp;
+        Gstarx(sol_vec,U_x_temp,x);
         U_x_out = U_x_temp;
+
         ret = -obj_val;
     }
     return ret;
 }
 
-void trame::rsc::D2Gstar(arma::mat& hess, arma::vec n, bool x_first)
+arma::mat trame::rsc::D2Gstar(const arma::vec& n, bool xFirst)
+{
+    arma::mat ret;
+    this->D2Gstar(ret,n,xFirst);
+    //
+    return ret;
+}
+
+void trame::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, bool x_first)
 {
     int i,j;
 
     hess.set_size(nbX*nbY,nbX*nbY);
     hess.zeros();
 
-    arma::vec mu_x_0 = n - arma::sum(mu,1);
+    arma::vec mu_x0 = n - arma::sum(mu,1);
 
     arma::umat mat_inds(nbY,nbX); // indices to place the results (complicated)
     for (i=0; i<nbX; i++) {
@@ -384,7 +390,7 @@ void trame::rsc::D2Gstar(arma::mat& hess, arma::vec n, bool x_first)
         C = - arma::trans( arma::repmat(aux_Influence_rhs.slice(i) * zeta.row(i).t(),1,nbY) % aux_Influence_lhs.slice(i).t() );
 
         ts_temp.rows(0,nbY-1) = mu.row(i).t();
-        ts_temp(nbY) = mu_x_0(i);
+        ts_temp(nbY) = mu_x0(i);
 
         ts_full = aux_DinvPsigma.slice(i) * ts_temp / n(i);
         //
@@ -399,16 +405,53 @@ void trame::rsc::D2Gstar(arma::mat& hess, arma::vec n, bool x_first)
     }
 }
 
-void trame::rsc::dtheta_NablaGstar(arma::mat& ret, arma::vec n, arma::mat* dtheta, bool x_first)
+void trame::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, const arma::mat& mu_inp, bool x_first)
 {
     int i,j;
-    arma::mat dtheta_mat;
 
-    if (dtheta==NULL) {
-        dtheta_mat = arma::eye(nbParams,nbParams);
-    } else {
-        dtheta_mat = *dtheta;
+    hess.set_size(nbX*nbY,nbX*nbY);
+    hess.zeros();
+
+    arma::vec mu_x0 = n - arma::sum(mu_inp,1);
+
+    arma::umat mat_inds(nbY,nbX); // indices to place the results (complicated)
+    for (i=0; i<nbX; i++) {
+        for (j=0; j<nbY; j++) {
+            if (x_first) {
+                mat_inds(j,i) = i + j*nbX;
+            } else {
+                mat_inds(j,i) = i*nbY + j;
+            }
+        }
     }
+    //
+    arma::mat C, d_mu_e_temp, d_mu_e;
+    arma::vec ts_temp(nbY+1), ts_full, erestr_temp, erestr, erestr_pdf;
+
+    for (i=0; i<nbX; i++) {
+        C = - arma::trans( arma::repmat(aux_Influence_rhs.slice(i) * zeta.row(i).t(),1,nbY) % aux_Influence_lhs.slice(i).t() );
+
+        ts_temp.rows(0,nbY-1) = mu_inp.row(i).t();
+        ts_temp(nbY) = mu_x0(i);
+
+        ts_full = aux_DinvPsigma.slice(i) * ts_temp / n(i);
+        //
+        erestr_temp = quantile(ts_full);
+        erestr = erestr_temp.rows(0,nbY-1);
+        erestr_pdf = pdf(erestr);
+        //
+        d_mu_e_temp = arma::join_cols(arma::zeros(1,nbY),arma::diagmat(1 / erestr_pdf)) * aux_DinvPsigma.slice(i).rows(0,nbY-1);
+        d_mu_e = d_mu_e_temp.cols(0,nbY-1) - arma::repmat(d_mu_e_temp.col(nbY),1,nbY);
+        //
+        hess(mat_inds.col(i),mat_inds.col(i)) = C * d_mu_e / n(i);
+    }
+}
+
+void trame::rsc::dtheta_NablaGstar(arma::mat& ret, const arma::vec& n, arma::mat* dtheta, bool x_first)
+{
+    int i,j;
+    //
+    arma::mat dtheta_mat = (dtheta) ? *dtheta : arma::eye(nbParams,nbParams);
 
     int nbDirs = std::floor(dtheta_mat.n_elem / (nbX*nbX*(nbY+1)));
 
