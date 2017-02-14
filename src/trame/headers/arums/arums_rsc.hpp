@@ -117,9 +117,9 @@ class rsc
         static double Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
         static double Gbar_opt_constr(const arma::vec& vals_inp, arma::vec* grad, void* constr_data);
 
-        static double Gstarx(arma::vec& U_x, arma::vec mu_x_inp, arma::mat zeta, 
-                             arma::mat aux_DinvPsigma, arma::mat aux_Psigma, 
-                             arma::mat aux_Influence_lhs, arma::mat aux_Influence_rhs,
+        static double Gstarx(arma::vec& U_x, const arma::vec& mu_x_inp, const arma::mat& zeta,
+                             const arma::mat& aux_DinvPsigma, const arma::mat& aux_Psigma,
+                             const arma::mat& aux_Influence_lhs, const arma::mat& aux_Influence_rhs,
                              arma::vec (*pot_eps_vec)(arma::vec pot_inp, double* dist_pars),
                              arma::vec (*quantile_eps_vec)(arma::vec quant_inp, double* dist_pars),
                              double* dist_pars, int nbY, int x);

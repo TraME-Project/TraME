@@ -43,16 +43,14 @@ void trame::rusc::build(arma::mat zeta_inp, bool outsideOption_inp)
         return;
     }
     //
-    int i;
-    //
+    outsideOption = true;
     nbX = zeta_inp.n_rows;
     nbY = zeta_inp.n_cols - 1;
     nbParams = zeta_inp.n_elem;
     
     zeta = zeta_inp;
-    //
     aux_ord = arma::zeros(nbX,nbY+1);
-
+    //
     aux_A.set_size(nbY,nbY,nbX);
     aux_A.zeros();
 
@@ -64,7 +62,7 @@ void trame::rusc::build(arma::mat zeta_inp, bool outsideOption_inp)
     arma::vec z_x, max_z0;
     arma::uvec ordx_temp;
 
-    for (i=0; i<nbX; i++) {
+    for (int i=0; i<nbX; i++) {
         z_x = zeta_inp.row(i).t();
         z_x.shed_rows(nbY,zeta_inp.n_cols-1);
 
@@ -84,26 +82,24 @@ void trame::rusc::build(arma::mat zeta_inp, bool outsideOption_inp)
         ordx_temp = arma::sort_index(zeta_inp.row(i));
         aux_ord.row(i) = arma::conv_to< arma::rowvec >::from(ordx_temp);
     }
-    //
-    outsideOption = true;
 }
 
-double trame::rusc::G(arma::vec n)
+double trame::rusc::G(const arma::vec& n)
 {   
     double val = this->G(n,U,mu_sol);
     //
     return val;
 }
 
-double trame::rusc::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
+double trame::rusc::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
 {   
-    int i;
     double val=0.0, val_x_temp;
     
     mu_out.set_size(nbX,nbY);
-    arma::vec mu_x;
     //
-    for (i=0; i<nbX; i++) {
+    arma::vec mu_x;
+
+    for (int i=0; i < nbX; i++) {
         val_x_temp = Gx(U_inp.row(i).t(), mu_x, i);
         //
         val += n(i)*val_x_temp;
@@ -116,7 +112,7 @@ double trame::rusc::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
 double trame::rusc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
 {
     int nbAlt = nbY + 1;
-    int i,j,y,z;
+    int j,y,z;
     
     double val_x; 
     double run_max=0, run_min=0, run_temp=0;
@@ -124,7 +120,7 @@ double trame::rusc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
     arma::vec mu_x_tilde = arma::zeros(nbAlt,1);
     arma::vec U_x_tilde = arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1));
     //
-    for (i=0; i<nbAlt; i++) {
+    for (int i=0; i < nbAlt; i++) {
         y = aux_ord(x,i);
         run_max = 0.0;
         //
@@ -167,22 +163,22 @@ double trame::rusc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
     return val_x;
 }
 
-double trame::rusc::Gstar(arma::vec n)
+double trame::rusc::Gstar(const arma::vec& n)
 {
     double val = this->Gstar(n,mu_sol,U_sol);
     //
     return val;
 }
 
-double trame::rusc::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out)
-{   
-    int i;
+double trame::rusc::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
+{   ;
     double val=0.0, val_x_temp;
     
     U_out.set_size(nbX,nbY);
-    arma::vec U_x_temp;
     //
-    for (i=0; i<nbX; i++) {
+    arma::vec U_x_temp;
+
+    for (int i=0; i<nbX; i++) {
         val_x_temp = Gstarx((mu_inp.row(i).t())/n(i),U_x_temp,i);
         //
         val += n(i)*val_x_temp;
@@ -206,14 +202,14 @@ double trame::rusc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
 
 double trame::rusc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {   
-    int i;
     double val=0.0, val_temp;
     
     U_out.set_size(nbX,nbY);
     mu_out.set_size(nbX,nbY);
-    arma::mat U_x_temp, mux_temp;
     //
-    for (i=0; i<nbX; i++) {
+    arma::mat U_x_temp, mux_temp;
+
+    for (int i=0; i < nbX; i++) {
         val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mux_temp,i);
         //
         val += n(i)*val_temp;
@@ -272,14 +268,13 @@ double trame::rusc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }
-    
+    //
     return val_x;
 }
 
 trame::empirical trame::rusc::simul()
 {
     empirical emp_obj;
-    
     this->simul(emp_obj,NULL,NULL);
     //
     return emp_obj;
@@ -288,7 +283,6 @@ trame::empirical trame::rusc::simul()
 trame::empirical trame::rusc::simul(int* nbDraws, int* seed)
 {
     empirical emp_obj;
-    
     this->simul(emp_obj,nbDraws,seed);
     //
     return emp_obj;
@@ -329,6 +323,7 @@ void trame::rusc::simul(empirical& obj_out, int* nbDraws, int* seed_val)
     obj_out.aux_nbDraws = n_draws;
     obj_out.xHomogenous = false;
     obj_out.outsideOption = outsideOption;
+    
     if (outsideOption) {
         obj_out.nbOptions = nbY + 1;
     } else {

@@ -43,22 +43,21 @@ void trame::none::build(int nbX_inp, int nbY_inp)
     nbParams = 0;
 }
 
-double trame::none::G(arma::vec n)
+double trame::none::G(const arma::vec& n)
 {   
     double val = this->G(n,U,mu_sol);
     //
     return val;
 }
 
-double trame::none::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
+double trame::none::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
 {   
-    int i;
     double val=0.0, val_x;
     
     mu_out.set_size(nbX,nbY);
     arma::mat mu_x_temp;
     //
-    for (i=0; i<nbX; i++) {
+    for (int i=0; i<nbX; i++) {
         val_x = Gx(U_inp.row(i).t(),mu_x_temp);
         //
         val += n(i)*val_x;
@@ -70,11 +69,10 @@ double trame::none::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
 
 double trame::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out)
 {
-    arma::uvec temp_vec = which_max(U_x_inp, (int) 0);
+    arma::uvec temp_vec = which_max(U_x_inp, 0);
     int y = temp_vec(0);
     //
-    mu_x_out.set_size(nbY,1);
-    mu_x_out.zeros();
+    mu_x_out.zeros(nbY,1);
     
     if (y < nbY) {
         mu_x_out(y) = 1;
@@ -92,7 +90,7 @@ double trame::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
 
     if (U_x_inp.n_rows > 1 && U_x_inp.n_cols > 1) {
         val_x = this->Gx(U_x_inp.row(x).t(),mu_x_out);
-    } if (U_x_inp.n_rows == 1 && U_x_inp.n_cols > 1) { 
+    } else if (U_x_inp.n_rows == 1 && U_x_inp.n_cols > 1) { 
         val_x = this->Gx(U_x_inp.t(),mu_x_out);
     } else {
         val_x = this->Gx(U_x_inp,mu_x_out);
@@ -101,14 +99,14 @@ double trame::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
     return val_x;
 }
 
-double trame::none::Gstar(arma::vec n)
+double trame::none::Gstar(const arma::vec& n)
 {   
     printf("Gstar not yet defined for no arums case.\n");
 
     return 0.0;
 }
 
-double trame::none::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out)
+double trame::none::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
 {   
     printf("Gstar not yet defined for no arums case.\n");
 
@@ -124,14 +122,13 @@ double trame::none::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
 
 double trame::none::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {   
-    int i;
     double val=0.0, val_temp;
     
     U_out.set_size(nbX,nbY);
     mu_out.set_size(nbX,nbY);
     arma::mat U_x_temp, mu_x_temp;
     //
-    for (i=0; i<nbX; i++) {
+    for (int i=0; i<nbX; i++) {
         val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp);
         //
         val += n(i)*val_temp;
@@ -164,7 +161,6 @@ double trame::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
     }
     //
     U_x_out = arma::zeros(nbY0,1);
-    //
     double valx = arma::accu(mu_x_out % Ubar_x);
     //
     return valx;

@@ -52,13 +52,13 @@ class none
         
         void build(int nbX_inp, int nbY_inp);
         
-        double G(arma::vec n);
-        double G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out);
+        double G(const arma::vec& n);
+        double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out);
         double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out);
         double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x);
 
-        double Gstar(arma::vec n);
-        double Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out);
+        double Gstar(const arma::vec& n);
+        double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out);
         double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
         
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out);

@@ -67,18 +67,11 @@ double trame::logit::G(const arma::vec& n)
 
 double trame::logit::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
 {   
-    arma::mat denom;
-    
     arma::mat expU = arma::exp(U_inp / sigma);
+    arma::vec denom = (outsideOption) ? (1.0 + arma::sum(expU,1)) : 0.0 + arma::sum(expU,1); // the '0.0 + ' fixes a compiling bug
     //
-    if (outsideOption) {
-        denom = 1 + arma::sum(expU,1);
-    } else {
-        denom = arma::sum(expU,1);
-    }
-    //
-    double val = sigma*arma::accu(n % arma::log(denom));
     mu_out = elem_prod(n/denom, expU);
+    double val = sigma*arma::accu(n % arma::log(denom));
     //
     return val;
 }
@@ -97,7 +90,7 @@ double trame::logit::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::ma
     arma::mat n_repd = arma::repmat(n,1,nbY);
     //
     if (outsideOption) {
-        arma::mat mu_x0 = n - arma::sum(mu_inp,1);
+        arma::vec mu_x0 = n - arma::sum(mu_inp,1);
         
         val   = sigma * ( arma::accu(mu_inp % arma::log(mu_inp/n_repd)) + arma::accu(mu_x0 % arma::log(mu_x0/n)) );
         U_out = sigma * arma::log(elem_div(mu_inp, mu_x0));
@@ -133,7 +126,7 @@ double trame::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x
 
     if (mu_x_inp.n_rows > 1 && mu_x_inp.n_cols > 1) {
         val_x = this->Gstarx(mu_x_inp.row(x).t(),U_x_out);
-    } if (mu_x_inp.n_rows == 1 && mu_x_inp.n_cols > 1) { 
+    } else if (mu_x_inp.n_rows == 1 && mu_x_inp.n_cols > 1) { 
         val_x = this->Gstarx(mu_x_inp.t(),U_x_out);
     } else {
         val_x = this->Gstarx(mu_x_inp,U_x_out);
@@ -213,25 +206,24 @@ arma::mat trame::logit::D2G(const arma::vec& n, bool xFirst)
 void trame::logit::D2G(arma::mat& H, const arma::vec& n, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption is true
-    int x, y, yprime;
     
     arma::mat mu_xy = mu_sol;
     H.zeros(nbX*nbY,nbX*nbY);
     //
-    for (x = 0; x < nbX; x++) {
-        for (y = 0; y < nbY; y++) {
-            for (yprime = 0; yprime < nbY; yprime++) {
+    for (int x = 0; x < nbX; x++) {
+        for (int y = 0; y < nbY; y++) {
+            for (int y_prime = 0; y_prime < nbY; y_prime++) {
                 if (xFirst) {
-                    if (y==yprime) {
-                        H(x + nbX*y, x + nbX*yprime) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
+                    if (y==y_prime) {
+                        H(x + nbX*y, x + nbX*y_prime) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
                     } else {
-                        H(x + nbX*y, x + nbX*yprime) = - mu_xy(x,y)*mu_xy(x,yprime) / (n(x)*sigma);
+                        H(x + nbX*y, x + nbX*y_prime) = - mu_xy(x,y)*mu_xy(x,y_prime) / (n(x)*sigma);
                     }
                 } else {
-                    if (y==yprime) {
-                        H(y + nbY*x, yprime + nbY*x) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
+                    if (y==y_prime) {
+                        H(y + nbY*x, y_prime + nbY*x) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
                     } else {
-                        H(y + nbY*x, yprime + nbY*x) = - mu_xy(x,y)*mu_xy(x,yprime) / (n(x)*sigma);
+                        H(y + nbY*x, y_prime + nbY*x) = - mu_xy(x,y)*mu_xy(x,y_prime) / (n(x)*sigma);
                     }
                 }
             }
@@ -242,27 +234,26 @@ void trame::logit::D2G(arma::mat& H, const arma::vec& n, bool xFirst)
 void trame::logit::D2G(arma::mat& H, const arma::vec& n, const arma::mat& U_inp, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption is true
-    int x, y, yprime;
 
     arma::mat mu_xy;
     this->G(n,U_inp,mu_xy);
     
     H.zeros(nbX*nbY,nbX*nbY);
     //
-    for (x = 0; x < nbX; x++) {
-        for (y = 0; y < nbY; y++) {
-            for (yprime = 0; yprime < nbY; yprime++) {
+    for (int x = 0; x < nbX; x++) {
+        for (int y = 0; y < nbY; y++) {
+            for (int y_prime = 0; y_prime < nbY; y_prime++) {
                 if (xFirst) {
-                    if (y==yprime) {
-                        H(x + nbX*y, x + nbX*yprime) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
+                    if (y==y_prime) {
+                        H(x + nbX*y, x + nbX*y_prime) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
                     } else {
-                        H(x + nbX*y, x + nbX*yprime) = - mu_xy(x,y)*mu_xy(x,yprime) / (n(x)*sigma);
+                        H(x + nbX*y, x + nbX*y_prime) = - mu_xy(x,y)*mu_xy(x,y_prime) / (n(x)*sigma);
                     }
                 } else {
-                    if (y==yprime) {
-                        H(y + nbY*x, yprime + nbY*x) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
+                    if (y==y_prime) {
+                        H(y + nbY*x, y_prime + nbY*x) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
                     } else {
-                        H(y + nbY*x, yprime + nbY*x) = - mu_xy(x,y)*mu_xy(x,yprime) / (n(x)*sigma);
+                        H(y + nbY*x, y_prime + nbY*x) = - mu_xy(x,y)*mu_xy(x,y_prime) / (n(x)*sigma);
                     }
                 }
             }
@@ -281,28 +272,27 @@ arma::mat trame::logit::D2Gstar(const arma::vec& n, bool xFirst)
 void trame::logit::D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption == 1 or 0
-    int x, y, yprime;
     
-    arma::mat mu_x0 = n - arma::sum(mu_sol,1);
-    arma::mat mu_x0_recip = arma::ones(mu_x0.n_rows,mu_x0.n_cols) / mu_x0; // reciprocal of mu_x0
+    arma::vec mu_x0 = n - arma::sum(mu_sol,1);
+    arma::vec mu_x0_recip = arma::ones(mu_x0.n_rows,1) / mu_x0; // reciprocal of mu_x0
     arma::mat mu_xy_recip = arma::ones(mu_sol.n_rows,mu_sol.n_cols) / mu_sol;
     
     H.zeros(nbX*nbY,nbX*nbY);
     //
-    for (x = 0; x < nbX; x++) {
-        for (y = 0; y < nbY; y++) {
-            for (yprime = 0; yprime < nbY; yprime++) {
+    for (int x = 0; x < nbX; x++) {
+        for (int y = 0; y < nbY; y++) {
+            for (int y_prime = 0; y_prime < nbY; y_prime++) {
                 if (xFirst) {
-                    if (y==yprime) {
-                        H(x + nbX*y, x + nbX*yprime) = mu_x0_recip(x) + mu_xy_recip(x,y);
+                    if (y==y_prime) {
+                        H(x + nbX*y, x + nbX*y_prime) = mu_x0_recip(x) + mu_xy_recip(x,y);
                     }else{
-                        H(x + nbX*y, x + nbX*yprime) = mu_x0_recip(x);
+                        H(x + nbX*y, x + nbX*y_prime) = mu_x0_recip(x);
                     }
                 } else {
-                    if (y==yprime) {
-                        H(y + nbY*x, yprime + nbY*x) = mu_x0_recip(x) + mu_xy_recip(x,y);
+                    if (y==y_prime) {
+                        H(y + nbY*x, y_prime + nbY*x) = mu_x0_recip(x) + mu_xy_recip(x,y);
                     } else {
-                        H(y + nbY*x, yprime + nbY*x) = mu_x0_recip(x);
+                        H(y + nbY*x, y_prime + nbY*x) = mu_x0_recip(x);
                     }
                 }
             }
@@ -314,28 +304,27 @@ void trame::logit::D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst)
 void trame::logit::D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption == 1 or 0
-    int x, y, yprime;
     
-    arma::mat mu_x0 = n - arma::sum(mu_inp,1);
-    arma::mat mu_x0_recip = arma::ones(mu_x0.n_rows,mu_x0.n_cols) / mu_x0; // reciprocal of mu_x0
+    arma::vec mu_x0 = n - arma::sum(mu_inp,1);
+    arma::vec mu_x0_recip = arma::ones(mu_x0.n_rows,1) / mu_x0; // reciprocal of mu_x0
     arma::mat mu_xy_recip = arma::ones(mu_inp.n_rows,mu_inp.n_cols) / mu_inp;
     
     H.zeros(nbX*nbY,nbX*nbY);
     //
-    for (x = 0; x < nbX; x++) {
-        for (y = 0; y < nbY; y++) {
-            for (yprime = 0; yprime < nbY; yprime++) {
+    for (int x = 0; x < nbX; x++) {
+        for (int y = 0; y < nbY; y++) {
+            for (int y_prime = 0; y_prime < nbY; y_prime++) {
                 if (xFirst) {
-                    if (y==yprime) {
-                        H(x + nbX*y, x + nbX*yprime) = mu_x0_recip(x) + mu_xy_recip(x,y);
+                    if (y==y_prime) {
+                        H(x + nbX*y, x + nbX*y_prime) = mu_x0_recip(x) + mu_xy_recip(x,y);
                     }else{
-                        H(x + nbX*y, x + nbX*yprime) = mu_x0_recip(x);
+                        H(x + nbX*y, x + nbX*y_prime) = mu_x0_recip(x);
                     }
                 } else {
-                    if (y==yprime) {
-                        H(y + nbY*x, yprime + nbY*x) = mu_x0_recip(x) + mu_xy_recip(x,y);
+                    if (y==y_prime) {
+                        H(y + nbY*x, y_prime + nbY*x) = mu_x0_recip(x) + mu_xy_recip(x,y);
                     } else {
-                        H(y + nbY*x, yprime + nbY*x) = mu_x0_recip(x);
+                        H(y + nbY*x, y_prime + nbY*x) = mu_x0_recip(x);
                     }
                 }
             }

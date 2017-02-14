@@ -29,17 +29,17 @@
  * 08/08/2016
  *
  * This version:
- * 11/28/2016
+ * 02/13/2017
  */
 
 #include "trame.hpp"
 
-trame::empirical::empirical(int nbX_inp, int nbY_inp, arma::cube atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
+trame::empirical::empirical(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
 {
     this->build(nbX_inp, nbY_inp, atoms_inp, xHomogenous_inp, outsideOption_inp);
 }
 
-void trame::empirical::build(int nbX_inp, int nbY_inp, arma::cube atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
+void trame::empirical::build(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -53,22 +53,21 @@ void trame::empirical::build(int nbX_inp, int nbY_inp, arma::cube atoms_inp, boo
     outsideOption = outsideOption_inp;
 }
 
-double trame::empirical::G(arma::vec n)
+double trame::empirical::G(const arma::vec& n)
 {
     double val = this->G(n,U,mu_sol);
     //
     return val;
 }
 
-double trame::empirical::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_out)
+double trame::empirical::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
 {
-    int i;
     double val=0.0, val_x;
-
     mu_out.set_size(nbX,nbY);
-    arma::mat mu_x_temp;
     //
-    for (i=0; i<nbX; i++) {
+    arma::mat mu_x_temp;
+
+    for (int i=0; i<nbX; i++) {
         val_x = Gx(U_inp.row(i).t(), mu_x_temp, i);
 
         val += n(i)*val_x;
@@ -80,35 +79,20 @@ double trame::empirical::G(arma::vec n, const arma::mat& U_inp, arma::mat& mu_ou
 
 double trame::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
 {
-    arma::mat U_xs, Utilde;
-
-    if (outsideOption) {
-        U_xs = arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1));
-    } else {
-        U_xs = U_x_inp;
-    }
-
-    if (xHomogenous) {
-        Utilde = arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(0);
-    } else {
-        Utilde = arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(x);
-    }
-    //
-    int tt;
-    arma::vec argmaxs = arma::max(Utilde,1);
-    arma::uvec argmax_inds = which_max(Utilde, 1);
-
-    double thesum = 0.0;
-    for (tt=0; tt < aux_nbDraws; tt++) {
-        thesum += argmaxs(tt,0);
-    }
-
-    double val_x = thesum/(double)(aux_nbDraws);
-    //
     mu_x_out.set_size(nbY,1);
+    //
+    arma::mat U_xs = (outsideOption) ? arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1)) : U_x_inp;
+    arma::mat Utilde = (xHomogenous) ? arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(0) : arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(x);
+    //
+    arma::vec argmaxs = arma::max(Utilde,1);       // take max over dim = 1
+    arma::uvec argmax_inds = which_max(Utilde,1);
+
+    double thesum = arma::accu(argmaxs);
+    double val_x = thesum / (double)(aux_nbDraws);
+    //
     arma::uvec temp_find;
 
-    for (tt=0; tt<nbY; tt++) {
+    for (int tt=0; tt < nbY; tt++) {
         temp_find = arma::find(argmax_inds==tt);
         mu_x_out(tt,0) = (double)(temp_find.n_elem)/(double)(aux_nbDraws);
     }
@@ -116,25 +100,25 @@ double trame::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x
     return val_x;
 }
 
-double trame::empirical::Gstar(arma::vec n)
+double trame::empirical::Gstar(const arma::vec& n)
 {
     double val = this->Gstar(n,mu_sol,U_sol);
     //
     return val;
 }
 
-double trame::empirical::Gstar(arma::vec n, const arma::mat& mu_inp, arma::mat& U_out)
+double trame::empirical::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
 {
     if (!TRAME_PRESOLVED_GSTAR) {
         presolve_LP_Gstar();
     }
     //
     double val = 0.0, val_x = 0.0;
-
     U_out.set_size(nbX,nbY);
-    arma::mat U_x;
     //
-    for (int i=0; i<nbX; i++) {
+    arma::mat U_x;
+
+    for (int i=0; i < nbX; i++) {
         val_x = Gstarx((mu_inp.row(i).t())/n(i),U_x,i);
 
         val += n(i)*val_x;
@@ -151,14 +135,8 @@ double trame::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, i
     }
     //
     int jj;
-    double val_x = 0.0;
-    arma::mat Phi, U_x_temp;
 
-    if (xHomogenous) {
-        Phi = atoms.slice(0);
-    } else {
-        Phi = atoms.slice(x);
-    }
+    arma::mat Phi = (xHomogenous) ? atoms.slice(0) : atoms.slice(x);
     //
     arma::vec p = arma::ones(aux_nbDraws,1)/aux_nbDraws;
     arma::mat q;
@@ -182,7 +160,7 @@ double trame::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, i
 
     bool LP_optimal;
     int modelSense = 1; // maximize
-    double objval;
+    double objval, val_x = 0.0;
 
     arma::mat sol_mat(n_Gstar, 2);
     arma::mat dual_mat(k_Gstar, 2);
@@ -193,12 +171,13 @@ double trame::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, i
         //
         if (LP_optimal) {
             arma::mat u = dual_mat.col(0).rows(0,aux_nbDraws-1);
+
             if (outsideOption) {
-                U_x_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY);
+                arma::mat U_x_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY);
                 U_x_out = - U_x_temp.rows(0,nbY-1) + arma::as_scalar(U_x_temp.row(nbY));
             } else {
-                U_x_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY-1);
-                U_x_out = -U_x_temp - arma::accu(p % u);
+                arma::mat U_x_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY-1);
+                U_x_out = - U_x_temp - arma::accu(p % u);
             }
             //
             val_x = -objval;
