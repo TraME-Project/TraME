@@ -54,16 +54,8 @@ void model<Ta>::build_int(const arma::cube& phi_xyk_inp, const arma::vec* n_inp,
     nbY = phi_xyk_inp.n_cols;
     nbParams = phi_xyk_inp.n_slices;
     //
-    if (n_inp) {
-        n = *n_inp;
-    } else {
-        n.ones(nbX,1);
-    }
-    if (m_inp) {
-        m = *m_inp;
-    } else {
-        m.ones(nbY,1);
-    }
+    n = (n_inp) ? *n_inp : arma::ones(nbX,1);
+    m = (m_inp) ? *m_inp : arma::ones(nbY,1);
 
     phi_xyk = phi_xyk_inp;
     //
@@ -95,16 +87,8 @@ void model<Ta>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const 
 
     nbParams = dX*dY;
     //
-    if (n_inp) {
-        n = *n_inp;
-    } else {
-        n.ones(nbX,1);
-    }
-    if (m_inp) {
-        m = *m_inp;
-    } else {
-        m.ones(nbY,1);
-    }
+    n = (n_inp) ? *n_inp : arma::ones(nbX,1);
+    m = (m_inp) ? *m_inp : arma::ones(nbY,1);
     //
     arma::mat phi_xy_temp = arma::kron(Y_inp,X_inp);
     arma::cube phi_xyk_temp(phi_xy_temp.memptr(),nbX,nbY,nbParams,false); // share memory
@@ -156,7 +140,7 @@ void model<Ta>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out, 
 }
 
 template<typename Ta>
-bool model<Ta>::dtheta(const arma::mat& mu_hat, arma::mat& theta_hat)
+void model<Ta>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
 {
     arma::mat mu, U, V;
     market_obj.solve(mu,U,V);
@@ -170,11 +154,19 @@ bool model<Ta>::dtheta(const arma::mat& mu_hat, arma::mat& theta_hat)
     arma::vec du_Psi_vec = arma::vectorise(market_obj.trans_obj.du_Psi(U,V));
     arma::vec dv_Psi_vec = 1 - du_Psi_vec;
     //
-    arma::mat HessGstar = market.arums_G.D2Gstar(market_obj.n,mu,true);
-    arma::mat HessHstar = market.arums_H.D2Gstar(market_obj.m,mu.t(),false);
+    arma::mat HessGstar = market_obj.arums_G.D2Gstar(market_obj.n,mu,true);
+    arma::mat HessHstar = market_obj.arums_H.D2Gstar(market_obj.m,mu.t(),false);
     //
     arma::mat denom = elem_prod(du_Psi_vec,HessGstar) + elem_prod(dv_Psi_vec,HessHstar);
 
+    arma::mat term_1 = market_obj.trans_obj.dtheta_Psi(U,V,dparams_Psi);
+
+    arma::mat dmu = - arma::solve(denom,term_1);
+    //
+    mu_out = mu;
+    mu_x0_out = mu_x0;
+    mu_0y_out = mu_0y;
+    dmu_out = dmu;
 }
 
 template<typename Ta>

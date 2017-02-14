@@ -35,6 +35,7 @@ int main()
 
     arma::mat A = arma::ones(dX,dY);
     arma::mat phi = X_vals*A*Y_vals.t();
+    
     trame::mfe<trame::mmf> mfe_obj_TU;
     mfe_obj_TU.build_TU(n,m,phi,&sigma,false);
     arma::mat noise = 1.0 + noise_scale*arma::randn(nbX,nbY);
