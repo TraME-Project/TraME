@@ -64,6 +64,8 @@ class model
 
         void dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out);
         void dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out);
+
+        void dtheta
         
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);

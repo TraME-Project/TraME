@@ -135,6 +135,49 @@ void model<Ta>::build_market_TU(const arma::mat& theta, T arums_G_inp, T arums_H
 }
 
 template<typename Ta>
+void model<Ta>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out)
+{
+    this->dparam(dparams_inp,dparamsPsi_out,NULL,NULL);
+}
+
+template<typename Ta>
+void model<Ta>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out)
+{
+    arma::mat dparams_mat = (dparams_inp) ? *dparams_inp : arma::eye(nbParams,nbParams);
+
+    dparamsPsi_out = Phi_xy() * dparams_mat;
+    //
+    if (dparamsG_out) {
+        *dparamsG_out = arma::zeros(0,dparams_mat.n_cols);
+    }
+    if (dparamsH_out) {
+        *dparamsH_out = arma::zeros(0,dparams_mat.n_cols);
+    }
+}
+
+template<typename Ta>
+bool model<Ta>::dtheta(const arma::mat& mu_hat, arma::mat& theta_hat)
+{
+    arma::mat mu, U, V;
+    market_obj.solve(mu,U,V);
+
+    arma::vec mu_x0 = market_obj.n - arma::sum(mu,1);
+    arma::vec mu_0y = market_obj.m - arma::trans(arma::sum(mu,0));
+
+    arma::mat dparams_Psi, dparams_G, dparams_H;
+    dparam(dtheta,dparams_Psi,&dparams_G,&dparams_H);
+
+    arma::vec du_Psi_vec = arma::vectorise(market_obj.trans_obj.du_Psi(U,V));
+    arma::vec dv_Psi_vec = 1 - du_Psi_vec;
+    //
+    arma::mat HessGstar = market.arums_G.D2Gstar(market_obj.n,mu,true);
+    arma::mat HessHstar = market.arums_H.D2Gstar(market_obj.m,mu.t(),false);
+    //
+    arma::mat denom = elem_prod(du_Psi_vec,HessGstar) + elem_prod(dv_Psi_vec,HessHstar);
+
+}
+
+template<typename Ta>
 bool model<Ta>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
 {
     bool success = false;
@@ -175,27 +218,6 @@ bool model<Ta>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     double val_ret = obj_val;
     //
     return success;
-}
-
-template<typename Ta>
-void model<Ta>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out)
-{
-    this->dparam(dparams_inp,dparamsPsi_out,NULL,NULL);
-}
-
-template<typename Ta>
-void model<Ta>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out)
-{
-    arma::mat dparams_mat = (dparams_inp) ? *dparams_inp : arma::eye(nbParams,nbParams);
-
-    dparamsPsi_out = Phi_xy() * dparams_mat;
-    //
-    if (dparamsG_out) {
-        *dparamsG_out = arma::zeros(0,dparams_mat.n_cols);
-    }
-    if (dparamsH_out) {
-        *dparamsH_out = arma::zeros(0,dparams_mat.n_cols);
-    }
 }
 
 // Keith: should probably switch this to be a member variable
