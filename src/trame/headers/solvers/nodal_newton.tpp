@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * nodal_newton
+ * nodal_newton for logit MFE case
  *
  * Keith O'Hara
  * 01/17/2016
@@ -41,7 +41,7 @@ bool nodal_newton_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0
     //
     int nbX = market.nbX;
     int nbY = market.nbY;
-    double sigma = market.sigma;
+    double sigma = market.sigma; // we don't check for arums_G.sigma == arums_H.sigma
 
     trame_mfe_opt_data<Tm> opt_data;
     opt_data.market = market;
