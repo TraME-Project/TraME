@@ -43,11 +43,7 @@ void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arm
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
+    outsideOption = (need_norm_inp) ? false : true;
 
     trans_obj.build_TU(phi_inp);
 
@@ -70,11 +66,7 @@ void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arm
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
+    outsideOption = (need_norm_inp) ? false : true;
 
     trans_obj.build_TU(phi_inp);
 
@@ -96,11 +88,7 @@ void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arm
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
+    outsideOption = (need_norm_inp) ? false : true;
 
     trans_obj.build_TU(phi_inp);
 
@@ -123,11 +111,7 @@ void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
+    outsideOption = (need_norm_inp) ? false : true;
 
     trans_obj.build_NTU(alpha_inp,gamma_inp);
 
@@ -150,11 +134,7 @@ void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
+    outsideOption = (need_norm_inp) ? false : true;
 
     trans_obj.build_NTU(alpha_inp,gamma_inp);
 
@@ -176,11 +156,7 @@ void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
+    outsideOption = (need_norm_inp) ? false : true;
 
     trans_obj.build_NTU(alpha_inp,gamma_inp);
 
@@ -203,11 +179,7 @@ void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
+    outsideOption = (need_norm_inp) ? false : true;
 
     trans_obj.build_LTU(lambda_inp,phi_inp);
 
@@ -230,11 +202,7 @@ void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
+    outsideOption = (need_norm_inp) ? false : true;
 
     trans_obj.build_LTU(lambda_inp,phi_inp);
 
@@ -256,11 +224,7 @@ void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     n = n_inp;
     m = m_inp;
 
-    if (need_norm) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
+    outsideOption = (need_norm_inp) ? false : true;
 
     trans_obj.build_LTU(lambda_inp,phi_inp);
 

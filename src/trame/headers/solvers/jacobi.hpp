@@ -30,7 +30,7 @@
  *
  * This version:
  * 02/15/2017
- *//
+ */
 
 #ifndef _trame_jacobi_HPP
 #define _trame_jacobi_HPP

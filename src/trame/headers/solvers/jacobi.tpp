@@ -106,9 +106,6 @@ bool jacobi_int(const dse<Ta>& market, const arma::mat* w_low_inp, const arma::m
     arma::mat U = trans_obj.UW(w);
     arma::mat V = trans_obj.VW(w);
 
-    //arums_G.U = U;
-    //arums_H.U = V.t();
-    
     arums_G.G(n,U,mu_G);
     arums_H.G(m,V.t(),mu_H);
 
