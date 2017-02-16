@@ -29,8 +29,8 @@
  * 08/25/2016
  *
  * This version:
- * 02/09/2017
- */
+ * 02/15/2017
+ *//
 
 #ifndef _trame_jacobi_HPP
 #define _trame_jacobi_HPP
@@ -68,6 +68,9 @@ bool jacobi(const dse<Ta>& market, arma::mat& mu_out, const int& max_iter_inp);
 
 template<typename Ta>
 bool jacobi(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+
+template<typename Ta>
+bool jacobi(const dse<Ta>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
 template<typename Ta>
 bool jacobi(const dse<Ta>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp);

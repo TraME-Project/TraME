@@ -143,7 +143,7 @@ template<typename Ta>
 void model<Ta>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
 {
     arma::mat mu, U, V;
-    market_obj.solve(mu,U,V);
+    market_obj.solve(mu,U,V,NULL);
 
     arma::vec mu_x0 = market_obj.n - arma::sum(mu,1);
     arma::vec mu_0y = market_obj.m - arma::trans(arma::sum(mu,0));

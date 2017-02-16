@@ -29,7 +29,7 @@
  * 08/25/2016
  *
  * This version:
- * 11/01/2016
+ * 02/15/2017
  */
 
 #ifndef _trame_cupids_lp_HPP
@@ -42,6 +42,9 @@ bool cupids_lp_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
 // wrappers
 template<typename Ta>
 bool cupids_lp(const dse<Ta>& market, arma::mat& mu_out);
+
+template<typename Ta>
+bool cupids_lp(const dse<Ta>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
 template<typename Ta>
 bool cupids_lp(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out);

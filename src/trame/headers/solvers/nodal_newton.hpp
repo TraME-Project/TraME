@@ -29,7 +29,7 @@
  * 01/17/2016
  *
  * This version:
- * 02/09/2017
+ * 02/15/2017
  */
 
 #ifndef _trame_nodal_newton_HPP
@@ -51,6 +51,9 @@ bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out, const int& max_iter_
 
 template<typename Tm>
 bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+
+template<typename Ta>
+bool nodal_newton(const dse<Ta>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
 template<typename Tm>
 bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* tol_inp, const int* max_iter_inp);

@@ -29,7 +29,7 @@
  * 08/25/2016
  *
  * This version:
- * 11/01/2016
+ * 02/15/2017
  */
 
 // internal cupids_lp
@@ -232,6 +232,14 @@ bool cupids_lp(const dse<Ta>& market, arma::mat& mu_out)
 {
     bool res = cupids_lp_int(market,&mu_out,NULL,NULL,NULL,NULL);
 
+    return res;
+}
+
+template<typename Ta>
+bool cupids_lp(const dse<Ta>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
+{
+    bool res = cupids_lp_int(market,&mu_out,NULL,NULL,&U_out,&V_out);
+    
     return res;
 }
 

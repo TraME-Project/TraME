@@ -29,7 +29,7 @@
  * 08/16/2016
  *
  * This version:
- * 10/22/2016
+ * 02/15/2017
  */
 
 #ifndef _trame_ipfp_HPP
@@ -63,6 +63,9 @@ bool ipfp(const mfe<Tm>& market, arma::mat& mu_out, const int& max_iter_inp, con
 
 template<typename Tm>
 bool ipfp(const mfe<Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp, const arma::vec& by_start);
+
+template<typename Tm>
+bool ipfp(const mfe<Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
 template<typename Tm>
 bool ipfp(const mfe<Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, arma::vec& u_out, arma::vec& v_out, double* tol_inp, int* max_iter_inp, arma::vec* by_start);

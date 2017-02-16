@@ -29,7 +29,7 @@
  * 08/16/2016
  *
  * This version:
- * 11/01/2016
+ * 02/15/2017
  */
 
 // internal eap_nash
@@ -208,6 +208,14 @@ template<typename Ta>
 bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp, const int& max_iter_inp)
 {
     bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&xFirst_inp,&tol_inp,&max_iter_inp);
+    
+    return res;
+}
+
+template<typename Ta>
+bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, arma::mat& u_out, arma::mat& v_out)
+{
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,&u_out,&v_out,NULL,NULL,NULL);
     
     return res;
 }

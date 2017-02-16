@@ -29,7 +29,7 @@
  * 08/17/2016
  *
  * This version:
- * 11/26/2016
+ * 02/15/2017
  */
 
 template<typename Ta>
@@ -335,6 +335,47 @@ bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
             res = max_welfare(*this,mu_sol);
         } else {
             res = jacobi(*this,mu_sol);
+        }
+    }
+    //
+    return res;
+}
+
+template<typename Ta>
+bool dse<Ta>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
+{
+    bool res = false;
+    const char sig = (solver != NULL) ? solver[0] : char(0);
+    
+    if (solver) { // not NULL
+        if (sig=='a') {
+            res = arc_newton(*this,&mu_sol,U_out,V_out);
+        }
+        /*if (sig=='c') { // only works with empirical case
+            res = cupids_lp(*this,mu_sol);
+        }*/
+        if (sig=='d') {
+            res = darum_int(*this,mu_sol,U_out,V_out);
+        }
+        if (sig=='e') {
+            res = eap_nash(*this,mu_sol,U_out,V_out);
+        }
+        if (sig=='j') {
+            res = jacobi(*this,mu_sol,U_out,V_out);
+        }
+        if (sig=='m') {
+            res = max_welfare(*this,mu_sol,U_out,V_out);
+        }
+        if (sig=='o') {
+            res = oap_lp(*this,mu_sol,U_out,V_out);
+        }
+    } else { // default
+        if (NTU) {
+            res = darum(*this,mu_sol,U_out,V_out);
+        } else if (TU) {
+            res = max_welfare(*this,mu_sol,U_out,V_out);
+        } else {
+            res = jacobi(*this,mu_sol,U_out,V_out);
         }
     }
     //

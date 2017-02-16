@@ -29,7 +29,7 @@
  * 08/25/2016
  *
  * This version:
- * 02/09/2017
+ * 02/15/2017
  */
 
 template<typename Ta>
@@ -217,6 +217,14 @@ template<typename Ta>
 bool jacobi(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
 {
     bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
+    
+    return res;
+}
+
+template<typename Ta>
+bool jacobi(const dse<Ta>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
+{
+    bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL);
     
     return res;
 }

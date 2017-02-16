@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 08/16/2016
+ *
+ * This version:
+ * 02/15/2017
  */
 
 // internal max_welfare
@@ -121,6 +124,14 @@ template<typename Ta>
 bool max_welfare(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
 {
     bool res = max_welfare_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
+    
+    return res;
+}
+
+template<typename Ta>
+bool max_welfare(const dse<Ta>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
+{
+    bool res = max_welfare_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL,NULL);
     
     return res;
 }

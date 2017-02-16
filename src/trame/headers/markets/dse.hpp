@@ -29,7 +29,7 @@
  * 08/17/2016
  *
  * This version:
- * 11/02/2016
+ * 02/15/2017
  */
 
 template<class Ta>
@@ -76,6 +76,7 @@ class dse
 
         bool solve(arma::mat& mu_sol);
         bool solve(arma::mat& mu_sol, const char* solver);
+        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
 
     private:
         bool arum_none;
