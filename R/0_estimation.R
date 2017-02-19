@@ -57,7 +57,7 @@ dtheta_mu_default <- function(model, market, theta, dtheta=diag(length(theta)))
   num3 = dvPsivec * dtheta_NablaGstar(arumsH,t(mu),market$m,dthetaH,xFirst=FALSE)
   #
   dmu = -solve(denom, num1)
-  num = cbind(num1, num2, num3) # Keith: where does this go?
+  #num = cbind(num1, num2, num3) # Keith: where does this go?
   #
   return(list(mu= c(mu),mux0s=mux0s, mu0ys=mu0ys,dmu=dmu))
 }

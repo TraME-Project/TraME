@@ -152,13 +152,12 @@ void model<Ta>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma:
     dparam(dtheta,dparams_Psi,&dparams_G,&dparams_H);
 
     arma::vec du_Psi_vec = arma::vectorise(market_obj.trans_obj.du_Psi(U,V));
-    arma::vec dv_Psi_vec = 1 - du_Psi_vec;
+    arma::vec dv_Psi_vec = 1.0 - du_Psi_vec;
     //
     arma::mat HessGstar = market_obj.arums_G.D2Gstar(market_obj.n,mu,true);
     arma::mat HessHstar = market_obj.arums_H.D2Gstar(market_obj.m,mu.t(),false);
     //
     arma::mat denom = elem_prod(du_Psi_vec,HessGstar) + elem_prod(dv_Psi_vec,HessHstar);
-
     arma::mat term_1 = market_obj.trans_obj.dtheta_Psi(U,V,dparams_Psi);
 
     arma::mat dmu = - arma::solve(denom,term_1);
@@ -191,7 +190,7 @@ bool model<Ta>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     arma::mat C_hat = arma::vectorise(arma::trans(arma::vectorise(mu_hat)) * kron_term);
     //
     // add optimization data
-    trame_model_opt_data<Ta> opt_data;
+    trame_model_mme_opt_data<Ta> opt_data;
     
     opt_data.market = market_obj;
     opt_data.nbParams = nbParams;
@@ -210,6 +209,60 @@ bool model<Ta>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     double val_ret = obj_val;
     //
     return success;
+}
+
+template<typename Ta>
+double model<Ta>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data)
+{
+    trame_model_ll_opt_data<Ta> *d = reinterpret_cast<trame_model_ll_opt_data<Ta>*>(opt_data);
+
+    bool by_individual = d->by_individual;
+    double scale = d->scale;
+    int nbX = d->model_obj.nbX;
+    int nbY = d->model_obj.nbY;
+
+    arma::mat mu_hat = d->mu_hat;
+    arma::vec mu_hat_x0 = d->mu_hat_x0;
+    arma::vec mu_hat_0y = d->mu_hat_0y;
+    //
+    arma::vec mu_x0, mu_0y;
+    arma::mat mu, dmu;
+
+    d->model_obj.dtheta_mu(vals_inp,NULL,mu,mu_x0,mu_0y,dmu);
+    //
+    double ret_val = 0.0;
+
+    if (by_individual) {
+        ret_val = - arma::accu(2.0*mu_hat % arma::log(mu)) - arma::accu(mu_hat_x0 % arma::log(mu_x0)) - arma::accu(mu_hat_0y % arma::log(mu_0y));
+
+        if (grad_vec) {
+            arma::mat term_1 = arma::trans(2.0*mu_hat / arma::reshape(mu,nbX,nbY) - mu_hat_x0 / mu_x0);
+            arma::mat term_2 = mu_hat_0y / mu_0y;
+
+            arma::mat term_grad = elem_prod(arma::vectorise(arma::trans(term_1 - term_2)),dmu);
+
+            *grad_vec = (- arma::trans(arma::sum(term_grad,0))) / scale;
+        }
+        //
+    } else {
+        double N = arma::accu(arma::join_cols(arma::vectorise(mu),arma::join_cols(mu_x0,mu_0y)));
+
+        ret_val = - arma::accu(mu_hat % arma::log(mu / N)) - arma::accu(mu_hat_x0 % arma::log(mu_x0 / N)) - arma::accu(mu_hat_0y % arma::log(mu_0y / N));
+
+        if (grad_vec) {
+            arma::mat term_1 = arma::trans(mu_hat / arma::reshape(mu,nbX,nbY) - mu_hat_x0 / mu_x0);
+            arma::mat term_2 = mu_hat_0y / mu_0y;
+
+            arma::mat term_grad = elem_prod(arma::vectorise(arma::trans(term_1 - term_2)),dmu);
+
+            arma::mat term_3 = (arma::accu(arma::join_cols(arma::vectorise(mu_hat),arma::join_cols(mu_hat_x0,mu_hat_0y))) / N)  * arma::trans(arma::sum(dmu,0));
+
+            *grad_vec = (- arma::trans(arma::sum(term_grad,0)) - term_3) / scale;
+        }
+
+    }
+    //
+    return ret_val / scale;
 }
 
 // Keith: should probably switch this to be a member variable
@@ -251,7 +304,7 @@ bool model<Ta>::model_mme_optim(arma::vec& init_out_vals, std::function<double (
 template<typename Ta>
 double model<Ta>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
 {
-    trame_model_opt_data<Ta> *d = reinterpret_cast<trame_model_opt_data<Ta>*>(opt_data);
+    trame_model_mme_opt_data<Ta> *d = reinterpret_cast<trame_model_mme_opt_data<Ta>*>(opt_data);
     //
     int nbX = d->market.nbX;
     int nbY = d->market.nbY;

@@ -69,6 +69,8 @@ class model
         
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
+
+        static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data);
         
     private:
         // internal build functions
@@ -85,12 +87,23 @@ class model
         static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 
-template<typename Tm>
-struct trame_model_opt_data {
+template<typename Ta>
+struct trame_model_mme_opt_data {
     int nbParams;
     arma::mat C_hat;
     arma::mat kron_term;
-    dse<Tm> market;
+    dse<Ta> market;
+};
+
+template<typename Ta>
+struct trame_model_ll_opt_data {
+    bool by_individual;
+    double scale;
+    arma::mat mu_hat;
+    arma::vec mu_hat_x0;
+    arma::vec mu_hat_0y;
+
+    model<Ta> model_obj;
 };
 
 #include "model.tpp"
