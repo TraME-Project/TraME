@@ -71,6 +71,8 @@ class model
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
 
         static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data);
+        bool mle(const arma::mat& mu_hat, arma::mat& theta_hat);
+
         
     private:
         // internal build functions
@@ -82,8 +84,10 @@ class model
         void init_param(arma::mat& params);
 
         // optimization-related objects
+        bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
+        static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
+
         bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
-        
         static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 
@@ -99,6 +103,7 @@ template<typename Ta>
 struct trame_model_ll_opt_data {
     bool by_individual;
     double scale;
+
     arma::mat mu_hat;
     arma::vec mu_hat_x0;
     arma::vec mu_hat_0y;
