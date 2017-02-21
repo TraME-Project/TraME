@@ -211,60 +211,6 @@ bool model<Ta>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     return success;
 }
 
-template<typename Ta>
-double model<Ta>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data)
-{
-    trame_model_ll_opt_data<Ta> *d = reinterpret_cast<trame_model_ll_opt_data<Ta>*>(opt_data);
-
-    bool by_individual = d->by_individual;
-    double scale = d->scale;
-    int nbX = d->model_obj.nbX;
-    int nbY = d->model_obj.nbY;
-
-    arma::mat mu_hat = d->mu_hat;
-    arma::vec mu_hat_x0 = d->mu_hat_x0;
-    arma::vec mu_hat_0y = d->mu_hat_0y;
-    //
-    arma::vec mu_x0, mu_0y;
-    arma::mat mu, dmu;
-
-    d->model_obj.dtheta_mu(vals_inp,NULL,mu,mu_x0,mu_0y,dmu);
-    //
-    double ret_val = 0.0;
-
-    if (by_individual) {
-        ret_val = - arma::accu(2.0*mu_hat % arma::log(mu)) - arma::accu(mu_hat_x0 % arma::log(mu_x0)) - arma::accu(mu_hat_0y % arma::log(mu_0y));
-
-        if (grad_vec) {
-            arma::mat term_1 = arma::trans(2.0*mu_hat / arma::reshape(mu,nbX,nbY) - mu_hat_x0 / mu_x0);
-            arma::mat term_2 = mu_hat_0y / mu_0y;
-
-            arma::mat term_grad = elem_prod(arma::vectorise(arma::trans(term_1 - term_2)),dmu);
-
-            *grad_vec = (- arma::trans(arma::sum(term_grad,0))) / scale;
-        }
-        //
-    } else {
-        double N = arma::accu(arma::join_cols(arma::vectorise(mu),arma::join_cols(mu_x0,mu_0y)));
-
-        ret_val = - arma::accu(mu_hat % arma::log(mu / N)) - arma::accu(mu_hat_x0 % arma::log(mu_x0 / N)) - arma::accu(mu_hat_0y % arma::log(mu_0y / N));
-
-        if (grad_vec) {
-            arma::mat term_1 = arma::trans(mu_hat / arma::reshape(mu,nbX,nbY) - mu_hat_x0 / mu_x0);
-            arma::mat term_2 = mu_hat_0y / mu_0y;
-
-            arma::mat term_grad = elem_prod(arma::vectorise(arma::trans(term_1 - term_2)),dmu);
-
-            arma::mat term_3 = (arma::accu(arma::join_cols(arma::vectorise(mu_hat),arma::join_cols(mu_hat_x0,mu_hat_0y))) / N)  * arma::trans(arma::sum(dmu,0));
-
-            *grad_vec = (- arma::trans(arma::sum(term_grad,0)) - term_3) / scale;
-        }
-
-    }
-    //
-    return ret_val / scale;
-}
-
 // Keith: should probably switch this to be a member variable
 template<typename Ta>
 arma::mat model<Ta>::Phi_xy()
@@ -299,6 +245,58 @@ bool model<Ta>::model_mme_optim(arma::vec& init_out_vals, std::function<double (
     bool success = generic_optim(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
     //
     return success;
+}
+
+template<typename Ta>
+double model<Ta>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data)
+{
+    trame_model_ll_opt_data<Ta> *d = reinterpret_cast<trame_model_ll_opt_data<Ta>*>(opt_data);
+
+    bool by_individual = d->by_individual;
+    double scale = d->scale;
+    int nbX = d->model_obj.nbX;
+    int nbY = d->model_obj.nbY;
+
+    arma::mat mu_hat = d->mu_hat;
+    arma::vec mu_hat_x0 = d->mu_hat_x0;
+    arma::vec mu_hat_0y = d->mu_hat_0y;
+    //
+    arma::vec mu_x0, mu_0y;
+    arma::mat mu, dmu;
+
+    d->model_obj.dtheta_mu(vals_inp,NULL,mu,mu_x0,mu_0y,dmu);
+    //
+    double ret_val = 0.0;
+
+    if (by_individual) {
+        ret_val = - arma::accu(2.0*mu_hat % arma::log(mu)) - arma::accu(mu_hat_x0 % arma::log(mu_x0)) - arma::accu(mu_hat_0y % arma::log(mu_0y));
+
+        if (grad_vec) {
+            arma::mat term_1 = arma::trans(2.0*mu_hat / arma::reshape(mu,nbX,nbY) - mu_hat_x0 / mu_x0);
+            arma::mat term_2 = mu_hat_0y / mu_0y;
+
+            arma::mat term_grad = elem_prod(arma::vectorise(arma::trans(term_1 - term_2)),dmu);
+
+            *grad_vec = (- arma::trans(arma::sum(term_grad,0))) / scale;
+        }
+    } else {
+        double N = arma::accu(arma::join_cols(arma::vectorise(mu),arma::join_cols(mu_x0,mu_0y)));
+
+        ret_val = - arma::accu(mu_hat % arma::log(mu / N)) - arma::accu(mu_hat_x0 % arma::log(mu_x0 / N)) - arma::accu(mu_hat_0y % arma::log(mu_0y / N));
+
+        if (grad_vec) {
+            arma::mat term_1 = arma::trans(mu_hat / arma::reshape(mu,nbX,nbY) - mu_hat_x0 / mu_x0);
+            arma::mat term_2 = mu_hat_0y / mu_0y;
+
+            arma::mat term_grad = elem_prod(arma::vectorise(arma::trans(term_1 - term_2)),dmu);
+
+            arma::mat term_3 = (arma::accu(arma::join_cols(arma::vectorise(mu_hat),arma::join_cols(mu_hat_x0,mu_hat_0y))) / N)  * arma::trans(arma::sum(dmu,0));
+
+            *grad_vec = (- arma::trans(arma::sum(term_grad,0)) - term_3) / scale;
+        }
+    }
+    //
+    return ret_val / scale;
 }
 
 template<typename Ta>
