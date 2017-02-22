@@ -169,13 +169,19 @@ void model<Ta>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma:
 }
 
 template<typename Ta>
-bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat* theta_hat)
+bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp)
 {
+    bool success = false;
+    //
     double err_tol = 1E-08;
     int max_iter = 5000;
 
     arma::vec theta_0;
-    init_param(theta_0);
+    if (theta_0_inp) {
+        theta_0 = *theta_0_inp;
+    } else {
+        init_param(theta_0);
+    }
 
     bool by_individual = true;
     double scale = std::max(arma::accu(n),arma::accu(m));
@@ -184,7 +190,7 @@ bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat* theta_hat)
     arma::vec mu_hat_0y = m - arma::trans(arma::sum(mu_hat,0));
     //
     // add optimization data
-    trame_model_ll_opt_data<Ta> opt_data;
+    trame_model_mle_opt_data<Ta> opt_data;
     
     opt_data.model_obj = *this;
     opt_data.by_individual = by_individual;
@@ -194,10 +200,13 @@ bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat* theta_hat)
     opt_data.mu_hat_x0 = mu_hat_x0;
     opt_data.mu_hat_0y = mu_hat_0y;
     //
-    arma::vec sol_vec = arma::join_cols(arma::vectorise(kron_term * theta_0)/2.0,theta_0);
     double obj_val = 0;
 
-    success = model_mle_optim(sol_vec,model_ll_opt_objfn,&opt_data,&obj_val,&err_tol,&max_iter);
+    success = model_mle_optim(theta_0,log_likelihood,&opt_data,&obj_val,&err_tol,&max_iter);
+    //
+    theta_hat = theta_0;
+
+    return success;
 }
 
 template<typename Ta>
@@ -282,7 +291,7 @@ bool model<Ta>::model_mle_optim(arma::vec& init_out_vals, std::function<double (
 template<typename Ta>
 double model<Ta>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data)
 {
-    trame_model_ll_opt_data<Ta> *d = reinterpret_cast<trame_model_ll_opt_data<Ta>*>(opt_data);
+    trame_model_mle_opt_data<Ta> *d = reinterpret_cast<trame_model_mle_opt_data<Ta>*>(opt_data);
 
     bool by_individual = d->by_individual;
     double scale = d->scale;

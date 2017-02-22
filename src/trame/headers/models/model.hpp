@@ -70,8 +70,7 @@ class model
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
 
-        static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data);
-        bool mle(const arma::mat& mu_hat, arma::mat& theta_hat);
+        bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp);
 
         
     private:
@@ -100,7 +99,7 @@ struct trame_model_mme_opt_data {
 };
 
 template<typename Ta>
-struct trame_model_ll_opt_data {
+struct trame_model_mle_opt_data {
     bool by_individual;
     double scale;
 
