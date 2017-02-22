@@ -29,7 +29,7 @@
  * 08/16/2016
  *
  * This version:
- * 02/15/2017
+ * 02/21/2017
  */
 
 // internal max_welfare
@@ -45,6 +45,9 @@ bool max_welfare_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_
         return false;
     }
     //
+    double tol = (tol_inp) ? *tol_inp : 1E-06;
+    int max_iter = (max_iter_inp) ? *max_iter_inp : 2000;
+
     int nbX = market.nbX;
     int nbY = market.nbY;
 
@@ -54,7 +57,7 @@ bool max_welfare_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_
     double obj_val = 0;
     arma::vec sol_vec = arma::vectorise(market.trans_obj.phi / 2.0);
     
-    success = max_welfare_optim(sol_vec,max_welfare_opt_objfn_2<Ta>,&opt_data,&obj_val,NULL,NULL);
+    success = max_welfare_optim(sol_vec,max_welfare_opt_objfn_2<Ta>,&opt_data,&obj_val,&tol,&max_iter);
     //
     // construct equilibrium objects
     arma::mat U = arma::reshape(sol_vec,nbX,nbY);

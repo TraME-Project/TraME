@@ -51,6 +51,7 @@ bool ipfp_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, ar
 
     double tol = (tol_inp) ? *tol_inp : 1E-12;
     int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
+    
     arma::vec by = (by_start) ? *by_start : m;
     //
     // begin loop
