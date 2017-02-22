@@ -247,7 +247,7 @@ bool model<Ta>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     arma::mat U = arma::reshape(sol_vec.rows(0,nbX*nbY-1),nbX,nbY);
     theta_hat = sol_vec.rows(nbX*nbY,nbX*nbY+nbParams-1);
 
-    double val_ret = obj_val;
+    //double val_ret = obj_val;
     //
     return success;
 }

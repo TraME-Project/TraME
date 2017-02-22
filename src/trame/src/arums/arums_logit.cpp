@@ -269,6 +269,14 @@ arma::mat trame::logit::D2Gstar(const arma::vec& n, bool xFirst)
     return ret;
 }
 
+arma::mat trame::logit::D2Gstar(const arma::vec& n, const arma::mat& mu_inp, bool xFirst)
+{
+    arma::mat ret;
+    this->D2Gstar(ret,n,mu_inp,xFirst);
+    //
+    return ret;
+}
+
 void trame::logit::D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption == 1 or 0

@@ -77,6 +77,7 @@ class logit
         void D2G(arma::mat &H, const arma::vec& n, const arma::mat& U_inp, bool xFirst);
 
         arma::mat D2Gstar(const arma::vec& n, bool xFirst);
+        arma::mat D2Gstar(const arma::vec& n, const arma::mat& mu_inp, bool xFirst);
         void D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst);
         void D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, bool xFirst);
 

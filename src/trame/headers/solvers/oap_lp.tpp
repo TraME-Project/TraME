@@ -220,7 +220,7 @@ bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, const bool& x_first_inp, a
 }
 
 template<typename Ta>
-bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, arma::mat& u_out, arma::mat& v_out)
+bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, arma::vec& u_out, arma::vec& v_out)
 {
     bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,&u_out,&v_out,NULL,NULL);
     

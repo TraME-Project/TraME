@@ -313,13 +313,13 @@ bool dse<Ta>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const
     
     if (solver) { // not NULL
         if (sig=='a') {
-            res = arc_newton(*this,&mu_sol,U_out,V_out);
+            res = arc_newton(*this,mu_sol,U_out,V_out);
         }
         /*if (sig=='c') { // only works with empirical case
             res = cupids_lp(*this,mu_sol);
         }*/
         if (sig=='d') {
-            res = darum_int(*this,mu_sol,U_out,V_out);
+            res = darum(*this,mu_sol,U_out,V_out);
         }
         if (sig=='e') {
             res = eap_nash(*this,mu_sol,U_out,V_out);

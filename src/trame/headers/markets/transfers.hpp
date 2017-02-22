@@ -74,7 +74,8 @@ class transfers
         arma::mat du_Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat du_Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys) const;
 
-        arma::mat dtheta_Psi(const arma::mat& U, const arma::mat& V, arma::mat* dtheta);
+        arma::mat dtheta_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dtheta);
+        arma::mat dtheta_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dtheta);
 
         // Ucal and Vcal functions are const restricted because of calls to const market pointers in equilibrium solvers
         arma::mat Ucal(const arma::mat& vs) const;

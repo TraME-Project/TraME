@@ -394,7 +394,13 @@ finished:
     return ret;
 }
 
-arma::mat trame::transfers::dtheta_Psi(const arma::mat& U, const arma::mat& V, arma::mat* dtheta)
+arma::mat trame::transfers::dtheta_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dtheta)
+{
+    arma::mat ret = this->dtheta_Psi(U,V,&dtheta);
+    return ret;
+}
+
+arma::mat trame::transfers::dtheta_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dtheta)
 {
     arma::mat ret(nbX,nbY);
     //
@@ -403,34 +409,32 @@ arma::mat trame::transfers::dtheta_Psi(const arma::mat& U, const arma::mat& V, a
         arma::vec du_psi = arma::vectorise(du_psi_mat);
 
         if (!dtheta) {
-            arma::mat term_1, term_2;
-            term_1 = (U - alpha) % du_psi_mat;
-            term_2 = (V - gamma) % (1 - du_psi_mat);
+            arma::mat term_1 = (U - alpha) % du_psi_mat;
+            arma::mat term_2 = (V - gamma) % (1 - du_psi_mat);
 
-            arma::mat dsigmapsi_mat = (Psi(U,V,NULL,NULL) - term_1 - term_2)/tau;
-            arma::vec dsigmapsi = arma::vectorise(dsigmapsi_mat);
+            arma::mat dsigma_psi_mat = (Psi(U,V,NULL,NULL) - term_1 - term_2)/tau;
+            arma::vec dsigma_psi = arma::vectorise(dsigma_psi_mat);
             //
-            ret = arma::join_rows(arma::diagmat(-du_psi),arma::join_rows(arma::diagmat(du_psi-1),arma::diagmat(dsigmapsi)));
+            ret = arma::join_rows(arma::diagmat(-du_psi),arma::join_rows(arma::diagmat(du_psi-1),arma::diagmat(dsigma_psi)));
             goto finished;
         } else {
             arma::mat dtheta_1 = dtheta->rows(0,nbX*nbY-1);
             arma::mat dtheta_2 = dtheta->rows(nbX*nbY,2*nbX*nbY-1);
             arma::mat dtheta_3 = dtheta->rows(2*nbX*nbY,3*nbX*nbY-1);
 
-            arma::vec dsigmapsidtheta = arma::zeros(dtheta_3.n_rows,1);
-            double min_check = arma::as_scalar(arma::min(arma::min(dtheta_3)));
+            arma::vec dsigma_psi_dtheta = arma::zeros(dtheta_3.n_rows,1);
+            double min_check = elem_min(dtheta_3);
 
             if (min_check!=0) {
-                arma::mat term_1, term_2;
-                term_1 = (U - alpha) % du_psi_mat;
-                term_2 = (V - gamma) % (1 - du_psi_mat);
+                arma::mat term_1 = (U - alpha) % du_psi_mat;
+                arma::mat term_2 = (V - gamma) % (1 - du_psi_mat);
 
-                arma::mat dsigmapsi_mat = (Psi(U,V,NULL,NULL) - term_1 - term_2)/tau;
+                arma::mat dsigma_psi_mat = (Psi(U,V,NULL,NULL) - term_1 - term_2)/tau;
 
-                dsigmapsidtheta = dtheta_3 % arma::vectorise(dsigmapsi_mat);
+                dsigma_psi_dtheta = dtheta_3 % arma::vectorise(dsigma_psi_mat);
             }
             //
-            ret = arma::vectorise(-du_psi % dtheta_1 - (1-du_psi) % dtheta_2 + dsigmapsidtheta);
+            ret = arma::vectorise(-du_psi % dtheta_1 - (1-du_psi) % dtheta_2 + dsigma_psi_dtheta);
             goto finished;
         }
     }
