@@ -142,6 +142,8 @@ void model<Ta>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out, 
 template<typename Ta>
 void model<Ta>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
 {
+    build_market_TU(theta); // need to replace this later with general 'parametric_market'
+    //
     arma::mat mu, U, V;
     market_obj.solve(mu,U,V,NULL);
 
@@ -173,7 +175,7 @@ bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* th
 {
     bool success = false;
     //
-    double err_tol = 1E-08;
+    double err_tol = 1E-06;
     int max_iter = 5000;
 
     arma::vec theta_0;
@@ -182,6 +184,8 @@ bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* th
     } else {
         init_param(theta_0);
     }
+    build_market_TU(theta_0);
+    printf("have initial values\n");
 
     bool by_individual = true;
     double scale = std::max(arma::accu(n),arma::accu(m));
@@ -190,6 +194,7 @@ bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* th
     arma::vec mu_hat_0y = m - arma::trans(arma::sum(mu_hat,0));
     //
     // add optimization data
+    printf("create data\n");
     trame_model_mle_opt_data<Ta> opt_data;
     
     opt_data.model_obj = *this;
@@ -200,6 +205,7 @@ bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* th
     opt_data.mu_hat_x0 = mu_hat_x0;
     opt_data.mu_hat_0y = mu_hat_0y;
     //
+    printf("begin optimization\n");
     double obj_val = 0;
 
     success = model_mle_optim(theta_0,log_likelihood,&opt_data,&obj_val,&err_tol,&max_iter);
@@ -313,10 +319,10 @@ double model<Ta>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec,
         ret_val = - arma::accu(2.0*mu_hat % arma::log(mu)) - arma::accu(mu_hat_x0 % arma::log(mu_x0)) - arma::accu(mu_hat_0y % arma::log(mu_0y));
 
         if (grad_vec) {
-            arma::mat term_1 = arma::trans(2.0*mu_hat / arma::reshape(mu,nbX,nbY) - mu_hat_x0 / mu_x0);
+            arma::mat term_1 = arma::trans( elem_sub(2.0*mu_hat/arma::reshape(mu,nbX,nbY), mu_hat_x0/mu_x0) );
             arma::mat term_2 = mu_hat_0y / mu_0y;
 
-            arma::mat term_grad = elem_prod(arma::vectorise(arma::trans(term_1 - term_2)),dmu);
+            arma::mat term_grad = elem_prod(arma::vectorise(arma::trans(elem_sub(term_1,term_2))),dmu);
 
             *grad_vec = (- arma::trans(arma::sum(term_grad,0))) / scale;
         }
@@ -326,12 +332,12 @@ double model<Ta>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec,
         ret_val = - arma::accu(mu_hat % arma::log(mu / N)) - arma::accu(mu_hat_x0 % arma::log(mu_x0 / N)) - arma::accu(mu_hat_0y % arma::log(mu_0y / N));
 
         if (grad_vec) {
-            arma::mat term_1 = arma::trans(mu_hat / arma::reshape(mu,nbX,nbY) - mu_hat_x0 / mu_x0);
+            arma::mat term_1 = arma::trans( elem_sub(mu_hat/arma::reshape(mu,nbX,nbY), mu_hat_x0/mu_x0) );
             arma::mat term_2 = mu_hat_0y / mu_0y;
 
-            arma::mat term_grad = elem_prod(arma::vectorise(arma::trans(term_1 - term_2)),dmu);
+            arma::mat term_grad = elem_prod(arma::vectorise(arma::trans(elem_sub(term_1,term_2))),dmu);
 
-            arma::mat term_3 = (arma::accu(arma::join_cols(arma::vectorise(mu_hat),arma::join_cols(mu_hat_x0,mu_hat_0y))) / N)  * arma::trans(arma::sum(dmu,0));
+            arma::vec term_3 = (arma::accu(arma::join_cols(arma::vectorise(mu_hat),arma::join_cols(mu_hat_x0,mu_hat_0y))) / N)  * arma::trans(arma::sum(dmu,0));
 
             *grad_vec = (- arma::trans(arma::sum(term_grad,0)) - term_3) / scale;
         }

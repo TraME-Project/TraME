@@ -47,8 +47,8 @@ void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arm
 
     trans_obj.build_TU(phi_inp);
 
-    //arums_G.build(nbX,nbY);
-    //arums_H.build(nbY,nbX);
+    arums_G.build(nbX,nbY); // this avoids nbX and nbY not being set in arums
+    arums_H.build(nbY,nbX);
     //
     TU = true;
     //arum_none = true;
@@ -115,8 +115,8 @@ void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
 
     trans_obj.build_NTU(alpha_inp,gamma_inp);
 
-    //arums_G.build(nbX,nbY);
-    //arums_H.build(nbY,nbX);
+    arums_G.build(nbX,nbY);
+    arums_H.build(nbY,nbX);
     //
     NTU = true;
     //arum_none = true;
@@ -183,8 +183,8 @@ void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
 
     trans_obj.build_LTU(lambda_inp,phi_inp);
 
-    //arums_G.build(nbX,nbY);
-    //arums_H.build(nbY,nbX);
+    arums_G.build(nbX,nbY);
+    arums_H.build(nbY,nbX);
     //
     LTU = true;
     //arum_none = true;

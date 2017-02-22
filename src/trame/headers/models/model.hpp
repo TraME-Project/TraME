@@ -72,7 +72,6 @@ class model
 
         bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp);
 
-        
     private:
         // internal build functions
         void build_int(const arma::cube& phi_xyk_inp, const arma::vec* n_inp, const arma::vec* m_inp);
