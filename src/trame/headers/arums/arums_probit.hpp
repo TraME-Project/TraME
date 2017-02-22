@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 08/08/2016
+ *
+ * This version:
+ * 02/21/2017
  */
 
 class probit
@@ -47,9 +50,11 @@ class probit
         // member functions
         ~probit(){};
          probit(){};
+        explicit probit(int nbX_inp, int nbY_inp);
         explicit probit(int nbX_inp, int nbY_inp, bool outsideOption_inp);
         explicit probit(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp);
 
+        void build(int nbX_inp, int nbY_inp);
         void build(int nbX_inp, int nbY_inp, bool outsideOption_inp);
         void build(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp);
 

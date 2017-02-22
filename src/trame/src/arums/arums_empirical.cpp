@@ -29,14 +29,25 @@
  * 08/08/2016
  *
  * This version:
- * 02/13/2017
+ * 02/21/2017
  */
 
 #include "trame.hpp"
 
+trame::empirical::empirical(int nbX_inp, int nbY_inp)
+{
+    this->build(nbX_inp, nbY_inp);
+}
+
 trame::empirical::empirical(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
 {
     this->build(nbX_inp, nbY_inp, atoms_inp, xHomogenous_inp, outsideOption_inp);
+}
+
+void trame::empirical::build(int nbX_inp, int nbY_inp)
+{
+    nbX = nbX_inp;
+    nbY = nbY_inp;
 }
 
 void trame::empirical::build(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)

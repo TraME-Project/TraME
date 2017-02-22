@@ -29,14 +29,14 @@
  * 08/08/2016
  *
  * This version:
- * 02/09/2017
+ * 02/21/2017
  */
 
 #include "trame.hpp"
 
 trame::logit::logit(int nbX_inp, int nbY_inp)
 {   
-    this->build(nbX_inp,nbY_inp, (double) 1.0, (bool) true);
+    this->build(nbX_inp,nbY_inp);
 }
 
 trame::logit::logit(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp)
@@ -46,7 +46,9 @@ trame::logit::logit(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOpti
 
 void trame::logit::build(int nbX_inp, int nbY_inp)
 {   
-    this->build(nbX_inp,nbY_inp, (double) 1.0, (bool) true);
+    nbX = nbX_inp;
+    nbY = nbY_inp;
+    nbParams = 1;
 }
 
 void trame::logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp)
@@ -312,7 +314,7 @@ void trame::logit::D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst)
 void trame::logit::D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, bool xFirst)
 {
     // NOTE: the formula is the same regardless of whether outsideOption == 1 or 0
-    
+
     arma::vec mu_x0 = n - arma::sum(mu_inp,1);
     arma::vec mu_x0_recip = arma::ones(mu_x0.n_rows,1) / mu_x0; // reciprocal of mu_x0
     arma::mat mu_xy_recip = arma::ones(mu_inp.n_rows,mu_inp.n_cols) / mu_inp;

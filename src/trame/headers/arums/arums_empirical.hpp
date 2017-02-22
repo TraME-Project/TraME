@@ -29,7 +29,7 @@
  * 08/08/2016
  *
  * This version:
- * 02/13/2017
+ * 02/21/2017
  */
 
 class empirical
@@ -59,8 +59,10 @@ class empirical
         // member functions
         ~empirical(){};
          empirical(){};
+        explicit empirical(int nbX_inp, int nbY_inp);
         explicit empirical(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool xHomogenous_inp, bool outsideOption_inp);
 
+        void build(int nbX_inp, int nbY_inp);
         void build(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool xHomogenous_inp, bool outsideOption_inp);
 
         double G(const arma::vec& n);

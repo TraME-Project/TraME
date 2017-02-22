@@ -29,7 +29,7 @@
  * 08/08/2016
  *
  * This version:
- * 02/11/2017
+ * 02/21/2017
  */
 
 class rusc
@@ -59,8 +59,10 @@ class rusc
         // member functions
         ~rusc(){};
          rusc(){};
+        explicit rusc(int nbX_inp, int nbY_inp);
         explicit rusc(arma::mat zeta_inp, bool outsideOption_inp);
 
+        void build(int nbX_inp, int nbY_inp);
         void build(arma::mat zeta_inp, bool outsideOption_inp);
         
         double G(const arma::vec& n);

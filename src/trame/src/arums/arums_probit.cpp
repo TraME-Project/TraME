@@ -27,9 +27,17 @@
  *
  * Keith O'Hara
  * 08/08/2016
+ *
+ * This version:
+ * 02/21/2017
  */
 
 #include "trame.hpp"
+
+trame::probit::probit(int nbX_inp, int nbY_inp)
+{   
+    this->build(nbX_inp, nbY_inp);
+}
 
 trame::probit::probit(int nbX_inp, int nbY_inp, bool outsideOption_inp)
 {   
@@ -39,6 +47,12 @@ trame::probit::probit(int nbX_inp, int nbY_inp, bool outsideOption_inp)
 trame::probit::probit(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp)
 {   
     this->build_prv(nbX_inp, nbY_inp, &rho_inp, outsideOption_inp);
+}
+
+void trame::probit::build(int nbX_inp, int nbY_inp)
+{   
+    nbX = nbX_inp;
+    nbY = nbY_inp;
 }
 
 void trame::probit::build(int nbX_inp, int nbY_inp, bool outsideOption_inp)

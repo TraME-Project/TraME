@@ -27,13 +27,27 @@
  *
  * Keith O'Hara
  * 08/08/2016
+ *
+ * This version:
+ * 02/21/2017
  */
 
 #include "trame.hpp"
 
+trame::rusc::rusc(int nbX_inp, int nbY_inp)
+{
+    this->build(nbX_inp, nbY_inp);
+}
+
 trame::rusc::rusc(arma::mat zeta_inp, bool outsideOption_inp)
 {
     this->build(zeta_inp, outsideOption_inp);
+}
+
+void trame::rusc::build(int nbX_inp, int nbY_inp)
+{
+    nbX = nbX_inp;
+    nbY = nbY_inp;
 }
 
 void trame::rusc::build(arma::mat zeta_inp, bool outsideOption_inp)

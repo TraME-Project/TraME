@@ -29,10 +29,15 @@
  * 08/08/2016
  * 
  * This version:
- * 02/11/2017
+ * 02/21/2017
  */
 
 #include "trame.hpp"
+
+trame::rsc::rsc(int nbX_inp, int nbY_inp)
+{
+    this->build(nbX_inp, nbY_inp);
+}
 
 trame::rsc::rsc(arma::mat zeta_inp, bool outsideOption_inp)
 {
@@ -42,6 +47,12 @@ trame::rsc::rsc(arma::mat zeta_inp, bool outsideOption_inp)
 trame::rsc::rsc(arma::mat zeta_inp, double alpha, double beta)
 {
     this->build_beta(zeta_inp, alpha, beta);
+}
+
+void trame::rsc::build(int nbX_inp, int nbY_inp)
+{
+    nbX = nbX_inp;
+    nbY = nbY_inp;
 }
 
 void trame::rsc::build(arma::mat zeta_inp, bool outsideOption_inp)

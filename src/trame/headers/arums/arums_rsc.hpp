@@ -29,7 +29,7 @@
  * 08/08/2016
  * 
  * This version:
- * 02/11/2017
+ * 02/21/2017
  */
 
 class rsc
@@ -75,9 +75,11 @@ class rsc
         // member functions
         ~rsc(){};
          rsc(){};
+        explicit rsc(int nbX_inp, int nbY_inp);
         explicit rsc(arma::mat zeta_inp, bool outsideOption_inp);
         explicit rsc(arma::mat zeta_inp, double alpha, double beta);
 
+        void build(int nbX_inp, int nbY_inp);
         void build(arma::mat zeta_inp, bool outsideOption_inp);
 
         void build_beta(arma::mat zeta_inp, double alpha, double beta);
