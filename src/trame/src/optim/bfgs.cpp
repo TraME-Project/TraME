@@ -29,7 +29,7 @@
  * 12/23/2016
  *
  * This version:
- * 02/07/2017
+ * 02/21/2017
  */
 
 #include "trame.hpp"
@@ -145,10 +145,14 @@ bool trame::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma:
             *value_out = opt_objfn(init_out_vals,NULL,opt_data);
         }
     } else {
-        printf("bfgs failure: max_iter reached before convergence could be achieved.\n");
-        printf("bfgs failure: best guess:\n");
-        arma::cout << x_p.t() << arma::endl;
-        std::cout << "error: " << err << std::endl;
+        //printf("bfgs failure: max_iter reached before convergence could be achieved.\n");
+        //printf("bfgs failure: best guess:\n");
+        //arma::cout << x_p.t() << arma::endl;
+        //std::cout << "error: " << err << std::endl;
+
+        if (err < 1E-06) {
+            init_out_vals = x_p;
+        }
     }
     //
     return success;
