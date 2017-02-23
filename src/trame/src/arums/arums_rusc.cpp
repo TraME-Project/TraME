@@ -29,7 +29,7 @@
  * 08/08/2016
  *
  * This version:
- * 02/21/2017
+ * 02/22/2017
  */
 
 #include "trame.hpp"
@@ -260,7 +260,6 @@ double trame::rusc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
     arma::mat dual_mat(1,2);
     
     try {
-        //LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, Q_grbi.memptr(), lb_grbi.memptr(), ub_grbi.memptr(), NULL, objval, sol_mat, dual_mat);
         LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, Q_grbi.memptr(), lb_grbi.memptr(), ub_grbi.memptr(), NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
         if (LP_optimal) {
