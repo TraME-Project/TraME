@@ -274,11 +274,6 @@ double trame::rusc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;
         }
-#if !defined(TRAME_USE_GUROBI_C)
-    } catch(GRBException e) {
-        std::cout << "Error code = " << e.getErrorCode() << std::endl;
-        std::cout << e.getMessage() << std::endl;
-#endif
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }

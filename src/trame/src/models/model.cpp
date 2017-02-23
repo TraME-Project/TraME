@@ -226,11 +226,6 @@ bool model<empirical>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;
         }
-#if !defined(TRAME_USE_GUROBI_C)
-    } catch(GRBException e) {
-        std::cout << "Error code = " << e.getErrorCode() << std::endl;
-        std::cout << e.getMessage() << std::endl;
-#endif
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }

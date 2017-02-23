@@ -32,16 +32,6 @@
 #ifndef _generic_lp_HPP
 #define _generic_lp_HPP
 
-#if (defined(WIN32) || defined(_WIN32) || defined(TRAME_USE_GUROBI_C)) && !defined(TRAME_PREDEF_GUROBI_C)
-    #define TRAME_PREDEF_GUROBI_C
-#endif
-
-/*bool generic_LP(int k, int n, double *obj, double* A, int model_opt_sense, double* rhs, char* constr_sense, double* Q, 
-                double* lb, double* ub, double* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat);
-
-bool generic_LP(int k, int n, double *obj, int numnz, int* vbeg, int* vind, double* vval, int model_opt_sense, double* rhs, char* constr_sense, double* Q, 
-                double* lb, double* ub, double* start, double& objval, arma::mat& sol_mat, arma::mat& dual_mat);*/
-
 bool generic_LP(int k, int n, double *obj, double* A, int model_opt_sense, double* rhs, char* constr_sense, double* Q, 
                 double* lb, double* ub, double* start, double& objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK);
 

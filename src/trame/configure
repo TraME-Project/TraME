@@ -57,15 +57,23 @@ if [[ $OSTYPE == darwin* ]] ; then
         grb_lib_name=$(basename ${grb_lib_latest})
         grb_lib_num=${grb_lib_name//[^0-9]/}
 
-        LP_INCLUDE_PATH="-I$grb_latest/mac64/include"
+        LP_INCLUDE_PATH="-DTRAME_USE_GUROBI -I$grb_latest/mac64/include"
         LP_LIB_PATH="-L$grb_latest/mac64/lib"
         LP_LIBS="-lgurobi${grb_lib_num}"
         LP_LIB_RPATH="-Wl,-rpath,$grb_latest/mac64/lib"
     else
-        LP_INCLUDE_PATH=
-        LP_LIB_PATH=
-        LP_LIBS=
-        LP_LIB_RPATH=
+        # look for GLPK, or give up
+        if [ -f /usr/local/include/glpk.h ]; then
+            LP_INCLUDE_PATH="-I/usr/local/include"
+            LP_LIB_PATH="-L/usr/local/lib"
+            LP_LIBS="-lglpk"
+            LP_LIB_RPATH=
+        else
+            LP_INCLUDE_PATH=
+            LP_LIB_PATH=
+            LP_LIBS=
+            LP_LIB_RPATH=
+        fi
     fi
 elif [[ $OSTYPE == *linux* ]] ; then
     TRAME_BLAS_LAPACK="${TRAME_LAPACK_LIBS} ${TRAME_BLAS_LIBS}"

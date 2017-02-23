@@ -108,11 +108,6 @@ bool oap_lp_int(const dse<Ta>& market, arma::mat* mu_out, const bool* x_first_in
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;
         }
-#if !defined(TRAME_USE_GUROBI_C)
-    } catch(GRBException e) {
-        std::cout << "Error code = " << e.getErrorCode() << std::endl;
-        std::cout << e.getMessage() << std::endl;
-#endif
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }
@@ -177,11 +172,6 @@ bool oap_lp_int(const dse<Ta>& market, arma::mat* mu_out, const bool* x_first_in
             } else {
                 std::cout << "Non-optimal value found during optimization" << std::endl;
             }
-#if !defined(TRAME_USE_GUROBI_C)
-        } catch(GRBException e) {
-            std::cout << "Error code = " << e.getErrorCode() << std::endl;
-            std::cout << e.getMessage() << std::endl;
-#endif
         } catch(...) {
             std::cout << "Exception during optimization" << std::endl;
         }

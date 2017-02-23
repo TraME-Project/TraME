@@ -24,10 +24,6 @@
 
 #pragma once
 
-#ifndef TRAME_USE_GUROBI_C
-    #define TRAME_USE_GUROBI_C
-#endif
-
 #ifdef TRAME_RCPP_ARMADILLO
     #include <RcppArmadillo.h>
 #else

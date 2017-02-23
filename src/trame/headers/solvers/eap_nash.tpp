@@ -134,11 +134,6 @@ bool eap_nash_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_out
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;
         }
-#if !defined(TRAME_USE_GUROBI_C)
-    } catch(GRBException e) {
-        std::cout << "Error code = " << e.getErrorCode() << std::endl;
-        std::cout << e.getMessage() << std::endl;
-#endif
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }
