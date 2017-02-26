@@ -64,7 +64,7 @@ if [[ $OSTYPE == darwin* ]] ; then
     else
         # look for GLPK, or give up
         if [ -f /usr/local/include/glpk.h ]; then
-            LP_INCLUDE_PATH="-I/usr/local/include"
+            LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/usr/local/include"
             LP_LIB_PATH="-L/usr/local/lib"
             LP_LIBS="-lglpk"
             LP_LIB_RPATH=

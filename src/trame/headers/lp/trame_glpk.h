@@ -23,29 +23,25 @@
   ################################################################################*/
 
 /*
- * Generic Linear/Quadratic Programming solver
+ * Generic Linear Programming solver using GLPK
  *
  * Keith O'Hara
- * 05/08/2016
+ * 02/24/2017
  *
  * This version:
- * 02/22/2017
+ * 02/26/2017
  */
 
-#ifndef _generic_lp_H
-#define _generic_lp_H
+#ifndef _trame_glpk_H
+#define _trame_glpk_H
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "glpk.h"
 
-int generic_LP_C(int rows, int cols, double* obj, double* A, int model_opt_sense, 
-                 double* rhs, char* constr_sense, double* Q, double* lb, double* ub,
-                 double* objval, double* sol_mat_X, double* sol_mat_RC,
-                 double* dual_mat_PI, double* dual_mat_SLACK);
-int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz,
-                        int* vbeg, int* vind, double* vval, int model_opt_sense,
-                        double* rhs, char* constr_sense, double* Q, double* lb, double* ub,
-                        double* objval, double* sol_mat_X, double* sol_mat_RC,
-                        double* dual_mat_PI, double* dual_mat_SLACK);
+int trame_glpk(int rows, int cols, double* obj, double* A, int model_opt_sense, 
+               double* rhs, char* constr_sense, double* lb, double* ub,
+               double* objval, double* sol_mat_X, double* sol_mat_RC,
+               double* dual_mat_PI, double* dual_mat_SLACK);
 
 #endif

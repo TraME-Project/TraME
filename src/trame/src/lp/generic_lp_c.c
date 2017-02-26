@@ -23,14 +23,13 @@
   ################################################################################*/
 
 /*
- * Generic Linear/Quadratic Programming solver using Gurobi
- * Based on Gurobi's 'dense_c.c' example
+ * Generic Linear/Quadratic Programming
  *
  * Keith O'Hara
  * 05/08/2016
  *
  * This version:
- * 02/22/2017
+ * 02/26/2017
  */
  
 #include <string.h>
@@ -40,7 +39,7 @@
 #if defined(TRAME_USE_GUROBI)
     #include "trame_gurobi.c"
 #elif defined(TRAME_USE_GLPK)
-    
+    #include "trame_glpk.c"
 #else
     
 #endif
@@ -60,6 +59,7 @@ int generic_LP_C(int rows, int cols, double* obj, double* A, int model_opt_sense
     if (Q) {
         printf("GLPK does not support quadratic programming problems\n");
     }
+    success = trame_glpk(rows,cols,obj,A,model_opt_sense,rhs,constr_sense,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
 #else
     printf("No linear programming kit detected\n");
     success = 0;

@@ -160,6 +160,7 @@ QUIT:
 
 //
 // Dense setup; to be used with Armadillo memptr-based passing 
+// Armadillo uses column-major ordering, as opposed to C-standard row-major ordering
 int trame_gurobi_switch(int rows, int cols, double* obj, double* A, int model_opt_sense, 
                         double* rhs, char* constr_sense, double* Q, double* lb, double* ub, 
                         double* objval, double* sol_mat_X, double* sol_mat_RC, 
