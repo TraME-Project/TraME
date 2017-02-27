@@ -121,8 +121,8 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
     }
     
     for (j=0; j < n_constr; j++) {
-        dual_mat_PI[j] = glp_get_row_prim(lp, j+1);
-        dual_mat_SLACK[j] = glp_get_row_dual(lp, j+1);
+        dual_mat_PI[j] = glp_get_row_dual(lp, j+1);
+        dual_mat_SLACK[j] = glp_get_row_prim(lp, j+1);
     }
     //
 
