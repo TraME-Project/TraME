@@ -334,9 +334,9 @@ void trame::empirical::presolve_LP_Gstar()
     const arma::uword* row_vals = &(*A_sp_Gstar_t.row_indices);
     const arma::uword* col_vals = &(*A_sp_Gstar_t.col_ptrs);
 
-    vind_Gstar = new int[numnz_Gstar];
-    vbeg_Gstar = new int[k_Gstar+1];
-    vval_Gstar = new double[numnz_Gstar];
+    vind_Gstar = new int[numnz_Gstar];    // index of what row each non-zero value belongs to
+    vbeg_Gstar = new int[k_Gstar+1];      // index of how many non-zero values are in each column
+    vval_Gstar = new double[numnz_Gstar]; // vals
 
     for (jj=0; jj<numnz_Gstar; jj++) {
         vind_Gstar[jj] = row_vals[jj];

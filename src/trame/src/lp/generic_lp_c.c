@@ -55,7 +55,6 @@ int generic_LP_C(int rows, int cols, double* obj, double* A, int model_opt_sense
 #if defined(TRAME_USE_GUROBI)
     success = trame_gurobi_switch(rows,cols,obj,A,model_opt_sense,rhs,constr_sense,Q,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
 #elif defined(TRAME_USE_GLPK)
-    // insert GLPK support
     if (Q) {
         printf("GLPK does not support quadratic programming problems\n");
     }
@@ -78,10 +77,10 @@ int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
 #if defined(TRAME_USE_GUROBI)
     success = trame_gurobi_sparse(rows,cols,obj,numnz,vbeg,vind,vval,model_opt_sense,rhs,constr_sense,Q,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
 #elif defined(TRAME_USE_GLPK)
-    // insert GLPK support for sparse constraint matrix A
     if (Q) {
         printf("GLPK does not support quadratic programming problems\n");
     }
+    success = trame_glpk_sparse(rows,cols,obj,numnz,vbeg,vind,vval,model_opt_sense,rhs,constr_sense,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
 #else
     printf("No linear programming kit detected\n");
     success = 0;
