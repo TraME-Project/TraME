@@ -45,7 +45,7 @@ if [[ $OSTYPE == darwin* ]] ; then
     # 'grb_dirs' will always be non-empty; in the case where no Gurobi directories are detected,
     # grb_dirs will contain just '/Library/gurobi*', which is not an actual directory, so we need 
     # the following sanity check
-    if [[ -d $grb_latest ]] && [[ !(-z ${TRAME_USE_GLPK+x}) ]] ; then
+    if [[ -d $grb_latest && -z ${TRAME_USE_GLPK+x} ]] ; then
 
         grb_lib_path=( "$grb_latest/mac64/lib/libgurobi*.so" )
 
