@@ -108,6 +108,7 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
     glp_smcp lp_control;
     glp_init_smcp(&lp_control);
     lp_control.presolve = GLP_ON;
+    lp_control.meth = GLP_DUAL;
 
     glp_simplex(lp, &lp_control);
 
@@ -237,6 +238,7 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbe
     glp_smcp lp_control;
     glp_init_smcp(&lp_control);
     lp_control.presolve = GLP_ON;
+    lp_control.meth = GLP_DUAL;
 
     glp_simplex(lp, &lp_control);
 

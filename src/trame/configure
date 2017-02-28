@@ -11,7 +11,7 @@ if [ -z ${FC+x} ]; then
     FC=gfortran
 fi
 
-if [[ !(-z ${TRAME_KEITH+x}) ]] || [[ $USER == keith* ]]; then 
+if [[ $USER == keith* ]]; then 
     CC=gcc-mp-5
     CXX=g++-mp-5
     FC=gfortran-mp-5
@@ -45,7 +45,8 @@ if [[ $OSTYPE == darwin* ]] ; then
     # 'grb_dirs' will always be non-empty; in the case where no Gurobi directories are detected,
     # grb_dirs will contain just '/Library/gurobi*', which is not an actual directory, so we need 
     # the following sanity check
-    if [[ -d $grb_latest && -z ${TRAME_USE_GLPK+x} ]] ; then
+    if [[ -z ${TRAME_USE_GLPK+x} && -d $grb_latest ]] ; then
+        echo "TraME: using Gurobi"
 
         grb_lib_path=( "$grb_latest/mac64/lib/libgurobi*.so" )
 
@@ -60,6 +61,8 @@ if [[ $OSTYPE == darwin* ]] ; then
     else
         # look for GLPK, or give up
         if [ -f /usr/local/include/glpk.h ]; then
+            echo "TraME: using GLPK"
+            
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/usr/local/include"
             LP_LIB_PATH="-L/usr/local/lib"
             LP_LIBS="-lglpk"
