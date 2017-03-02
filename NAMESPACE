@@ -1,5 +1,0 @@
-useDynLib(TraME)
-
-importFrom(Rcpp, evalCpp)
-
-exportPattern("^[[:alpha:]]+")
