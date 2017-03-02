@@ -19,7 +19,7 @@ INSTALL_PATH=@TRAME_INSTALL_PATH@
 SDIR = .
 TRAME_DIR = $(SDIR)
 TRAME_SRC_DIR = $(SDIR)/src
-TRAME_HEADER_DIR = $(SDIR)/headers
+TRAME_HEADER_DIR = $(SDIR)/include
 TRAME_TEST_DIR = $(SDIR)/tests
 
 # shared library name and flags
@@ -117,4 +117,4 @@ clean:
 install: $(SHLIB)
 	@cp $(TRAME_DIR)/$(SHLIB) $(INSTALL_PATH)/lib/$(SHLIB)
 	@mkdir -p $(INSTALL_PATH)/include/trame
-	@cp -r $(TRAME_DIR)/headers/* $(INSTALL_PATH)/include/trame
+	@cp -r $(TRAME_DIR)/include/* $(INSTALL_PATH)/include/trame
