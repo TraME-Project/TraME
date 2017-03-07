@@ -1,4 +1,4 @@
-#! /bin/sh
+#!/bin/sh
 ## TraME config script
 
 if [ -z ${CC+x} ]; then 
