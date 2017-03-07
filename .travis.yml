@@ -1,11 +1,9 @@
-language: r
-sudo: required
-warnings_are_errors: false
+langauge: cpp
+sudo: false
+dist: trusty
 
-env:
-  global:
-    - R_BUILD_ARGS="--no-manual"
-    - R_CHECK_ARGS="--no-manual --as-cran"
+script:
+  - ./configure && make
 
 after_failure:
   - ./travis-tool.sh dump_logs
