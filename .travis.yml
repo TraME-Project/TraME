@@ -2,6 +2,10 @@ langauge: cpp
 sudo: false
 dist: trusty
 
+env:
+    global:
+        - FC=gfortran-4.8
+
 script:
   - ./configure && make
 
