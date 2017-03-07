@@ -1,10 +1,7 @@
 .DS_Store
 .Rproj.user
 .Rhistory
-src/Makevars
-src-i386/
-src-x64/
-src/trame/Makefile
+Makefile
 *.dll
 *.exe
 *.log
