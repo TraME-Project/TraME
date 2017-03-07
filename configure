@@ -75,6 +75,7 @@ if [[ $OSTYPE == darwin* ]] ; then
         fi
     fi
 elif [[ $OSTYPE == *linux* ]] ; then
+    TRAME_SHLIB_FLAGS="-shared"
     TRAME_BLAS_LAPACK="-lblas -llapack"
 
     if [ -d "/opt/gurobi"* ] ; then
@@ -92,7 +93,7 @@ elif [[ $OSTYPE == *linux* ]] ; then
         LP_LIB_RPATH=
     fi
 else
-    TRAME_BLAS_LAPACK=
+    TRAME_BLAS_LAPACK="-lblas -llapack"
 
     LP_INCLUDE_PATH=
     LP_LIB_PATH=
