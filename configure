@@ -92,6 +92,7 @@ elif [[ $OSTYPE == *linux* ]] ; then
         LP_LIBS=
         LP_LIB_RPATH=
     fi
+    LP_INCLUDE_PATH="-fPIC ${LP_INCLUDE_PATH}"
 else
     TRAME_BLAS_LAPACK="-lblas -llapack"
 
