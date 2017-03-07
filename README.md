@@ -15,7 +15,7 @@ The package is under active development and should be considered as
 
 ### Installation and Testing
 
-TraME can be install via
+TraME can be installed via
 ```
 ./configure
 make
