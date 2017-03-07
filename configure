@@ -75,7 +75,7 @@ if [[ $OSTYPE == darwin* ]] ; then
         fi
     fi
 elif [[ $OSTYPE == *linux* ]] ; then
-    TRAME_BLAS_LAPACK="${TRAME_LAPACK_LIBS} ${TRAME_BLAS_LIBS}"
+    TRAME_BLAS_LAPACK="-lblas -llapack"
 
     if [ -d "/opt/gurobi"* ] ; then
         grb_dirs=( /opt/gurobi* )
