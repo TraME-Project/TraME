@@ -4,7 +4,7 @@
 
 ### Overview
 
-TraME (Transportation Methods for Econometrics) is an C++ library for 
+TraME (Transportation Methods for Econometrics) is a C++ library for 
 solving problems of equilibrium computation and estimation in consumer 
 demand and matching frameworks via the Mass Transportation Approach.
 

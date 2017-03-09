@@ -66,6 +66,7 @@ class mfe
 
         bool solve(arma::mat& mu_sol);
         bool solve(arma::mat& mu_sol, const char* solver);
+        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
 };
 
 #include "mfe.tpp"

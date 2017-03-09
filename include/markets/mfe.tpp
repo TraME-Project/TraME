@@ -197,10 +197,30 @@ bool mfe<Tm>::solve(arma::mat& mu_sol, const char* solver)
             res = ipfp(*this,mu_sol);
         }
         if (sig=='n') {
-            res = nodal_newton(*this,mu_sol);
+            //res = nodal_newton(*this,mu_sol);
         }
     } else {
         res = ipfp(*this,mu_sol);
+    }
+    //
+    return res;
+}
+
+template<typename Tm>
+bool mfe<Tm>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
+{
+    bool res = false;
+    const char sig = (solver != NULL) ? solver[0] : char(0);
+    
+    if (solver) { // not NULL
+        if (sig=='i') {
+            res = ipfp(*this,mu_sol,U_out,V_out);
+        }
+        if (sig=='n') {
+            //res = nodal_newton(*this,mu_sol,U_out,V_out);
+        }
+    } else {
+        res = ipfp(*this,mu_sol,U_out,V_out);
     }
     //
     return res;

@@ -37,6 +37,37 @@
 
 namespace trame
 {
+
+template<>
+void model<logit>::build_market_TU(const arma::mat& theta)
+{
+    mfe_obj.build_TU(n,m,Phi_xy_theta(theta),NULL,need_norm);
+}
+
+template<>
+bool model<logit>::solve(arma::mat& mu_sol)
+{
+    bool res = mfe_obj.solve(mu_sol,NULL);
+    //
+    return res;
+}
+
+template<>
+bool model<logit>::solve(arma::mat& mu_sol, const char* solver)
+{
+    bool res = mfe_obj.solve(mu_sol,solver);
+    //
+    return res;
+}
+
+template<>
+bool model<logit>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
+{
+    bool res = mfe_obj.solve(mu_sol,U,V,solver);
+    //
+    return res;
+}
+
 template<>
 bool model<empirical>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out)
 {

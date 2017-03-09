@@ -145,7 +145,7 @@ void model<Ta>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma:
     build_market_TU(theta); // need to replace this later with general 'parametric_market'
     //
     arma::mat mu, U, V;
-    market_obj.solve(mu,U,V,NULL);
+    solve(mu,U,V,NULL);
 
     arma::vec mu_x0 = market_obj.n - arma::sum(mu,1);
     arma::vec mu_0y = market_obj.m - arma::trans(arma::sum(mu,0));
@@ -185,7 +185,6 @@ bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* th
         init_param(theta_0);
     }
     build_market_TU(theta_0);
-    printf("have initial values\n");
 
     bool by_individual = true;
     double scale = std::max(arma::accu(n),arma::accu(m));
@@ -194,7 +193,6 @@ bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* th
     arma::vec mu_hat_0y = m - arma::trans(arma::sum(mu_hat,0));
     //
     // add optimization data
-    printf("create data\n");
     trame_model_mle_opt_data<Ta> opt_data;
     
     opt_data.model_obj = *this;
@@ -205,7 +203,6 @@ bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* th
     opt_data.mu_hat_x0 = mu_hat_x0;
     opt_data.mu_hat_0y = mu_hat_0y;
     //
-    printf("begin optimization\n");
     double obj_val = 0;
 
     success = model_mle_optim(theta_0,log_likelihood,&opt_data,&obj_val,&err_tol,&max_iter);
@@ -282,6 +279,32 @@ template<typename Ta>
 void model<Ta>::init_param(arma::mat& params)
 {
     params.zeros(nbParams,1);
+}
+
+// solve wrappers
+
+template<typename Ta>
+bool model<Ta>::solve(arma::mat& mu_sol)
+{
+    bool res = market_obj.solve(mu_sol,NULL);
+    //
+    return res;
+}
+
+template<typename Ta>
+bool model<Ta>::solve(arma::mat& mu_sol, const char* solver)
+{
+    bool res = market_obj.solve(mu_sol,solver);
+    //
+    return res;
+}
+
+template<typename Ta>
+bool model<Ta>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
+{
+    bool res = market_obj.solve(mu_sol,U,V,solver);
+    //
+    return res;
 }
 
 // optimization-related functions

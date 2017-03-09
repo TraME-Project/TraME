@@ -51,6 +51,7 @@ class model
 
         arma::cube phi_xyk;
 
+        mfe<mmf> mfe_obj;
         dse<Ta> market_obj;
         // member functions
         void build(const arma::cube& phi_xyk_inp);
@@ -80,6 +81,10 @@ class model
         arma::mat Phi_xy();
         arma::mat Phi_xy_theta(const arma::mat& theta);
         void init_param(arma::mat& params);
+
+        bool solve(arma::mat& mu_sol);
+        bool solve(arma::mat& mu_sol, const char* solver);
+        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
 
         // optimization-related objects
         bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);

@@ -197,7 +197,7 @@ bool ipfp(const mfe<Tm>& market, arma::mat& mu_out, const double& tol_inp, const
 template<typename Tm>
 bool ipfp(const mfe<Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    bool res = ipfp_int(market,&mu_out,NULL,NULL,U_out,V_out,NULL,NULL,NULL,NULL,NULL);
+    bool res = ipfp_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL,NULL,NULL,NULL);
     
     return res;
 }
