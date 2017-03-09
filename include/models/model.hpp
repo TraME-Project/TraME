@@ -29,7 +29,7 @@
  * 11/19/2016
  *
  * This version:
- * 02/11/2017
+ * 03/09/2017
  */
 
 template<class Ta>
@@ -73,6 +73,11 @@ class model
 
         bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp);
 
+        // solve wrappers
+        bool solve(arma::mat& mu_sol);
+        bool solve(arma::mat& mu_sol, const char* solver);
+        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
+
     private:
         // internal build functions
         void build_int(const arma::cube& phi_xyk_inp, const arma::vec* n_inp, const arma::vec* m_inp);
@@ -81,10 +86,6 @@ class model
         arma::mat Phi_xy();
         arma::mat Phi_xy_theta(const arma::mat& theta);
         void init_param(arma::mat& params);
-
-        bool solve(arma::mat& mu_sol);
-        bool solve(arma::mat& mu_sol, const char* solver);
-        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
 
         // optimization-related objects
         bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);

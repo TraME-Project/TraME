@@ -30,7 +30,7 @@
  * 11/19/2016
  *
  * This version:
- * 11/28/2016
+ * 03/09/2017
  */
 
 #include "trame.hpp"
@@ -42,6 +42,57 @@ template<>
 void model<logit>::build_market_TU(const arma::mat& theta)
 {
     mfe_obj.build_TU(n,m,Phi_xy_theta(theta),NULL,need_norm);
+}
+
+template<>
+void model<logit>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+{
+    build_market_TU(theta);
+    //
+    int range_params = theta.n_cols;
+    
+    arma::mat mu, U, V;
+    solve(mu,U,V,NULL);
+    
+    arma::vec mu_x0 = mfe_obj.n - arma::sum(mu,1);
+    arma::vec mu_0y = mfe_obj.m - arma::trans(arma::sum(mu,0));
+
+    arma::mat dparams_Psi, dparams_G, dparams_H;
+    dparam(dtheta,dparams_Psi,NULL,NULL);
+
+    arma::mat du_Psi = mfe_obj.trans_obj.du_Psi(U,V);
+    arma::mat dv_Psi = 1.0 - du_Psi;
+
+    arma::mat dtheta_psis = mfe_obj.trans_obj.dtheta_Psi(U,V,dparams_Psi);
+
+
+    
+    build_market_TU(theta); // need to replace this later with general 'parametric_market'
+    //
+    arma::mat mu, U, V;
+    solve(mu,U,V,NULL);
+
+    arma::vec mu_x0 = market_obj.n - arma::sum(mu,1);
+    arma::vec mu_0y = market_obj.m - arma::trans(arma::sum(mu,0));
+
+    arma::mat dparams_Psi, dparams_G, dparams_H;
+    dparam(dtheta,dparams_Psi,&dparams_G,&dparams_H);
+
+    arma::vec du_Psi_vec = mfe_obj.trans_obj.du_Psi(U,V);
+    arma::vec dv_Psi_vec = 1.0 - du_Psi_vec;
+    //
+    arma::mat HessGstar = market_obj.arums_G.D2Gstar(market_obj.n,mu,true);
+    arma::mat HessHstar = market_obj.arums_H.D2Gstar(market_obj.m,mu.t(),false);
+    //
+    arma::mat denom = elem_prod(du_Psi_vec,HessGstar) + elem_prod(dv_Psi_vec,HessHstar);
+    arma::mat term_1 = market_obj.trans_obj.dtheta_Psi(U,V,dparams_Psi);
+
+    arma::mat dmu = - arma::solve(denom,term_1);
+    //
+    mu_out = mu;
+    mu_x0_out = mu_x0;
+    mu_0y_out = mu_0y;
+    dmu_out = dmu;
 }
 
 template<>
@@ -263,4 +314,5 @@ bool model<empirical>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double
     //
     return success;
 }
+
 }

@@ -4,7 +4,7 @@
  * Keith O'Hara
  * 11/27/2016
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include model_test.cpp -o model.test -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include/trame -I/usr/local/include model_test.cpp -o model.test -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"

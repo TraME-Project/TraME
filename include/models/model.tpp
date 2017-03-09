@@ -29,7 +29,7 @@
  * 11/19/2016
  *
  * This version:
- * 02/11/2017
+ * 03/09/2016
  */
 
 // first method to build
@@ -104,20 +104,19 @@ void model<Ta>::build_market_TU(const arma::mat& theta)
     market_obj.build_TU(n,m,Phi_xy_theta(theta),need_norm);
 }
 
-// general arums input
 template<typename Ta>
 void model<Ta>::build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Ta& arums_H_inp)
 {
     market_obj.build_TU(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,need_norm);
 }
 
-// empirical version
 template<typename Ta> template<typename T>
 void model<Ta>::build_market_TU(const arma::mat& theta, T arums_G_inp, T arums_H_inp, int nbDraws, int seed)
 {
     market_obj.build_TU(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,nbDraws,seed,need_norm);
 }
 
+// gradients
 template<typename Ta>
 void model<Ta>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out)
 {
@@ -170,6 +169,7 @@ void model<Ta>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma:
     dmu_out = dmu;
 }
 
+// MLE
 template<typename Ta>
 bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp)
 {
@@ -212,6 +212,7 @@ bool model<Ta>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* th
     return success;
 }
 
+// MME
 template<typename Ta>
 bool model<Ta>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
 {
