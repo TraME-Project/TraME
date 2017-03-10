@@ -64,35 +64,14 @@ void model<logit>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, ar
     arma::mat dv_Psi = 1.0 - du_Psi;
 
     arma::mat dtheta_psis = mfe_obj.trans_obj.dtheta_Psi(U,V,dparams_Psi);
+    arma::vec mu_dthetapsi_vec = arma::vectorise(mu) % arma::vectorise(dtheta_psis);
 
+    arma::cube mu_dthetapsi(mu_dthetapsi_vec.memptr(),nbX,nbY,range_params,false);
 
-    
-    build_market_TU(theta); // need to replace this later with general 'parametric_market'
-    //
-    arma::mat mu, U, V;
-    solve(mu,U,V,NULL);
+    arma::mat d_1 = cube_sum(mu_dthetapsi,0) / mfe_obj.sigma;
+    arma::mat d_2 = cube_sum(mu_dthetapsi,1) / mfe_obj.sigma;
 
-    arma::vec mu_x0 = market_obj.n - arma::sum(mu,1);
-    arma::vec mu_0y = market_obj.m - arma::trans(arma::sum(mu,0));
-
-    arma::mat dparams_Psi, dparams_G, dparams_H;
-    dparam(dtheta,dparams_Psi,&dparams_G,&dparams_H);
-
-    arma::vec du_Psi_vec = mfe_obj.trans_obj.du_Psi(U,V);
-    arma::vec dv_Psi_vec = 1.0 - du_Psi_vec;
-    //
-    arma::mat HessGstar = market_obj.arums_G.D2Gstar(market_obj.n,mu,true);
-    arma::mat HessHstar = market_obj.arums_H.D2Gstar(market_obj.m,mu.t(),false);
-    //
-    arma::mat denom = elem_prod(du_Psi_vec,HessGstar) + elem_prod(dv_Psi_vec,HessHstar);
-    arma::mat term_1 = market_obj.trans_obj.dtheta_Psi(U,V,dparams_Psi);
-
-    arma::mat dmu = - arma::solve(denom,term_1);
-    //
-    mu_out = mu;
-    mu_x0_out = mu_x0;
-    mu_0y_out = mu_0y;
-    dmu_out = dmu;
+    arma::mat numer = arma::join_cols(d_1,d_2);
 }
 
 template<>
