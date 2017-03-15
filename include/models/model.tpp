@@ -29,7 +29,7 @@
  * 11/19/2016
  *
  * This version:
- * 02/11/2017
+ * 03/14/2016
  */
 
 // first method to build
@@ -118,6 +118,8 @@ void model<Ta,Tm>::build_market_TU(const arma::mat& theta, T arums_G_inp, T arum
     market_obj.build_TU(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,nbDraws,seed,need_norm);
 }
 
+// gradients
+
 template<typename Ta, typename Tm>
 void model<Ta,Tm>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out)
 {
@@ -170,6 +172,7 @@ void model<Ta,Tm>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, ar
     dmu_out = dmu;
 }
 
+// MLE
 template<typename Ta, typename Tm>
 bool model<Ta,Tm>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp)
 {
@@ -212,6 +215,7 @@ bool model<Ta,Tm>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat*
     return success;
 }
 
+// MME
 template<typename Ta, typename Tm>
 bool model<Ta,Tm>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
 {

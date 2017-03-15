@@ -30,7 +30,7 @@
  * 11/19/2016
  *
  * This version:
- * 11/28/2016
+ * 03/09/2017
  */
 
 #include "trame.hpp"
@@ -69,6 +69,48 @@ bool model<logit,tu>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const
 }
 
 template<>
+void model<logit>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+{
+    build_market_TU(theta);
+    //
+    int range_params = theta.n_cols;
+    
+    arma::mat mu, U, V;
+    solve(mu,U,V,NULL);
+    
+    arma::vec mu_x0 = mfe_obj.n - arma::sum(mu,1);
+    arma::vec mu_0y = mfe_obj.m - arma::trans(arma::sum(mu,0));
+
+    arma::mat dparams_Psi, dparams_G, dparams_H;
+    dparam(dtheta,dparams_Psi,NULL,NULL);
+
+    arma::mat du_Psi = mfe_obj.trans_obj.du_Psi(U,V);
+    arma::mat dv_Psi = 1.0 - du_Psi;
+    //
+    arma::mat dtheta_psis = mfe_obj.trans_obj.dtheta_Psi(U,V,dparams_Psi);
+    arma::vec mu_dthetapsi_vec = arma::vectorise(mu) % arma::vectorise(dtheta_psis);
+
+    arma::cube mu_dthetapsi(mu_dthetapsi_vec.memptr(),nbX,nbY,range_params,false);
+
+    arma::mat d_1 = cube_sum(mu_dthetapsi,0) / mfe_obj.sigma;
+    arma::mat d_2 = cube_sum(mu_dthetapsi,1) / mfe_obj.sigma;
+
+    arma::mat numer = arma::join_cols(d_1,d_2);
+    //
+    arma::mat Delta_11 = arma::diagmat(mu_x0 + arma::sum(mu % du_Psi,1));
+    arma::mat Delta_22 = arma::diagmat(mu_0y + arma::trans(arma::sum(mu % dv_Psi,0)));
+
+    arma::mat Delta_12 = mu % dv_Psi;
+    arma::mat Delta_21 = arma::trans(mu % du_Psi);
+
+    arma::mat Delta = arma::join_cols(arma::join_rows(Delta_11,Delta_12),arma::join_rows(Delta_21,Delta_22));
+    //
+    arma::mat dlogmu_singles = arma::solve(Delta,numer);
+    arma::mat dlogmu_x0 = dlogmu_singles.rows(0,nbX-1);
+    arma::mat dlogmu_0y = dlogmu_singles.rows(nbX,nbX+nbY-1);
+}
+
+template<>
 bool model<empirical,tu>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out)
 {
     bool success = false;
@@ -79,15 +121,15 @@ bool model<empirical,tu>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, dou
     arma::vec C_hat = arma::vectorise(arma::vectorise(mu_hat)*kron_mat);
     //
     arma::mat epsilon_iy, epsilon0_i, I_ix;
-    arma::mat eta_xj, eta0_j, I_yj;
+    arma::mat eta_xj, eta_0j, I_yj;
 
     int nbDraws_1 = build_disaggregate_epsilon(n,market_obj.arums_G,epsilon_iy,epsilon0_i,I_ix);
-    int nbDraws_2 = build_disaggregate_epsilon(m,market_obj.arums_H,eta_xj,eta0_j,I_yj);
+    int nbDraws_2 = build_disaggregate_epsilon(m,market_obj.arums_H,eta_xj,eta_0j,I_yj);
 
     epsilon0_i = arma::vectorise(epsilon0_i);
 
     eta_xj = eta_xj.t();
-    eta0_j = arma::vectorise(eta0_j);
+    eta_0j = arma::vectorise(eta_0j);
     I_yj = I_yj.t();
     
     arma::vec n_i = arma::vectorise(I_ix * n) / (double) nbDraws_1;
@@ -203,10 +245,10 @@ bool model<empirical,tu>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, dou
         sense_lp[jj] = '>';
     }
 
-    arma::vec lb_lp(epsilon0_i.n_elem + eta0_j.n_elem + nbX*nbY + nbParams);
+    arma::vec lb_lp(epsilon0_i.n_elem + eta_0j.n_elem + nbX*nbY + nbParams);
     lb_lp.rows(0,epsilon0_i.n_elem-1) = arma::vectorise(epsilon0_i);
-    lb_lp.rows(epsilon0_i.n_elem,epsilon0_i.n_elem + eta0_j.n_elem - 1) = eta0_j;
-    lb_lp.rows(epsilon0_i.n_elem + eta0_j.n_elem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
+    lb_lp.rows(epsilon0_i.n_elem,epsilon0_i.n_elem + eta_0j.n_elem - 1) = eta_0j;
+    lb_lp.rows(epsilon0_i.n_elem + eta_0j.n_elem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
 
     arma::vec rhs_lp(epsilon_iy.n_elem + eta_xj.n_elem);
     rhs_lp.rows(0,epsilon_iy.n_elem-1) = arma::vectorise(epsilon_iy);

@@ -443,3 +443,31 @@ inline arma::mat elem_max(const arma::mat& mat_1, const double& comp_val)
     //
     return ret;
 }
+
+inline arma::mat cube_sum(const arma::cube& cube_inp, int which_dim)
+{
+    if (which_dim > 1 || which_dim < 0) {
+        printf("unrecognized dim value; should be in (0,1)\n");
+    }
+    //
+    int dim_0 = cube_inp.n_rows;
+    int dim_1 = cube_inp.n_cols;
+    int dim_2 = cube_inp.n_slices;
+    arma::mat ret;
+
+    if (which_dim == 0) {
+        ret.set_size(dim_0,dim_2);
+        for (int i=0; i < dim_2; i++) {
+            arma::mat mat_s = cube_inp.slice(i);
+            ret.col(i) = arma::sum(mat_s,1);
+        }
+    } else { // dim == 1
+        ret.set_size(dim_1,dim_2);
+        for (int i=0; i < dim_1; i++) {
+            arma::mat mat_s = cube_inp.slice(i);
+            ret.col(i) = arma::trans(arma::sum(mat_s,0));
+        }
+    }
+    //
+    return ret;
+}
