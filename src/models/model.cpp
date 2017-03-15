@@ -69,7 +69,7 @@ bool model<logit,tu>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const
 }
 
 template<>
-void model<logit>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+void model<logit,tu>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
 {
     build_market_TU(theta);
     //
