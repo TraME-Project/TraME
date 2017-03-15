@@ -6,7 +6,7 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/markets
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include mfe_test.cpp -o mfe.test -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include/trame mfe_test.cpp -o mfe.test -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -39,13 +39,13 @@ int main()
     printf("\n");
     //
     // TU, 
-    trame::mfe<trame::mmf> mfe_obj_TU;
+    trame::mfe<trame::tu> mfe_obj_TU;
     mfe_obj_TU.build_TU(n,m,phi,&sigma,false);
 
-    trame::mfe<trame::mmf> mfe_obj_LTU;
+    trame::mfe<trame::ltu> mfe_obj_LTU;
     mfe_obj_LTU.build_LTU(n,m,lambda_LTU,phi_LTU,&sigma,false);
 
-    trame::mfe<trame::mmf> mfe_obj_NTU;
+    trame::mfe<trame::ntu> mfe_obj_NTU;
     mfe_obj_NTU.build_NTU(n,m,alpha,gamma,&sigma,false);
     //
     //

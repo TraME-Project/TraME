@@ -18,7 +18,7 @@ if [[ $USER == keith* ]]; then
 fi
 
 if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
-    ARMA_INCLUDE_PATH="-I/opt/local/include"
+    ARMA_INCLUDE_PATH="-I./include"
 fi
 
 TRAME_OPT_FLAGS="-O2"

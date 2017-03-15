@@ -36,14 +36,14 @@
 
 void trame::tu::build(const arma::mat& phi_TU, bool need_norm_TU)
 {
-    need_norm = need_norm_LTU;
+    need_norm = need_norm_TU;
 
     nbX = phi_TU.n_rows;
     nbY = phi_TU.n_cols;
     nbParams = nbX*nbY;
 
     phi = phi_TU;
-    aux_phi_exp = arma::exp(phi_inp / 2.0);
+    aux_phi_exp = arma::exp(phi_TU / 2.0);
 }
 
 void trame::tu::trans()

@@ -32,6 +32,7 @@
  * 03/14/2017
  */
 
+/*
 template<typename Tm>
 void mfe<Tm>::build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, double* sigma_inp, bool need_norm_inp)
 {
@@ -55,6 +56,7 @@ void mfe<Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arm
 {
     printf("cannot use build_TU without TU defined market!\n");
 }
+*/
 
 template<typename Tm>
 void mfe<Tm>::trans()

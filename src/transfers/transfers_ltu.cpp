@@ -301,7 +301,7 @@ const
     arma::mat term_1 = phi(x_ind,y_ind) - elem_prod(lambda(x_ind,y_ind), us);
     arma::mat term_2 = aux_zeta(x_ind,y_ind);
 
-    ret = term_1 / term_2;
+    arma::mat ret = term_1 / term_2;
     //
     return ret;
 }

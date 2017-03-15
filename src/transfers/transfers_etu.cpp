@@ -488,7 +488,7 @@ arma::mat trame::etu::WV(const arma::mat& Vs, arma::uvec* xs, arma::uvec* ys)
     arma::mat term_2 = arma::exp( (alpha(x_ind,y_ind) - gamma(x_ind,y_ind))/tau(x_ind,y_ind) );
     arma::mat term_log = term_1 - term_2;
 
-    ret = - tau(x_ind,y_ind) % arma::log(term_log);
+    arma::mat ret = - tau(x_ind,y_ind) % arma::log(term_log);
     //
     return ret;
 }

@@ -6,7 +6,7 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/arums
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include logit_test.cpp -o logit.test -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include/trame logit_test.cpp -o logit.test -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -40,11 +40,6 @@ int main()
     arma::vec n = arma::sum(mu,1);
 
     trame::logit logits(nbX,nbY);
-    //logits.nbX = nbX;
-    //logits.nbY = nbY;
-    //logits.nbParams = 1;
-    //logits.sigma = 1.0;
-    //logits.outsideOption = true;
     
     logits.U = U;
     logits.mu = mu;
@@ -60,25 +55,26 @@ int main()
     logit_sim.mu = mu;
     //
     // first compute optimal assignment (mu)
-    double G_val = logits.G(n);
-    double G_sim_val = logit_sim.G(n);
+    arma::mat mu_sol, mu_sol_sim;
+    double G_val = logits.G(n,U,mu_sol);
+    double G_sim_val = logit_sim.G(n,U,mu_sol_sim);
     
     std::cout << "G(U) and G-sim(U): \n" << G_val << " and " << G_sim_val << std::endl;
     
-    arma::cout << "\nG -> mu: \n" << logits.mu_sol << arma::endl;
-    arma::cout << "G-sim -> mu: \n" << logit_sim.mu_sol << arma::endl;
+    arma::cout << "\nG -> mu: \n" << mu_sol << arma::endl;
+    arma::cout << "G-sim -> mu: \n" << mu_sol_sim << arma::endl;
     //
     // solution to dual problem U*
     arma::mat U_star;
     arma::mat U_star_sim;
     
-    double Gstar_val = logits.Gstar(n);
-    double Gstar_sim_val = logit_sim.Gstar(n);
+    double Gstar_val = logits.Gstar(n,mu_sol,U_star);
+    double Gstar_sim_val = logit_sim.Gstar(n,mu_sol,U_star_sim);
     
     std::cout << "G*(mu) and G*-sim(mu): \n" << Gstar_val << " and " << Gstar_sim_val << std::endl;
     
-    arma::cout << "\n\\nabla G*(\\nabla G(U)): \n" << logits.U_sol << arma::endl;
-    arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << logit_sim.U_sol << arma::endl;
+    arma::cout << "\n\\nabla G*(\\nabla G(U)): \n" << U_star << arma::endl;
+    arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << U_star_sim << arma::endl;
     //
     // Gbar
     arma::mat mu_bar(2,3);

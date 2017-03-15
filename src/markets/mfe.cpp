@@ -94,7 +94,7 @@ void mfe<ntu>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const a
 }
 
 template<>
-void mfe<tu>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<trame::tu>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
