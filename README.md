@@ -1,6 +1,6 @@
 # TraME
 
-***Tra***nsportation ***M***ethods for ***E***conometrics
+_Tra_nsportation _M_ethods for _E_conometrics
 
 ### Overview
 
