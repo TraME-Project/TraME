@@ -37,8 +37,8 @@
  * 08/25/2016
  */
 
-template<typename Ta>
-arma::mat w_upper_bound(const dse<Ta>& market)
+template<typename Ta, typename Tm>
+arma::mat w_upper_bound(const dse<Ta,Tm>& market)
 {
     int nbX = market.nbX;
     int nbY = market.nbY;
@@ -49,7 +49,7 @@ arma::mat w_upper_bound(const dse<Ta>& market)
     Ta arums_G = market.arums_G;
     Ta arums_H = market.arums_H;
 
-    transfers trans_obj = market.trans_obj;
+    Tm trans_obj = market.trans_obj;
     int transfers_type = trans_obj.transfers_type;
     //
     //bool success = false;

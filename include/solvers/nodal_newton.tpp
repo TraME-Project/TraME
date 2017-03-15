@@ -120,8 +120,8 @@ bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out, const double& tol_in
     return res;
 }
 
-template<typename Ta>
-bool nodal_newton(const dse<Ta>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
+template<typename Tm>
+bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = nodal_newton_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL,NULL);
     

@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * OAP LP
+ * OAP LP for TU
  *
  * Keith O'Hara
  * 08/16/2016
@@ -35,12 +35,12 @@
 // internal oap_lp
 
 template<typename Ta>
-bool oap_lp_int(const dse<Ta>& market, arma::mat* mu_out, const bool* x_first_inp, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out)
+bool oap_lp_int(const dse<Ta,tu>& market, arma::mat* mu_out, const bool* x_first_inp, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out)
 {
     bool success = false;
     //
     // warnings
-    if (!market.trans_obj.TU) {
+    if (!market.TU) {
         printf("oap_lp only works for TU transfers.\n");
         return false;
     }
@@ -185,40 +185,40 @@ bool oap_lp_int(const dse<Ta>& market, arma::mat* mu_out, const bool* x_first_in
 
 // wrappers
 
-template<typename Ta>
-bool oap_lp(const dse<Ta>& market, arma::mat& mu_out)
+template<typename Ta, typename Tm>
+bool oap_lp(const dse<Ta,Tm>& market, arma::mat& mu_out)
 {
     bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     
     return res;
 }
 
-template<typename Ta>
-bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, arma::mat& residuals_out)
+template<typename Ta, typename Tm>
+bool oap_lp(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::mat& residuals_out)
 {
     bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&residuals_out);
     
     return res;
 }
 
-template<typename Ta>
-bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, const bool& x_first_inp, arma::mat& residuals_out)
+template<typename Ta, typename Tm>
+bool oap_lp(const dse<Ta,Tm>& market, arma::mat& mu_out, const bool& x_first_inp, arma::mat& residuals_out)
 {
     bool res = oap_lp_int(market,&mu_out,&x_first_inp,NULL,NULL,NULL,NULL,NULL,&residuals_out);
     
     return res;
 }
 
-template<typename Ta>
-bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, arma::vec& u_out, arma::vec& v_out)
+template<typename Ta, typename Tm>
+bool oap_lp(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::vec& u_out, arma::vec& v_out)
 {
     bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,&u_out,&v_out,NULL,NULL);
     
     return res;
 }
 
-template<typename Ta>
-bool oap_lp(const dse<Ta>& market, arma::mat& mu_out, const bool& x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out)
+template<typename Ta, typename Tm>
+bool oap_lp(const dse<Ta,Tm>& market, arma::mat& mu_out, const bool& x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out)
 {
     bool res = oap_lp_int(market,&mu_out,&x_first_inp,&mu_x0_out,&mu_0y_out,&u_out,&v_out,&val_out,&residuals_out);
     

@@ -36,45 +36,50 @@
 #define _trame_eap_nash_HPP
 
 // internal function
-template<typename Ta>
-bool eap_nash_int(const dse<Ta>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* u_out, arma::mat* v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp);
+template<typename Ta, typename Tm>
+bool eap_nash_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* u_out, arma::mat* v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp);
 
 // wrappers
-template<typename Ta>
-bool eap_nash(const dse<Ta>& market, arma::mat& mu_out);
+template<typename Ta, typename Tm>
+bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out);
 
-template<typename Ta>
-bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp);
+template<typename Ta, typename Tm>
+bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp);
 
-template<typename Ta>
-bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp);
+template<typename Ta, typename Tm>
+bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const double& tol_inp);
 
-template<typename Ta>
-bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const int& max_iter_inp);
+template<typename Ta, typename Tm>
+bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const int& max_iter_inp);
 
-template<typename Ta>
-bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp);
+template<typename Ta, typename Tm>
+bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp);
 
-template<typename Ta>
-bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp, const int& max_iter_inp);
+template<typename Ta, typename Tm>
+bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const int& max_iter_inp);
 
-template<typename Ta>
-bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+template<typename Ta, typename Tm>
+bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
 
-template<typename Ta>
-bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp, const int& max_iter_inp);
+template<typename Ta, typename Tm>
+bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp, const int& max_iter_inp);
 
-template<typename Ta>
-bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, arma::mat& u_out, arma::mat& v_out);
+template<typename Ta, typename Tm>
+bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::mat& u_out, arma::mat& v_out);
 
-template<typename Ta>
-bool eap_nash(const dse<Ta>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp);
+template<typename Ta, typename Tm>
+bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp);
 
 // aux functions
 
-arma::mat u_from_vs(const transfers& trans_obj, const arma::mat& v, double* tol_inp, arma::mat* subdiff);
-arma::mat v_from_us(const transfers& trans_obj, const arma::mat& u, double* tol_inp, arma::mat* subdiff);
-arma::mat update_v(const transfers& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, bool xFirst);
+template<typename Tm>
+arma::mat u_from_vs(const Tm& trans_obj, const arma::mat& v, double* tol_inp, arma::mat* subdiff);
+
+template<typename Tm>
+arma::mat v_from_us(const Tm& trans_obj, const arma::mat& u, double* tol_inp, arma::mat* subdiff);
+
+template<typename Tm>
+arma::mat update_v(const Tm& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, bool xFirst);
 
 #include "eap_nash.tpp"
 

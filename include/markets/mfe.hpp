@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 08/16/2016
+ *
+ * This version:
+ * 03/12/2017
  */
 
 template<class Tm>
@@ -34,11 +37,6 @@ class mfe
 {
     public:
         // build objects
-        bool ETU = false;
-        bool LTU = false;
-        bool NTU = false;
-        bool TU  = false;
-
         bool need_norm;
         bool outsideOption;
 
@@ -50,11 +48,7 @@ class mfe
         arma::vec n;
         arma::vec m;
 
-        logit arums_G;
-        logit arums_H;
-
-        transfers trans_obj;
-        Tm mmf_obj;
+        Tm trans_obj;
 
         // member functions
         void build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, double* sigma_inp, bool need_norm_inp);
@@ -64,9 +58,32 @@ class mfe
 
         void trans();
 
+        arma::vec marg_x_inv(const arma::mat& B_ys) const;
+        arma::vec marg_x_inv(const arma::mat& B_ys, arma::uvec* xs) const;
+        arma::vec marg_y_inv(const arma::mat& A_xs) const;
+        arma::vec marg_y_inv(const arma::mat& A_xs, arma::uvec* ys) const;
+
         bool solve(arma::mat& mu_sol);
         bool solve(arma::mat& mu_sol, const char* solver);
         bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
+
+    private:
+        // member functions
+        static double marg_x_inv_fn(double z, void* opt_data);
+        static double marg_y_inv_fn(double z, void* opt_data);
+};
+
+template<class Tm>
+struct trame_mfe_zeroin_data {
+    bool coeff;
+
+    int x_ind;
+    int y_ind;
+
+    arma::mat A_xs;
+    arma::mat B_ys;
+
+    mfe<Tm> mfe_obj;
 };
 
 #include "mfe.tpp"

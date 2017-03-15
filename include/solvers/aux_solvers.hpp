@@ -35,9 +35,9 @@
 #ifndef _trame_aux_solvers_HPP
 #define _trame_aux_solvers_HPP
 
-template<typename Ta>
+template<typename Ta, typename Tm>
 struct trame_market_opt_data {
-    dse<Ta> market;
+    dse<Ta,Tm> market;
 };
 
 template<typename Tm>
@@ -49,11 +49,11 @@ struct trame_mfe_opt_data {
 
 int build_disaggregate_epsilon(arma::vec n, const trame::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix);
 
-template<typename Ta>
-arma::mat w_upper_bound(const dse<Ta>& market);
+template<typename Ta, typename Tm>
+arma::mat w_upper_bound(const dse<Ta,Tm>& market);
 
 /*
-template<typename Ta>
+template<typename Ta, typename Tm>
 bool max_welfare_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
                        double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
                        trame_market_opt_data<Ta> opt_data);

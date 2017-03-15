@@ -32,7 +32,7 @@
  * 02/15/2017
  */
 
-template<class Ta>
+template<class Ta, class Tm>
 class dse
 {
     public:
@@ -53,8 +53,7 @@ class dse
         arma::vec n;
         arma::vec m;
 
-        //mmf mmf_obj;
-        transfers trans_obj;
+        Tm trans_obj;
 
         Ta arums_G;
         Ta arums_H;

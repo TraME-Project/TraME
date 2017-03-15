@@ -27,23 +27,27 @@ namespace trame
     #include "arums/arums_rsc.hpp"
     #include "arums/arums_rusc.hpp"
 
+    // transfers
+    #include "transfers/transfers_etu.hpp"
+    #include "transfers/transfers_ltu.hpp"
+    #include "transfers/transfers_ntu.hpp"
+    #include "transfers/transfers_tu.hpp"
+
     // markets
-    #include "markets/mmf.hpp"
-    #include "markets/transfers.hpp"
-    #include "markets/mfe.hpp"
     #include "markets/dse.hpp"
+    #include "markets/mfe.hpp"
 
     // solvers
     #include "solvers/aux_solvers.hpp"
-    #include "solvers/ipfp.hpp"
-    #include "solvers/oap_lp.hpp"
+    #include "solvers/arc_newton.hpp"
+    #include "solvers/cupids_lp.hpp"
     #include "solvers/darum.hpp"
     #include "solvers/eap_nash.hpp"
+    #include "solvers/ipfp.hpp"
     #include "solvers/jacobi.hpp"
-    #include "solvers/cupids_lp.hpp"
     #include "solvers/max_welfare.hpp"
-    #include "solvers/arc_newton.hpp"
     #include "solvers/nodal_newton.hpp"
+    #include "solvers/oap_lp.hpp"
 
     // models
     #include "models/affinity.hpp"

@@ -39,23 +39,18 @@ bool ipfp_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, ar
 {
     bool success = false;
     //
-    Tm mmf_obj = market.mmf_obj;
-
     //bool noSingles = market.need_norm;
 
     int nbX = market.nbX;
     int nbY = market.nbY;
 
-    arma::vec n = mmf_obj.n;
-    arma::vec m = mmf_obj.m;
-
     double tol = (tol_inp) ? *tol_inp : 1E-12;
     int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
-    
-    arma::vec by = (by_start) ? *by_start : m;
     //
     // begin loop
     arma::vec ax(nbX);
+    arma::vec by = (by_start) ? *by_start : market.m;
+
     arma::vec val_old(nbX+nbY);
     arma::vec val_new(nbX+nbY);
     arma::vec val_err(nbX+nbY);
@@ -68,8 +63,8 @@ bool ipfp_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, ar
         val_old = arma::join_cols(ax,by);
 
         // Solve for 'ax' and then 'by'
-        ax = mmf_obj.marg_x_inv(by);
-        by = mmf_obj.marg_y_inv(ax);
+        ax = market.marg_x_inv(by);
+        by = market.marg_y_inv(ax);
 
         /* Keith: need to add this later
         if (noSingles) {
@@ -90,15 +85,15 @@ bool ipfp_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, ar
     // Construct the equilibrium outcome based on 'ax' and 'by' obtained above
     if (mu_out || mu_x0_out || mu_0y_out || U_out || V_out || u_out || v_out) {
 
-        arma::mat mu = mmf_obj.M(ax,by);
+        arma::mat mu = market.trans_obj.M(ax,by);
 
         if (mu_out) {
             *mu_out = mu;
         }
         //
         if (mu_x0_out || mu_0y_out || U_out || V_out || u_out || v_out) {
-            arma::vec mu_x0 = mmf_obj.Mx0(ax);
-            arma::vec mu_0y = mmf_obj.M0y(by);
+            arma::vec mu_x0 = market.trans_obj.Mx0(ax);
+            arma::vec mu_0y = market.trans_obj.M0y(by);
 
             if (mu_x0_out) {
                 *mu_x0_out = mu_x0;

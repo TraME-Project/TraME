@@ -28,15 +28,19 @@
  *
  * Keith O'Hara
  * 08/17/2016
+ *
+ * This version:
+ * 03/14/2017
  */
 
 #include "trame.hpp"
 
 namespace trame
 {
+
 // we specialize because cupids_lp is only define for empirical classes
 template<>
-bool dse<empirical>::solve(arma::mat& mu_sol, const char* solver)
+bool dse<empirical,tu>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);
@@ -44,9 +48,6 @@ bool dse<empirical>::solve(arma::mat& mu_sol, const char* solver)
     if (solver) { // not NULL
         if (sig=='c') {
             res = cupids_lp(*this,mu_sol);
-        }
-        if (sig=='d') {
-            res = darum(*this,mu_sol);
         }
         if (sig=='e') {
             res = eap_nash(*this,mu_sol);
@@ -60,17 +61,7 @@ bool dse<empirical>::solve(arma::mat& mu_sol, const char* solver)
         if (sig=='o') {
             res = oap_lp(*this,mu_sol);
         }
-        // default
-        if (sig=='n') {
-            if (NTU) {
-                res = darum(*this,mu_sol);
-            } else if (TU) {
-                res = max_welfare(*this,mu_sol);
-            } else {
-                res = jacobi(*this,mu_sol);
-            }
-        }
-    } else {
+    } /*else {
         if (NTU) {
             res = darum(*this,mu_sol);
         } else if (TU) {
@@ -78,8 +69,9 @@ bool dse<empirical>::solve(arma::mat& mu_sol, const char* solver)
         } else {
             res = jacobi(*this,mu_sol);
         }
-    }
+    }*/
     //
     return res;
 }
+
 }

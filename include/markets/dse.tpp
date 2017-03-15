@@ -32,8 +32,8 @@
  * 02/15/2017
  */
 
-template<typename Ta>
-void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, bool need_norm_inp)
+template<typename Ta, typename Tm>
+void dse<Ta,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -51,12 +51,11 @@ void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arm
     arums_H.build(nbY,nbX);
     //
     TU = true;
-    //arum_none = true;
 }
 
 // general arums input
-template<typename Ta>
-void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp)
+template<typename Ta, typename Tm>
+void dse<Ta,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -77,8 +76,8 @@ void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arm
 }
 
 // empirical version
-template<typename Ta> template<typename T>
-void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+template<typename Ta, typename Tm> template<typename T>
+void dse<Ta,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -96,12 +95,11 @@ void dse<Ta>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arm
     arums_H_inp.simul(arums_H,nbDraws,seed);
     //
     TU = true;
-    arum_empirical = true;
 }
 
 // arums none
-template<typename Ta>
-void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp)
+template<typename Ta, typename Tm>
+void dse<Ta,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -119,12 +117,11 @@ void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     arums_H.build(nbY,nbX);
     //
     NTU = true;
-    //arum_none = true;
 }
 
 // general arums input
-template<typename Ta>
-void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp)
+template<typename Ta, typename Tm>
+void dse<Ta,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -145,8 +142,8 @@ void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
 }
 
 // general simulation
-template<typename Ta> template<typename T>
-void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+template<typename Ta, typename Tm> template<typename T>
+void dse<Ta,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -164,12 +161,11 @@ void dse<Ta>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     arums_H_inp.simul(arums_H,nbDraws,seed);
     //
     NTU = true;
-    arum_empirical = true;
 }
 
 // arums none
-template<typename Ta>
-void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp)
+template<typename Ta, typename Tm>
+void dse<Ta,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -187,12 +183,11 @@ void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     arums_H.build(nbY,nbX);
     //
     LTU = true;
-    //arum_none = true;
 }
 
 // general arums input
-template<typename Ta>
-void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp)
+template<typename Ta, typename Tm>
+void dse<Ta,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -213,8 +208,8 @@ void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
 }
 
 // general simulation
-template<typename Ta> template<typename T>
-void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+template<typename Ta, typename Tm> template<typename T>
+void dse<Ta,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -232,11 +227,10 @@ void dse<Ta>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const ar
     arums_H_inp.simul(arums_H,nbDraws,seed);
     //
     LTU = true;
-    arum_empirical = true;
 }
 
-template<typename Ta>
-void dse<Ta>::trans()
+template<typename Ta, typename Tm>
+void dse<Ta,Tm>::trans()
 {
     int nbX_temp = nbX;
     nbX = nbY;
@@ -256,16 +250,16 @@ void dse<Ta>::trans()
     //
 }
 
-template<typename Ta>
-bool dse<Ta>::solve(arma::mat& mu_sol)
+template<typename Ta, typename Tm>
+bool dse<Ta,Tm>::solve(arma::mat& mu_sol)
 {
     bool res = this->solve(mu_sol,NULL);
     //
     return res;
 }
 
-template<typename Ta>
-bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
+template<typename Ta, typename Tm>
+bool dse<Ta,Tm>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);
@@ -292,7 +286,7 @@ bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
         if (sig=='o') {
             res = oap_lp(*this,mu_sol);
         }
-    } else { // default
+    }/* else { // default
         if (NTU) {
             res = darum(*this,mu_sol);
         } else if (TU) {
@@ -300,13 +294,13 @@ bool dse<Ta>::solve(arma::mat& mu_sol, const char* solver)
         } else {
             res = jacobi(*this,mu_sol);
         }
-    }
+    }*/
     //
     return res;
 }
 
-template<typename Ta>
-bool dse<Ta>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
+template<typename Ta, typename Tm>
+bool dse<Ta,Tm>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);
@@ -333,7 +327,7 @@ bool dse<Ta>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const
         if (sig=='o') {
             res = oap_lp(*this,mu_sol,U_out,V_out);
         }
-    } else { // default
+    }/* else { // default
         if (NTU) {
             res = darum(*this,mu_sol,U_out,V_out);
         } else if (TU) {
@@ -341,7 +335,7 @@ bool dse<Ta>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const
         } else {
             res = jacobi(*this,mu_sol,U_out,V_out);
         }
-    }
+    }*/
     //
     return res;
 }

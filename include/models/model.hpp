@@ -32,7 +32,7 @@
  * 02/11/2017
  */
 
-template<class Ta>
+template<class Ta, class Tm>
 class model
 {
     public:
@@ -51,8 +51,8 @@ class model
 
         arma::cube phi_xyk;
 
-        mfe<mmf> mfe_obj;
-        dse<Ta> market_obj;
+        mfe<Tm> mfe_obj;
+        dse<Ta,Tm> market_obj;
         // member functions
         void build(const arma::cube& phi_xyk_inp);
         void build(const arma::cube& phi_xyk_inp, const arma::vec& n_inp, const arma::vec& m_inp);
@@ -94,15 +94,17 @@ class model
         static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 
-template<typename Ta>
+template<typename Ta, typename Tm>
 struct trame_model_mme_opt_data {
     int nbParams;
+
     arma::mat C_hat;
     arma::mat kron_term;
-    dse<Ta> market;
+
+    dse<Ta,Tm> market;
 };
 
-template<typename Ta>
+template<typename Ta, typename Tm>
 struct trame_model_mle_opt_data {
     bool by_individual;
     double scale;
@@ -111,7 +113,7 @@ struct trame_model_mle_opt_data {
     arma::vec mu_hat_x0;
     arma::vec mu_hat_0y;
 
-    model<Ta> model_obj;
+    model<Ta,Tm> model_obj;
 };
 
 #include "model.tpp"

@@ -27,156 +27,135 @@
  *
  * Keith O'Hara
  * 08/16/2016
+ *
+ * This version:
+ * 03/14/2017
  */
 
 template<typename Tm>
 void mfe<Tm>::build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, double* sigma_inp, bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    if (need_norm_inp) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
-
-    if (sigma_inp) {
-        sigma = *sigma_inp;
-    } else {
-        sigma = 1;
-    }
-
-    trans_obj.build_ETU(alpha_inp,gamma_inp,tau_inp);
-
-    arums_G.build(nbX,nbY,sigma,outsideOption);
-    arums_H.build(nbY,nbX,sigma,outsideOption);
-
-    mmf_obj.build_ETU(n,m,arma::exp(-alpha_inp/tau_inp),arma::exp(-gamma_inp/tau_inp),-1/tau_inp,need_norm_inp);
-    //
-    ETU = true;
+    printf("cannot use build_ETU without ETU defined market!\n");
 }
 
 template<typename Tm>
 void mfe<Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    if (need_norm_inp) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
-
-    if (sigma_inp) {
-        sigma = *sigma_inp;
-    } else {
-        sigma = 1;
-    }
-
-    trans_obj.build_LTU(lambda_inp,phi_inp);
-
-    arums_G.build(nbX,nbY,sigma,outsideOption);
-    arums_H.build(nbY,nbX,sigma,outsideOption);
-
-    mmf_obj.build_LTU(n,m,lambda_inp,arma::exp(phi_inp/sigma),need_norm_inp);
-    //
-    LTU = true;
+    printf("cannot use build_LTU without LTU defined market!\n");
 }
 
 template<typename Tm>
 void mfe<Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, double* sigma_inp, bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    if (need_norm_inp) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
-
-    if (sigma_inp) {
-        sigma = *sigma_inp;
-    } else {
-        sigma = 1;
-    }
-
-    trans_obj.build_NTU(alpha_inp,gamma_inp);
-
-    arums_G.build(nbX,nbY,sigma,outsideOption);
-    arums_H.build(nbY,nbX,sigma,outsideOption);
-
-    mmf_obj.build_NTU(n,m,arma::exp(alpha_inp/sigma),arma::exp(gamma_inp/sigma),need_norm_inp);
-    //
-    NTU = true;
+    printf("cannot use build_NTU without NTU defined market!\n");
 }
 
 template<typename Tm>
 void mfe<Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    if (need_norm_inp) {
-        outsideOption = false;
-    } else {
-        outsideOption = true;
-    }
-
-    if (sigma_inp) {
-        sigma = *sigma_inp;
-    } else {
-        sigma = 1;
-    }
-
-    trans_obj.build_TU(phi_inp);
-
-    arums_G.build(nbX,nbY,sigma,outsideOption);
-    arums_H.build(nbY,nbX,sigma,outsideOption);
-
-    mmf_obj.build_TU(n,m,arma::exp(phi_inp/(2*sigma)),need_norm_inp);
-    //
-    TU = true;
+    printf("cannot use build_TU without TU defined market!\n");
 }
 
 template<typename Tm>
 void mfe<Tm>::trans()
 {
+    int nbX_temp = nbX;
+
+    nbX = nbY;
+    nbY = nbX_temp;
+    //
     arma::vec n_temp = n;
     n = m;
     m = n_temp;
     // Keith: fill in normalization later
 
-    mmf_obj.trans();
     trans_obj.trans();
-
-    logit arums_G_temp = arums_G;
-    arums_G = arums_H;
-    arums_H = arums_G_temp;
     //
 }
+
+template<typename Tm>
+arma::vec mfe<Tm>::marg_x_inv(const arma::mat& B_ys)
+const
+{
+    arma::vec ret = this->marg_x_inv(B_ys,NULL);
+    //
+    return ret;
+}
+
+template<typename Tm>
+arma::vec mfe<Tm>::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
+const
+{
+    arma::uvec temp_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
+    bool coeff = (need_norm) ? false : true;
+    arma::vec ubs(nbX);
+
+    if (need_norm) {
+        ubs.fill(1E10);
+    } else {
+        ubs = n;
+    }
+    //
+    trame_mfe_zeroin_data<Tm> root_data;
+
+    root_data.mfe_obj = *this;
+    root_data.coeff = coeff;
+    root_data.B_ys  = B_ys;
+    //
+    arma::vec the_a_xs(temp_ind.n_elem);
+
+    for (int j=0; j < (int) temp_ind.n_elem; j++) {
+        int x = temp_ind(j);
+        root_data.x_ind = x;
+
+        the_a_xs(j) = zeroin(0.0, ubs(x), marg_x_inv_fn, &root_data, NULL, NULL);
+    }
+    //
+    return the_a_xs;
+}
+
+template<typename Tm>
+arma::vec mfe<Tm>::marg_y_inv(const arma::mat& A_xs)
+const
+{
+    arma::vec ret = this->marg_y_inv(A_xs,NULL);
+    //
+    return ret;
+}
+
+template<typename Tm>
+arma::vec mfe<Tm>::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
+const
+{
+    arma::uvec temp_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
+    bool coeff = (need_norm) ? false : true;
+    arma::vec ubs(nbY);
+
+    if (need_norm) {
+        ubs.fill(1E10);
+    } else {
+        ubs = m;
+    }
+    //
+    trame_mfe_zeroin_data<Tm> root_data;
+
+    root_data.mfe_obj = *this;
+    root_data.coeff = coeff;
+    root_data.A_xs  = A_xs;
+    //
+    arma::vec the_b_ys(temp_ind.n_elem);
+        
+    for (int j=0; j < (int) temp_ind.n_elem; j++) {
+        int y = temp_ind(j);
+        root_data.y_ind = y;
+
+        the_b_ys(j) = zeroin(0.0, ubs(y), marg_y_inv_fn, &root_data, NULL, NULL);
+    }
+    //
+    return the_b_ys;
+}
+
+// solve
 
 template<typename Tm>
 bool mfe<Tm>::solve(arma::mat& mu_sol)
@@ -224,4 +203,36 @@ bool mfe<Tm>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const
     }
     //
     return res;
+}
+
+// root finding functions
+
+template<typename Tm>
+double mfe<Tm>::marg_x_inv_fn(double z, void* opt_data)
+{
+    trame_mfe_zeroin_data<Tm> *d = reinterpret_cast<trame_mfe_zeroin_data<Tm>*>(opt_data);
+    //
+    arma::uvec x_ind_temp(1);
+    x_ind_temp(0) = d->x_ind;
+    
+    double term_1 = (d->coeff) ? z : 0;
+    //
+    double ret = term_1 - d->mfe_obj.n(d->x_ind) + arma::accu(d->mfe_obj.trans_obj.M(z,d->B_ys,&x_ind_temp,NULL));
+    //
+    return ret;
+}
+
+template<typename Tm>
+double mfe<Tm>::marg_y_inv_fn(double z, void* opt_data)
+{
+    trame_mfe_zeroin_data<Tm> *d = reinterpret_cast<trame_mfe_zeroin_data<Tm>*>(opt_data);
+    //
+    arma::uvec y_ind_temp(1);
+    y_ind_temp(0) = d->y_ind;
+    
+    double term_1 = (d->coeff) ? z : 0;
+    //
+    double ret = term_1 - d->mfe_obj.m(d->y_ind) + arma::accu(d->mfe_obj.trans_obj.M(d->A_xs,z,NULL,&y_ind_temp));
+    //
+    return ret;
 }
