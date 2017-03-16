@@ -31,7 +31,7 @@ int main()
     arma::mat phi = alpha + gamma;
     //
     // results
-    printf("\n*===================   Start of oap_nash Test   ===================*\n");
+    printf("\n*===================   Start of eap_nash Test   ===================*\n");
     printf("\n");
     //
     // TU

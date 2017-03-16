@@ -143,13 +143,14 @@ const
     return ret;
 }
 
+// Implicit Parameterization
 arma::mat trame::ntu::Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat ret = arma::max(U - alpha(x_ind,y_ind), V - gamma(x_ind,y_ind));
+    arma::mat ret = elem_max(U - alpha(x_ind,y_ind), V - gamma(x_ind,y_ind));
     //
     return ret;
 }
@@ -160,7 +161,7 @@ const
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat ret = arma::max(U - alpha(x_ind,y_ind), V - gamma(x_ind,y_ind));
+    arma::mat ret = elem_max(U - alpha(x_ind,y_ind), V - gamma(x_ind,y_ind));
     //
     return ret;
 }
@@ -171,7 +172,7 @@ const
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat ret = arma::max(U - alpha(x_ind,y_ind), V - gamma(x_ind,y_ind));
+    arma::mat ret = elem_max(U - alpha(x_ind,y_ind), V - gamma(x_ind,y_ind));
     //
     return ret;
 }
@@ -184,6 +185,7 @@ const
     return ret;
 }
 
+// Derivative of Psi wrt u
 arma::mat trame::ntu::du_Psi(const arma::mat& U, const arma::mat& V)
 const
 {
@@ -252,6 +254,7 @@ arma::mat trame::ntu::dtheta_Psi(const arma::mat& U, const arma::mat& V, const a
     return ret;
 }
 
+// Explicit Parameterization
 arma::mat trame::ntu::Ucal(const arma::mat& vs)
 const
 {

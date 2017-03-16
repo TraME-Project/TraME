@@ -46,7 +46,7 @@ bool nodal_newton_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0
     trame_mfe_opt_data<Tm> opt_data;
     opt_data.market = market;
 
-    arma::vec sol_vec = -sigma*arma::join_cols(arma::log(market.n/2.0),arma::log(market.m/2.0));
+    arma::vec sol_vec = -sigma*arma::join_cols(arma::log(market.n/2.0),arma::log(market.m/2.0)); // initial guess
     
     //success = nodal_newton_optim(sol_vec,nodal_newton_opt_objfn<Tm>,&opt_data);
     success = nodal_newton_optim(sol_vec,nodal_newton_opt_objfn<Tm>,&opt_data,nodal_newton_jacobian<Tm>,&opt_data);

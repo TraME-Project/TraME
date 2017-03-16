@@ -40,9 +40,18 @@ inline arma::mat elem_add(const arma::mat& mat_1, const arma::mat& mat_2);
 inline arma::mat elem_sub(const arma::mat& mat_1, const arma::mat& mat_2);
 inline arma::mat elem_prod(const arma::mat& mat_1, const arma::mat& mat_2);
 inline arma::mat elem_div(const arma::mat& mat_1, const arma::mat& mat_2);
+
 inline double elem_min(const arma::mat& mat_1);
+inline arma::mat elem_min(const arma::mat& mat_1, const arma::mat& mat_2);
+inline arma::mat elem_min(const arma::mat& mat_1, const double& comp_val);
+inline arma::mat elem_min(const double& comp_val, const arma::mat& mat_1);
+inline double elem_min(const double& comp_val_1, const double& comp_val_2);
+
 inline double elem_max(const arma::mat& mat_1);
+inline arma::mat elem_max(const arma::mat& mat_1, const arma::mat& mat_2);
 inline arma::mat elem_max(const arma::mat& mat_1, const double& comp_val);
+inline arma::mat elem_max(const double& comp_val, const arma::mat& mat_1);
+inline double elem_max(const double& comp_val_1, const double& comp_val_2);
 
 inline arma::mat cube_sum(const arma::cube& cube_inp, int which_dim);
 

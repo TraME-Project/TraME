@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * probit class
+ * probit random utility model (RUM) class
  *
  * Keith O'Hara
  * 08/08/2016

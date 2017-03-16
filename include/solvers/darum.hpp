@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * darum for NTU_general
+ * Deferred Acceptance Algorithm for NTU_general
  *
  * Keith O'Hara
  * 08/16/2016

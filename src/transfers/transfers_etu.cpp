@@ -155,16 +155,17 @@ const
     return ret;
 }
 
+// Implicit Parameterization
 arma::mat trame::etu::Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat temp_1 = elem_prod(arma::exp(elem_div(U, tau(x_ind,y_ind))), aux_alpha_exp(x_ind,y_ind));
-    arma::mat temp_2 = elem_prod(arma::exp(elem_div(V, tau(x_ind,y_ind))), aux_gamma_exp(x_ind,y_ind));
+    arma::mat term_1 = elem_prod(arma::exp(elem_div(U, tau(x_ind,y_ind))), aux_alpha_exp(x_ind,y_ind));
+    arma::mat term_2 = elem_prod(arma::exp(elem_div(V, tau(x_ind,y_ind))), aux_gamma_exp(x_ind,y_ind));
 
-    arma::mat ret =  elem_prod(tau(x_ind,y_ind), arma::log(0.5 * (temp_1 + temp_2)));
+    arma::mat ret =  elem_prod(tau(x_ind,y_ind), arma::log(0.5 * (term_1 + term_2)));
     //
     return ret;
 }
@@ -175,10 +176,10 @@ const
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat temp_1 = elem_prod(arma::exp(U/tau(x_ind,y_ind)), aux_alpha_exp(x_ind,y_ind));
-    arma::mat temp_2 = elem_prod(arma::exp(elem_div(V, tau(x_ind,y_ind))), aux_gamma_exp(x_ind,y_ind));
+    arma::mat term_1 = elem_prod(arma::exp(U/tau(x_ind,y_ind)), aux_alpha_exp(x_ind,y_ind));
+    arma::mat term_2 = elem_prod(arma::exp(elem_div(V, tau(x_ind,y_ind))), aux_gamma_exp(x_ind,y_ind));
         
-    arma::mat ret =  elem_prod(tau(x_ind,y_ind), arma::log(0.5 * (temp_1 + temp_2)));
+    arma::mat ret =  elem_prod(tau(x_ind,y_ind), arma::log(0.5 * (term_1 + term_2)));
     //
     return ret;
 }
@@ -189,10 +190,10 @@ const
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat temp_1 = elem_prod(arma::exp(elem_div(U, tau(x_ind,y_ind))), aux_alpha_exp(x_ind,y_ind));
-    arma::mat temp_2 = elem_prod(arma::exp(V/tau(x_ind,y_ind)), aux_gamma_exp(x_ind,y_ind));
+    arma::mat term_1 = elem_prod(arma::exp(elem_div(U, tau(x_ind,y_ind))), aux_alpha_exp(x_ind,y_ind));
+    arma::mat term_2 = elem_prod(arma::exp(V/tau(x_ind,y_ind)), aux_gamma_exp(x_ind,y_ind));
 
-    arma::mat ret =  elem_prod(tau(x_ind,y_ind), arma::log(0.5 * (temp_1 + temp_2)));
+    arma::mat ret =  elem_prod(tau(x_ind,y_ind), arma::log(0.5 * (term_1 + term_2)));
     //
     return ret;
 }
@@ -200,14 +201,15 @@ const
 double trame::etu::Psi(const double& U, const double& V, int x_ind, int y_ind)
 const
 {
-    double temp_1 = std::exp(U/tau(x_ind,y_ind)) * aux_alpha_exp(x_ind,y_ind);
-    double temp_2 = std::exp(V/tau(x_ind,y_ind)) * aux_gamma_exp(x_ind,y_ind);
+    double term_1 = std::exp(U/tau(x_ind,y_ind)) * aux_alpha_exp(x_ind,y_ind);
+    double term_2 = std::exp(V/tau(x_ind,y_ind)) * aux_gamma_exp(x_ind,y_ind);
 
-    double ret =  tau(x_ind,y_ind) * std::log(0.5 * (temp_1 + temp_2));
+    double ret =  tau(x_ind,y_ind) * std::log(0.5 * (term_1 + term_2));
     //
     return ret;
 }
 
+// Derivative of Psi wrt u
 arma::mat trame::etu::du_Psi(const arma::mat& U, const arma::mat& V)
 const
 {
@@ -293,6 +295,7 @@ arma::mat trame::etu::dtheta_Psi(const arma::mat& U, const arma::mat& V, const a
     return ret;
 }
 
+// Explicit Parameterization
 arma::mat trame::etu::Ucal(const arma::mat& vs)
 const
 {

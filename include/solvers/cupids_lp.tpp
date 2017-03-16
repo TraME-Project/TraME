@@ -57,16 +57,16 @@ bool cupids_lp_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0
 
     arma::mat phi = trans_obj.phi;
     //
-    arma::mat epsilon_iy, epsilon0_i, I_ix;
-    arma::mat eta_xj, eta0_j, I_yj;
+    arma::mat epsilon_iy, epsilon_0i, I_ix;
+    arma::mat eta_xj, eta_0j, I_yj;
 
-    int nbDraws_1 = build_disaggregate_epsilon(n,arums_G,epsilon_iy,epsilon0_i,I_ix);
-    int nbDraws_2 = build_disaggregate_epsilon(m,arums_H,eta_xj,eta0_j,I_yj);
+    int nbDraws_1 = build_disaggregate_epsilon(n,arums_G,epsilon_iy,epsilon_0i,I_ix);
+    int nbDraws_2 = build_disaggregate_epsilon(m,arums_H,eta_xj,eta_0j,I_yj);
 
     eta_xj = eta_xj.t();
 
-    epsilon0_i = arma::vectorise(epsilon0_i);
-    eta0_j = arma::vectorise(eta0_j);
+    epsilon_0i = arma::vectorise(epsilon_0i);
+    eta_0j = arma::vectorise(eta_0j);
 
     I_yj = I_yj.t();
     //
@@ -159,10 +159,10 @@ bool cupids_lp_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0
         sense_lp[jj] = '>';
     }
 
-    arma::vec lb_lp(epsilon0_i.n_elem + eta0_j.n_elem + nbX*nbY);
-    lb_lp.rows(0,epsilon0_i.n_elem-1) = arma::vectorise(epsilon0_i);
-    lb_lp.rows(epsilon0_i.n_elem,epsilon0_i.n_elem + eta0_j.n_elem - 1) = eta0_j;
-    lb_lp.rows(epsilon0_i.n_elem + eta0_j.n_elem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
+    arma::vec lb_lp(epsilon_0i.n_elem + eta_0j.n_elem + nbX*nbY);
+    lb_lp.rows(0,epsilon_0i.n_elem-1) = arma::vectorise(epsilon_0i);
+    lb_lp.rows(epsilon_0i.n_elem,epsilon_0i.n_elem + eta_0j.n_elem - 1) = eta_0j;
+    lb_lp.rows(epsilon_0i.n_elem + eta_0j.n_elem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
 
     arma::vec rhs_lp(epsilon_iy.n_elem + eta_xj.n_elem);
     rhs_lp.rows(0,epsilon_iy.n_elem-1) = arma::vectorise(epsilon_iy);

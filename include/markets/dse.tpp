@@ -45,7 +45,7 @@ void dse<Ta,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const 
 
     outsideOption = (need_norm_inp) ? false : true;
 
-    trans_obj.build_TU(phi_inp);
+    trans_obj.build(phi_inp,need_norm_inp);
 
     arums_G.build(nbX,nbY); // this avoids nbX and nbY not being set in arums
     arums_H.build(nbY,nbX);
@@ -67,7 +67,7 @@ void dse<Ta,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const 
 
     outsideOption = (need_norm_inp) ? false : true;
 
-    trans_obj.build_TU(phi_inp);
+    trans_obj.build(phi_inp,need_norm_inp);
 
     arums_G = arums_G_inp;
     arums_H = arums_H_inp;
@@ -89,7 +89,7 @@ void dse<Ta,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const 
 
     outsideOption = (need_norm_inp) ? false : true;
 
-    trans_obj.build_TU(phi_inp);
+    trans_obj.build(phi_inp,need_norm_inp);
 
     arums_G_inp.simul(arums_G,nbDraws,seed);
     arums_H_inp.simul(arums_H,nbDraws,seed);
@@ -111,7 +111,7 @@ void dse<Ta,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const
 
     outsideOption = (need_norm_inp) ? false : true;
 
-    trans_obj.build_NTU(alpha_inp,gamma_inp);
+    trans_obj.build(alpha_inp,gamma_inp,need_norm_inp);
 
     arums_G.build(nbX,nbY);
     arums_H.build(nbY,nbX);
@@ -133,7 +133,7 @@ void dse<Ta,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const
 
     outsideOption = (need_norm_inp) ? false : true;
 
-    trans_obj.build_NTU(alpha_inp,gamma_inp);
+    trans_obj.build(alpha_inp,gamma_inp,need_norm_inp);
 
     arums_G = arums_G_inp;
     arums_H = arums_H_inp;
@@ -155,7 +155,7 @@ void dse<Ta,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const
 
     outsideOption = (need_norm_inp) ? false : true;
 
-    trans_obj.build_NTU(alpha_inp,gamma_inp);
+    trans_obj.build(alpha_inp,gamma_inp,need_norm_inp);
 
     arums_G_inp.simul(arums_G,nbDraws,seed);
     arums_H_inp.simul(arums_H,nbDraws,seed);

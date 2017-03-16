@@ -117,12 +117,7 @@ bool oap_lp_int(const dse<Ta,tu>& market, arma::mat* mu_out, const bool* x_first
     if ( LP_optimal && (u_out || v_out || residuals_out) ) {
         arma::vec obj_bis = arma::join_cols(n,-m);
         
-        bool x_first;
-        if (x_first_inp) {
-            x_first = *x_first_inp;
-        } else {
-            x_first = true;
-        }
+        bool x_first = (x_first_inp) ? *x_first_inp : true;
 
         if (!x_first) {
             obj_bis *= -1.0;

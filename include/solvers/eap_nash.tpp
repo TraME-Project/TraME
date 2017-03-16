@@ -29,7 +29,7 @@
  * 08/16/2016
  *
  * This version:
- * 02/15/2017
+ * 03/15/2017
  */
 
 // internal eap_nash
@@ -95,9 +95,8 @@ bool eap_nash_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_
     int k_lp = A_lp.n_rows;
     int n_lp = A_lp.n_cols;
 
-    int jj;
     char* sense_lp = new char[k_lp];
-    for (jj=0; jj<k_lp; jj++) {
+    for (int jj=0; jj<k_lp; jj++) {
         if (uv_vec(jj) - 0 < tol) {
             sense_lp[jj] = '<';
         } else {

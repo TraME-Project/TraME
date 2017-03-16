@@ -38,7 +38,7 @@ int main()
     printf("\n*===================   Start of MFE Test   ===================*\n");
     printf("\n");
     //
-    // TU, 
+    //
     trame::mfe<trame::tu> mfe_obj_TU;
     mfe_obj_TU.build_TU(n,m,phi,&sigma,false);
 

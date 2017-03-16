@@ -145,6 +145,7 @@ const
     return ret;
 }
 
+// Implicit Parameterization
 arma::mat trame::ltu::Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
 const
 {
@@ -251,6 +252,7 @@ arma::mat trame::ltu::dtheta_Psi(const arma::mat& U, const arma::mat& V, const a
     return ret;
 }
 
+// Explicit Parameterization
 arma::mat trame::ltu::Ucal(const arma::mat& vs)
 const
 {

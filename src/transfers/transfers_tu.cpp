@@ -133,6 +133,7 @@ const
     return ret;
 }
 
+// Implicit Parameterization
 arma::mat trame::tu::Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
 const
 {
@@ -174,6 +175,7 @@ const
     return ret;
 }
 
+// Derivative of Psi wrt u
 arma::mat trame::tu::du_Psi(const arma::mat& U, const arma::mat& V)
 const
 {
@@ -238,6 +240,7 @@ arma::mat trame::tu::dtheta_Psi(const arma::mat& U, const arma::mat& V, const ar
     return ret;
 }
 
+// Explicit Parameterization
 arma::mat trame::tu::Ucal(const arma::mat& vs)
 const
 {

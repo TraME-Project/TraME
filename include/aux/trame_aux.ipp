@@ -424,9 +424,56 @@ inline double elem_min(const arma::mat& mat_1)
     return ret;
 }
 
+inline arma::mat elem_min(const arma::mat& mat_1, const arma::mat& mat_2)
+{
+    arma::mat ret = arma::min(mat_1,mat_2);
+    //
+    return ret;
+}
+
+inline arma::mat elem_min(const arma::mat& mat_1, const double& comp_val)
+{
+    int rows_1 = mat_1.n_rows;
+    int cols_1 = mat_1.n_cols;
+    //
+    arma::mat comp_mat(rows_1,cols_1);
+    comp_mat.fill(comp_val);
+    
+    arma::mat ret = arma::min(mat_1,comp_mat);
+    //
+    return ret;
+}
+
+inline arma::mat elem_min(const double& comp_val, const arma::mat& mat_1)
+{
+    int rows_1 = mat_1.n_rows;
+    int cols_1 = mat_1.n_cols;
+    //
+    arma::mat comp_mat(rows_1,cols_1);
+    comp_mat.fill(comp_val);
+    
+    arma::mat ret = arma::min(mat_1,comp_mat);
+    //
+    return ret;
+}
+
+inline double elem_min(const double& comp_val_1, const double& comp_val_2)
+{
+    double ret = std::min(comp_val_1,comp_val_2);
+    //
+    return ret;
+}
+
 inline double elem_max(const arma::mat& mat_1)
 {
     double ret = mat_1.max();
+    //
+    return ret;
+}
+
+inline arma::mat elem_max(const arma::mat& mat_1, const arma::mat& mat_2)
+{
+    arma::mat ret = arma::max(mat_1,mat_2);
     //
     return ret;
 }
@@ -444,6 +491,26 @@ inline arma::mat elem_max(const arma::mat& mat_1, const double& comp_val)
     return ret;
 }
 
+inline arma::mat elem_max(const double& comp_val, const arma::mat& mat_1)
+{
+    int rows_1 = mat_1.n_rows;
+    int cols_1 = mat_1.n_cols;
+    //
+    arma::mat comp_mat(rows_1,cols_1);
+    comp_mat.fill(comp_val);
+    
+    arma::mat ret = arma::max(mat_1,comp_mat);
+    //
+    return ret;
+}
+
+inline double elem_max(const double& comp_val_1, const double& comp_val_2)
+{
+    double ret = std::max(comp_val_1,comp_val_2);
+    //
+    return ret;
+}
+
 inline arma::mat cube_sum(const arma::cube& cube_inp, int which_dim)
 {
     if (which_dim > 1 || which_dim < 0) {
@@ -453,6 +520,7 @@ inline arma::mat cube_sum(const arma::cube& cube_inp, int which_dim)
     int dim_0 = cube_inp.n_rows;
     int dim_1 = cube_inp.n_cols;
     int dim_2 = cube_inp.n_slices;
+
     arma::mat ret;
 
     if (which_dim == 0) {
