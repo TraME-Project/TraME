@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * empirical class
+ * empirical random utility model (RUM) class
  *
  * Keith O'Hara
  * 08/08/2016
