@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * TU transfers class
+ * Transferable Utility (TU) transfers class
  *
  * Keith O'Hara
  * 08/15/2016

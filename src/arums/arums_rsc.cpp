@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * RSC class
+ * Random Scalar Coefficient (RSC) additive random utility model (ARUM) class
  *
  * Keith O'Hara
  * 08/08/2016
@@ -34,28 +34,28 @@
 
 #include "trame.hpp"
 
-trame::rsc::rsc(int nbX_inp, int nbY_inp)
+trame::arums::rsc::rsc(int nbX_inp, int nbY_inp)
 {
     this->build(nbX_inp, nbY_inp);
 }
 
-trame::rsc::rsc(arma::mat zeta_inp, bool outsideOption_inp)
+trame::arums::rsc::rsc(arma::mat zeta_inp, bool outsideOption_inp)
 {
     this->build(zeta_inp, outsideOption_inp);
 }
 
-trame::rsc::rsc(arma::mat zeta_inp, double alpha, double beta)
+trame::arums::rsc::rsc(arma::mat zeta_inp, double alpha, double beta)
 {
     this->build_beta(zeta_inp, alpha, beta);
 }
 
-void trame::rsc::build(int nbX_inp, int nbY_inp)
+void trame::arums::rsc::build(int nbX_inp, int nbY_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
 }
 
-void trame::rsc::build(arma::mat zeta_inp, bool outsideOption_inp)
+void trame::arums::rsc::build(arma::mat zeta_inp, bool outsideOption_inp)
 {
     if (!outsideOption_inp) {
         return;
@@ -102,7 +102,7 @@ void trame::rsc::build(arma::mat zeta_inp, bool outsideOption_inp)
 }
 
 // epsilon is a beta(alpha,beta) distribution
-void trame::rsc::build_beta(arma::mat zeta_inp, double alpha, double beta)
+void trame::arums::rsc::build_beta(arma::mat zeta_inp, double alpha, double beta)
 {
     dist_pars = new double[2];
     dist_pars[0] = alpha;
@@ -121,14 +121,14 @@ void trame::rsc::build_beta(arma::mat zeta_inp, double alpha, double beta)
     build(zeta_inp,true);
 }
 
-double trame::rsc::G(const arma::vec& n)
+double trame::arums::rsc::G(const arma::vec& n)
 {   
     double val = this->G(n,U,mu_sol);
     //
     return val;
 }
 
-double trame::rsc::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
+double trame::arums::rsc::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
 {
     double val=0.0, val_x;
 
@@ -146,7 +146,7 @@ double trame::rsc::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_o
     return val;
 }
 
-double trame::rsc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
+double trame::arums::rsc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
 {
     int nbAlt = nbY + 1;
     int j,y,z;
@@ -217,14 +217,14 @@ double trame::rsc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
     return val_x;
 }
 
-double trame::rsc::Gstar(const arma::vec& n)
+double trame::arums::rsc::Gstar(const arma::vec& n)
 {
     double val = this->Gstar(n,mu_sol,U_sol);
     //
     return val;
 }
 
-double trame::rsc::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
+double trame::arums::rsc::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
 {
     double val=0.0, val_x_temp;
 
@@ -242,7 +242,7 @@ double trame::rsc::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat&
     return val;
 }
 
-double trame::rsc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
+double trame::arums::rsc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
 {
     double val_x = 0;
 
@@ -266,7 +266,7 @@ double trame::rsc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
     return val_x;
 }
 
-double trame::rsc::Gstarx(arma::vec& U_x, const arma::vec& mu_x_inp, const arma::mat& zeta,
+double trame::arums::rsc::Gstarx(arma::vec& U_x, const arma::vec& mu_x_inp, const arma::mat& zeta,
                           const arma::mat& aux_DinvPsigma, const arma::mat& aux_Psigma,
                           const arma::mat& aux_Influence_lhs, const arma::mat& aux_Influence_rhs,
                           arma::vec (*pot_eps_vec)(arma::vec pot_inp, double* dist_pars),
@@ -293,7 +293,7 @@ double trame::rsc::Gstarx(arma::vec& U_x, const arma::vec& mu_x_inp, const arma:
     return val_x;
 }
 
-double trame::rsc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
+double trame::arums::rsc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {
     double val = 0.0, val_temp;
 
@@ -313,7 +313,7 @@ double trame::rsc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arm
     return val;
 }
 
-double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+double trame::arums::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     if (!outsideOption) {
         printf("Gbarx not implemented yet when outsideOption==false");
@@ -358,7 +358,7 @@ double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma
     return ret;
 }
 
-arma::mat trame::rsc::D2Gstar(const arma::vec& n, bool xFirst)
+arma::mat trame::arums::rsc::D2Gstar(const arma::vec& n, bool xFirst)
 {
     arma::mat ret;
     this->D2Gstar(ret,n,xFirst);
@@ -366,7 +366,7 @@ arma::mat trame::rsc::D2Gstar(const arma::vec& n, bool xFirst)
     return ret;
 }
 
-void trame::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, bool x_first)
+void trame::arums::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, bool x_first)
 {
     hess.zeros(nbX*nbY,nbX*nbY);
 
@@ -405,7 +405,7 @@ void trame::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, bool x_first)
     }
 }
 
-void trame::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, const arma::mat& mu_inp, bool x_first)
+void trame::arums::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, const arma::mat& mu_inp, bool x_first)
 {
     hess.zeros(nbX*nbY,nbX*nbY);
 
@@ -444,7 +444,7 @@ void trame::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, const arma::mat& m
     }
 }
 
-void trame::rsc::dtheta_NablaGstar(arma::mat& ret, const arma::vec& n, arma::mat* dtheta, bool x_first)
+void trame::arums::rsc::dtheta_NablaGstar(arma::mat& ret, const arma::vec& n, arma::mat* dtheta, bool x_first)
 {
     arma::mat dtheta_mat = (dtheta) ? *dtheta : arma::eye(nbParams,nbParams);
 
@@ -492,7 +492,7 @@ void trame::rsc::dtheta_NablaGstar(arma::mat& ret, const arma::vec& n, arma::mat
     }
 }
 
-trame::empirical trame::rsc::simul()
+trame::arums::empirical trame::arums::rsc::simul()
 {
     empirical emp_obj;
     this->simul(emp_obj,NULL,NULL);
@@ -500,7 +500,7 @@ trame::empirical trame::rsc::simul()
     return emp_obj;
 }
 
-trame::empirical trame::rsc::simul(int* nbDraws, int* seed)
+trame::arums::empirical trame::arums::rsc::simul(int* nbDraws, int* seed)
 {
     empirical emp_obj;
     this->simul(emp_obj,nbDraws,seed);
@@ -508,12 +508,12 @@ trame::empirical trame::rsc::simul(int* nbDraws, int* seed)
     return emp_obj;
 }
 
-void trame::rsc::simul(empirical& obj_out)
+void trame::arums::rsc::simul(empirical& obj_out)
 {
     this->simul(obj_out,NULL,NULL);
 }
 
-void trame::rsc::simul(empirical& obj_out, int* nbDraws, int* seed_val)
+void trame::arums::rsc::simul(empirical& obj_out, int* nbDraws, int* seed_val)
 {
     int n_draws = 0;
     if (nbDraws) {
@@ -559,7 +559,7 @@ void trame::rsc::simul(empirical& obj_out, int* nbDraws, int* seed_val)
  * optimization-related functions
  */
 
-double trame::rsc::Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
+double trame::arums::rsc::Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
 {
     trame_rsc_gbar_opt_data *d = reinterpret_cast<trame_rsc_gbar_opt_data*>(opt_data);
     //
@@ -592,7 +592,7 @@ double trame::rsc::Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, vo
     return ret;
 }
 
-double trame::rsc::Gbar_opt_constr(const arma::vec& vals_inp, arma::vec* grad, void* constr_data)
+double trame::arums::rsc::Gbar_opt_constr(const arma::vec& vals_inp, arma::vec* grad, void* constr_data)
 {
     //
     double ret = arma::accu(vals_inp) - 1;
@@ -611,7 +611,7 @@ double trame::rsc::Gbar_opt_constr(const arma::vec& vals_inp, arma::vec* grad, v
  * Distribution-related functions
  */
 
-double trame::rsc::cdf(double x)
+double trame::arums::rsc::cdf(double x)
 {
     double res;
 
@@ -620,7 +620,7 @@ double trame::rsc::cdf(double x)
     return res;
 }
 
-arma::vec trame::rsc::cdf(arma::vec x)
+arma::vec trame::arums::rsc::cdf(arma::vec x)
 {
     arma::vec res;
 
@@ -629,7 +629,7 @@ arma::vec trame::rsc::cdf(arma::vec x)
     return res;
 }
 
-double trame::rsc::pdf(double x)
+double trame::arums::rsc::pdf(double x)
 {
     double res;
 
@@ -638,7 +638,7 @@ double trame::rsc::pdf(double x)
     return res;
 }
 
-arma::vec trame::rsc::pdf(arma::vec x)
+arma::vec trame::arums::rsc::pdf(arma::vec x)
 {
     arma::vec res;
 
@@ -647,7 +647,7 @@ arma::vec trame::rsc::pdf(arma::vec x)
     return res;
 }
 
-double trame::rsc::quantile(double x)
+double trame::arums::rsc::quantile(double x)
 {
     double res;
 
@@ -656,7 +656,7 @@ double trame::rsc::quantile(double x)
     return res;
 }
 
-arma::vec trame::rsc::quantile(arma::vec x)
+arma::vec trame::arums::rsc::quantile(arma::vec x)
 {
     arma::vec res;
 
@@ -665,7 +665,7 @@ arma::vec trame::rsc::quantile(arma::vec x)
     return res;
 }
 
-double trame::rsc::pot(double x)
+double trame::arums::rsc::pot(double x)
 {
     double res;
 
@@ -674,7 +674,7 @@ double trame::rsc::pot(double x)
     return res;
 }
 
-arma::vec trame::rsc::pot(arma::vec x)
+arma::vec trame::arums::rsc::pot(arma::vec x)
 {
     arma::vec res;
 
@@ -686,7 +686,7 @@ arma::vec trame::rsc::pot(arma::vec x)
 // old
 
 /*
-double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+double trame::arums::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     if (!outsideOption) {
         printf("Gbarx not implemented yet when outsideOption==false");
@@ -723,7 +723,7 @@ double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma
     trame_nlopt_constr_data constr_data;
     constr_data.rsc_gbar.nbY = nbY;
     //
-    bool success = generic_nlopt(nbY,sol_vec,obj_val,lb.memptr(),ub.memptr(),trame::rsc::Gbar_opt_objfn,trame::rsc::Gbar_opt_constr,opt_data,constr_data);
+    bool success = generic_nlopt(nbY,sol_vec,obj_val,lb.memptr(),ub.memptr(),trame::arums::rsc::Gbar_opt_objfn,trame::arums::rsc::Gbar_opt_constr,opt_data,constr_data);
     //
     arma::vec U_x_temp;
     arma::vec sol_temp = arma::conv_to<arma::vec>::from(sol_vec);
@@ -738,7 +738,7 @@ double trame::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma
 }*/
 
 /*
-double trame::rsc::Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data)
+double trame::arums::rsc::Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data)
 {
     trame_nlopt_opt_data *d = reinterpret_cast<trame_nlopt_opt_data*>(opt_data);
 
@@ -773,7 +773,7 @@ double trame::rsc::Gbar_opt_objfn(const std::vector<double> &x_inp, std::vector<
 }*/
 
 /*
-double trame::rsc::Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data)
+double trame::arums::rsc::Gbar_opt_constr(const std::vector<double> &x_inp, std::vector<double> &grad, void *constr_data)
 {
     trame_nlopt_constr_data *d = reinterpret_cast<trame_nlopt_constr_data*>(constr_data);
 

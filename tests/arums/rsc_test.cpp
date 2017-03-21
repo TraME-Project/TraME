@@ -56,7 +56,7 @@ int main()
     // empirical object:
     int sim_seed = 1777;
     int n_draws = 1000;
-    trame::empirical rsc_sim;
+    trame::arums::empirical rsc_sim;
     
     rsc_obj.simul(rsc_sim, &n_draws, &sim_seed);
     

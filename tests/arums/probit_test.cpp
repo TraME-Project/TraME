@@ -51,7 +51,7 @@ int main()
     //
     // empirical object:
     int n_draws = 1000;
-    trame::empirical emp_obj;
+    trame::arums::empirical emp_obj;
     
     probits.simul(emp_obj, n_draws, (int) 1777);
     

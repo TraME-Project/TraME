@@ -56,7 +56,7 @@ class affinity
         void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp);
         void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp, double sigma_inp);
 
-        mfe<tu> build_market(const arma::mat& theta);
+        mfe<transfers::tu> build_market(const arma::mat& theta);
 
         void dparam(arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out);
 

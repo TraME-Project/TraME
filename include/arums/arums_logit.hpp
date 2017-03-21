@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * logit random utility model (RUM) class
+ * logit additive random utility model (ARUM) class
  *
  * Keith O'Hara
  * 08/08/2016
@@ -39,7 +39,7 @@ class logit
         int nbX;
         int nbY;
         int nbParams;
-        double sigma = 1.0; // this avoid problems with general market construction (DSE)
+        double sigma = 1.0; // this obviates issues with general market construction (DSE)
         bool outsideOption = true;
         
         // input objects

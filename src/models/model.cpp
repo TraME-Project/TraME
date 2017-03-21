@@ -39,13 +39,13 @@ namespace trame
 {
 
 template<>
-void model<logit,tu>::build_market_TU(const arma::mat& theta)
+void model<arums::logit,transfers::tu>::build_market_TU(const arma::mat& theta)
 {
     mfe_obj.build_TU(n,m,Phi_xy_theta(theta),NULL,need_norm);
 }
 
 template<>
-bool model<logit,tu>::solve(arma::mat& mu_sol)
+bool model<arums::logit,transfers::tu>::solve(arma::mat& mu_sol)
 {
     bool res = mfe_obj.solve(mu_sol,NULL);
     //
@@ -53,7 +53,7 @@ bool model<logit,tu>::solve(arma::mat& mu_sol)
 }
 
 template<>
-bool model<logit,tu>::solve(arma::mat& mu_sol, const char* solver)
+bool model<arums::logit,transfers::tu>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = mfe_obj.solve(mu_sol,solver);
     //
@@ -61,7 +61,7 @@ bool model<logit,tu>::solve(arma::mat& mu_sol, const char* solver)
 }
 
 template<>
-bool model<logit,tu>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
+bool model<arums::logit,transfers::tu>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
 {
     bool res = mfe_obj.solve(mu_sol,U,V,solver);
     //
@@ -69,7 +69,7 @@ bool model<logit,tu>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const
 }
 
 template<>
-void model<logit,tu>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
 {
     build_market_TU(theta);
     //
@@ -111,7 +111,7 @@ void model<logit,tu>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta,
 }
 
 template<>
-bool model<empirical,tu>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out)
+bool model<arums::empirical,transfers::tu>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out)
 {
     bool success = false;
     //

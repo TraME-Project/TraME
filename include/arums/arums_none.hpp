@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * none random utility model (RUM) class
+ * none additive random utility model (ARUM) class
  *
  * Keith O'Hara
  * 08/08/2016

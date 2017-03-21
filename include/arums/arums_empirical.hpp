@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * empirical random utility model (RUM) class
+ * empirical additive random utility model (ARUM) class
  *
  * Keith O'Hara
  * 08/08/2016
@@ -78,7 +78,7 @@ class empirical
 
     private:
         /*
-         * these private member objects are mostly for use with Gurobi
+         * these private member objects are mostly used by LP solvers
          */
         void presolve_LP_Gstar();
         void presolve_LP_Gbar();

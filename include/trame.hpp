@@ -20,18 +20,22 @@ namespace trame
     #include "optim/optim.hpp"
 
     // heterogeneity
-    #include "arums/arums_empirical.hpp"
-    #include "arums/arums_logit.hpp"
-    #include "arums/arums_none.hpp"
-    #include "arums/arums_probit.hpp"
-    #include "arums/arums_rsc.hpp"
-    #include "arums/arums_rusc.hpp"
+    namespace arums {
+        #include "arums/arums_empirical.hpp"
+        #include "arums/arums_logit.hpp"
+        #include "arums/arums_none.hpp"
+        #include "arums/arums_probit.hpp"
+        #include "arums/arums_rsc.hpp"
+        #include "arums/arums_rusc.hpp"
+    }
 
     // transfers
-    #include "transfers/transfers_etu.hpp"
-    #include "transfers/transfers_ltu.hpp"
-    #include "transfers/transfers_ntu.hpp"
-    #include "transfers/transfers_tu.hpp"
+    namespace transfers {
+        #include "transfers/transfers_etu.hpp"
+        #include "transfers/transfers_ltu.hpp"
+        #include "transfers/transfers_ntu.hpp"
+        #include "transfers/transfers_tu.hpp"
+    }
 
     // markets
     #include "markets/dse.hpp"

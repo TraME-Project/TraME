@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * RSC random utility model (RUM) class
+ * Random Scalar Coefficient (RSC) additive random utility model (ARUM) class
  *
  * Keith O'Hara
  * 08/08/2016

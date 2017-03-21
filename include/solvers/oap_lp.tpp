@@ -35,7 +35,7 @@
 // internal oap_lp
 
 template<typename Ta>
-bool oap_lp_int(const dse<Ta,tu>& market, arma::mat* mu_out, const bool* x_first_inp, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out)
+bool oap_lp_int(const dse<Ta,transfers::tu>& market, arma::mat* mu_out, const bool* x_first_inp, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out)
 {
     bool success = false;
     //

@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * RUSC random utility model (RUM) class
+ * Random Uniform Scalar Coefficient Model (RUSC) additive random utility model (ARUM) class
  *
  * Keith O'Hara
  * 08/08/2016

@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * ETU transfers class
+ * Exponentially Transferable Utility (ETU) transfers class
  *
  * Keith O'Hara
  * 08/15/2016

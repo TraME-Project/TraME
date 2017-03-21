@@ -35,7 +35,7 @@
 // internal max_welfare
 
 template<typename Ta>
-bool max_welfare_int(const dse<Ta,tu>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp)
+bool max_welfare_int(const dse<Ta,transfers::tu>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp)
 {
     bool success = false;
     //
@@ -51,13 +51,13 @@ bool max_welfare_int(const dse<Ta,tu>& market, arma::mat* mu_out, arma::vec* mu_
     int nbX = market.nbX;
     int nbY = market.nbY;
 
-    trame_market_opt_data<Ta,tu> opt_data;
+    trame_market_opt_data<Ta,transfers::tu> opt_data;
     opt_data.market = market;
 
     double obj_val = 0;
     arma::vec sol_vec = arma::vectorise(market.trans_obj.phi / 2.0);
     
-    success = max_welfare_optim(sol_vec,max_welfare_opt_objfn<Ta,tu>,&opt_data,&obj_val,&tol,&max_iter);
+    success = max_welfare_optim(sol_vec,max_welfare_opt_objfn<Ta,transfers::tu>,&opt_data,&obj_val,&tol,&max_iter);
     //
     // construct equilibrium objects
     arma::mat U = arma::reshape(sol_vec,nbX,nbY);

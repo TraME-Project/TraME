@@ -47,7 +47,7 @@ int main()
     // empirical object:
     int sim_seed = 1777;
     int n_draws = 100;
-    trame::empirical logit_sim;
+    trame::arums::empirical logit_sim;
     
     logits.simul(logit_sim, &n_draws, &sim_seed);
     

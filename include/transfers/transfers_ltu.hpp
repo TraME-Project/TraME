@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * LTU transfers class
+ * Linearly Transferable Utility (LTU) transfers class
  *
  * Keith O'Hara
  * 08/15/2016

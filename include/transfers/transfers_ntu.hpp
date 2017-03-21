@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * NTU transfers class
+ * Non-Transferable Utility (NTU) transfers class
  *
  * Keith O'Hara
  * 08/15/2016

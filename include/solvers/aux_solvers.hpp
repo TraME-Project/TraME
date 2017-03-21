@@ -47,7 +47,7 @@ struct trame_mfe_opt_data {
 
 //
 
-int build_disaggregate_epsilon(arma::vec n, const trame::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix);
+int build_disaggregate_epsilon(arma::vec n, const arums::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix);
 
 template<typename Ta, typename Tm>
 arma::mat w_upper_bound(const dse<Ta,Tm>& market);

@@ -23,34 +23,37 @@
   ################################################################################*/
 
 /*
- * none class
+ * none additive random utility model (ARUM) class
  *
  * Keith O'Hara
  * 08/08/2016
+ *
+ * This version:
+ * 02/11/2017
  */
 
 #include "trame.hpp"
 
-trame::none::none(int nbX_inp, int nbY_inp)
+trame::arums::none::none(int nbX_inp, int nbY_inp)
 {   
     this->build(nbX_inp,nbY_inp);
 }
 
-void trame::none::build(int nbX_inp, int nbY_inp)
+void trame::arums::none::build(int nbX_inp, int nbY_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
     nbParams = 0;
 }
 
-double trame::none::G(const arma::vec& n)
+double trame::arums::none::G(const arma::vec& n)
 {   
     double val = this->G(n,U,mu_sol);
     //
     return val;
 }
 
-double trame::none::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
+double trame::arums::none::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
 {   
     double val=0.0, val_x;
     
@@ -67,7 +70,7 @@ double trame::none::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_
     return val;
 }
 
-double trame::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out)
+double trame::arums::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out)
 {
     arma::uvec temp_vec = which_max(U_x_inp, 0);
     int y = temp_vec(0);
@@ -84,7 +87,7 @@ double trame::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out)
 }
 
 // just to conform with other arums classes
-double trame::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
+double trame::arums::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
 {
     double val_x = 0.0;
 
@@ -99,28 +102,28 @@ double trame::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
     return val_x;
 }
 
-double trame::none::Gstar(const arma::vec& n)
+double trame::arums::none::Gstar(const arma::vec& n)
 {   
     printf("Gstar not yet defined for no arums case.\n");
 
     return 0.0;
 }
 
-double trame::none::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
+double trame::arums::none::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
 {   
     printf("Gstar not yet defined for no arums case.\n");
 
     return 0.0;
 }
 
-double trame::none::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
+double trame::arums::none::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
 {   
     printf("Gstarx not yet defined for no arums case.\n");
 
     return 0.0;
 }
 
-double trame::none::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
+double trame::arums::none::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {   
     double val=0.0, val_temp;
     
@@ -139,7 +142,7 @@ double trame::none::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const ar
     return val;
 }
 
-double trame::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out)
+double trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out)
 {
     int count_int=0;
     int nbY0 = Ubar_x.n_elem;
@@ -167,20 +170,20 @@ double trame::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
 }
 
 // just to conform with other arums classes
-double trame::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+double trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     double val_x = this->Gbarx(Ubar_x, mubar_x, U_x_out, mu_x_out);
     //
     return val_x;
 }
 
-arma::vec trame::none::dtheta_NablaGstar()
+arma::vec trame::arums::none::dtheta_NablaGstar()
 {
     arma::vec ret = arma::zeros(nbX*nbY,1);
     return ret;
 }
 
-trame::empirical trame::none::simul()
+trame::arums::empirical trame::arums::none::simul()
 {
     empirical emp_obj;
     
@@ -189,7 +192,7 @@ trame::empirical trame::none::simul()
     return emp_obj;
 }
 
-trame::empirical trame::none::simul(int* nbDraws, int* seed)
+trame::arums::empirical trame::arums::none::simul(int* nbDraws, int* seed)
 {
     empirical emp_obj;
     
@@ -198,12 +201,12 @@ trame::empirical trame::none::simul(int* nbDraws, int* seed)
     return emp_obj;
 }
 
-void trame::none::simul(empirical& obj_out)
+void trame::arums::none::simul(empirical& obj_out)
 {
     this->simul(obj_out,NULL,NULL);
 }
 
-void trame::none::simul(empirical& obj_out, int* nbDraws, int* seed_val)
+void trame::arums::none::simul(empirical& obj_out, int* nbDraws, int* seed_val)
 {
     int n_draws = 0;
     if (nbDraws) {

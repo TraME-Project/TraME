@@ -40,7 +40,7 @@ namespace trame
 // builds
 
 template<>
-void mfe<etu>::build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<transfers::etu>::build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -58,7 +58,7 @@ void mfe<etu>::build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const a
 }
 
 template<>
-void mfe<ltu>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<transfers::ltu>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -76,7 +76,7 @@ void mfe<ltu>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const a
 }
 
 template<>
-void mfe<ntu>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<transfers::ntu>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -94,7 +94,7 @@ void mfe<ntu>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const a
 }
 
 template<>
-void mfe<trame::tu>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<transfers::tu>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -114,7 +114,7 @@ void mfe<trame::tu>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, co
 // ipfp-related functions
 
 template<>
-arma::vec mfe<ntu>::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
+arma::vec mfe<transfers::ntu>::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
 const
 {
     arma::uvec temp_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -129,7 +129,7 @@ const
 }
 
 template<>
-arma::vec mfe<tu>::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
+arma::vec mfe<transfers::tu>::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
 const
 {
     arma::uvec temp_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -150,7 +150,7 @@ const
 }
 
 template<>
-arma::vec mfe<ntu>::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
+arma::vec mfe<transfers::ntu>::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
 const
 {
     arma::uvec temp_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
@@ -165,7 +165,7 @@ const
 }
 
 template<>
-arma::vec mfe<tu>::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
+arma::vec mfe<transfers::tu>::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
 const
 {
     arma::uvec temp_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);

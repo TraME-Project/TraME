@@ -74,12 +74,12 @@ void trame::affinity::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, 
     //
 }
 
-trame::mfe<trame::tu> trame::affinity::build_market(const arma::mat& theta)
+trame::mfe<trame::transfers::tu> trame::affinity::build_market(const arma::mat& theta)
 {
     arma::mat Phi_mkt = Phi_xy(arma::vectorise(theta));
     Phi_mkt.reshape(nbX,nbY);
 
-    trame::mfe<trame::tu> mkt_ret;
+    trame::mfe<trame::transfers::tu> mkt_ret;
     mkt_ret.build_TU(n,m,Phi_mkt,&sigma,false);
     //
     return mkt_ret;

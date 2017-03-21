@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * probit class
+ * probit additive random utility model (ARUM) class
  *
  * Keith O'Hara
  * 08/08/2016
@@ -34,38 +34,38 @@
 
 #include "trame.hpp"
 
-trame::probit::probit(int nbX_inp, int nbY_inp)
+trame::arums::probit::probit(int nbX_inp, int nbY_inp)
 {   
     this->build(nbX_inp, nbY_inp);
 }
 
-trame::probit::probit(int nbX_inp, int nbY_inp, bool outsideOption_inp)
+trame::arums::probit::probit(int nbX_inp, int nbY_inp, bool outsideOption_inp)
 {   
     this->build_prv(nbX_inp, nbY_inp, NULL, outsideOption_inp);
 }
 
-trame::probit::probit(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp)
+trame::arums::probit::probit(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp)
 {   
     this->build_prv(nbX_inp, nbY_inp, &rho_inp, outsideOption_inp);
 }
 
-void trame::probit::build(int nbX_inp, int nbY_inp)
+void trame::arums::probit::build(int nbX_inp, int nbY_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
 }
 
-void trame::probit::build(int nbX_inp, int nbY_inp, bool outsideOption_inp)
+void trame::arums::probit::build(int nbX_inp, int nbY_inp, bool outsideOption_inp)
 {   
     this->build_prv(nbX_inp, nbY_inp, NULL, outsideOption_inp);
 }
 
-void trame::probit::build(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp)
+void trame::arums::probit::build(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp)
 {   
     this->build_prv(nbX_inp, nbY_inp, &rho_inp, outsideOption_inp);
 }
 
-void trame::probit::build_prv(int nbX_inp, int nbY_inp, double* rho_inp, bool outsideOption_inp)
+void trame::arums::probit::build_prv(int nbX_inp, int nbY_inp, double* rho_inp, bool outsideOption_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -83,12 +83,12 @@ void trame::probit::build_prv(int nbX_inp, int nbY_inp, double* rho_inp, bool ou
     nbParams = (nbX_inp * aux_nbOptions * (aux_nbOptions-1))/2;
 }
 
-void trame::probit::unifCorrelCovMatrices()
+void trame::arums::probit::unifCorrelCovMatrices()
 {
     this->unifCorrelCovMatrices(rho);
 }
 
-void trame::probit::unifCorrelCovMatrices(double rho_inp)
+void trame::arums::probit::unifCorrelCovMatrices(double rho_inp)
 {
     int i;
     //
@@ -107,7 +107,7 @@ void trame::probit::unifCorrelCovMatrices(double rho_inp)
     //
 }
 
-trame::empirical trame::probit::simul()
+trame::arums::empirical trame::arums::probit::simul()
 {
     empirical emp_obj;
     
@@ -116,7 +116,7 @@ trame::empirical trame::probit::simul()
     return emp_obj;
 }
 
-trame::empirical trame::probit::simul(int* nbDraws, int* seed)
+trame::arums::empirical trame::arums::probit::simul(int* nbDraws, int* seed)
 {
     empirical emp_obj;
     
@@ -125,12 +125,12 @@ trame::empirical trame::probit::simul(int* nbDraws, int* seed)
     return emp_obj;
 }
 
-void trame::probit::simul(empirical& obj_out)
+void trame::arums::probit::simul(empirical& obj_out)
 {
     this->simul(obj_out,NULL,NULL);
 }
 
-void trame::probit::simul(empirical& obj_out, int* nbDraws, int* seed_val)
+void trame::arums::probit::simul(empirical& obj_out, int* nbDraws, int* seed_val)
 {
     int n_draws = 0;
     if (nbDraws) {
