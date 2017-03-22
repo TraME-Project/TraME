@@ -52,16 +52,6 @@ class tu
         void build(const arma::mat& phi_TU, bool need_norm_TU);
         
         void trans();
-        
-        //
-        // MFE-related functions
-        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys) const;
-        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys) const;
-
-        arma::mat Mx0(const arma::mat& a_x) const;
-        arma::mat M0y(const arma::mat& b_y) const;
 
         //
         // DSE-related functions

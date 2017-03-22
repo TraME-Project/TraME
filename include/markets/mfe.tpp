@@ -71,7 +71,7 @@ void mfe<Tm>::trans()
     m = n_temp;
     // Keith: fill in normalization later
 
-    trans_obj.trans();
+    mmfs_obj.trans();
     //
 }
 
@@ -219,7 +219,7 @@ double mfe<Tm>::marg_x_inv_fn(double z, void* opt_data)
     
     double term_1 = (d->coeff) ? z : 0;
     //
-    double ret = term_1 - d->mfe_obj.n(d->x_ind) + arma::accu(d->mfe_obj.trans_obj.M(z,d->B_ys,&x_ind_temp,NULL));
+    double ret = term_1 - d->mfe_obj.n(d->x_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(z,d->B_ys,&x_ind_temp,NULL));
     //
     return ret;
 }
@@ -234,7 +234,7 @@ double mfe<Tm>::marg_y_inv_fn(double z, void* opt_data)
     
     double term_1 = (d->coeff) ? z : 0;
     //
-    double ret = term_1 - d->mfe_obj.m(d->y_ind) + arma::accu(d->mfe_obj.trans_obj.M(d->A_xs,z,NULL,&y_ind_temp));
+    double ret = term_1 - d->mfe_obj.m(d->y_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(d->A_xs,z,NULL,&y_ind_temp));
     //
     return ret;
 }

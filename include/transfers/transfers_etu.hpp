@@ -62,16 +62,6 @@ class etu
         void trans();
 
         //
-        // MFE-related functions
-        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys) const;
-        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys) const;
-
-        arma::mat Mx0(const arma::mat& a_x) const;
-        arma::mat M0y(const arma::mat& b_y) const;
-
-        //
         // DSE-related functions
         arma::mat Psi(const arma::mat& U, const arma::mat& V) const;
         arma::mat Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;

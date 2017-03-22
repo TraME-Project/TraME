@@ -85,15 +85,15 @@ bool ipfp_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, ar
     // Construct the equilibrium outcome based on 'ax' and 'by' obtained above
     if (mu_out || mu_x0_out || mu_0y_out || U_out || V_out || u_out || v_out) {
 
-        arma::mat mu = market.trans_obj.M(ax,by);
+        arma::mat mu = market.mmfs_obj.M(ax,by);
 
         if (mu_out) {
             *mu_out = mu;
         }
         //
         if (mu_x0_out || mu_0y_out || U_out || V_out || u_out || v_out) {
-            arma::vec mu_x0 = market.trans_obj.Mx0(ax);
-            arma::vec mu_0y = market.trans_obj.M0y(by);
+            arma::vec mu_x0 = market.mmfs_obj.Mx0(ax);
+            arma::vec mu_0y = market.mmfs_obj.M0y(by);
 
             if (mu_x0_out) {
                 *mu_x0_out = mu_x0;

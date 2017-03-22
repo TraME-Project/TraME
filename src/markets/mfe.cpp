@@ -53,7 +53,7 @@ void mfe<transfers::etu>::build_ETU(const arma::vec& n_inp, const arma::vec& m_i
     outsideOption = (need_norm_inp) ? false : true;
     sigma = (sigma_inp) ? *sigma_inp : 1.0;
 
-    trans_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
+    mmfs_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
     //
 }
 
@@ -71,7 +71,7 @@ void mfe<transfers::ltu>::build_LTU(const arma::vec& n_inp, const arma::vec& m_i
     outsideOption = (need_norm_inp) ? false : true;
     sigma = (sigma_inp) ? *sigma_inp : 1.0;
     
-    trans_obj.build(lambda_inp,phi_inp/sigma,need_norm_inp);
+    mmfs_obj.build(lambda_inp,phi_inp/sigma,need_norm_inp);
     //
 }
 
@@ -89,7 +89,7 @@ void mfe<transfers::ntu>::build_NTU(const arma::vec& n_inp, const arma::vec& m_i
     outsideOption = (need_norm_inp) ? false : true;
     sigma = (sigma_inp) ? *sigma_inp : 1.0;
 
-    trans_obj.build(alpha_inp/sigma,gamma_inp/sigma,need_norm_inp);
+    mmfs_obj.build(alpha_inp/sigma,gamma_inp/sigma,need_norm_inp);
     //
 }
 
@@ -107,7 +107,7 @@ void mfe<transfers::tu>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp
     outsideOption = (need_norm_inp) ? false : true;
     sigma = (sigma_inp) ? *sigma_inp : 1.0;
 
-    trans_obj.build(phi_inp/sigma,need_norm_inp);
+    mmfs_obj.build(phi_inp/sigma,need_norm_inp);
     //
 }
 
@@ -120,8 +120,8 @@ const
     arma::uvec temp_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     //
     arma::vec a_NTU = n.elem(temp_ind);
-    arma::mat B_NTU = arma::trans( elem_prod(arma::trans(trans_obj.aux_gamma_exp.rows(temp_ind)/trans_obj.aux_alpha_exp.rows(temp_ind)), B_ys) );
-    arma::mat C_NTU = trans_obj.aux_alpha_exp.rows(temp_ind);
+    arma::mat B_NTU = arma::trans( elem_prod(arma::trans(mmfs_obj.aux_gamma_exp.rows(temp_ind)/mmfs_obj.aux_alpha_exp.rows(temp_ind)), B_ys) );
+    arma::mat C_NTU = mmfs_obj.aux_alpha_exp.rows(temp_ind);
 
     arma::vec the_a_xs = inv_pwa(a_NTU, B_NTU, C_NTU, 1.0);
     //
@@ -138,10 +138,10 @@ const
     arma::mat sqrt_B_ys = arma::sqrt(B_ys);
 
     if (!need_norm) {
-        arma::mat b = (trans_obj.aux_phi_exp.rows(temp_ind) * sqrt_B_ys) / 2;
+        arma::mat b = (mmfs_obj.aux_phi_exp.rows(temp_ind) * sqrt_B_ys) / 2;
         sqrt_A_xs = arma::sqrt(n.rows(temp_ind) + b%b) - b;
     } else{
-        sqrt_A_xs = n.elem(temp_ind) / arma::vectorise(trans_obj.aux_phi_exp.rows(temp_ind) * sqrt_B_ys);
+        sqrt_A_xs = n.elem(temp_ind) / arma::vectorise(mmfs_obj.aux_phi_exp.rows(temp_ind) * sqrt_B_ys);
     }
         
     arma::vec the_a_xs = arma::vectorise(sqrt_A_xs % sqrt_A_xs);
@@ -156,8 +156,8 @@ const
     arma::uvec temp_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
     arma::vec a_NTU = m.elem(temp_ind);
-    arma::mat B_NTU = arma::trans( elem_prod(trans_obj.aux_alpha_exp.cols(temp_ind)/trans_obj.aux_gamma_exp.cols(temp_ind), A_xs) );
-    arma::mat C_NTU = arma::trans(trans_obj.aux_gamma_exp.cols(temp_ind));
+    arma::mat B_NTU = arma::trans( elem_prod(mmfs_obj.aux_alpha_exp.cols(temp_ind)/mmfs_obj.aux_gamma_exp.cols(temp_ind), A_xs) );
+    arma::mat C_NTU = arma::trans(mmfs_obj.aux_gamma_exp.cols(temp_ind));
 
     arma::vec the_b_ys = inv_pwa(a_NTU, B_NTU, C_NTU, 1.0);
     //
@@ -174,10 +174,10 @@ const
     arma::mat sqrt_A_xs = arma::sqrt(A_xs);
 
     if (!need_norm) {
-        arma::mat b = arma::trans(sqrt_A_xs.t() * trans_obj.aux_phi_exp.cols(temp_ind)) / 2; // not sure about this
+        arma::mat b = arma::trans(sqrt_A_xs.t() * mmfs_obj.aux_phi_exp.cols(temp_ind)) / 2; // not sure about this
         sqrt_B_ys = arma::sqrt(m.rows(temp_ind) + b%b) - b;
     } else {
-        sqrt_B_ys = m.elem(temp_ind) / arma::vectorise(arma::trans(sqrt_A_xs.t() * trans_obj.aux_phi_exp.cols(temp_ind))); // not sure about this
+        sqrt_B_ys = m.elem(temp_ind) / arma::vectorise(arma::trans(sqrt_A_xs.t() * mmfs_obj.aux_phi_exp.cols(temp_ind))); // not sure about this
     }
         
     arma::vec the_b_ys = arma::vectorise(sqrt_B_ys % sqrt_B_ys);

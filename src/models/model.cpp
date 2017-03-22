@@ -39,13 +39,13 @@ namespace trame
 {
 
 template<>
-void model<arums::logit,transfers::tu>::build_market_TU(const arma::mat& theta)
+void model<arums::logit,mmfs::tu>::build_market_TU(const arma::mat& theta)
 {
     mfe_obj.build_TU(n,m,Phi_xy_theta(theta),NULL,need_norm);
 }
 
 template<>
-bool model<arums::logit,transfers::tu>::solve(arma::mat& mu_sol)
+bool model<arums::logit,mmfs::tu>::solve(arma::mat& mu_sol)
 {
     bool res = mfe_obj.solve(mu_sol,NULL);
     //
@@ -53,7 +53,7 @@ bool model<arums::logit,transfers::tu>::solve(arma::mat& mu_sol)
 }
 
 template<>
-bool model<arums::logit,transfers::tu>::solve(arma::mat& mu_sol, const char* solver)
+bool model<arums::logit,mmfs::tu>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = mfe_obj.solve(mu_sol,solver);
     //
@@ -61,13 +61,13 @@ bool model<arums::logit,transfers::tu>::solve(arma::mat& mu_sol, const char* sol
 }
 
 template<>
-bool model<arums::logit,transfers::tu>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
+bool model<arums::logit,mmfs::tu>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
 {
     bool res = mfe_obj.solve(mu_sol,U,V,solver);
     //
     return res;
 }
-
+/*
 template<>
 void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
 {
@@ -84,10 +84,10 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
     arma::mat dparams_Psi, dparams_G, dparams_H;
     dparam(dtheta,dparams_Psi,NULL,NULL);
 
-    arma::mat du_Psi = mfe_obj.trans_obj.du_Psi(U,V);
+    arma::mat du_Psi = mfe_obj.mmfs_obj.du_Psi(U,V);
     arma::mat dv_Psi = 1.0 - du_Psi;
     //
-    arma::mat dtheta_psis = mfe_obj.trans_obj.dtheta_Psi(U,V,dparams_Psi);
+    arma::mat dtheta_psis = mfe_obj.mmfs_obj.dtheta_Psi(U,V,dparams_Psi);
     arma::vec mu_dthetapsi_vec = arma::vectorise(mu) % arma::vectorise(dtheta_psis);
 
     arma::cube mu_dthetapsi(mu_dthetapsi_vec.memptr(),nbX,nbY,range_params,false);
@@ -108,7 +108,7 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
     arma::mat dlogmu_singles = arma::solve(Delta,numer);
     arma::mat dlogmu_x0 = dlogmu_singles.rows(0,nbX-1);
     arma::mat dlogmu_0y = dlogmu_singles.rows(nbX,nbX+nbY-1);
-}
+}*/
 
 template<>
 bool model<arums::empirical,transfers::tu>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out)

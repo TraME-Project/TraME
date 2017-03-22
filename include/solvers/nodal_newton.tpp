@@ -177,7 +177,7 @@ arma::mat nodal_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
 
     arma::mat mu = d->market.mmf_obj.M(mu_x0_s,mu_0y_s);
     //
-    arma::mat du_s = d->market.trans_obj.du_Psi(us,vs);
+    arma::mat du_s = d->market.mmfs_obj.du_Psi(us,vs);
     arma::mat dv_s = 1.0 - du_s;
 
     arma::mat Delta_11 = arma::diagmat(mu_x0_s + arma::sum(mu%du_s,1));

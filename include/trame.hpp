@@ -29,6 +29,14 @@ namespace trame
         #include "arums/arums_rusc.hpp"
     }
 
+    // matching functions
+    namespace mmfs {
+        #include "mmfs/mmfs_etu.hpp"
+        #include "mmfs/mmfs_ltu.hpp"
+        #include "mmfs/mmfs_ntu.hpp"
+        #include "mmfs/mmfs_tu.hpp"
+    }
+
     // transfers
     namespace transfers {
         #include "transfers/transfers_etu.hpp"

@@ -48,7 +48,7 @@ class mfe
         arma::vec n;
         arma::vec m;
 
-        Tm trans_obj;
+        Tm mmfs_obj;
 
         // member functions
         void build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, double* sigma_inp, bool need_norm_inp);
