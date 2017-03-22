@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * OAP LP for TU
+ * Optimal Assignment Problem (OAP) LP solver for TU case
  *
  * Keith O'Hara
  * 08/16/2016

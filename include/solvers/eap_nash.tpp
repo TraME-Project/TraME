@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * EAP-Nash
+ * Equilibrium Assignment Problem (EAP) - Nash
  *
  * Keith O'Hara
  * 08/16/2016

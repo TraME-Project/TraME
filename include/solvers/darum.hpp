@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * Deferred Acceptance Algorithm for NTU_general
+ * Deferred Acceptance (DA) algorithm for general ARUMs with NTU
  *
  * Keith O'Hara
  * 08/16/2016

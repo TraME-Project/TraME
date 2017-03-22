@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * max_welfare for TU_general
+ * max_welfare for general ARUMs with TU
  *
  * Keith O'Hara
  * 08/16/2016

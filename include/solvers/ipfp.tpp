@@ -23,7 +23,7 @@
   ################################################################################*/
 
 /*
- * ipfp for logit
+ * Iterated Proportional Fitting Procedure (IPFP) for MFE-type markets
  *
  * Keith O'Hara
  * 08/16/2016
