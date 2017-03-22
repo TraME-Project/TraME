@@ -130,3 +130,8 @@ install: $(SHLIB)
 	@cp $(TRAME_DIR)/$(SHLIB) $(INSTALL_PATH)/lib/$(SHLIB)
 	@mkdir -p $(INSTALL_PATH)/include/trame
 	@cp -r $(TRAME_DIR)/include/* $(INSTALL_PATH)/include/trame
+
+.PHONY: uninstall
+uninstall: $(SHLIB)
+	@rm $(INSTALL_PATH)/lib/$(SHLIB)
+	@rm -rf $(INSTALL_PATH)/include/trame

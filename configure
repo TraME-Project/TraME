@@ -23,7 +23,7 @@ fi
 
 TRAME_OPT_FLAGS="-O2"
 TRAME_SHLIB_NAME="libtrame.so"
-TRAME_INSTALL_PATH="/opt/local"
+TRAME_INSTALL_PATH="/usr/local"
 
 if [[ $OSTYPE == darwin* ]] ; then
     if [[ !(-z ${TRAME_R_VERSION+x}) ]]; then 
