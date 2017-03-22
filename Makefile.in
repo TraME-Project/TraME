@@ -45,8 +45,8 @@ LIBS= -lgfortran @TRAME_BLAS_LAPACK@
 # core TraME files
 OBJECTS_TRAME_F90= $(TRAME_SRC_DIR)/prob/prob.o $(TRAME_SRC_DIR)/math/quadpack_double.o $(TRAME_SRC_DIR)/prob/trame_F90_aux.o
 
-SOURCES_TRAME_AUX= $(TRAME_SRC_DIR)/aux/inv_pwa.cpp $(TRAME_SRC_DIR)/aux/logit_transform.cpp $(TRAME_SRC_DIR)/aux/trame_stats.cpp $(TRAME_SRC_DIR)/aux/zeroin.cpp
-OBJECTS_TRAME_AUX= $(SOURCES_TRAME_AUX:.cpp=.o)
+SOURCES_TRAME_ANC= $(TRAME_SRC_DIR)/ancillary/inv_pwa.cpp $(TRAME_SRC_DIR)/ancillary/logit_transform.cpp $(TRAME_SRC_DIR)/ancillary/trame_stats.cpp $(TRAME_SRC_DIR)/ancillary/zeroin.cpp
+OBJECTS_TRAME_ANC= $(SOURCES_TRAME_ANC:.cpp=.o)
 
 SOURCES_TRAME_ARUMS= $(TRAME_SRC_DIR)/arums/arums_empirical.cpp $(TRAME_SRC_DIR)/arums/arums_logit.cpp $(TRAME_SRC_DIR)/arums/arums_none.cpp $(TRAME_SRC_DIR)/arums/arums_probit.cpp $(TRAME_SRC_DIR)/arums/arums_rsc.cpp $(TRAME_SRC_DIR)/arums/arums_rusc.cpp
 OBJECTS_TRAME_ARUMS= $(SOURCES_TRAME_ARUMS:.cpp=.o)
@@ -69,7 +69,7 @@ OBJECTS_TRAME_SLVRS= $(SOURCES_TRAME_SLVRS:.cpp=.o)
 SOURCES_TRAME_TRANS= $(TRAME_SRC_DIR)/transfers/transfers_etu.cpp $(TRAME_SRC_DIR)/transfers/transfers_ltu.cpp $(TRAME_SRC_DIR)/transfers/transfers_ntu.cpp $(TRAME_SRC_DIR)/transfers/transfers_tu.cpp
 OBJECTS_TRAME_TRANS= $(SOURCES_TRAME_TRANS:.cpp=.o)
 
-OBJECTS_TRAME= $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_TRAME_F90) $(OBJECTS_TRAME_AUX) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_MKTS) $(OBJECTS_TRAME_MMFS) $(OBJECTS_TRAME_MDLS) $(OBJECTS_TRAME_OPTIM) $(OBJECTS_TRAME_SLVRS) $(OBJECTS_TRAME_TRANS)
+OBJECTS_TRAME= $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_TRAME_F90) $(OBJECTS_TRAME_ANC) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_MKTS) $(OBJECTS_TRAME_MMFS) $(OBJECTS_TRAME_MDLS) $(OBJECTS_TRAME_OPTIM) $(OBJECTS_TRAME_SLVRS) $(OBJECTS_TRAME_TRANS)
 
 all: $(TRAME_DIR)/$(SHLIB) $(OBJECTS_TRAME)
 
@@ -80,7 +80,7 @@ $(OBJECTS_LP): $(SOURCES_LP)
 $(OBJECTS_LPXX): $(SOURCES_LPXX)
 	$(CXX) $(CXXFLAGS) $^ -c -o $@
 
-# aux and Fortran code
+# anc and Fortran code
 $(TRAME_SRC_DIR)/prob/prob.o: $(TRAME_SRC_DIR)/prob/prob.f90
 	$(FC) $(FFLAGS) $^ -c -o $@
 
@@ -90,7 +90,7 @@ $(TRAME_SRC_DIR)/math/quadpack_double.o: $(TRAME_SRC_DIR)/math/quadpack_double.f
 $(TRAME_SRC_DIR)/prob/trame_F90_aux.o: $(TRAME_SRC_DIR)/prob/trame_F90_aux.f90
 	$(FC) $(FFLAGS) $^ -c -o $@
 
-$(TRAME_SRC_DIR)/aux/%.o: $(TRAME_SRC_DIR)/aux/%.cpp
+$(TRAME_SRC_DIR)/ancillary/%.o: $(TRAME_SRC_DIR)/ancillary/%.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 $(TRAME_SRC_DIR)/optim/%.o: $(TRAME_SRC_DIR)/optim/%.cpp

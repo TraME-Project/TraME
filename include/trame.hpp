@@ -9,12 +9,12 @@
 
 namespace trame
 {
-    #include "aux/trame_aux.hpp"
-    #include "aux/trame_stats.hpp"
-    #include "aux/logit_transform.hpp"
+    #include "ancillary/trame_aux.hpp"
+    #include "ancillary/trame_stats.hpp"
+    #include "ancillary/logit_transform.hpp"
 
-    #include "aux/inv_pwa.hpp"
-    #include "aux/zeroin.hpp"
+    #include "ancillary/inv_pwa.hpp"
+    #include "ancillary/zeroin.hpp"
 
     #include "lp/generic_lp.hpp"
     #include "optim/optim.hpp"
