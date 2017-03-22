@@ -51,6 +51,7 @@ namespace trame
 
     // solvers
     #include "solvers/aux_solvers.hpp"
+    
     #include "solvers/arc_newton.hpp"
     #include "solvers/cupids_lp.hpp"
     #include "solvers/darum.hpp"

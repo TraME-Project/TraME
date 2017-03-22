@@ -29,13 +29,13 @@
  * 08/25/2016
  *
  * This version:
- * 02/15/2017
+ * 03/22/2017
  */
 
 // internal cupids_lp
 
-template<typename Ta, typename Tm>
-bool cupids_lp_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out)
+template<typename Tg, typename Th, typename Tm>
+bool cupids_lp_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out)
 {
     bool success = false;
     //
@@ -50,8 +50,8 @@ bool cupids_lp_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0
     arma::vec n = market.n;
     arma::vec m = market.m;
 
-    Ta arums_G = market.arums_G;
-    Ta arums_H = market.arums_H;
+    Tg arums_G = market.arums_G;
+    Th arums_H = market.arums_H;
 
     Tm trans_obj = market.trans_obj;
 
@@ -222,24 +222,24 @@ bool cupids_lp_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0
 
 // wrappers
 
-template<typename Ta, typename Tm>
-bool cupids_lp(const dse<Ta,Tm>& market, arma::mat& mu_out)
+template<typename Tg, typename Th, typename Tm>
+bool cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
 {
     bool res = cupids_lp_int(market,&mu_out,NULL,NULL,NULL,NULL);
 
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool cupids_lp(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
+template<typename Tg, typename Th, typename Tm>
+bool cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = cupids_lp_int(market,&mu_out,NULL,NULL,&U_out,&V_out);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool cupids_lp(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out)
+template<typename Tg, typename Th, typename Tm>
+bool cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = cupids_lp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out);
 

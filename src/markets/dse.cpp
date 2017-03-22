@@ -30,7 +30,7 @@
  * 08/17/2016
  *
  * This version:
- * 03/14/2017
+ * 03/22/2017
  */
 
 #include "trame.hpp"
@@ -40,7 +40,7 @@ namespace trame
 
 // we specialize because cupids_lp is only define for empirical classes
 template<>
-bool dse<arums::empirical,transfers::tu>::solve(arma::mat& mu_sol, const char* solver)
+bool dse<arums::empirical,arums::empirical,transfers::tu>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);

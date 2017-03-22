@@ -34,11 +34,11 @@
  * used in 'jacobi' solver and arc_newton
  *
  * Keith O'Hara
- * 08/25/2016
+ * 03/22/2017
  */
 
-template<typename Ta, typename Tm>
-arma::mat w_upper_bound(const dse<Ta,Tm>& market)
+template<typename Tg, typename Th, typename Tm>
+arma::mat w_upper_bound(const dse<Tg,Th,Tm>& market)
 {
     int nbX = market.nbX;
     int nbY = market.nbY;
@@ -46,8 +46,8 @@ arma::mat w_upper_bound(const dse<Ta,Tm>& market)
     arma::vec n = market.n;
     arma::vec m = market.m;
 
-    Ta arums_G = market.arums_G;
-    Ta arums_H = market.arums_H;
+    Tg arums_G = market.arums_G;
+    Th arums_H = market.arums_H;
 
     Tm trans_obj = market.trans_obj;
     int transfers_type = trans_obj.transfers_type;

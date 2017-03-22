@@ -29,34 +29,34 @@
  * 08/16/2016
  *
  * This version:
- * 02/15/2017
+ * 03/22/2017
  */
 
 #ifndef _trame_darum_HPP
 #define _trame_darum_HPP
 
 // internal function
-template<typename Ta, typename Tm>
-bool darum_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp);
+template<typename Tg, typename Th, typename Tm>
+bool darum_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp);
 
 // wrappers
-template<typename Ta, typename Tm>
-bool darum(const dse<Ta,Tm>& market, arma::mat& mu_out);
+template<typename Tg, typename Th, typename Tm>
+bool darum(const dse<Tg,Th,Tm>& market, arma::mat& mu_out);
 
-template<typename Ta, typename Tm>
-bool darum(const dse<Ta,Tm>& market, arma::mat& mu_out, const double& tol_inp);
+template<typename Tg, typename Th, typename Tm>
+bool darum(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const double& tol_inp);
 
-template<typename Ta, typename Tm>
-bool darum(const dse<Ta,Tm>& market, arma::mat& mu_out, const int& max_iter_inp);
+template<typename Tg, typename Th, typename Tm>
+bool darum(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const int& max_iter_inp);
 
-template<typename Ta, typename Tm>
-bool darum(const dse<Ta,Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+template<typename Tg, typename Th, typename Tm>
+bool darum(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
 
-template<typename Ta, typename Tm>
-bool darum(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
+template<typename Tg, typename Th, typename Tm>
+bool darum(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
-template<typename Ta, typename Tm>
-bool darum(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp);
+template<typename Tg, typename Th, typename Tm>
+bool darum(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp);
 
 #include "darum.tpp"
 

@@ -29,25 +29,25 @@
  * 08/25/2016
  *
  * This version:
- * 02/15/2017
+ * 03/22/2017
  */
 
 #ifndef _trame_cupids_lp_HPP
 #define _trame_cupids_lp_HPP
 
 // internal function
-template<typename Ta, typename Tm>
-bool cupids_lp_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out);
+template<typename Tg, typename Th, typename Tm>
+bool cupids_lp_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out);
 
 // wrappers
-template<typename Ta, typename Tm>
-bool cupids_lp(const dse<Ta,Tm>& market, arma::mat& mu_out);
+template<typename Tg, typename Th, typename Tm>
+bool cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out);
 
-template<typename Ta, typename Tm>
-bool cupids_lp(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
+template<typename Tg, typename Th, typename Tm>
+bool cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
-template<typename Ta, typename Tm>
-bool cupids_lp(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out);
+template<typename Tg, typename Th, typename Tm>
+bool cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out);
 
 #include "cupids_lp.tpp"
 

@@ -29,10 +29,10 @@
  * 08/17/2016
  *
  * This version:
- * 02/15/2017
+ * 03/22/2017
  */
 
-template<class Ta, class Tm>
+template<class Tg, class Th, class Tm>
 class dse
 {
     public:
@@ -55,21 +55,21 @@ class dse
 
         Tm trans_obj;
 
-        Ta arums_G;
-        Ta arums_H;
+        Tg arums_G;
+        Th arums_H;
 
         // member functions
         void build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, bool need_norm_inp);
-        void build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp);
-        template<typename T> void build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        void build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
+        template<typename Ta, typename Tb> void build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
         void build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp);
-        void build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp);
-        template<typename T> void build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        void build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
+        template<typename Ta, typename Tb> void build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
         void build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda, const arma::mat& phi, bool need_norm_inp);
-        void build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Ta& arums_G_inp, const Ta& arums_H_inp, bool need_norm_inp);
-        template<typename T> void build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, T arums_G_inp, T arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        void build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
+        template<typename Ta, typename Tb> void build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
         void trans();
 

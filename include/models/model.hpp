@@ -29,10 +29,10 @@
  * 11/19/2016
  *
  * This version:
- * 03/14/2017
+ * 03/22/2017
  */
 
-template<class Ta, class Tm>
+template<class Tg, class Th, class Tm>
 class model
 {
     public:
@@ -52,7 +52,7 @@ class model
         arma::cube phi_xyk;
 
         mfe<Tm> mfe_obj;
-        dse<Ta,Tm> market_obj;
+        dse<Tg,Th,Tm> market_obj;
         // member functions
         void build(const arma::cube& phi_xyk_inp);
         void build(const arma::cube& phi_xyk_inp, const arma::vec& n_inp, const arma::vec& m_inp);
@@ -60,7 +60,7 @@ class model
         void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp);
 
         void build_market_TU(const arma::mat& theta);
-        void build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Ta& arums_H_inp);
+        void build_market_TU(const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp);
         template<typename T> void build_market_TU(const arma::mat& theta, T arums_G_inp, T arums_H_inp, int nbDraws, int seed);
 
         void dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out);
@@ -95,17 +95,17 @@ class model
         static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 
-template<typename Ta, typename Tm>
+template<typename Tg, typename Th, typename Tm>
 struct trame_model_mme_opt_data {
     int nbParams;
 
     arma::mat C_hat;
     arma::mat kron_term;
 
-    dse<Ta,Tm> market;
+    dse<Tg,Th,Tm> market;
 };
 
-template<typename Ta, typename Tm>
+template<typename Tg, typename Th, typename Tm>
 struct trame_model_mle_opt_data {
     bool by_individual;
     double scale;
@@ -114,7 +114,7 @@ struct trame_model_mle_opt_data {
     arma::vec mu_hat_x0;
     arma::vec mu_hat_0y;
 
-    model<Ta,Tm> model_obj;
+    model<Tg,Th,Tm> model_obj;
 };
 
 #include "model.tpp"

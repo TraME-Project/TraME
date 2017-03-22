@@ -29,13 +29,13 @@
  * 08/16/2016
  *
  * This version:
- * 03/15/2017
+ * 03/22/2017
  */
 
 // internal eap_nash
 
-template<typename Ta, typename Tm>
-bool eap_nash_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* u_out, arma::mat* v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp)
+template<typename Tg, typename Th, typename Tm>
+bool eap_nash_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* u_out, arma::mat* v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp)
 {
     bool success = false;
     //
@@ -142,80 +142,80 @@ bool eap_nash_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_
 
 // wrappers
 
-template<typename Ta, typename Tm>
-bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out)
+template<typename Tg, typename Th, typename Tm>
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
 {
     bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp)
+template<typename Tg, typename Th, typename Tm>
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp)
 {
     bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&xFirst_inp,NULL,NULL);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const double& tol_inp)
+template<typename Tg, typename Th, typename Tm>
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const double& tol_inp)
 {
     bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const int& max_iter_inp)
+template<typename Tg, typename Th, typename Tm>
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const int& max_iter_inp)
 {
     bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp)
+template<typename Tg, typename Th, typename Tm>
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp)
 {
     bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&xFirst_inp,&tol_inp,NULL);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const int& max_iter_inp)
+template<typename Tg, typename Th, typename Tm>
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const int& max_iter_inp)
 {
     bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
+template<typename Tg, typename Th, typename Tm>
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
 {
     bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp, const int& max_iter_inp)
+template<typename Tg, typename Th, typename Tm>
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp, const int& max_iter_inp)
 {
     bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&xFirst_inp,&tol_inp,&max_iter_inp);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::mat& u_out, arma::mat& v_out)
+template<typename Tg, typename Th, typename Tm>
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& u_out, arma::mat& v_out)
 {
     bool res = eap_nash_int(market,&mu_out,NULL,NULL,&u_out,&v_out,NULL,NULL,NULL);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool eap_nash(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp)
+template<typename Tg, typename Th, typename Tm>
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp)
 {
     bool res = eap_nash_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&u_out,&v_out,xFirst_inp,tol_inp,max_iter_inp);
     

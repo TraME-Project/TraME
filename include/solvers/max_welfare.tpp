@@ -29,13 +29,13 @@
  * 08/16/2016
  *
  * This version:
- * 02/21/2017
+ * 03/22/2017
  */
 
 // internal max_welfare
 
-template<typename Ta>
-bool max_welfare_int(const dse<Ta,transfers::tu>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp)
+template<typename Tg, typename Th>
+bool max_welfare_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp)
 {
     bool success = false;
     //
@@ -51,19 +51,19 @@ bool max_welfare_int(const dse<Ta,transfers::tu>& market, arma::mat* mu_out, arm
     int nbX = market.nbX;
     int nbY = market.nbY;
 
-    trame_market_opt_data<Ta,transfers::tu> opt_data;
+    trame_market_opt_data<Tg,Tg,transfers::tu> opt_data;
     opt_data.market = market;
 
     double obj_val = 0;
     arma::vec sol_vec = arma::vectorise(market.trans_obj.phi / 2.0);
     
-    success = max_welfare_optim(sol_vec,max_welfare_opt_objfn<Ta,transfers::tu>,&opt_data,&obj_val,&tol,&max_iter);
+    success = max_welfare_optim(sol_vec,max_welfare_opt_objfn<Tg,Th,transfers::tu>,&opt_data,&obj_val,&tol,&max_iter);
     //
     // construct equilibrium objects
     arma::mat U = arma::reshape(sol_vec,nbX,nbY);
 
-    Ta* arums_G = const_cast<Ta*>(&market.arums_G); // Keith: this recast is unsafe, change later
-    Ta* arums_H = const_cast<Ta*>(&market.arums_H);
+    Tg* arums_G = const_cast<Tg*>(&market.arums_G); // Keith: this recast is unsafe, change later
+    Th* arums_H = const_cast<Th*>(&market.arums_H);
     
     arma::mat mu_G, mu_H;
     double val_G = arums_G->G(market.n,U,mu_G);
@@ -99,48 +99,48 @@ bool max_welfare_int(const dse<Ta,transfers::tu>& market, arma::mat* mu_out, arm
 
 // wrappers 
 
-template<typename Ta, typename Tm>
-bool max_welfare(const dse<Ta,Tm>& market, arma::mat& mu_out)
+template<typename Tg, typename Th, typename Tm>
+bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
 {
     bool res = max_welfare_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool max_welfare(const dse<Ta,Tm>& market, arma::mat& mu_out, const double& tol_inp)
+template<typename Tg, typename Th, typename Tm>
+bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const double& tol_inp)
 {
     bool res = max_welfare_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool max_welfare(const dse<Ta,Tm>& market, arma::mat& mu_out, const int& max_iter_inp)
+template<typename Tg, typename Th, typename Tm>
+bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const int& max_iter_inp)
 {
     bool res = max_welfare_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool max_welfare(const dse<Ta,Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
+template<typename Tg, typename Th, typename Tm>
+bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
 {
     bool res = max_welfare_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool max_welfare(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
+template<typename Tg, typename Th, typename Tm>
+bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = max_welfare_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL,NULL);
     
     return res;
 }
 
-template<typename Ta, typename Tm>
-bool max_welfare(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* tol_inp, const int* max_iter_inp)
+template<typename Tg, typename Th, typename Tm>
+bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* tol_inp, const int* max_iter_inp)
 {
     bool res = max_welfare_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,&val_out,tol_inp,max_iter_inp);
     
@@ -149,10 +149,10 @@ bool max_welfare(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_o
 
 // optimization function
 
-template<typename Ta, typename Tm>
+template<typename Tg, typename Th, typename Tm>
 double max_welfare_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void *opt_data)
 {
-    trame_market_opt_data<Ta,Tm> *d = reinterpret_cast<trame_market_opt_data<Ta,Tm>*>(opt_data);
+    trame_market_opt_data<Tg,Th,Tm> *d = reinterpret_cast<trame_market_opt_data<Tg,Th,Tm>*>(opt_data);
     //
     int nbX = d->market.nbX;
     int nbY = d->market.nbY;
@@ -173,7 +173,7 @@ double max_welfare_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void *o
 }
 
 /*
-template<typename Ta, typename Tm>
+template<typename Tg, typename Th, typename Tm>
 double max_welfare_opt_objfn(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data)
 {
     trame_market_opt_data<Ta> *d = reinterpret_cast<trame_market_opt_data<Ta>*>(opt_data);
@@ -200,8 +200,8 @@ double max_welfare_opt_objfn(const std::vector<double> &x_inp, std::vector<doubl
 */
 
 /*
-template<typename Ta, typename Tm>
-bool max_welfare_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp)
+template<typename Tg, typename Th, typename Tm>
+bool max_welfare_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp)
 {
     bool success = false;
     //

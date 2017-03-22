@@ -29,34 +29,34 @@
  * 01/17/2016
  *
  * This version:
- * 02/15/2017
+ * 03/22/2017
  */
 
 #ifndef _trame_arc_newton_HPP
 #define _trame_arc_newton_HPP
 
 // internal function
-template<typename Ta, typename Tm>
-bool arc_newton_int(const dse<Ta,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp);
+template<typename Tg, typename Th, typename Tm>
+bool arc_newton_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp);
 
 // wrappers
-template<typename Ta, typename Tm>
-bool arc_newton(const dse<Ta,Tm>& market, arma::mat& mu_out);
+template<typename Tg, typename Th, typename Tm>
+bool arc_newton(const dse<Tg,Th,Tm>& market, arma::mat& mu_out);
 
-template<typename Ta, typename Tm>
-bool arc_newton(const dse<Ta,Tm>& market, arma::mat& mu_out, const double& tol_inp);
+template<typename Tg, typename Th, typename Tm>
+bool arc_newton(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const double& tol_inp);
 
-template<typename Ta, typename Tm>
-bool arc_newton(const dse<Ta,Tm>& market, arma::mat& mu_out, const int& max_iter_inp);
+template<typename Tg, typename Th, typename Tm>
+bool arc_newton(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const int& max_iter_inp);
 
-template<typename Ta, typename Tm>
-bool arc_newton(const dse<Ta,Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+template<typename Tg, typename Th, typename Tm>
+bool arc_newton(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
 
-template<typename Ta, typename Tm>
-bool arc_newton(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
+template<typename Tg, typename Th, typename Tm>
+bool arc_newton(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
-template<typename Ta, typename Tm>
-bool arc_newton(const dse<Ta,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* tol_inp, const int* max_iter_inp);
+template<typename Tg, typename Th, typename Tm>
+bool arc_newton(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* tol_inp, const int* max_iter_inp);
 
 // optimization-related functions
 
@@ -65,10 +65,10 @@ bool arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const a
 bool arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
                                std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data);
 
-template<typename Ta, typename Tm>
+template<typename Tg, typename Th, typename Tm>
 arma::vec arc_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data);
 
-template<typename Ta, typename Tm>
+template<typename Tg, typename Th, typename Tm>
 arma::mat arc_newton_jacobian(const arma::vec& vals_inp, void *jacob_data);
 
 #include "arc_newton.tpp"
