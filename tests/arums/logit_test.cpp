@@ -51,7 +51,7 @@ int main()
     
     std::cout << "G(U) and G-sim(U): \n" << G_val << " and " << G_sim_val << std::endl;
     arma::cout << "\nG -> mu: \n" << mu_sol << "\nG-sim -> mu: \n" << mu_sol_sim << arma::endl;
-    arma::cout << "sum(mu)" << arma::sum(mu_sol,1) << arma::endl;
+    arma::cout << "mu normalized" << trame::elem_div(mu_sol,n) << arma::endl;
     //
     // solution to dual problem U*
     arma::mat U_star, U_star_sim;

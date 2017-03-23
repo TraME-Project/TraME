@@ -274,14 +274,14 @@ void trame::arums::logit::D2G(arma::mat& H, const arma::vec& n, const arma::mat&
 arma::mat trame::arums::logit::D2Gstar(const arma::vec& n, bool x_first)
 {
     arma::mat ret;
-    this->D2Gstar(ret,n,x_first);
+    this->D2Gstar(ret,n,mu,x_first);
     //
     return ret;
 }
 
 void trame::arums::logit::D2Gstar(arma::mat &ret, const arma::vec& n, bool x_first)
 {
-    this->D2Gstar(ret,n,mu_sol,x_first);
+    this->D2Gstar(ret,n,mu,x_first);
 }
 
 arma::mat trame::arums::logit::D2Gstar(const arma::vec& n, const arma::mat& mu_inp, bool x_first)

@@ -361,14 +361,14 @@ double trame::arums::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_
 arma::mat trame::arums::rsc::D2Gstar(const arma::vec& n, bool x_first)
 {
     arma::mat ret;
-    this->D2Gstar(ret,n,mu_sol,x_first);
+    this->D2Gstar(ret,n,mu,x_first);
     //
     return ret;
 }
 
 void trame::arums::rsc::D2Gstar(arma::mat& ret, const arma::vec& n, bool x_first)
 {
-    this->D2Gstar(ret,n,mu_sol,x_first);
+    this->D2Gstar(ret,n,mu,x_first);
 }
 
 arma::mat trame::arums::rsc::D2Gstar(const arma::vec& n, const arma::mat& mu_inp, bool x_first)
@@ -383,7 +383,7 @@ void trame::arums::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, const arma:
 {
     hess.zeros(nbX*nbY,nbX*nbY);
 
-    arma::vec mu_x0 = n - arma::sum(mu,1);
+    arma::vec mu_x0 = n - arma::sum(mu_inp,1);
 
     arma::umat mat_inds(nbY,nbX); // indices to place the results (complicated)
     for (int i=0; i < nbX; i++) {
