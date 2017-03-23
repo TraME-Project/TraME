@@ -95,11 +95,15 @@ class rsc
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out);
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
         
-        arma::mat D2Gstar(const arma::vec& n, bool xFirst);
-        void D2Gstar(arma::mat &H, const arma::vec& n, bool xFirst);
-        void D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, bool xFirst);
+        arma::mat D2Gstar(const arma::vec& n, bool x_first);
+        void D2Gstar(arma::mat &ret, const arma::vec& n, bool x_first);
+        arma::mat D2Gstar(const arma::vec& n, const arma::mat& mu_inp, bool x_first);
+        void D2Gstar(arma::mat &hess, const arma::vec& n, const arma::mat& mu_inp, bool x_first);
 
-        void dtheta_NablaGstar(arma::mat& ret, const arma::vec& n, arma::mat* dtheta, bool x_first);
+        arma::mat dtheta_NablaGstar(const arma::vec& n, arma::mat* dtheta_inp, bool x_first);
+        void dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dtheta_inp, bool x_first);
+        arma::mat dtheta_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dtheta_inp, bool x_first);
+        void dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dtheta_inp, bool x_first);
         
         empirical simul();
         empirical simul(int* nbDraws, int* seed);

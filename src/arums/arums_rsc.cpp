@@ -358,58 +358,32 @@ double trame::arums::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_
     return ret;
 }
 
-arma::mat trame::arums::rsc::D2Gstar(const arma::vec& n, bool xFirst)
+arma::mat trame::arums::rsc::D2Gstar(const arma::vec& n, bool x_first)
 {
     arma::mat ret;
-    this->D2Gstar(ret,n,xFirst);
+    this->D2Gstar(ret,n,mu_sol,x_first);
     //
     return ret;
 }
 
-void trame::arums::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, bool x_first)
+void trame::arums::rsc::D2Gstar(arma::mat& ret, const arma::vec& n, bool x_first)
 {
-    hess.zeros(nbX*nbY,nbX*nbY);
+    this->D2Gstar(ret,n,mu_sol,x_first);
+}
 
-    arma::vec mu_x0 = n - arma::sum(mu,1);
-
-    arma::umat mat_inds(nbY,nbX); // indices to place the results (complicated)
-    for (int i=0; i < nbX; i++) {
-        for (int j=0; j < nbY; j++) {
-            if (x_first) {
-                mat_inds(j,i) = i + j*nbX;
-            } else {
-                mat_inds(j,i) = i*nbY + j;
-            }
-        }
-    }
+arma::mat trame::arums::rsc::D2Gstar(const arma::vec& n, const arma::mat& mu_inp, bool x_first)
+{
+    arma::mat ret;
+    this->D2Gstar(ret,n,mu_inp,x_first);
     //
-    arma::mat C, d_mu_e_temp, d_mu_e;
-    arma::vec ts_temp(nbY+1), ts_full, erestr_temp, erestr, erestr_pdf;
-
-    for (int i=0; i < nbX; i++) {
-        C = - arma::trans( arma::repmat(aux_Influence_rhs.slice(i) * zeta.row(i).t(),1,nbY) % aux_Influence_lhs.slice(i).t() );
-
-        ts_temp.rows(0,nbY-1) = mu.row(i).t();
-        ts_temp(nbY) = mu_x0(i);
-
-        ts_full = aux_DinvPsigma.slice(i) * ts_temp / n(i);
-        //
-        erestr_temp = quantile(ts_full);
-        erestr = erestr_temp.rows(0,nbY-1);
-        erestr_pdf = pdf(erestr);
-        //
-        d_mu_e_temp = arma::join_cols(arma::zeros(1,nbY),arma::diagmat(1 / erestr_pdf)) * aux_DinvPsigma.slice(i).rows(0,nbY-1);
-        d_mu_e = d_mu_e_temp.cols(0,nbY-1) - arma::repmat(d_mu_e_temp.col(nbY),1,nbY);
-        //
-        hess(mat_inds.col(i),mat_inds.col(i)) = C * d_mu_e / n(i);
-    }
+    return ret;
 }
 
 void trame::arums::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, const arma::mat& mu_inp, bool x_first)
 {
     hess.zeros(nbX*nbY,nbX*nbY);
 
-    arma::vec mu_x0 = n - arma::sum(mu_inp,1);
+    arma::vec mu_x0 = n - arma::sum(mu,1);
 
     arma::umat mat_inds(nbY,nbX); // indices to place the results (complicated)
     for (int i=0; i < nbX; i++) {
@@ -444,7 +418,28 @@ void trame::arums::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, const arma:
     }
 }
 
-void trame::arums::rsc::dtheta_NablaGstar(arma::mat& ret, const arma::vec& n, arma::mat* dtheta, bool x_first)
+arma::mat trame::arums::rsc::dtheta_NablaGstar(const arma::vec& n, arma::mat* dtheta_inp, bool x_first)
+{
+    arma::mat ret;
+    this->dtheta_NablaGstar(ret,n,mu_sol,dtheta_inp,x_first);
+    //
+    return ret;
+}
+
+void trame::arums::rsc::dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dtheta_inp, bool x_first)
+{
+    this->dtheta_NablaGstar(ret,n,mu_sol,dtheta_inp,x_first);
+}
+
+arma::mat trame::arums::rsc::dtheta_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dtheta_inp, bool x_first)
+{
+    arma::mat ret;
+    this->dtheta_NablaGstar(ret,n,mu_inp,dtheta_inp,x_first);
+    //
+    return ret;
+}
+
+void trame::arums::rsc::dtheta_NablaGstar(arma::mat& ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dtheta, bool x_first)
 {
     arma::mat dtheta_mat = (dtheta) ? *dtheta : arma::eye(nbParams,nbParams);
 
@@ -480,8 +475,8 @@ void trame::arums::rsc::dtheta_NablaGstar(arma::mat& ret, const arma::vec& n, ar
     arma::vec ts_temp(nbY+1), ts_full, ts;
 
     for (int i=0; i<nbX; i++) {
-        ts_temp.rows(0,nbY-1) = mu.row(i).t();
-        ts_temp(nbY) = n(i) - arma::accu(mu.row(i));
+        ts_temp.rows(0,nbY-1) = mu_inp.row(i).t();
+        ts_temp(nbY) = n(i) - arma::accu(mu_inp.row(i));
 
         arma::vec ts_full = aux_DinvPsigma.slice(i) * ts_temp / n(i);
         arma::vec ts = ts_full.rows(0,nbY-1);
