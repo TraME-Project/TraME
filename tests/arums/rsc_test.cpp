@@ -6,7 +6,7 @@
  *
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/arums
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I/opt/local/include/trame rsc_test.cpp -o rsc.test -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/usr/local/include/trame rsc_test.cpp -o rsc.test -L/usr/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -25,61 +25,50 @@ int main()
     mu << 1.0 << 3.0 << 1.0 << arma::endr
        << 2.0 << 1.0 << 3.0 << arma::endr;
 
-    //
-    // results
-    printf("\n*===================   Start of RSC Test   ===================*\n");
-    printf("\n");
-    printf("Inputs: \n");
-    arma::cout << "\nU: \n" << U << arma::endl;
-    arma::cout << "mu: \n" << mu << arma::endl;
-    //
-    // setup RSC class object
     int nbX = U.n_rows;
     int nbY = U.n_cols;
 
     arma::vec n = arma::sum(mu,1) + 1.0;
+    //
+    // results
+    printf("\n*===================   Start of RSC Test   ===================*\n");
+    printf("\n");
+    arma::cout << "\nU: \n" << U << arma::endl;
+    arma::cout << "mu: \n" << mu << arma::endl;
+    //
+    // setup
+    arma::mat zeta_temp(1,nbY+1);
+    zeta_temp(0,0) = 0.1; zeta_temp(0,1) = 0.2; zeta_temp(0,2) = 0.3; zeta_temp(0,3) = 0.0;
 
-    arma::mat z_temp(1,nbY+1);
-    z_temp(0,0) = 0.1; z_temp(0,1) = 0.2; z_temp(0,2) = 0.3; z_temp(0,3) = 0.0;
-
-    arma::mat zeta = arma::ones(nbX,1) * z_temp;
+    arma::mat zeta = arma::ones(nbX,1) * zeta_temp;
 
     arma::cout << "zeta: \n" << zeta << arma::endl;
     //
-    // RSC object
-    trame::rsc rsc_obj;
-    rsc_obj.U = U;
-    rsc_obj.mu = mu;
-
+    trame::arums::rsc rsc_obj;
     rsc_obj.build_beta(zeta,2.0,2.0);
     //
     // empirical object:
-    int sim_seed = 1777;
-    int n_draws = 1000;
+    int sim_seed = 1777, n_draws = 1000;
     trame::arums::empirical rsc_sim;
-    
     rsc_obj.simul(rsc_sim, &n_draws, &sim_seed);
-    
-    rsc_sim.U = U;
-    rsc_sim.mu = mu;
     //
     // first compute optimal assignment (mu)
-    double G_val = rsc_obj.G(n);
-    double G_sim_val = rsc_sim.G(n);
+    arma::mat mu_sol, mu_sol_sim;
 
+    double G_val = rsc_obj.G(n,U,mu_sol);
+    double G_sim_val = rsc_sim.G(n,U,mu_sol_sim);
+    
     std::cout << "G(U) and G-sim(U): \n" << G_val << " and " << G_sim_val << std::endl;
-
-    arma::cout << "\nG -> mu: \n" << rsc_obj.mu_sol << arma::endl;
-    arma::cout << "G-sim -> mu: \n" << rsc_sim.mu_sol << arma::endl;
+    arma::cout << "\nG -> mu: \n" << mu_sol << "\nG-sim -> mu: \n" << mu_sol_sim << arma::endl;
     //
     // solution to dual problem U*
-    double Gstar_val = rsc_obj.Gstar(n);
-    double Gstar_sim_val = rsc_sim.Gstar(n);
-
+    arma::mat U_star, U_star_sim;
+    
+    double Gstar_val = rsc_obj.Gstar(n,mu_sol,U_star);
+    double Gstar_sim_val = rsc_sim.Gstar(n,mu_sol,U_star_sim);
+    
     std::cout << "G*(mu) and G*-sim(mu): \n" << Gstar_val << " and " << Gstar_sim_val << std::endl;
-
-    arma::cout << "\n\\nabla G*(\\nabla G(U)): \n" << rsc_obj.U_sol << arma::endl;
-    arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << rsc_sim.U_sol << arma::endl;
+    arma::cout << "\n\\nabla G*(\\nabla G(U)): \n" << U_star << "\n\\nabla G-sim*(\\nabla G-sim(U)): \n" << U_star_sim << arma::endl;
     //
     // Gbar
     arma::mat mu_bar(2,3);
@@ -102,7 +91,7 @@ int main()
     // hessian objects
     arma::mat hess;
 
-    rsc_obj.D2Gstar(hess,n,true);
+    rsc_obj.D2Gstar(hess,n,mu,true);
 
     arma::cout << "\nD2Gstar: \n" << hess << arma::endl;
     //

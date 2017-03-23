@@ -6,8 +6,7 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/arums
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include none_test.cpp -c -o none_test.o
- * g++-mp-5 -O2 -Wall -o none.test none_test.o -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/usr/local/include/trame none_test.cpp -o none.test -L/usr/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -26,38 +25,35 @@ int main()
     mu << 1.0 << 3.0 << 1.0 << arma::endr
        << 2.0 << 1.0 << 3.0 << arma::endr;
     
-    //
-    // results
-    printf("\n*===================   Start of None Test   ===================*\n");
-    printf("\n");
-    printf("Inputs: \n");
-    arma::cout << "\nU: \n" << U << arma::endl;
-    arma::cout << "mu: \n" << mu << arma::endl;
-    //
-    // setup none class object
     int nbX = U.n_rows;
     int nbY = U.n_cols;
     
     arma::vec n = arma::sum(mu,1);
     //
-    trame::none none_obj(nbX,nbY);
-    //none_obj.nbX = nbX;
-    //none_obj.nbY = nbY;
-    //none_obj.nbParams = 0;
-    
-    none_obj.U = U;
-    none_obj.mu = mu;
+    // results
+    printf("\n*===================   Start of None Test   ===================*\n");
+    printf("\n");
+    arma::cout << "\nU: \n" << U << arma::endl;
+    arma::cout << "mu: \n" << mu << arma::endl;
     //
-    double val_G = none_obj.G(n);
-    std::cout << "G val: \n" << val_G << std::endl;
+    // setup
+    trame::arums::none none_obj(nbX,nbY);
+
+    // first compute optimal assignment (mu)
+    arma::mat mu_sol;
+    //
+    double G_val = none_obj.G(n,U,mu_sol);
+    
+    std::cout << "G(U) and G-sim(U): \n" << G_val << std::endl;
+    arma::cout << "\nG -> mu: \n" << mu_sol << arma::endl;
     //
     arma::mat mubar(2,3);
     mubar.fill(2);
 
     arma::mat Ubar_temp, mubar_temp;
-    double valGbar = none_obj.Gbar(U,mubar,n,Ubar_temp,mubar_temp);
+    double val_Gbar = none_obj.Gbar(U,mubar,n,Ubar_temp,mubar_temp);
     
-    std::cout << "Gbar val: \n" << valGbar << std::endl;
+    std::cout << "Gbar val: \n" << val_Gbar << std::endl;
     //
     printf("\n*===================   End of None Test   ===================*\n");
     printf("\n");

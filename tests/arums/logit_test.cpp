@@ -6,7 +6,7 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/arums
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include/trame logit_test.cpp -o logit.test -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/usr/local/include/trame logit_test.cpp -o logit.test -L/usr/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -24,57 +24,43 @@ int main()
     arma::mat mu(2,3);
     mu << 1.0 << 3.0 << 1.0 << arma::endr
        << 2.0 << 1.0 << 3.0 << arma::endr;
-    
-    //
-    // results
-    printf("\n*===================   Start of Logit Test   ===================*\n");
-    printf("\n");
-    printf("Inputs: \n");
-    arma::cout << "\nU: \n" << U << arma::endl;
-    arma::cout << "mu: \n" << mu << arma::endl;
-    //
-    // setup logit class object
+
     int nbX = U.n_rows;
     int nbY = U.n_cols;
     
     arma::vec n = arma::sum(mu,1);
-
-    trame::logit logits(nbX,nbY);
-    
-    logits.U = U;
-    logits.mu = mu;
     //
-    // empirical object:
-    int sim_seed = 1777;
-    int n_draws = 100;
+    // results
+    printf("\n*===================   Start of Logit Test   ===================*\n");
+    printf("\n");
+    arma::cout << "\nU: \n" << U << arma::endl;
+    arma::cout << "mu: \n" << mu << arma::endl;
+    //
+    // setup
+    trame::arums::logit logits(nbX,nbY);
+
     trame::arums::empirical logit_sim;
-    
+    int sim_seed = 1777, n_draws = 1000;
     logits.simul(logit_sim, &n_draws, &sim_seed);
-    
-    logit_sim.U = U;
-    logit_sim.mu = mu;
     //
     // first compute optimal assignment (mu)
     arma::mat mu_sol, mu_sol_sim;
+
     double G_val = logits.G(n,U,mu_sol);
     double G_sim_val = logit_sim.G(n,U,mu_sol_sim);
     
     std::cout << "G(U) and G-sim(U): \n" << G_val << " and " << G_sim_val << std::endl;
-    
-    arma::cout << "\nG -> mu: \n" << mu_sol << arma::endl;
-    arma::cout << "G-sim -> mu: \n" << mu_sol_sim << arma::endl;
+    arma::cout << "\nG -> mu: \n" << mu_sol << "\nG-sim -> mu: \n" << mu_sol_sim << arma::endl;
+    arma::cout << "sum(mu)" << arma::sum(mu_sol,1) << arma::endl;
     //
     // solution to dual problem U*
-    arma::mat U_star;
-    arma::mat U_star_sim;
+    arma::mat U_star, U_star_sim;
     
     double Gstar_val = logits.Gstar(n,mu_sol,U_star);
     double Gstar_sim_val = logit_sim.Gstar(n,mu_sol,U_star_sim);
     
     std::cout << "G*(mu) and G*-sim(mu): \n" << Gstar_val << " and " << Gstar_sim_val << std::endl;
-    
-    arma::cout << "\n\\nabla G*(\\nabla G(U)): \n" << U_star << arma::endl;
-    arma::cout << "\\nabla G-sim*(\\nabla G-sim(U)): \n" << U_star_sim << arma::endl;
+    arma::cout << "\n\\nabla G*(\\nabla G(U)): \n" << U_star << "\n\\nabla G-sim*(\\nabla G-sim(U)): \n" << U_star_sim << arma::endl;
     //
     // Gbar
     arma::mat mu_bar(2,3);
@@ -86,8 +72,7 @@ int main()
     double val_Gbar     = logits.Gbar(U,mu_bar,n,U_bar_temp,mu_bar_temp);
     double val_Gbar_sim = logit_sim.Gbar(U,mu_bar,n,U_bar_sim_temp,mu_bar_sim_temp);
     
-    std::cout << "Gbar val: \n" << val_Gbar << std::endl;
-    std::cout << "Gbar-sim val: \n" << val_Gbar_sim << std::endl;
+    std::cout << "Gbar val: \n" << val_Gbar << "\nGbar-sim val: \n" << val_Gbar_sim << std::endl;
     //
     // Hessian tests
     /*arma::mat H;
