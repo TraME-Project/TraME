@@ -35,7 +35,7 @@
 // internal eap_nash
 
 template<typename Tg, typename Th, typename Tm>
-bool eap_nash_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* u_out, arma::mat* v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp)
+bool eap_nash_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* u_out, arma::mat* v_out, const bool* x_first_inp, const double* tol_inp, const int* max_iter_inp)
 {
     bool success = false;
     //
@@ -47,13 +47,13 @@ bool eap_nash_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_
     arma::vec n = market.n;
     arma::vec m = market.m;
 
-    bool xFirst = (xFirst_inp) ? *xFirst_inp : true;
+    bool x_first = (x_first_inp) ? *x_first_inp : true;
     double tol = (tol_inp) ? *tol_inp : 1E-12;
     int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
     //
     arma::mat v_curr, v_next, v_err;
 
-    if (xFirst) {
+    if (x_first) {
         v_curr = v_from_us(trans_obj,arma::zeros(nbX,1),NULL,NULL);
     } else {
         v_curr = arma::zeros(nbY,1);
@@ -65,7 +65,7 @@ bool eap_nash_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_
     while (err > tol && iter < max_iter) {
         iter++;
 
-        v_next = update_v(trans_obj,v_curr,n,m,xFirst);
+        v_next = update_v(trans_obj,v_curr,n,m,x_first);
         v_err = arma::abs(v_next - v_curr);
         err = elem_max(v_err);
 
@@ -151,9 +151,9 @@ bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp)
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& x_first_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&xFirst_inp,NULL,NULL);
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,NULL,NULL);
     
     return res;
 }
@@ -175,15 +175,15 @@ bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const int& max_ite
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp)
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& x_first_inp, const double& tol_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&xFirst_inp,&tol_inp,NULL);
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,&tol_inp,NULL);
     
     return res;
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const int& max_iter_inp)
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& x_first_inp, const int& max_iter_inp)
 {
     bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
     
@@ -199,9 +199,9 @@ bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const double& tol_
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& xFirst_inp, const double& tol_inp, const int& max_iter_inp)
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& x_first_inp, const double& tol_inp, const int& max_iter_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&xFirst_inp,&tol_inp,&max_iter_inp);
+    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,&tol_inp,&max_iter_inp);
     
     return res;
 }
@@ -215,9 +215,9 @@ bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& u_out, 
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool* xFirst_inp, const double* tol_inp, const int* max_iter_inp)
+bool eap_nash(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool* x_first_inp, const double* tol_inp, const int* max_iter_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&u_out,&v_out,xFirst_inp,tol_inp,max_iter_inp);
+    bool res = eap_nash_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&u_out,&v_out,x_first_inp,tol_inp,max_iter_inp);
     
     return res;
 }
@@ -258,7 +258,7 @@ arma::mat v_from_us(const Tm& trans_obj, const arma::mat& u, double* tol_inp, ar
 }
 
 template<typename Tm>
-arma::mat update_v(const Tm& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, bool xFirst)
+arma::mat update_v(const Tm& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, bool x_first)
 {
     int nbX = trans_obj.nbX;
     int nbY = trans_obj.nbY;
@@ -316,7 +316,7 @@ arma::mat update_v(const Tm& trans_obj, const arma::mat& v, const arma::vec& n, 
     sense_bis[k_bis-1] = '=';
 
     int modelSense_bis = 0; // minimize
-    if (!xFirst) {
+    if (!x_first) {
         modelSense_bis = 1; // maximize
     }
 
