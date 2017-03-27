@@ -23,18 +23,19 @@
   ################################################################################*/
 
 /*
- * Non-Transferable Utility (NTU) Marriage Matching Functions (MMFs) class
+ * Leontief Marriage Matching Functions (MMFs) class
+ * Corresponds to NTU transfers class
  *
  * Keith O'Hara
  * 08/15/2016
  *
  * This version:
- * 03/12/2017
+ * 03/27/2017
  */
 
 #include "trame.hpp"
 
-void trame::mmfs::ntu::build(const arma::mat& alpha_NTU, const arma::mat& gamma_NTU, bool need_norm_NTU)
+void trame::mmfs::min::build(const arma::mat& alpha_NTU, const arma::mat& gamma_NTU, bool need_norm_NTU)
 {
     need_norm = need_norm_NTU;
 
@@ -49,7 +50,7 @@ void trame::mmfs::ntu::build(const arma::mat& alpha_NTU, const arma::mat& gamma_
     aux_gamma_exp = arma::exp(gamma_NTU);
 }
 
-void trame::mmfs::ntu::trans()
+void trame::mmfs::min::trans()
 {
     int nbX_temp = nbX;
 
@@ -70,7 +71,7 @@ void trame::mmfs::ntu::trans()
 //
 // MFE-related functions
 
-arma::mat trame::mmfs::ntu::M(const arma::mat& a_xs, const arma::mat& b_ys)
+arma::mat trame::mmfs::min::M(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
     arma::mat ret = this->M(a_xs,b_ys,NULL,NULL);
@@ -78,7 +79,7 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::ntu::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmfs::min::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1); 
@@ -92,7 +93,7 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::ntu::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmfs::min::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1); 
@@ -106,7 +107,7 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::ntu::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmfs::min::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1); 
@@ -120,13 +121,13 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::ntu::Mx0(const arma::mat& a_x)
+arma::mat trame::mmfs::min::Mx0(const arma::mat& a_x)
 const
 {
     return a_x;
 }
 
-arma::mat trame::mmfs::ntu::M0y(const arma::mat& b_y)
+arma::mat trame::mmfs::min::M0y(const arma::mat& b_y)
 const
 {
     return b_y;

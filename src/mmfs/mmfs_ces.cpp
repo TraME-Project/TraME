@@ -23,18 +23,19 @@
   ################################################################################*/
 
 /*
- * Exponentially Transferable Utility (ETU) Marriage Matching Functions (MMFs) class
+ * Constant Elasticity of Substitution (CES) Marriage Matching Functions (MMFs) class
+ * Corresponds to the ETU transfers class
  *
  * Keith O'Hara
  * 08/15/2016
  *
  * This version:
- * 03/21/2017
+ * 03/27/2017
  */
 
 #include "trame.hpp"
 
-void trame::mmfs::etu::build(const arma::mat& alpha_ETU, const arma::mat& gamma_ETU, const arma::mat& tau_ETU, bool need_norm_ETU)
+void trame::mmfs::ces::build(const arma::mat& alpha_ETU, const arma::mat& gamma_ETU, const arma::mat& tau_ETU, bool need_norm_ETU)
 {
     need_norm = need_norm_ETU;
 
@@ -54,7 +55,7 @@ void trame::mmfs::etu::build(const arma::mat& alpha_ETU, const arma::mat& gamma_
     aux_gamma_exp = arma::exp(- elem_div(gamma_ETU, tau_ETU));
 }
 
-void trame::mmfs::etu::trans()
+void trame::mmfs::ces::trans()
 {
     int nbX_temp = nbX;
 
@@ -82,7 +83,7 @@ void trame::mmfs::etu::trans()
 //
 // MFE-related functions
 
-arma::mat trame::mmfs::etu::M(const arma::mat& a_xs, const arma::mat& b_ys)
+arma::mat trame::mmfs::ces::M(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
     arma::mat ret = this->M(a_xs,b_ys,NULL,NULL);
@@ -90,7 +91,7 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::etu::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmfs::ces::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1); 
@@ -104,7 +105,7 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::etu::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmfs::ces::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1); 
@@ -118,7 +119,7 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::etu::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmfs::ces::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1); 
@@ -132,13 +133,13 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::etu::Mx0(const arma::mat& a_x)
+arma::mat trame::mmfs::ces::Mx0(const arma::mat& a_x)
 const
 {
     return a_x;
 }
 
-arma::mat trame::mmfs::etu::M0y(const arma::mat& b_y)
+arma::mat trame::mmfs::ces::M0y(const arma::mat& b_y)
 const
 {
     return b_y;

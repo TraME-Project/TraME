@@ -31,10 +31,10 @@ namespace trame
 
     // matching functions
     namespace mmfs {
-        #include "mmfs/mmfs_etu.hpp"
-        #include "mmfs/mmfs_ltu.hpp"
-        #include "mmfs/mmfs_ntu.hpp"
-        #include "mmfs/mmfs_tu.hpp"
+        #include "mmfs/mmfs_ces.hpp"
+        #include "mmfs/mmfs_cd.hpp"
+        #include "mmfs/mmfs_min.hpp"
+        #include "mmfs/mmfs_geo.hpp"
     }
 
     // transfers

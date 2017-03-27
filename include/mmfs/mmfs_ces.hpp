@@ -23,24 +23,24 @@
   ################################################################################*/
 
 /*
- * Exponentially Transferable Utility (ETU) Marriage Matching Functions (MMFs) class
+ * Constant Elasticity of Substitution (CES) Marriage Matching Functions (MMFs) class
+ * Corresponds to the ETU transfers class
  *
  * Keith O'Hara
  * 08/15/2016
  *
  * This version:
- * 03/21/2017
+ * 03/27/2017
  */
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
 
-class etu
+class ces
 {
     public:
         // build objects
         bool need_norm;
         
-        int transfers_type = 2;
         int nbX;
         int nbY;
         int nbParams;
@@ -62,6 +62,7 @@ class etu
         void trans();
 
         //
+        // MFE-related functions
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys) const;
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;

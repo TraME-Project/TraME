@@ -54,7 +54,7 @@ OBJECTS_TRAME_ARUMS= $(SOURCES_TRAME_ARUMS:.cpp=.o)
 SOURCES_TRAME_MKTS= $(TRAME_SRC_DIR)/markets/dse.cpp $(TRAME_SRC_DIR)/markets/mfe.cpp
 OBJECTS_TRAME_MKTS= $(SOURCES_TRAME_MKTS:.cpp=.o)
 
-SOURCES_TRAME_MMFS= $(TRAME_SRC_DIR)/mmfs/mmfs_etu.cpp $(TRAME_SRC_DIR)/mmfs/mmfs_ltu.cpp $(TRAME_SRC_DIR)/mmfs/mmfs_ntu.cpp $(TRAME_SRC_DIR)/mmfs/mmfs_tu.cpp
+SOURCES_TRAME_MMFS= $(TRAME_SRC_DIR)/mmfs/mmfs_ces.cpp $(TRAME_SRC_DIR)/mmfs/mmfs_cd.cpp $(TRAME_SRC_DIR)/mmfs/mmfs_min.cpp $(TRAME_SRC_DIR)/mmfs/mmfs_geo.cpp
 OBJECTS_TRAME_MMFS= $(SOURCES_TRAME_MMFS:.cpp=.o)
 
 SOURCES_TRAME_MDLS= $(TRAME_SRC_DIR)/models/affinity.cpp $(TRAME_SRC_DIR)/models/model.cpp

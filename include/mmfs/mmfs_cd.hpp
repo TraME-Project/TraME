@@ -23,18 +23,19 @@
   ################################################################################*/
 
 /*
- * Transferable Utility (TU) Marriage Matching Functions (MMFs) class
+ * Cobb-Douglas (CD) Marriage Matching Functions (MMFs) class
+ * Corresponds to LTU transfers class
  *
  * Keith O'Hara
  * 08/15/2016
  *
  * This version:
- * 03/21/2017
+ * 03/27/2017
  */
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
 
-class tu
+class cd
 {
     public:
         // build objects
@@ -45,14 +46,17 @@ class tu
         int nbY;
         int nbParams;
 
+        arma::mat lambda;
         arma::mat phi;
-        arma::mat aux_phi_exp; // exp(phi_inp/(2*sigma)), also labelled K_TU
+
+        arma::mat aux_zeta; // could be 1 - lambda_LTU;
+        arma::mat aux_phi_exp; // aux_phi_exp = exp(phi); will probably end up as exp(phi / sigma) when using MFE, K_LTU
 
         // member functions
-        void build(const arma::mat& phi_TU, bool need_norm_TU);
+        void build(const arma::mat& lambda_LTU, const arma::mat& phi_LTU, bool need_norm_LTU);
         
         void trans();
-        
+
         //
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys) const;
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;

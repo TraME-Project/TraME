@@ -23,36 +23,33 @@
   ################################################################################*/
 
 /*
- * Non-Transferable Utility (NTU) Marriage Matching Functions (MMFs) class
+ * Geometric Marriage Matching Functions (MMFs) class
+ * Corresponds to TU transfers class
  *
  * Keith O'Hara
  * 08/15/2016
  *
  * This version:
- * 03/21/2017
+ * 03/27/2017
  */
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
 
-class ntu
+class geo
 {
     public:
         // build objects
         bool need_norm;
-        
-        int transfers_type = 1;
+
         int nbX;
         int nbY;
         int nbParams;
 
-        arma::mat alpha;
-        arma::mat gamma;
-
-        arma::mat aux_alpha_exp; // exp(alpha_NTU / sigma), also labelled A_NTU
-        arma::mat aux_gamma_exp; // exp(gamma_NTU / sigma), also labelled B_NTU
+        arma::mat phi;
+        arma::mat aux_phi_exp; // exp(phi_inp/(2*sigma)), also labelled K_TU
 
         // member functions
-        void build(const arma::mat& alpha_NTU, const arma::mat& gamma_NTU, bool need_norm_NTU);
+        void build(const arma::mat& phi_TU, bool need_norm_TU);
         
         void trans();
         

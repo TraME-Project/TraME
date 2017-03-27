@@ -23,39 +23,40 @@
   ################################################################################*/
 
 /*
- * Linearly Transferable Utility (LTU) Marriage Matching Functions (MMFs) class
+ * Leontief Marriage Matching Functions (MMFs) class
+ * Corresponds to NTU transfers class
  *
  * Keith O'Hara
  * 08/15/2016
  *
  * This version:
- * 03/21/2017
+ * 03/27/2017
  */
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
 
-class ltu
+class min
 {
     public:
         // build objects
         bool need_norm;
-
+        
         int transfers_type = 1;
         int nbX;
         int nbY;
         int nbParams;
 
-        arma::mat lambda;
-        arma::mat phi;
+        arma::mat alpha;
+        arma::mat gamma;
 
-        arma::mat aux_zeta; // could be 1 - lambda_LTU;
-        arma::mat aux_phi_exp; // aux_phi_exp = exp(phi); will probably end up as exp(phi / sigma) when using MFE, K_LTU
+        arma::mat aux_alpha_exp; // exp(alpha_NTU / sigma), also labelled A_NTU
+        arma::mat aux_gamma_exp; // exp(gamma_NTU / sigma), also labelled B_NTU
 
         // member functions
-        void build(const arma::mat& lambda_LTU, const arma::mat& phi_LTU, bool need_norm_LTU);
+        void build(const arma::mat& alpha_NTU, const arma::mat& gamma_NTU, bool need_norm_NTU);
         
         void trans();
-
+        
         //
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys) const;
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;

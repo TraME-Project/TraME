@@ -39,13 +39,13 @@ namespace trame
 {
 
 template<>
-void model<arums::logit,arums::logit,mmfs::tu>::build_market_TU(const arma::mat& theta)
+void model<arums::logit,arums::logit,mmfs::geo>::build_market_TU(const arma::mat& theta)
 {
     mfe_obj.build_TU(n,m,Phi_xy_theta(theta),NULL,need_norm);
 }
 
 template<>
-bool model<arums::logit,arums::logit,mmfs::tu>::solve(arma::mat& mu_sol)
+bool model<arums::logit,arums::logit,mmfs::geo>::solve(arma::mat& mu_sol)
 {
     bool res = mfe_obj.solve(mu_sol,NULL);
     //
@@ -53,7 +53,7 @@ bool model<arums::logit,arums::logit,mmfs::tu>::solve(arma::mat& mu_sol)
 }
 
 template<>
-bool model<arums::logit,arums::logit,mmfs::tu>::solve(arma::mat& mu_sol, const char* solver)
+bool model<arums::logit,arums::logit,mmfs::geo>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = mfe_obj.solve(mu_sol,solver);
     //
@@ -61,7 +61,7 @@ bool model<arums::logit,arums::logit,mmfs::tu>::solve(arma::mat& mu_sol, const c
 }
 
 template<>
-bool model<arums::logit,arums::logit,mmfs::tu>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
+bool model<arums::logit,arums::logit,mmfs::geo>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
 {
     bool res = mfe_obj.solve(mu_sol,U,V,solver);
     //

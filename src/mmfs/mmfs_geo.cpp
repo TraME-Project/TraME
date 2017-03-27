@@ -23,18 +23,19 @@
   ################################################################################*/
 
 /*
- * Transferable Utility (TU) Marriage Matching Functions (MMFs) class
+ * Geometric Marriage Matching Functions (MMFs) class
+ * Corresponds to TU transfers class
  *
  * Keith O'Hara
  * 08/15/2016
  *
  * This version:
- * 03/21/2017
+ * 03/27/2017
  */
 
 #include "trame.hpp"
 
-void trame::mmfs::tu::build(const arma::mat& phi_TU, bool need_norm_TU)
+void trame::mmfs::geo::build(const arma::mat& phi_TU, bool need_norm_TU)
 {
     need_norm = need_norm_TU;
 
@@ -46,7 +47,7 @@ void trame::mmfs::tu::build(const arma::mat& phi_TU, bool need_norm_TU)
     aux_phi_exp = arma::exp(phi_TU / 2.0);
 }
 
-void trame::mmfs::tu::trans()
+void trame::mmfs::geo::trans()
 {
     int nbX_temp = nbX;
 
@@ -60,7 +61,7 @@ void trame::mmfs::tu::trans()
 //
 // MFE-related functions
 
-arma::mat trame::mmfs::tu::M(const arma::mat& a_xs, const arma::mat& b_ys)
+arma::mat trame::mmfs::geo::M(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
     arma::mat ret = this->M(a_xs,b_ys,NULL,NULL);
@@ -68,7 +69,7 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::tu::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmfs::geo::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1); 
@@ -82,7 +83,7 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::tu::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmfs::geo::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1); 
@@ -96,7 +97,7 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::tu::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat trame::mmfs::geo::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1); 
@@ -110,13 +111,13 @@ const
     return ret;
 }
 
-arma::mat trame::mmfs::tu::Mx0(const arma::mat& a_x)
+arma::mat trame::mmfs::geo::Mx0(const arma::mat& a_x)
 const
 {
     return a_x;
 }
 
-arma::mat trame::mmfs::tu::M0y(const arma::mat& b_y)
+arma::mat trame::mmfs::geo::M0y(const arma::mat& b_y)
 const
 {
     return b_y;
