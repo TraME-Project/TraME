@@ -27,6 +27,9 @@
  *
  * Keith O'Hara
  * 08/08/2016
+ *
+ * This version:
+ * 04/01/2017
  */
 
 // Find indices that correspond to maximum values 
@@ -47,12 +50,14 @@ inline arma::uvec which_max(const arma::mat& X, int which_dim)
         for (j=0; j<k; j++) {
             max_val = X(0,j);
             max_ind = 0;
+
             for (i=1; i<n; i++) {
                 if (X(i,j) > max_val) {
                     max_val = X(i,j);
                     max_ind = i;
                 }
             }
+
             max_vec(j) = max_ind;
         }
     } else { // each row
@@ -60,12 +65,14 @@ inline arma::uvec which_max(const arma::mat& X, int which_dim)
         for (i=0; i<n; i++) {
             max_val = X(i,0);
             max_ind = 0;
+
             for (j=0; j<k; j++) {
                 if (X(i,j) > max_val) {
                     max_val = X(i,j);
                     max_ind = j;
                 }
             }
+
             max_vec(i) = max_ind;
         }
     }
