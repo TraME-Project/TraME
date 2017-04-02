@@ -34,9 +34,7 @@
 
 // Find indices that correspond to maximum values 
 inline arma::uvec which_max(const arma::mat& X, int which_dim)
-{
-    int i,j;
-    
+{    
     int n = X.n_rows;
     int k = X.n_cols;
 
@@ -47,11 +45,11 @@ inline arma::uvec which_max(const arma::mat& X, int which_dim)
      
     if (which_dim==0) { // each column
         max_vec.set_size(k);
-        for (j=0; j<k; j++) {
+        for (int j=0; j < k; j++) {
             max_val = X(0,j);
             max_ind = 0;
 
-            for (i=1; i<n; i++) {
+            for (int i=1; i < n; i++) {
                 if (X(i,j) > max_val) {
                     max_val = X(i,j);
                     max_ind = i;
@@ -66,7 +64,7 @@ inline arma::uvec which_max(const arma::mat& X, int which_dim)
             max_val = X(i,0);
             max_ind = 0;
 
-            for (j=0; j<k; j++) {
+            for (j=0; j < k; j++) {
                 if (X(i,j) > max_val) {
                     max_val = X(i,j);
                     max_ind = j;
@@ -92,12 +90,11 @@ arma::vec unit_vec(int j, int n)
 // Generate an equi-spaced grid of integers
 inline arma::uvec uvec_linspace (int a, int b)
 {
-    int i;
     int n_points = b - a + 1;
     
     arma::uvec ret(n_points);
     //
-    for (i = 0; i<n_points; i++) {
+    for (int i=0; i < n_points; i++) {
         ret(i) = a + i;
     }
     //
@@ -119,20 +116,9 @@ inline arma::mat elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
 
     int cols_1 = mat_1.n_cols;
     int cols_2 = mat_2.n_cols; 
-    //
-    bool same_rows, same_cols;
 
-    if (rows_1 == rows_2) {
-        same_rows = true;
-    } else {
-        same_rows = false;
-    }
-
-    if (cols_1 == cols_2) {
-        same_cols = true;
-    } else {
-        same_cols = false;
-    }
+    bool same_rows = (rows_1==rows_2) ? true : false;
+    bool same_cols = (cols_1==cols_2) ? true : false;
     //
     arma::mat ret;
 
@@ -199,20 +185,9 @@ inline arma::mat elem_sub(const arma::mat& mat_1, const arma::mat& mat_2)
 
     int cols_1 = mat_1.n_cols;
     int cols_2 = mat_2.n_cols; 
-    //
-    bool same_rows, same_cols;
-
-    if (rows_1 == rows_2) {
-        same_rows = true;
-    } else {
-        same_rows = false;
-    }
-
-    if (cols_1 == cols_2) {
-        same_cols = true;
-    } else {
-        same_cols = false;
-    }
+    
+    bool same_rows = (rows_1==rows_2) ? true : false;
+    bool same_cols = (cols_1==cols_2) ? true : false;
     //
     arma::mat ret;
 
@@ -279,20 +254,9 @@ inline arma::mat elem_prod(const arma::mat& mat_1, const arma::mat& mat_2)
 
     int cols_1 = mat_1.n_cols;
     int cols_2 = mat_2.n_cols; 
-    //
-    bool same_rows, same_cols;
-
-    if (rows_1 == rows_2) {
-        same_rows = true;
-    } else {
-        same_rows = false;
-    }
-
-    if (cols_1 == cols_2) {
-        same_cols = true;
-    } else {
-        same_cols = false;
-    }
+    
+    bool same_rows = (rows_1==rows_2) ? true : false;
+    bool same_cols = (cols_1==cols_2) ? true : false;
     //
     arma::mat ret;
 
@@ -359,20 +323,9 @@ inline arma::mat elem_div(const arma::mat& mat_1, const arma::mat& mat_2)
 
     int cols_1 = mat_1.n_cols;
     int cols_2 = mat_2.n_cols; 
-    //
-    bool same_rows, same_cols;
-
-    if (rows_1 == rows_2) {
-        same_rows = true;
-    } else {
-        same_rows = false;
-    }
-
-    if (cols_1 == cols_2) {
-        same_cols = true;
-    } else {
-        same_cols = false;
-    }
+    
+    bool same_rows = (rows_1==rows_2) ? true : false;
+    bool same_cols = (cols_1==cols_2) ? true : false;
     //
     arma::mat ret;
 
