@@ -37,7 +37,7 @@
 
 namespace trame
 {
-
+/*
 template<>
 void model<arums::logit,arums::logit,mmfs::geo>::build_market_TU(const arma::mat& theta)
 {
@@ -67,6 +67,7 @@ bool model<arums::logit,arums::logit,mmfs::geo>::solve(arma::mat& mu_sol, arma::
     //
     return res;
 }
+*/
 /*
 template<>
 void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)

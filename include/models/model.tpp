@@ -32,72 +32,15 @@
  * 03/22/2017
  */
 
-// first method to build
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::build(const arma::cube& phi_xyk_inp)
-{
-    this->build_int(phi_xyk_inp,NULL,NULL);
-}
-
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::build(const arma::cube& phi_xyk_inp, const arma::vec& n_inp, const arma::vec& m_inp)
-{
-    this->build_int(phi_xyk_inp,&n_inp,&m_inp);
-}
-
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::build_int(const arma::cube& phi_xyk_inp, const arma::vec* n_inp, const arma::vec* m_inp)
-{
-    need_norm = false;
-
-    nbX = phi_xyk_inp.n_rows;
-    nbY = phi_xyk_inp.n_cols;
-    nbParams = phi_xyk_inp.n_slices;
-    //
-    n = (n_inp) ? *n_inp : arma::ones(nbX,1);
-    m = (m_inp) ? *m_inp : arma::ones(nbY,1);
-
-    phi_xyk = phi_xyk_inp;
-    //
-}
-
-// second method to build
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::build(const arma::mat& X_inp, const arma::mat& Y_inp)
-{
-    this->build_int(X_inp,Y_inp,NULL,NULL);
-}
-
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp)
-{
-    this->build_int(X_inp,Y_inp,&n_inp,&m_inp);
-}
-
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp)
-{
-    need_norm = false;
-
-    nbX = X_inp.n_rows;
-    nbY = Y_inp.n_rows;
-
-    dX = X_inp.n_cols;
-    dY = Y_inp.n_cols;
-
-    nbParams = dX*dY;
-    //
-    n = (n_inp) ? *n_inp : arma::ones(nbX,1);
-    m = (m_inp) ? *m_inp : arma::ones(nbY,1);
-    //
-    arma::mat phi_xy_temp = arma::kron(Y_inp,X_inp);
-    arma::cube phi_xyk_temp(phi_xy_temp.memptr(),nbX,nbY,nbParams,false); // share memory
-
-    phi_xyk = phi_xyk_temp;
-}
-
 //
 // build markets
+
+template<typename Tm>
+void model<Tm>::build_market_TU(const arma::mat& theta)
+{
+    market_obj.build(n,m,Phi_xy_theta(theta),NULL,need_norm);
+}
+
 template<typename Tg, typename Th, typename Tm>
 void model<Tg,Th,Tm>::build_market_TU(const arma::mat& theta)
 {
@@ -119,27 +62,6 @@ void model<Tg,Th,Tm>::build_market_TU(const arma::mat& theta, T arums_G_inp, T a
 }
 
 // gradients
-
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out)
-{
-    this->dparam(dparams_inp,dparamsPsi_out,NULL,NULL);
-}
-
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out)
-{
-    arma::mat dparams_mat = (dparams_inp) ? *dparams_inp : arma::eye(nbParams,nbParams);
-
-    dparamsPsi_out = Phi_xy() * dparams_mat;
-    //
-    if (dparamsG_out) {
-        *dparamsG_out = arma::zeros(0,dparams_mat.n_cols);
-    }
-    if (dparamsH_out) {
-        *dparamsH_out = arma::zeros(0,dparams_mat.n_cols);
-    }
-}
 
 template<typename Tg, typename Th, typename Tm>
 void model<Tg,Th,Tm>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
@@ -254,32 +176,6 @@ bool model<Tg,Th,Tm>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     //double val_ret = obj_val;
     //
     return success;
-}
-
-// Keith: should probably switch this to be a member variable
-template<typename Tg, typename Th, typename Tm>
-arma::mat model<Tg,Th,Tm>::Phi_xy()
-{
-    // mirror R's approach to creating a matrix from an array; take each slice and vectorise that matrix
-    arma::mat phi_xy_mat(nbX*nbY,nbParams);
-    for(int k = 0; k < nbParams; k++) {
-        phi_xy_mat.col(k) = arma::vectorise(phi_xyk.slice(k));
-    }
-
-    return phi_xy_mat;
-}
-
-template<typename Tg, typename Th, typename Tm>
-arma::mat model<Tg,Th,Tm>::Phi_xy_theta(const arma::mat& theta)
-{
-    arma::mat ret = arma::reshape(Phi_xy() * theta,nbX,nbY);
-    return ret;
-}
-
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::init_param(arma::mat& params)
-{
-    params.zeros(nbParams,1);
 }
 
 // solve wrappers
