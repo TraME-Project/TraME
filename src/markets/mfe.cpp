@@ -40,7 +40,7 @@ namespace trame
 // builds
 
 template<>
-void mfe<mmfs::ces>::build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<mmfs::ces>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -58,7 +58,13 @@ void mfe<mmfs::ces>::build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, c
 }
 
 template<>
-void mfe<mmfs::cd>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<mmfs::ces>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp)
+{
+    this->build(n_inp,m_inp,alpha_inp,gamma_inp,tau_inp,NULL,false);
+}
+
+template<>
+void mfe<mmfs::cd>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -76,7 +82,13 @@ void mfe<mmfs::cd>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, co
 }
 
 template<>
-void mfe<mmfs::min>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<mmfs::cd>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp)
+{
+    this->build(n_inp,m_inp,lambda_inp,phi_inp,NULL,false);
+}
+
+template<>
+void mfe<mmfs::min>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -94,7 +106,7 @@ void mfe<mmfs::min>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, c
 }
 
 template<>
-void mfe<mmfs::geo>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<mmfs::geo>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;

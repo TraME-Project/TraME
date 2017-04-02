@@ -41,7 +41,7 @@ namespace trame
 template<>
 void model<arums::logit,arums::logit,mmfs::geo>::build_market_TU(const arma::mat& theta)
 {
-    mfe_obj.build_TU(n,m,Phi_xy_theta(theta),NULL,need_norm);
+    mfe_obj.build(n,m,Phi_xy_theta(theta),NULL,need_norm);
 }
 
 template<>

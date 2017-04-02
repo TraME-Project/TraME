@@ -32,31 +32,21 @@
  * 03/14/2017
  */
 
-/*
+// short build function, mmf_obj not touched
 template<typename Tm>
-void mfe<Tm>::build_ETU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, double* sigma_inp, bool need_norm_inp)
+void mfe<Tm>::build(const arma::vec& n_inp, const arma::vec& m_inp)
 {
-    printf("cannot use build_ETU without ETU defined market!\n");
-}
+    nbX = n_inp.n_elem;
+    nbY = m_inp.n_elem;
+    
+    n = n_inp;
+    m = m_inp;
 
-template<typename Tm>
-void mfe<Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
-{
-    printf("cannot use build_LTU without LTU defined market!\n");
-}
+    need_norm = false;
 
-template<typename Tm>
-void mfe<Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, double* sigma_inp, bool need_norm_inp)
-{
-    printf("cannot use build_NTU without NTU defined market!\n");
+    outsideOption = true;
+    sigma = 1.0;
 }
-
-template<typename Tm>
-void mfe<Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, double* sigma_inp, bool need_norm_inp)
-{
-    printf("cannot use build_TU without TU defined market!\n");
-}
-*/
 
 template<typename Tm>
 void mfe<Tm>::trans()
