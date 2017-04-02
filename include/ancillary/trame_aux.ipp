@@ -60,11 +60,11 @@ inline arma::uvec which_max(const arma::mat& X, int which_dim)
         }
     } else { // each row
         max_vec.set_size(n);
-        for (i=0; i<n; i++) {
+        for (int i=0; i<n; i++) {
             max_val = X(i,0);
             max_ind = 0;
 
-            for (j=0; j < k; j++) {
+            for (int j=0; j < k; j++) {
                 if (X(i,j) > max_val) {
                     max_val = X(i,j);
                     max_ind = j;
