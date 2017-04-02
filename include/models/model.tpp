@@ -214,10 +214,18 @@ bool model<Tg,Th,Tm>::model_mle_optim(arma::vec& init_out_vals, std::function<do
     return success;
 }
 
-template<typename Tg, typename Th, typename Tm>
-double model<Tg,Th,Tm>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data)
+template<typename Tm>
+bool model<Tm>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
 {
-    trame_model_mle_opt_data<Tg,Th,Tm> *d = reinterpret_cast<trame_model_mle_opt_data<Tg,Th,Tm>*>(opt_data);
+    bool success = generic_optim(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
+    //
+    return success;
+}
+
+template<typename... Tt>
+double model<Tt...>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data)
+{
+    trame_model_mle_opt_data<Tt...> *d = reinterpret_cast<trame_model_mle_opt_data<Tt...>*>(opt_data);
 
     bool by_individual = d->by_individual;
     double scale = d->scale;

@@ -69,7 +69,10 @@ class model_base
 };
 
 template<class... Tt>
-class model : public model_base {};
+class model : public model_base {
+    public:
+        static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
+};
 
 // might be better to make this a friend class
 template<class Tg, class Th, class Tm>
@@ -133,8 +136,11 @@ class model<Tm> : public model_base
         static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 
+template<typename... Tt>
+struct trame_model_mme_opt_data {};
+
 template<typename Tg, typename Th, typename Tm>
-struct trame_model_mme_opt_data {
+struct trame_model_mme_opt_data<Tg,Th,Tm> {
     int nbParams;
 
     arma::mat C_hat;
@@ -143,8 +149,21 @@ struct trame_model_mme_opt_data {
     dse<Tg,Th,Tm> market;
 };
 
+template<typename Tm>
+struct trame_model_mme_opt_data<Tm> {
+    int nbParams;
+
+    arma::mat C_hat;
+    arma::mat kron_term;
+
+    mfe<Tm> market;
+};
+
+template<typename... Tt>
+struct trame_model_mle_opt_data {};
+
 template<typename Tg, typename Th, typename Tm>
-struct trame_model_mle_opt_data {
+struct trame_model_mle_opt_data<Tg,Th,Tm> {
     bool by_individual;
     double scale;
 
@@ -153,6 +172,18 @@ struct trame_model_mle_opt_data {
     arma::vec mu_hat_0y;
 
     model<Tg,Th,Tm> model_obj;
+};
+
+template<typename Tm>
+struct trame_model_mle_opt_data<Tm> {
+    bool by_individual;
+    double scale;
+
+    arma::mat mu_hat;
+    arma::vec mu_hat_x0;
+    arma::vec mu_hat_0y;
+
+    model<Tm> model_obj;
 };
 
 #include "model.ipp"
