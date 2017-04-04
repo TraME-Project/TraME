@@ -4,7 +4,7 @@
  * Keith O'Hara
  * 11/27/2016
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include/trame -I/usr/local/include model_test.cpp -o model.test -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/usr/local/include/trame model_test.cpp -o model.test -L/usr/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -36,8 +36,8 @@ int main()
     arma::mat A = arma::ones(dX,dY);
     arma::mat phi = X_vals*A*Y_vals.t();
     
-    trame::mfe<trame::mmf> mfe_obj_TU;
-    mfe_obj_TU.build_TU(n,m,phi,&sigma,false);
+    trame::mfe<trame::mmfs::geo> mfe_obj_TU;
+    mfe_obj_TU.build(n,m,phi,&sigma,false);
     arma::mat noise = 1.0 + noise_scale*arma::randn(nbX,nbY);
 
     arma::mat mu_mfe;
@@ -45,13 +45,13 @@ int main()
 
     arma::mat mu_hat = mu_mfe % noise;
     //
-    trame::model<trame::logit> TU_logit_model;
+    trame::model<trame::mmfs::geo> TU_logit_model;
     TU_logit_model.build(X_vals,Y_vals,n,m);
-
+    
     //double val_hat;
     arma::mat theta_hat;
     TU_logit_model.mme(mu_hat,theta_hat);
-
+    /*
     arma::cout << "theta_hat mme: \n" << theta_hat << arma::endl;
 
     TU_logit_model.mle(mu_hat,theta_hat,NULL);

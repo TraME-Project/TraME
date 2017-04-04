@@ -3,7 +3,6 @@
   ##   Copyright (C) 2015 - 2017 the TraME Team:
   ##      Alfred Galichon
   ##      Keith O'Hara
-  ##      Simon Weber
   ##
   ##   This file is part of TraME.
   ##
@@ -32,7 +31,9 @@
  * 04/01/2017
  */
 
-class model_base
+
+template<class Tt>
+class model
 {
     public:
         // build objects
@@ -49,55 +50,42 @@ class model_base
         arma::vec m;
 
         arma::cube phi_xyk;
+
+        Tt market_obj;
         // member functions
         void build(const arma::cube& phi_xyk_inp);
         void build(const arma::cube& phi_xyk_inp, const arma::vec& n_inp, const arma::vec& m_inp);
         void build(const arma::mat& X_inp, const arma::mat& Y_inp);
         void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp);
 
-        arma::mat Phi_xy();
-        arma::mat Phi_xy_theta(const arma::mat& theta);
-        void init_param(arma::mat& params);
-
         void dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out);
         void dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out);
+
+        void build_market_TU(const arma::mat& theta);
+        template<typename Ta, typename Tb> void build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp);
+        template<typename Ta, typename Tb> void build_market_TU(const arma::mat& theta, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed);
+
+        void dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu);
+
+        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
+        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
+
+        bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp);
+
+        // solve wrappers
+        bool solve(arma::mat& mu_sol);
+        bool solve(arma::mat& mu_sol, const char* solver);
+        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
 
     private:
         // internal build functions
         void build_int(const arma::cube& phi_xyk_inp, const arma::vec* n_inp, const arma::vec* m_inp);
         void build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp);
-};
 
-template<class... Tt>
-class model : public model_base {
-    public:
-        static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
-};
+        arma::mat Phi_xy();
+        arma::mat Phi_xy_theta(const arma::mat& theta);
+        void init_param(arma::mat& params);
 
-// might be better to make this a friend class
-template<class Tg, class Th, class Tm>
-class model<Tg,Th,Tm> : public model_base
-{
-    public:
-        dse<Tg,Th,Tm> market_obj;
-
-        void build_market_TU(const arma::mat& theta);
-        void build_market_TU(const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp);
-        template<typename T> void build_market_TU(const arma::mat& theta, T arums_G_inp, T arums_H_inp, int nbDraws, int seed);
-
-        void dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu);
-
-        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
-        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
-
-        bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp);
-
-        // solve wrappers
-        bool solve(arma::mat& mu_sol);
-        bool solve(arma::mat& mu_sol, const char* solver);
-        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
-
-    private:
         // optimization-related objects
         bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
         static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
@@ -106,64 +94,27 @@ class model<Tg,Th,Tm> : public model_base
         static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 
-// might be better to make this a friend class
-template<class Tm>
-class model<Tm> : public model_base
-{
-    public:
-        mfe<Tm> market_obj;
+template<typename Tt>
+void dmodel_mu(const Tt& market_obj, const arma::mat& dparams_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out);
 
-        void build_market_TU(const arma::mat& theta);
+// template<typename... Tt>
+// struct trame_model_mme_opt_data {};
 
-        void dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu);
-
-        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
-        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
-
-        bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp);
-
-        // solve wrappers
-        bool solve(arma::mat& mu_sol);
-        bool solve(arma::mat& mu_sol, const char* solver);
-        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
-
-    private:
-        // optimization-related objects
-        bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
-        static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
-
-        bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
-        static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
-};
-
-template<typename... Tt>
-struct trame_model_mme_opt_data {};
-
-template<typename Tg, typename Th, typename Tm>
-struct trame_model_mme_opt_data<Tg,Th,Tm> {
+template<typename Tt>
+struct trame_model_mme_opt_data {
     int nbParams;
 
     arma::mat C_hat;
     arma::mat kron_term;
 
-    dse<Tg,Th,Tm> market;
+    Tt market;
 };
 
-template<typename Tm>
-struct trame_model_mme_opt_data<Tm> {
-    int nbParams;
+// template<typename... Tt>
+// struct trame_model_mle_opt_data {};
 
-    arma::mat C_hat;
-    arma::mat kron_term;
-
-    mfe<Tm> market;
-};
-
-template<typename... Tt>
-struct trame_model_mle_opt_data {};
-
-template<typename Tg, typename Th, typename Tm>
-struct trame_model_mle_opt_data<Tg,Th,Tm> {
+template<typename Tt>
+struct trame_model_mle_opt_data {
     bool by_individual;
     double scale;
 
@@ -171,20 +122,8 @@ struct trame_model_mle_opt_data<Tg,Th,Tm> {
     arma::vec mu_hat_x0;
     arma::vec mu_hat_0y;
 
-    model<Tg,Th,Tm> model_obj;
+    model<Tt> model_obj;
 };
 
-template<typename Tm>
-struct trame_model_mle_opt_data<Tm> {
-    bool by_individual;
-    double scale;
-
-    arma::mat mu_hat;
-    arma::vec mu_hat_x0;
-    arma::vec mu_hat_0y;
-
-    model<Tm> model_obj;
-};
-
-#include "model.ipp"
+//#include "model.ipp"
 #include "model.tpp"

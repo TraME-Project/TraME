@@ -3,7 +3,6 @@
   ##   Copyright (C) 2015 - 2017 the TraME Team:
   ##      Alfred Galichon
   ##      Keith O'Hara
-  ##      Simon Weber
   ##
   ##   This file is part of TraME.
   ##
@@ -35,7 +34,8 @@
 // internal cupids_lp
 
 template<typename Tg, typename Th, typename Tm>
-bool cupids_lp_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out)
+bool 
+cupids_lp_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out)
 {
     bool success = false;
     //
@@ -223,7 +223,8 @@ bool cupids_lp_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu
 // wrappers
 
 template<typename Tg, typename Th, typename Tm>
-bool cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
+bool 
+cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
 {
     bool res = cupids_lp_int(market,&mu_out,NULL,NULL,NULL,NULL);
 
@@ -231,7 +232,8 @@ bool cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
+bool 
+cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = cupids_lp_int(market,&mu_out,NULL,NULL,&U_out,&V_out);
     
@@ -239,7 +241,8 @@ bool cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& U_out,
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out)
+bool 
+cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = cupids_lp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out);
 

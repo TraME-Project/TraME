@@ -3,7 +3,6 @@
   ##   Copyright (C) 2015 - 2017 the TraME Team:
   ##      Alfred Galichon
   ##      Keith O'Hara
-  ##      Simon Weber
   ##
   ##   This file is part of TraME.
   ##
@@ -33,49 +32,149 @@
  */
 
 //
+// first method to build
+
+template<typename Tt>
+inline 
+void 
+model<Tt>::build(const arma::cube& phi_xyk_inp)
+{
+    this->build_int(phi_xyk_inp,NULL,NULL);
+}
+
+template<typename Tt>
+inline 
+void 
+model<Tt>::build(const arma::cube& phi_xyk_inp, const arma::vec& n_inp, const arma::vec& m_inp)
+{
+    this->build_int(phi_xyk_inp,&n_inp,&m_inp);
+}
+
+template<typename Tt>
+inline 
+void 
+model<Tt>::build_int(const arma::cube& phi_xyk_inp, const arma::vec* n_inp, const arma::vec* m_inp)
+{
+    need_norm = false;
+
+    nbX = phi_xyk_inp.n_rows;
+    nbY = phi_xyk_inp.n_cols;
+    nbParams = phi_xyk_inp.n_slices;
+    //
+    n = (n_inp) ? *n_inp : arma::ones(nbX,1);
+    m = (m_inp) ? *m_inp : arma::ones(nbY,1);
+
+    phi_xyk = phi_xyk_inp;
+    //
+}
+
+//
+// second method to build
+
+template<typename Tt>
+inline 
+void 
+model<Tt>::build(const arma::mat& X_inp, const arma::mat& Y_inp)
+{
+    this->build_int(X_inp,Y_inp,NULL,NULL);
+}
+
+template<typename Tt>
+inline 
+void 
+model<Tt>::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp)
+{
+    this->build_int(X_inp,Y_inp,&n_inp,&m_inp);
+}
+
+template<typename Tt>
+inline 
+void 
+model<Tt>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp)
+{
+    need_norm = false;
+
+    nbX = X_inp.n_rows;
+    nbY = Y_inp.n_rows;
+
+    dX = X_inp.n_cols;
+    dY = Y_inp.n_cols;
+
+    nbParams = dX*dY;
+    //
+    n = (n_inp) ? *n_inp : arma::ones(nbX,1);
+    m = (m_inp) ? *m_inp : arma::ones(nbY,1);
+    //
+    arma::mat phi_xy_temp = arma::kron(Y_inp,X_inp);
+    arma::cube phi_xyk_temp(phi_xy_temp.memptr(),nbX,nbY,nbParams,false); // share memory
+
+    phi_xyk = phi_xyk_temp;
+}
+
+//
 // build markets
 
-template<typename Tm>
-void model<Tm>::build_market_TU(const arma::mat& theta)
+// template<>
+template<typename Tt>
+void 
+model<Tt>::build_market_TU(const arma::mat& theta)
 {
     market_obj.build(n,m,Phi_xy_theta(theta),NULL,need_norm);
 }
 
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::build_market_TU(const arma::mat& theta)
-{
-    market_obj.build_TU(n,m,Phi_xy_theta(theta),need_norm);
-}
-
 // general arums input
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::build_market_TU(const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp)
+template<typename Tt>
+template<typename Ta, typename Tb>
+void 
+model<Tt>::build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp)
 {
-    market_obj.build_TU(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,need_norm);
+    market_obj.build(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,need_norm);
 }
 
 // empirical version
-template<typename Tg, typename Th, typename Tm> template<typename T>
-void model<Tg,Th,Tm>::build_market_TU(const arma::mat& theta, T arums_G_inp, T arums_H_inp, int nbDraws, int seed)
+template<typename Tt> 
+template<typename Ta, typename Tb>
+void 
+model<Tt>::build_market_TU(const arma::mat& theta, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed)
 {
-    market_obj.build_TU(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,nbDraws,seed,need_norm);
+    market_obj.build(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,nbDraws,seed,need_norm);
 }
 
+//
 // gradients
 
-template<typename Tg, typename Th, typename Tm>
-void model<Tg,Th,Tm>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+template<typename Tt>
+void 
+model<Tt>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out)
 {
-    build_market_TU(theta); // need to replace this later with general 'parametric_market'
+    this->dparam(dparams_inp,dparamsPsi_out,NULL,NULL);
+}
+
+template<typename Tt>
+void 
+model<Tt>::dparam(const arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out)
+{
+    arma::mat dparams_mat = (dparams_inp) ? *dparams_inp : arma::eye(nbParams,nbParams);
+
+    dparamsPsi_out = Phi_xy() * dparams_mat;
     //
+    if (dparamsG_out) {
+        *dparamsG_out = arma::zeros(0,dparams_mat.n_cols);
+    }
+    if (dparamsH_out) {
+        *dparamsH_out = arma::zeros(0,dparams_mat.n_cols);
+    }
+}
+
+template<typename Tg, typename Th, typename Tm>
+void
+dmodel_mu(const dse<Tg,Th,Tm>& market_obj, const arma::mat& dparams_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+{
     arma::mat mu, U, V;
-    solve(mu,U,V,NULL);
+    market_obj.solve(mu,U,V,NULL);
 
     arma::vec mu_x0 = market_obj.n - arma::sum(mu,1);
     arma::vec mu_0y = market_obj.m - arma::trans(arma::sum(mu,0));
-
-    arma::mat dparams_Psi, dparams_G, dparams_H;
-    dparam(dtheta,dparams_Psi,&dparams_G,&dparams_H);
 
     arma::vec du_Psi_vec = arma::vectorise(market_obj.trans_obj.du_Psi(U,V));
     arma::vec dv_Psi_vec = 1.0 - du_Psi_vec;
@@ -94,9 +193,26 @@ void model<Tg,Th,Tm>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta,
     dmu_out = dmu;
 }
 
+template<typename Tt>
+void 
+model<Tt>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+{
+    build_market_TU(theta); // need to replace this later with general 'parametric_market'
+
+    // arma::mat dparams_Psi, dparams_G, dparams_H;
+    // dparam(dtheta,dparams_Psi,&dparams_G,&dparams_H);
+    arma::mat dparams_Psi;
+    dparam(dtheta,dparams_Psi,NULL,NULL);
+    //
+    dmodel_mu(market_obj,dparams_Psi,mu_out,mu_x0_out,mu_0y_out,dmu_out);
+}
+
+//
 // MLE
-template<typename Tg, typename Th, typename Tm>
-bool model<Tg,Th,Tm>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp)
+
+template<typename Tt>
+bool 
+model<Tt>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp)
 {
     bool success = false;
     //
@@ -115,7 +231,7 @@ bool model<Tg,Th,Tm>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::m
     arma::vec mu_hat_0y = m - arma::trans(arma::sum(mu_hat,0));
     //
     // add optimization data
-    trame_model_mle_opt_data<Tg,Th,Tm> opt_data;
+    trame_model_mle_opt_data<Tt> opt_data;
     
     opt_data.model_obj = *this;
     opt_data.by_individual = by_individual;
@@ -134,9 +250,12 @@ bool model<Tg,Th,Tm>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::m
     return success;
 }
 
+//
 // MME
-template<typename Tg, typename Th, typename Tm>
-bool model<Tg,Th,Tm>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
+
+template<typename Tt>
+bool 
+model<Tt>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
 {
     bool success = false;
     //
@@ -157,7 +276,7 @@ bool model<Tg,Th,Tm>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     arma::mat C_hat = arma::vectorise(arma::trans(arma::vectorise(mu_hat)) * kron_term);
     //
     // add optimization data
-    trame_model_mme_opt_data<Tg,Th,Tm> opt_data;
+    trame_model_mme_opt_data<Tt> opt_data;
     
     opt_data.market = market_obj;
     opt_data.nbParams = nbParams;
@@ -178,54 +297,88 @@ bool model<Tg,Th,Tm>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     return success;
 }
 
+//
 // solve wrappers
 
-template<typename Tg, typename Th, typename Tm>
-bool model<Tg,Th,Tm>::solve(arma::mat& mu_sol)
+template<typename Tt>
+bool 
+model<Tt>::solve(arma::mat& mu_sol)
 {
     bool res = market_obj.solve(mu_sol,NULL);
     //
     return res;
 }
 
-template<typename Tg, typename Th, typename Tm>
-bool model<Tg,Th,Tm>::solve(arma::mat& mu_sol, const char* solver)
+template<typename Tt>
+bool 
+model<Tt>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = market_obj.solve(mu_sol,solver);
     //
     return res;
 }
 
-template<typename Tg, typename Th, typename Tm>
-bool model<Tg,Th,Tm>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
+template<typename Tt>
+bool 
+model<Tt>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
 {
     bool res = market_obj.solve(mu_sol,U,V,solver);
     //
     return res;
 }
 
+//
+// internal
+
+// Keith: should probably switch this to be a member variable
+template<typename Tt>
+inline
+arma::mat 
+model<Tt>::Phi_xy()
+{
+    // mirror R's approach to creating a matrix from an array; take each slice and vectorise that matrix
+    arma::mat phi_xy_mat(nbX*nbY,nbParams);
+    for(int k = 0; k < nbParams; k++) {
+        phi_xy_mat.col(k) = arma::vectorise(phi_xyk.slice(k));
+    }
+
+    return phi_xy_mat;
+}
+
+template<typename Tt>
+inline
+arma::mat 
+model<Tt>::Phi_xy_theta(const arma::mat& theta)
+{
+    arma::mat ret = arma::reshape(Phi_xy() * theta,nbX,nbY);
+    return ret;
+}
+
+template<typename Tt>
+inline
+void 
+model<Tt>::init_param(arma::mat& params)
+{
+    params.zeros(nbParams,1);
+}
+
+//
 // optimization-related functions
 
-template<typename Tg, typename Th, typename Tm>
-bool model<Tg,Th,Tm>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
+template<typename Tt>
+bool 
+model<Tt>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
 {
     bool success = generic_optim(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
     //
     return success;
 }
 
-template<typename Tm>
-bool model<Tm>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
+template<typename Tt>
+double 
+model<Tt>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data)
 {
-    bool success = generic_optim(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
-    //
-    return success;
-}
-
-template<typename... Tt>
-double model<Tt...>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data)
-{
-    trame_model_mle_opt_data<Tt...> *d = reinterpret_cast<trame_model_mle_opt_data<Tt...>*>(opt_data);
+    trame_model_mle_opt_data<Tt> *d = reinterpret_cast<trame_model_mle_opt_data<Tt>*>(opt_data);
 
     bool by_individual = d->by_individual;
     double scale = d->scale;
@@ -274,18 +427,20 @@ double model<Tt...>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_v
     return ret_val / scale;
 }
 
-template<typename Tg, typename Th, typename Tm>
-bool model<Tg,Th,Tm>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
+template<typename Tt>
+bool 
+model<Tt>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
 {
     bool success = generic_optim(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
     //
     return success;
 }
 
-template<typename Tg, typename Th, typename Tm>
-double model<Tg,Th,Tm>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
+template<typename Tt>
+double 
+model<Tt>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
 {
-    trame_model_mme_opt_data<Tg,Th,Tm> *d = reinterpret_cast<trame_model_mme_opt_data<Tg,Th,Tm>*>(opt_data);
+    trame_model_mme_opt_data<Tt> *d = reinterpret_cast<trame_model_mme_opt_data<Tt>*>(opt_data);
     //
     int nbX = d->market.nbX;
     int nbY = d->market.nbY;

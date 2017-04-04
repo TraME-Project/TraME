@@ -3,7 +3,6 @@
   ##   Copyright (C) 2015 - 2017 the TraME Team:
   ##      Alfred Galichon
   ##      Keith O'Hara
-  ##      Simon Weber
   ##
   ##   This file is part of TraME.
   ##
@@ -33,7 +32,8 @@
  */
 
 template<typename Tg, typename Th, typename Tm>
-void dse<Tg,Th,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, bool need_norm_inp)
+void 
+dse<Tg,Th,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -55,7 +55,8 @@ void dse<Tg,Th,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, con
 
 // general arums input
 template<typename Tg, typename Th, typename Tm>
-void dse<Tg,Th,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp)
+void 
+dse<Tg,Th,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -77,7 +78,8 @@ void dse<Tg,Th,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, con
 
 // empirical version
 template<typename Tg, typename Th, typename Tm> template<typename Ta, typename Tb>
-void dse<Tg,Th,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+void 
+dse<Tg,Th,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -99,7 +101,8 @@ void dse<Tg,Th,Tm>::build_TU(const arma::vec& n_inp, const arma::vec& m_inp, con
 
 // arums none
 template<typename Tg, typename Th, typename Tm>
-void dse<Tg,Th,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp)
+void 
+dse<Tg,Th,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -121,7 +124,8 @@ void dse<Tg,Th,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, co
 
 // general arums input
 template<typename Tg, typename Th, typename Tm>
-void dse<Tg,Th,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp)
+void 
+dse<Tg,Th,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -143,7 +147,8 @@ void dse<Tg,Th,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, co
 
 // general simulation
 template<typename Tg, typename Th, typename Tm> template<typename Ta, typename Tb>
-void dse<Tg,Th,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+void 
+dse<Tg,Th,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -165,7 +170,8 @@ void dse<Tg,Th,Tm>::build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, co
 
 // arums none
 template<typename Tg, typename Th, typename Tm>
-void dse<Tg,Th,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp)
+void 
+dse<Tg,Th,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -187,7 +193,8 @@ void dse<Tg,Th,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, co
 
 // general arums input
 template<typename Tg, typename Th, typename Tm>
-void dse<Tg,Th,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp)
+void 
+dse<Tg,Th,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -209,7 +216,8 @@ void dse<Tg,Th,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, co
 
 // general simulation
 template<typename Tg, typename Th, typename Tm> template<typename Ta, typename Tb>
-void dse<Tg,Th,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
+void 
+dse<Tg,Th,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
 
@@ -230,7 +238,8 @@ void dse<Tg,Th,Tm>::build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, co
 }
 
 template<typename Tg, typename Th, typename Tm>
-void dse<Tg,Th,Tm>::trans()
+void 
+dse<Tg,Th,Tm>::trans()
 {
     int nbX_temp = nbX;
     nbX = nbY;
@@ -251,7 +260,8 @@ void dse<Tg,Th,Tm>::trans()
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool dse<Tg,Th,Tm>::solve(arma::mat& mu_sol)
+bool 
+dse<Tg,Th,Tm>::solve(arma::mat& mu_sol)
 {
     bool res = this->solve(mu_sol,NULL);
     //
@@ -259,7 +269,8 @@ bool dse<Tg,Th,Tm>::solve(arma::mat& mu_sol)
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool dse<Tg,Th,Tm>::solve(arma::mat& mu_sol, const char* solver)
+bool 
+dse<Tg,Th,Tm>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);
@@ -300,7 +311,8 @@ bool dse<Tg,Th,Tm>::solve(arma::mat& mu_sol, const char* solver)
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool dse<Tg,Th,Tm>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
+bool 
+dse<Tg,Th,Tm>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);

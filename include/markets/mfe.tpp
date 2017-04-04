@@ -3,7 +3,6 @@
   ##   Copyright (C) 2015 - 2017 the TraME Team:
   ##      Alfred Galichon
   ##      Keith O'Hara
-  ##      Simon Weber
   ##
   ##   This file is part of TraME.
   ##
@@ -34,7 +33,8 @@
 
 // short build function, mmf_obj not touched
 template<typename Tm>
-void mfe<Tm>::build(const arma::vec& n_inp, const arma::vec& m_inp)
+void 
+mfe<Tm>::build(const arma::vec& n_inp, const arma::vec& m_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -49,7 +49,8 @@ void mfe<Tm>::build(const arma::vec& n_inp, const arma::vec& m_inp)
 }
 
 template<typename Tm>
-void mfe<Tm>::trans()
+void 
+mfe<Tm>::trans()
 {
     int nbX_temp = nbX;
 
@@ -66,7 +67,8 @@ void mfe<Tm>::trans()
 }
 
 template<typename Tm>
-arma::vec mfe<Tm>::marg_x_inv(const arma::mat& B_ys)
+arma::vec 
+mfe<Tm>::marg_x_inv(const arma::mat& B_ys)
 const
 {
     arma::vec ret = this->marg_x_inv(B_ys,NULL);
@@ -75,7 +77,8 @@ const
 }
 
 template<typename Tm>
-arma::vec mfe<Tm>::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
+arma::vec 
+mfe<Tm>::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
 const
 {
     arma::uvec temp_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
@@ -107,7 +110,8 @@ const
 }
 
 template<typename Tm>
-arma::vec mfe<Tm>::marg_y_inv(const arma::mat& A_xs)
+arma::vec 
+mfe<Tm>::marg_y_inv(const arma::mat& A_xs)
 const
 {
     arma::vec ret = this->marg_y_inv(A_xs,NULL);
@@ -116,7 +120,8 @@ const
 }
 
 template<typename Tm>
-arma::vec mfe<Tm>::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
+arma::vec 
+mfe<Tm>::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
 const
 {
     arma::uvec temp_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
@@ -150,7 +155,8 @@ const
 // solve
 
 template<typename Tm>
-bool mfe<Tm>::solve(arma::mat& mu_sol)
+bool 
+mfe<Tm>::solve(arma::mat& mu_sol)
 {
     bool res = ipfp(*this,mu_sol);
     //
@@ -158,7 +164,8 @@ bool mfe<Tm>::solve(arma::mat& mu_sol)
 }
 
 template<typename Tm>
-bool mfe<Tm>::solve(arma::mat& mu_sol, const char* solver)
+bool 
+mfe<Tm>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);
@@ -178,7 +185,8 @@ bool mfe<Tm>::solve(arma::mat& mu_sol, const char* solver)
 }
 
 template<typename Tm>
-bool mfe<Tm>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
+bool 
+mfe<Tm>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);
@@ -200,7 +208,8 @@ bool mfe<Tm>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const
 // root finding functions
 
 template<typename Tm>
-double mfe<Tm>::marg_x_inv_fn(double z, void* opt_data)
+double
+mfe<Tm>::marg_x_inv_fn(double z, void* opt_data)
 {
     trame_mfe_zeroin_data<Tm> *d = reinterpret_cast<trame_mfe_zeroin_data<Tm>*>(opt_data);
     //
@@ -215,7 +224,8 @@ double mfe<Tm>::marg_x_inv_fn(double z, void* opt_data)
 }
 
 template<typename Tm>
-double mfe<Tm>::marg_y_inv_fn(double z, void* opt_data)
+double
+mfe<Tm>::marg_y_inv_fn(double z, void* opt_data)
 {
     trame_mfe_zeroin_data<Tm> *d = reinterpret_cast<trame_mfe_zeroin_data<Tm>*>(opt_data);
     //

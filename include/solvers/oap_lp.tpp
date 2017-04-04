@@ -3,7 +3,6 @@
   ##   Copyright (C) 2015 - 2017 the TraME Team:
   ##      Alfred Galichon
   ##      Keith O'Hara
-  ##      Simon Weber
   ##
   ##   This file is part of TraME.
   ##
@@ -35,7 +34,8 @@
 // internal oap_lp
 
 template<typename Tg, typename Th>
-bool oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool* x_first_inp, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out)
+bool
+oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool* x_first_inp, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out)
 {
     bool success = false;
     //
@@ -181,7 +181,8 @@ bool oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const
 // wrappers
 
 template<typename Tg, typename Th, typename Tm>
-bool oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
+bool 
+oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
 {
     bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     
@@ -189,7 +190,8 @@ bool oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& residuals_out)
+bool 
+oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& residuals_out)
 {
     bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&residuals_out);
     
@@ -197,7 +199,8 @@ bool oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& residuals
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& x_first_inp, arma::mat& residuals_out)
+bool 
+oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& x_first_inp, arma::mat& residuals_out)
 {
     bool res = oap_lp_int(market,&mu_out,&x_first_inp,NULL,NULL,NULL,NULL,NULL,&residuals_out);
     
@@ -205,7 +208,8 @@ bool oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& x_first_
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& u_out, arma::vec& v_out)
+bool 
+oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& u_out, arma::vec& v_out)
 {
     bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,&u_out,&v_out,NULL,NULL);
     
@@ -213,7 +217,8 @@ bool oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& u_out, ar
 }
 
 template<typename Tg, typename Th, typename Tm>
-bool oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out)
+bool 
+oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out)
 {
     bool res = oap_lp_int(market,&mu_out,&x_first_inp,&mu_x0_out,&mu_0y_out,&u_out,&v_out,&val_out,&residuals_out);
     

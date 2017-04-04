@@ -3,7 +3,6 @@
   ##   Copyright (C) 2015 - 2017 the TraME Team:
   ##      Alfred Galichon
   ##      Keith O'Hara
-  ##      Simon Weber
   ##
   ##   This file is part of TraME.
   ##
@@ -38,7 +37,8 @@
  */
 
 template<typename Tg, typename Th, typename Tm>
-arma::mat w_upper_bound(const dse<Tg,Th,Tm>& market)
+arma::mat 
+w_upper_bound(const dse<Tg,Th,Tm>& market)
 {
     int nbX = market.nbX;
     int nbY = market.nbY;
