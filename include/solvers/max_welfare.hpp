@@ -35,33 +35,33 @@
 #define _trame_max_welfare_HPP
 
 // internal function
-template<typename Tg, typename Th, typename Tm>
-bool max_welfare_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp);
+template<typename Tg, typename Th, typename Tt>
+bool max_welfare_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp);
 
 // wrappers
-template<typename Tg, typename Th, typename Tm>
-bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out);
+template<typename Tg, typename Th, typename Tt>
+bool max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out);
 
-template<typename Tg, typename Th, typename Tm>
-bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const double& tol_inp);
+template<typename Tg, typename Th, typename Tt>
+bool max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp);
 
-template<typename Tg, typename Th, typename Tm>
-bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const int& max_iter_inp);
+template<typename Tg, typename Th, typename Tt>
+bool max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp);
 
-template<typename Tg, typename Th, typename Tm>
-bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+template<typename Tg, typename Th, typename Tt>
+bool max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
 
-template<typename Tg, typename Th, typename Tm>
-bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
+template<typename Tg, typename Th, typename Tt>
+bool max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
-template<typename Tg, typename Th, typename Tm>
-bool max_welfare(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* tol_inp, const int* max_iter_inp);
+template<typename Tg, typename Th, typename Tt>
+bool max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* tol_inp, const int* max_iter_inp);
 
 // optimization-related functions
 
 bool max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
 
-template<typename Tg, typename Th, typename Tm>
+template<typename Tg, typename Th, typename Tt>
 double max_welfare_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void *opt_data);
 
 #include "max_welfare.tpp"

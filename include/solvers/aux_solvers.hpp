@@ -34,22 +34,22 @@
 #ifndef _trame_aux_solvers_HPP
 #define _trame_aux_solvers_HPP
 
-template<typename Tg, typename Th, typename Tm>
+template<typename Tg, typename Th, typename Tt>
 struct trame_market_opt_data {
-    dse<Tg,Th,Tm> market;
+    dse<Tg,Th,Tt> market;
 };
 
-template<typename Tm>
+template<typename Tt>
 struct trame_mfe_opt_data {
-    mfe<Tm> market;
+    mfe<Tt> market;
 };
 
 //
 
 int build_disaggregate_epsilon(arma::vec n, const arums::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix);
 
-template<typename Tg, typename Th, typename Tm>
-arma::mat w_upper_bound(const dse<Tg,Th,Tm>& market);
+template<typename Tg, typename Th, typename Tt>
+arma::mat w_upper_bound(const dse<Tg,Th,Tt>& market);
 
 #include "aux_solvers.tpp"
 

@@ -31,7 +31,7 @@
  * 03/12/2017
  */
 
-template<class Tm>
+template<class Tt>
 class mfe
 {
     public:
@@ -47,7 +47,7 @@ class mfe
         arma::vec n;
         arma::vec m;
 
-        Tm mmfs_obj;
+        Tt mmfs_obj;
 
         // member functions
         void build(const arma::vec& n_inp, const arma::vec& m_inp);
@@ -78,7 +78,7 @@ class mfe
         static double marg_y_inv_fn(double z, void* opt_data);
 };
 
-template<class Tm>
+template<class Tt>
 struct trame_mfe_zeroin_data {
     bool coeff;
 
@@ -88,7 +88,7 @@ struct trame_mfe_zeroin_data {
     arma::mat A_xs;
     arma::mat B_ys;
 
-    mfe<Tm> mfe_obj;
+    mfe<Tt> mfe_obj;
 };
 
 #include "mfe.tpp"

@@ -31,7 +31,7 @@
  * 03/22/2017
  */
 
-template<class Tg, class Th, class Tm>
+template<class Tg, class Th, class Tt>
 class dse
 {
     public:
@@ -52,7 +52,7 @@ class dse
         arma::vec n;
         arma::vec m;
 
-        Tm trans_obj;
+        Tt trans_obj;
 
         Tg arums_G;
         Th arums_H;

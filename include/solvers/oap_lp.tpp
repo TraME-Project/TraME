@@ -180,45 +180,45 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool
 
 // wrappers
 
-template<typename Tg, typename Th, typename Tm>
+template<typename Tg, typename Th, typename Tt>
 bool 
-oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
+oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
     bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
     
     return res;
 }
 
-template<typename Tg, typename Th, typename Tm>
+template<typename Tg, typename Th, typename Tt>
 bool 
-oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& residuals_out)
+oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& residuals_out)
 {
     bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&residuals_out);
     
     return res;
 }
 
-template<typename Tg, typename Th, typename Tm>
+template<typename Tg, typename Th, typename Tt>
 bool 
-oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& x_first_inp, arma::mat& residuals_out)
+oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool& x_first_inp, arma::mat& residuals_out)
 {
     bool res = oap_lp_int(market,&mu_out,&x_first_inp,NULL,NULL,NULL,NULL,NULL,&residuals_out);
     
     return res;
 }
 
-template<typename Tg, typename Th, typename Tm>
+template<typename Tg, typename Th, typename Tt>
 bool 
-oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& u_out, arma::vec& v_out)
+oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& u_out, arma::vec& v_out)
 {
     bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,&u_out,&v_out,NULL,NULL);
     
     return res;
 }
 
-template<typename Tg, typename Th, typename Tm>
+template<typename Tg, typename Th, typename Tt>
 bool 
-oap_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, const bool& x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out)
+oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool& x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out)
 {
     bool res = oap_lp_int(market,&mu_out,&x_first_inp,&mu_x0_out,&mu_0y_out,&u_out,&v_out,&val_out,&residuals_out);
     

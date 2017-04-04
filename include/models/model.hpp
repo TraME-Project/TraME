@@ -32,7 +32,7 @@
  */
 
 
-template<class Tt>
+template<class Tm>
 class model
 {
     public:
@@ -51,7 +51,7 @@ class model
 
         arma::cube phi_xyk;
 
-        Tt market_obj;
+        Tm market_obj;
         // member functions
         void build(const arma::cube& phi_xyk_inp);
         void build(const arma::cube& phi_xyk_inp, const arma::vec& n_inp, const arma::vec& m_inp);
@@ -94,26 +94,26 @@ class model
         static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 
-template<typename Tt>
-void dmodel_mu(const Tt& market_obj, const arma::mat& dparams_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out);
+template<typename Tm>
+void dmodel_mu(const Tm& market_obj, const arma::mat& dparams_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out);
 
-// template<typename... Tt>
+// template<typename... Tm>
 // struct trame_model_mme_opt_data {};
 
-template<typename Tt>
+template<typename Tm>
 struct trame_model_mme_opt_data {
     int nbParams;
 
     arma::mat C_hat;
     arma::mat kron_term;
 
-    Tt market;
+    Tm market;
 };
 
-// template<typename... Tt>
+// template<typename... Tm>
 // struct trame_model_mle_opt_data {};
 
-template<typename Tt>
+template<typename Tm>
 struct trame_model_mle_opt_data {
     bool by_individual;
     double scale;
@@ -122,7 +122,7 @@ struct trame_model_mle_opt_data {
     arma::vec mu_hat_x0;
     arma::vec mu_hat_0y;
 
-    model<Tt> model_obj;
+    model<Tm> model_obj;
 };
 
 //#include "model.ipp"

@@ -32,9 +32,9 @@
  */
 
 // short build function, mmf_obj not touched
-template<typename Tm>
+template<typename Tt>
 void 
-mfe<Tm>::build(const arma::vec& n_inp, const arma::vec& m_inp)
+mfe<Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -48,9 +48,9 @@ mfe<Tm>::build(const arma::vec& n_inp, const arma::vec& m_inp)
     sigma = 1.0;
 }
 
-template<typename Tm>
+template<typename Tt>
 void 
-mfe<Tm>::trans()
+mfe<Tt>::trans()
 {
     int nbX_temp = nbX;
 
@@ -66,9 +66,9 @@ mfe<Tm>::trans()
     //
 }
 
-template<typename Tm>
+template<typename Tt>
 arma::vec 
-mfe<Tm>::marg_x_inv(const arma::mat& B_ys)
+mfe<Tt>::marg_x_inv(const arma::mat& B_ys)
 const
 {
     arma::vec ret = this->marg_x_inv(B_ys,NULL);
@@ -76,9 +76,9 @@ const
     return ret;
 }
 
-template<typename Tm>
+template<typename Tt>
 arma::vec 
-mfe<Tm>::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
+mfe<Tt>::marg_x_inv(const arma::mat& B_ys, arma::uvec* xs)
 const
 {
     arma::uvec temp_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
@@ -91,7 +91,7 @@ const
         ubs = n;
     }
     //
-    trame_mfe_zeroin_data<Tm> root_data;
+    trame_mfe_zeroin_data<Tt> root_data;
 
     root_data.mfe_obj = *this;
     root_data.coeff = coeff;
@@ -109,9 +109,9 @@ const
     return the_a_xs;
 }
 
-template<typename Tm>
+template<typename Tt>
 arma::vec 
-mfe<Tm>::marg_y_inv(const arma::mat& A_xs)
+mfe<Tt>::marg_y_inv(const arma::mat& A_xs)
 const
 {
     arma::vec ret = this->marg_y_inv(A_xs,NULL);
@@ -119,9 +119,9 @@ const
     return ret;
 }
 
-template<typename Tm>
+template<typename Tt>
 arma::vec 
-mfe<Tm>::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
+mfe<Tt>::marg_y_inv(const arma::mat& A_xs, arma::uvec* ys)
 const
 {
     arma::uvec temp_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
@@ -134,7 +134,7 @@ const
         ubs = m;
     }
     //
-    trame_mfe_zeroin_data<Tm> root_data;
+    trame_mfe_zeroin_data<Tt> root_data;
 
     root_data.mfe_obj = *this;
     root_data.coeff = coeff;
@@ -154,18 +154,18 @@ const
 
 // solve
 
-template<typename Tm>
+template<typename Tt>
 bool 
-mfe<Tm>::solve(arma::mat& mu_sol)
+mfe<Tt>::solve(arma::mat& mu_sol)
 {
     bool res = ipfp(*this,mu_sol);
     //
     return res;
 }
 
-template<typename Tm>
+template<typename Tt>
 bool 
-mfe<Tm>::solve(arma::mat& mu_sol, const char* solver)
+mfe<Tt>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);
@@ -184,9 +184,9 @@ mfe<Tm>::solve(arma::mat& mu_sol, const char* solver)
     return res;
 }
 
-template<typename Tm>
+template<typename Tt>
 bool 
-mfe<Tm>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
+mfe<Tt>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
     bool res = false;
     const char sig = (solver != NULL) ? solver[0] : char(0);
@@ -207,11 +207,11 @@ mfe<Tm>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char
 
 // root finding functions
 
-template<typename Tm>
+template<typename Tt>
 double
-mfe<Tm>::marg_x_inv_fn(double z, void* opt_data)
+mfe<Tt>::marg_x_inv_fn(double z, void* opt_data)
 {
-    trame_mfe_zeroin_data<Tm> *d = reinterpret_cast<trame_mfe_zeroin_data<Tm>*>(opt_data);
+    trame_mfe_zeroin_data<Tt> *d = reinterpret_cast<trame_mfe_zeroin_data<Tt>*>(opt_data);
     //
     arma::uvec x_ind_temp(1);
     x_ind_temp(0) = d->x_ind;
@@ -223,11 +223,11 @@ mfe<Tm>::marg_x_inv_fn(double z, void* opt_data)
     return ret;
 }
 
-template<typename Tm>
+template<typename Tt>
 double
-mfe<Tm>::marg_y_inv_fn(double z, void* opt_data)
+mfe<Tt>::marg_y_inv_fn(double z, void* opt_data)
 {
-    trame_mfe_zeroin_data<Tm> *d = reinterpret_cast<trame_mfe_zeroin_data<Tm>*>(opt_data);
+    trame_mfe_zeroin_data<Tt> *d = reinterpret_cast<trame_mfe_zeroin_data<Tt>*>(opt_data);
     //
     arma::uvec y_ind_temp(1);
     y_ind_temp(0) = d->y_ind;

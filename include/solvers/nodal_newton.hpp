@@ -35,27 +35,27 @@
 #define _trame_nodal_newton_HPP
 
 // internal function
-template<typename Tm>
-bool nodal_newton_int(const mfe<Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp);
+template<typename Tt>
+bool nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp);
 
 // wrappers
-template<typename Tm>
-bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out);
+template<typename Tt>
+bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out);
 
-template<typename Tm>
-bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out, const double& tol_inp);
+template<typename Tt>
+bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp);
 
-template<typename Tm>
-bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out, const int& max_iter_inp);
+template<typename Tt>
+bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const int& max_iter_inp);
 
-template<typename Tm>
-bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+template<typename Tt>
+bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
 
-template<typename Tm>
-bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
+template<typename Tt>
+bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
-template<typename Tm>
-bool nodal_newton(const mfe<Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* tol_inp, const int* max_iter_inp);
+template<typename Tt>
+bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* tol_inp, const int* max_iter_inp);
 
 // optimization-related functions
 
@@ -64,10 +64,10 @@ bool nodal_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const
 bool nodal_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
                                std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data);
 
-template<typename Tm>
+template<typename Tt>
 arma::vec nodal_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data);
 
-template<typename Tm>
+template<typename Tt>
 arma::mat nodal_newton_jacobian(const arma::vec& vals_inp, void *jacob_data);
 
 #include "nodal_newton.tpp"

@@ -33,9 +33,9 @@
 
 // internal cupids_lp
 
-template<typename Tg, typename Th, typename Tm>
+template<typename Tg, typename Th, typename Tt>
 bool 
-cupids_lp_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out)
+cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out)
 {
     bool success = false;
     //
@@ -53,7 +53,7 @@ cupids_lp_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     Tg arums_G = market.arums_G;
     Th arums_H = market.arums_H;
 
-    Tm trans_obj = market.trans_obj;
+    Tt trans_obj = market.trans_obj;
 
     arma::mat phi = trans_obj.phi;
     //
@@ -222,27 +222,27 @@ cupids_lp_int(const dse<Tg,Th,Tm>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
 // wrappers
 
-template<typename Tg, typename Th, typename Tm>
+template<typename Tg, typename Th, typename Tt>
 bool 
-cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out)
+cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
     bool res = cupids_lp_int(market,&mu_out,NULL,NULL,NULL,NULL);
 
     return res;
 }
 
-template<typename Tg, typename Th, typename Tm>
+template<typename Tg, typename Th, typename Tt>
 bool 
-cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
+cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = cupids_lp_int(market,&mu_out,NULL,NULL,&U_out,&V_out);
     
     return res;
 }
 
-template<typename Tg, typename Th, typename Tm>
+template<typename Tg, typename Th, typename Tt>
 bool 
-cupids_lp(const dse<Tg,Th,Tm>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out)
+cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = cupids_lp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out);
 
