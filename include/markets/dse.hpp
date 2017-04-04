@@ -47,28 +47,205 @@ class dse
         int nbX;
         int nbY;
 
-        double sigma;
-
         arma::vec n;
         arma::vec m;
-
-        Tt trans_obj;
 
         Tg arums_G;
         Th arums_H;
 
+        Tt trans_obj;
+
         // member functions
-        void build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, bool need_norm_inp);
-        void build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
-        template<typename Ta, typename Tb> void build_TU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_inp);
 
-        void build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp);
-        void build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
-        template<typename Ta, typename Tb> void build_NTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
-        void build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda, const arma::mat& phi, bool need_norm_inp);
-        void build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
-        template<typename Ta, typename Tb> void build_LTU(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda, const arma::mat& phi, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+
+        void trans();
+
+        bool solve(arma::mat& mu_sol);
+        bool solve(arma::mat& mu_sol, const char* solver);
+        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
+
+    private:
+        bool arum_none;
+        bool arum_empirical;
+        bool arum_general; // need to finish this later
+};
+
+template<class Tg, class Th>
+class dse<Tg,Th,transfers::etu>
+{
+    public:
+        // build objects
+        bool ETU = false;
+        bool LTU = false;
+        bool NTU = false;
+        bool TU  = false;
+
+        bool need_norm;
+        bool outsideOption;
+
+        int nbX;
+        int nbY;
+
+        arma::vec n;
+        arma::vec m;
+
+        Tg arums_G;
+        Th arums_H;
+
+        transfers::etu trans_obj;
+
+        // member functions
+        void build(const arma::vec& n_inp, const arma::vec& m_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_inp);
+
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+
+        void trans();
+
+        bool solve(arma::mat& mu_sol);
+        bool solve(arma::mat& mu_sol, const char* solver);
+        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
+
+    private:
+        bool arum_none;
+        bool arum_empirical;
+        bool arum_general; // need to finish this later
+};
+
+template<class Tg, class Th>
+class dse<Tg,Th,transfers::ltu>
+{
+    public:
+        // build objects
+        bool ETU = false;
+        bool LTU = false;
+        bool NTU = false;
+        bool TU  = false;
+
+        bool need_norm;
+        bool outsideOption;
+
+        int nbX;
+        int nbY;
+
+        arma::vec n;
+        arma::vec m;
+
+        Tg arums_G;
+        Th arums_H;
+
+        transfers::ltu trans_obj;
+
+        // member functions
+        void build(const arma::vec& n_inp, const arma::vec& m_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_inp);
+
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda, const arma::mat& phi, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+
+        void trans();
+
+        bool solve(arma::mat& mu_sol);
+        bool solve(arma::mat& mu_sol, const char* solver);
+        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
+
+    private:
+        bool arum_none;
+        bool arum_empirical;
+        bool arum_general; // need to finish this later
+};
+
+template<class Tg, class Th>
+class dse<Tg,Th,transfers::ntu>
+{
+    public:
+        // build objects
+        bool ETU = false;
+        bool LTU = false;
+        bool NTU = false;
+        bool TU  = false;
+
+        bool need_norm;
+        bool outsideOption;
+
+        int nbX;
+        int nbY;
+
+        arma::vec n;
+        arma::vec m;
+
+        Tg arums_G;
+        Th arums_H;
+
+        transfers::ntu trans_obj;
+
+        // member functions
+        void build(const arma::vec& n_inp, const arma::vec& m_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_inp);
+
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda, const arma::mat& phi, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+
+        void trans();
+
+        bool solve(arma::mat& mu_sol);
+        bool solve(arma::mat& mu_sol, const char* solver);
+        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
+
+    private:
+        bool arum_none;
+        bool arum_empirical;
+        bool arum_general; // need to finish this later
+};
+
+template<class Tg, class Th>
+class dse<Tg,Th,transfers::tu>
+{
+    public:
+        // build objects
+        bool ETU = false;
+        bool LTU = false;
+        bool NTU = false;
+        bool TU  = false;
+
+        bool need_norm;
+        bool outsideOption;
+
+        int nbX;
+        int nbY;
+
+        arma::vec n;
+        arma::vec m;
+
+        Tg arums_G;
+        Th arums_H;
+
+        transfers::tu trans_obj;
+
+        // member functions
+        void build(const arma::vec& n_inp, const arma::vec& m_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_inp);
+
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
         void trans();
 
