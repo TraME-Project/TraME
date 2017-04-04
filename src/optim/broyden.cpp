@@ -33,7 +33,8 @@
 
 #include "trame.hpp"
 
-bool trame::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
+bool 
+trame::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
 {
     // notation: 'p' stands for '+1'.
     //
@@ -107,7 +108,8 @@ bool trame::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arm
     return success;
 }
 
-bool trame::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
+bool 
+trame::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
                     std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data)
 {
     // notation: 'p' stands for '+1'.
@@ -188,7 +190,8 @@ bool trame::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arm
 
 // derivative-free method of Li and Fukushima (2000)
 
-bool trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
+bool 
+trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
 {
     // notation: 'p' stands for '+1'.
     //
@@ -287,7 +290,8 @@ bool trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const 
     return success;
 }
 
-bool trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
+bool 
+trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
                        std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data)
 {
     // notation: 'p' stands for '+1'.
@@ -391,12 +395,14 @@ bool trame::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const 
     return success;
 }
 
-double trame::df_eta(int k)
+double 
+trame::df_eta(int k)
 {
     return 1.0 / (k*k);
 }
 
-double trame::df_proc_1(const arma::vec& x_vals, const arma::vec& direc, double sigma_1, int k, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
+double 
+trame::df_proc_1(const arma::vec& x_vals, const arma::vec& direc, double sigma_1, int k, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
 {
     double beta = 0.9, lambda = 1.0;
     double eta_k = df_eta(k);

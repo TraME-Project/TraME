@@ -33,21 +33,24 @@
 
 #include "trame.hpp"
 
-bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
+bool 
+trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
     bool success = bfgs(init_out_vals,opt_objfn,opt_data);
     //
     return success;
 }
 
-bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out)
+bool 
+trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out)
 {
     bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,value_out,NULL,NULL);
     //
     return success;
 }
 
-bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
+bool 
+trame::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
 {
     bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
     //
@@ -56,7 +59,8 @@ bool trame::generic_optim(arma::vec& init_out_vals, std::function<double (const 
 
 // box constraints
 
-bool trame::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
+bool 
+trame::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
                           std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
     bool success = generic_optim(init_out_vals,lower_bounds,upper_bounds,opt_objfn,opt_data,NULL);
@@ -64,7 +68,8 @@ bool trame::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bound
     return success;
 }
 
-bool trame::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
+bool 
+trame::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
                           std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data,
                           double* value_out)
 {

@@ -33,7 +33,8 @@
 
 #include "trame.hpp"
 
-bool trame::sumt(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data,
+bool 
+trame::sumt(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data,
                  std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* constr_data)> constr_fn, void* constr_data,
                  double* value_out)
 {
@@ -114,7 +115,8 @@ bool trame::sumt(arma::vec& init_out_vals, std::function<double (const arma::vec
     return success;
 }
 
-bool trame::sumt(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data,
+bool 
+trame::sumt(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data,
                  std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* constr_data)> constr_fn, void* constr_data)
 {
     bool success = sumt(init_out_vals,opt_objfn,opt_data,constr_fn,constr_data,NULL);

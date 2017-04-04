@@ -30,7 +30,8 @@
 
 #include "trame.hpp"
 
-double trame::zeroin(double ax, double bx, double (*f)(double x, void* opt_data), void* opt_data, double* tol_inp, int* max_iter_inp)
+double 
+trame::zeroin(double ax, double bx, double (*f)(double x, void* opt_data), void* opt_data, double* tol_inp, int* max_iter_inp)
 {
 	double a,b,c;
 	double fa;

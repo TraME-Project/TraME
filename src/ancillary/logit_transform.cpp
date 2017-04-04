@@ -30,7 +30,8 @@
 
 #include "trame.hpp"
 
-arma::vec trame::logit_trans(const arma::vec& pars, const arma::vec& lower_bounds, const arma::vec& upper_bounds)
+arma::vec
+trame::logit_trans(const arma::vec& pars, const arma::vec& lower_bounds, const arma::vec& upper_bounds)
 {
 	//
 	arma::vec pars_trans = arma::log((pars - lower_bounds)/(upper_bounds - pars));

@@ -33,22 +33,26 @@
 
 #include "trame.hpp"
 
-void trame::affinity::build(const arma::mat& X_inp, const arma::mat& Y_inp)
+void 
+trame::affinity::build(const arma::mat& X_inp, const arma::mat& Y_inp)
 {
     this->build_int(X_inp,Y_inp,NULL,NULL,NULL);
 }
 
-void trame::affinity::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp)
+void 
+trame::affinity::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp)
 {
     this->build_int(X_inp,Y_inp,&n_inp,&m_inp,NULL);
 }
 
-void trame::affinity::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp, double sigma_inp)
+void 
+trame::affinity::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp, double sigma_inp)
 {
     this->build_int(X_inp,Y_inp,&n_inp,&m_inp,&sigma_inp);
 }
 
-void trame::affinity::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp, const double* sigma_inp)
+void 
+trame::affinity::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp, const double* sigma_inp)
 {
     need_norm = false;
 
@@ -73,7 +77,8 @@ void trame::affinity::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, 
     //
 }
 
-trame::mfe<trame::mmfs::geo> trame::affinity::build_market(const arma::mat& theta)
+trame::mfe<trame::mmfs::geo> 
+trame::affinity::build_market(const arma::mat& theta)
 {
     arma::mat Phi_mkt = Phi_xy(arma::vectorise(theta));
     Phi_mkt.reshape(nbX,nbY);
@@ -84,7 +89,8 @@ trame::mfe<trame::mmfs::geo> trame::affinity::build_market(const arma::mat& thet
     return mkt_ret;
 }
 
-void trame::affinity::dparam(arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out)
+void 
+trame::affinity::dparam(arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out)
 {
     arma::mat dparams_mat = (dparams_inp) ? *dparams_inp : arma::eye(nbParams,nbParams);
 
@@ -98,7 +104,8 @@ void trame::affinity::dparam(arma::mat* dparams_inp, arma::mat& dparamsPsi_out, 
     }
 }
 
-bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
+bool 
+trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
 {
     bool success = false;
     //
@@ -173,7 +180,8 @@ bool trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat,
     return success;
 }
 
-bool trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
+bool 
+trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
 {
     bool success = false;
     //
@@ -283,12 +291,14 @@ bool trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, a
 
 // internal
 
-arma::mat trame::affinity::Phi_xyk()
+arma::mat 
+trame::affinity::Phi_xyk()
 {
     return phi_xyk_aux;
 }
 
-arma::mat trame::affinity::Phi_xy(const arma::mat& lambda)
+arma::mat 
+trame::affinity::Phi_xy(const arma::mat& lambda)
 {
     arma::mat phi_xyk_temp = arma::reshape(phi_xyk_aux,nbX*nbY,nbParams); 
     arma::mat ret = phi_xyk_temp * lambda;
@@ -296,7 +306,8 @@ arma::mat trame::affinity::Phi_xy(const arma::mat& lambda)
     return ret;
 }
 
-arma::mat trame::affinity::Phi_k(const arma::mat& mu_hat)
+arma::mat 
+trame::affinity::Phi_k(const arma::mat& mu_hat)
 {
     arma::mat phi_xyk_temp = arma::reshape(phi_xyk_aux,nbX*nbY,nbParams); 
     arma::mat ret = arma::vectorise(arma::trans(arma::vectorise(mu_hat))*phi_xyk_temp);
@@ -305,7 +316,8 @@ arma::mat trame::affinity::Phi_k(const arma::mat& mu_hat)
     return ret;
 }
 
-void trame::affinity::init_param(arma::mat& params)
+void 
+trame::affinity::init_param(arma::mat& params)
 {
     params.zeros(nbParams,1);
 }
@@ -314,7 +326,8 @@ void trame::affinity::init_param(arma::mat& params)
  * optimization-related functions
  */
 
-double trame::affinity::mme_woregul_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
+double 
+trame::affinity::mme_woregul_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
 {
     trame_mme_woregal_opt_data *d = reinterpret_cast<trame_mme_woregal_opt_data*>(opt_data);
     //

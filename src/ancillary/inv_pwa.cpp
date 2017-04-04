@@ -33,7 +33,8 @@
 
 #include "trame.hpp"
 
-arma::vec trame::inv_pwa (const arma::vec& a, const arma::mat& B, const arma::mat& C, const double& k)
+arma::vec 
+trame::inv_pwa(const arma::vec& a, const arma::mat& B, const arma::mat& C, const double& k)
 {
     int nb_X = a.n_elem;
     int nb_Y = B.n_cols;

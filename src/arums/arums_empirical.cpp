@@ -43,13 +43,15 @@ trame::arums::empirical::empirical(int nbX_inp, int nbY_inp, const arma::cube& a
     this->build(nbX_inp, nbY_inp, atoms_inp, xHomogenous_inp, outsideOption_inp);
 }
 
-void trame::arums::empirical::build(int nbX_inp, int nbY_inp)
+void 
+trame::arums::empirical::build(int nbX_inp, int nbY_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
 }
 
-void trame::arums::empirical::build(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
+void 
+trame::arums::empirical::build(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -63,14 +65,16 @@ void trame::arums::empirical::build(int nbX_inp, int nbY_inp, const arma::cube& 
     outsideOption = outsideOption_inp;
 }
 
-double trame::arums::empirical::G(const arma::vec& n)
+double 
+trame::arums::empirical::G(const arma::vec& n)
 {
     double val = this->G(n,U,mu_sol);
     //
     return val;
 }
 
-double trame::arums::empirical::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
+double 
+trame::arums::empirical::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
 {
     double val=0.0, val_x;
     mu_out.set_size(nbX,nbY);
@@ -87,7 +91,8 @@ double trame::arums::empirical::G(const arma::vec& n, const arma::mat& U_inp, ar
     return val;
 }
 
-double trame::arums::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
+double 
+trame::arums::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
 {
     mu_x_out.set_size(nbY,1);
     //
@@ -110,14 +115,16 @@ double trame::arums::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out
     return val_x;
 }
 
-double trame::arums::empirical::Gstar(const arma::vec& n)
+double 
+trame::arums::empirical::Gstar(const arma::vec& n)
 {
     double val = this->Gstar(n,mu_sol,U_sol);
     //
     return val;
 }
 
-double trame::arums::empirical::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
+double 
+trame::arums::empirical::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
 {
     if (!TRAME_PRESOLVED_GSTAR) {
         presolve_LP_Gstar();
@@ -138,7 +145,8 @@ double trame::arums::empirical::Gstar(const arma::vec& n, const arma::mat& mu_in
     return val;
 }
 
-double trame::arums::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
+double 
+trame::arums::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
 {
     if (!TRAME_PRESOLVED_GSTAR) {
         presolve_LP_Gstar();
@@ -201,7 +209,8 @@ double trame::arums::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x
     return val_x;
 }
 
-double trame::arums::empirical::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
+double 
+trame::arums::empirical::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {
     if (!TRAME_PRESOLVED_GBAR) {
         presolve_LP_Gbar();
@@ -224,7 +233,8 @@ double trame::arums::empirical::Gbar(const arma::mat& Ubar, const arma::mat& mub
     return val;
 }
 
-double trame::arums::empirical::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+double 
+trame::arums::empirical::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
     if (!TRAME_PRESOLVED_GBAR) {
         presolve_LP_Gbar();
@@ -290,7 +300,8 @@ double trame::arums::empirical::Gbarx(const arma::vec& Ubar_x, const arma::vec& 
  * presolve functions for Gstar and Gbar
  */
 
-void trame::arums::empirical::presolve_LP_Gstar()
+void 
+trame::arums::empirical::presolve_LP_Gstar()
 {
     /*
      * Here we build and store the linear constraint matrix ('A') used in Gstarx.
@@ -349,7 +360,8 @@ void trame::arums::empirical::presolve_LP_Gstar()
     TRAME_PRESOLVED_GSTAR = true;
 }
 
-void trame::arums::empirical::presolve_LP_Gbar()
+void 
+trame::arums::empirical::presolve_LP_Gbar()
 {
     /*
      * Here we build and store the linear constraint matrix ('A') used in Gbarx.

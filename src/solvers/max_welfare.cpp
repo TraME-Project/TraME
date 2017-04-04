@@ -33,7 +33,8 @@
 
 #include "trame.hpp"
 
-bool trame::max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
+bool 
+trame::max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
 {
     bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
     //

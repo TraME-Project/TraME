@@ -111,7 +111,8 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
 }*/
 
 template<>
-bool model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out)
+bool 
+model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out)
 {
     bool success = false;
     //
