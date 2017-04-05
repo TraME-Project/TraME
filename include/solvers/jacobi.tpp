@@ -186,6 +186,7 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
     return success;
 }
 
+//
 // wrappers
 
 template<typename Tg, typename Th, typename Tt>
@@ -242,6 +243,7 @@ jacobi(const dse<Tg,Th,Tt>& market, const arma::mat& w_low_inp, const arma::mat&
     return res;
 }
 
+//
 // root-finding function
 
 template<typename Tg, typename Th, typename Tt>

@@ -73,7 +73,6 @@ class mfe
         bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
 
     private:
-        // member functions
         static double marg_x_inv_fn(double z, void* opt_data);
         static double marg_y_inv_fn(double z, void* opt_data);
 };

@@ -34,7 +34,7 @@
 // internal ipfp
 
 template<typename Tt>
-bool 
+bool
 ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, arma::vec* u_out, arma::vec* v_out, const double* tol_inp, const int* max_iter_inp, const arma::vec* by_start)
 {
     bool success = false;
@@ -60,6 +60,7 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
     
     while (err > tol && iter < max_iter) {
         iter++;
+
         val_old = arma::join_cols(ax,by);
 
         // Solve for 'ax' and then 'by'
@@ -123,7 +124,8 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
     return success;
 }
 
-// wrappers 
+//
+// wrappers
 
 template<typename Tt>
 bool 
