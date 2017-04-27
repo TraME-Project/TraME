@@ -23,13 +23,13 @@
 
 /*
  * Geometric Marriage Matching Functions (MMFs) class
- * Corresponds to TU transfers class
+ * (Corresponds to TU transfers class)
  *
  * Keith O'Hara
  * 08/15/2016
  *
  * This version:
- * 03/27/2017
+ * 04/27/2017
  */
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
@@ -45,10 +45,10 @@ class geo
         int nbParams;
 
         arma::mat phi;
-        arma::mat aux_phi_exp; // exp(phi_inp/(2*sigma)), also labelled K_TU
+        arma::mat aux_phi_exp; // exp(phi_inp/(2*sigma)), also labelled K
 
         // member functions
-        void build(const arma::mat& phi_TU, bool need_norm_TU);
+        void build(const arma::mat& phi_inp, bool need_norm_inp);
         
         void trans();
         
@@ -57,6 +57,12 @@ class geo
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys) const;
+
+        arma::mat dmu_x0(const arma::mat& a_xs, const arma::mat& b_ys) const;
+        arma::mat dmu_0y(const arma::mat& a_xs, const arma::mat& b_ys) const;
+
+        arma::mat dparams_M(const arma::mat& a_xs, const arma::mat& b_ys) const;
+        arma::mat dparams_M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::mat* delta_params_M) const;
 
         arma::mat Mx0(const arma::mat& a_x) const;
         arma::mat M0y(const arma::mat& b_y) const;

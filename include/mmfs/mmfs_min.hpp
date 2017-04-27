@@ -23,13 +23,13 @@
 
 /*
  * Leontief Marriage Matching Functions (MMFs) class
- * Corresponds to NTU transfers class
+ * (Corresponds to NTU transfers class)
  *
  * Keith O'Hara
  * 08/15/2016
  *
  * This version:
- * 03/27/2017
+ * 04/27/2017
  */
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
@@ -40,7 +40,6 @@ class min
         // build objects
         bool need_norm;
         
-        int transfers_type = 1;
         int nbX;
         int nbY;
         int nbParams;
@@ -48,11 +47,11 @@ class min
         arma::mat alpha;
         arma::mat gamma;
 
-        arma::mat aux_alpha_exp; // exp(alpha_NTU / sigma), also labelled A_NTU
-        arma::mat aux_gamma_exp; // exp(gamma_NTU / sigma), also labelled B_NTU
+        arma::mat aux_alpha_exp; // exp(alpha / sigma), also labelled A
+        arma::mat aux_gamma_exp; // exp(gamma / sigma), also labelled B
 
         // member functions
-        void build(const arma::mat& alpha_NTU, const arma::mat& gamma_NTU, bool need_norm_NTU);
+        void build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp);
         
         void trans();
         
@@ -61,6 +60,12 @@ class min
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys) const;
+
+        arma::mat dmu_x0(const arma::mat& a_xs, const arma::mat& b_ys) const;
+        arma::mat dmu_0y(const arma::mat& a_xs, const arma::mat& b_ys) const;
+
+        arma::mat dparams_M(const arma::mat& a_xs, const arma::mat& b_ys) const;
+        arma::mat dparams_M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::mat* delta_params_M) const;
 
         arma::mat Mx0(const arma::mat& a_x) const;
         arma::mat M0y(const arma::mat& b_y) const;

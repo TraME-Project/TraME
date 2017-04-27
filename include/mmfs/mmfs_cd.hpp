@@ -23,13 +23,13 @@
 
 /*
  * Cobb-Douglas (CD) Marriage Matching Functions (MMFs) class
- * Corresponds to LTU transfers class
+ * (Corresponds to LTU transfers class)
  *
  * Keith O'Hara
  * 08/15/2016
  *
  * This version:
- * 03/27/2017
+ * 04/27/2017
  */
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
@@ -40,7 +40,6 @@ class cd
         // build objects
         bool need_norm;
 
-        int transfers_type = 1;
         int nbX;
         int nbY;
         int nbParams;
@@ -48,11 +47,11 @@ class cd
         arma::mat lambda;
         arma::mat phi;
 
-        arma::mat aux_zeta; // could be 1 - lambda_LTU;
-        arma::mat aux_phi_exp; // aux_phi_exp = exp(phi); will probably end up as exp(phi / sigma) when using MFE, K_LTU
+        arma::mat aux_zeta; // could be 1 - lambda;
+        arma::mat aux_phi_exp; // aux_phi_exp = exp(phi); will probably end up as exp(phi / sigma) when using MFE; K
 
         // member functions
-        void build(const arma::mat& lambda_LTU, const arma::mat& phi_LTU, bool need_norm_LTU);
+        void build(const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp);
         
         void trans();
 
@@ -61,6 +60,12 @@ class cd
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys) const;
+
+        arma::mat dmu_x0(const arma::mat& a_xs, const arma::mat& b_ys) const;
+        arma::mat dmu_0y(const arma::mat& a_xs, const arma::mat& b_ys) const;
+
+        arma::mat dparams_M(const arma::mat& a_xs, const arma::mat& b_ys) const;
+        arma::mat dparams_M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::mat* delta_params_M) const;
 
         arma::mat Mx0(const arma::mat& a_x) const;
         arma::mat M0y(const arma::mat& b_y) const;

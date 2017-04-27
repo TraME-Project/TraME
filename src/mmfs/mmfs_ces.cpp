@@ -35,24 +35,24 @@
 #include "trame.hpp"
 
 void 
-trame::mmfs::ces::build(const arma::mat& alpha_ETU, const arma::mat& gamma_ETU, const arma::mat& tau_ETU, bool need_norm_ETU)
+trame::mmfs::ces::build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, bool need_norm_inp)
 {
-    need_norm = need_norm_ETU;
+    need_norm = need_norm_inp;
 
-    nbX = alpha_ETU.n_rows;
-    nbY = alpha_ETU.n_cols;
+    nbX = alpha_inp.n_rows;
+    nbY = alpha_inp.n_cols;
     nbParams = 3*nbX*nbY;
 
-    alpha = alpha_ETU;
-    gamma = gamma_ETU;
-    tau   = tau_ETU;
-    kappa = - 1.0 / tau_ETU;
+    alpha = alpha_inp;
+    gamma = gamma_inp;
+    tau   = tau_inp;
+    kappa = - 1.0 / tau_inp;
 
-    aux_alpha = - elem_div(alpha_ETU, tau_ETU);
-    aux_gamma = - elem_div(gamma_ETU, tau_ETU);
+    aux_alpha = - elem_div(alpha_inp, tau_inp);
+    aux_gamma = - elem_div(gamma_inp, tau_inp);
 
-    aux_alpha_exp = arma::exp(- elem_div(alpha_ETU, tau_ETU));
-    aux_gamma_exp = arma::exp(- elem_div(gamma_ETU, tau_ETU));
+    aux_alpha_exp = arma::exp(- elem_div(alpha_inp, tau_inp));
+    aux_gamma_exp = arma::exp(- elem_div(gamma_inp, tau_inp));
 }
 
 void 
@@ -83,6 +83,8 @@ trame::mmfs::ces::trans()
 
 //
 // MFE-related functions
+
+// matching function
 
 arma::mat 
 trame::mmfs::ces::M(const arma::mat& a_xs, const arma::mat& b_ys)
@@ -134,6 +136,22 @@ const
     arma::mat term_2 = arma::exp(aux_gamma(x_ind,y_ind) + kappa(x_ind,y_ind) * std::log(b_ys));
 
     arma::mat ret = arma::exp( - tau(x_ind,y_ind) % arma::log((term_1 + term_2)/2) );
+    //
+    return ret;
+}
+
+//
+
+arma::mat 
+trame::mmfs::ces::dmu_x0(const arma::mat& a_xs, const arma::mat& b_ys)
+const
+{
+    arma::mat term_1 = arma::exp(aux_alpha + elem_prod(kappa, arma::log(a_xs)));
+    arma::mat term_2 = arma::exp(aux_gamma + arma::trans(elem_prod(arma::trans(kappa), arma::log(b_ys))));
+
+    arma::mat mu_s = arma::exp( - tau % arma::log((term_1 + term_2)/2) ); 
+
+    arma::mat ret = aux_alpha_exp % arma::exp( elem_prod(1 - kappa, arma::log(mu_s / a_xs)) ) / 2.0;
     //
     return ret;
 }

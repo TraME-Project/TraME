@@ -23,13 +23,13 @@
 
 /*
  * Constant Elasticity of Substitution (CES) Marriage Matching Functions (MMFs) class
- * Corresponds to the ETU transfers class
+ * (Corresponds to the ETU transfers class)
  *
  * Keith O'Hara
  * 08/15/2016
  *
  * This version:
- * 03/27/2017
+ * 04/27/2017
  */
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
@@ -47,16 +47,16 @@ class ces
         arma::mat alpha;
         arma::mat gamma;
         arma::mat tau;
-        arma::mat kappa; // kappa_ETU = -1/tau_inp
+        arma::mat kappa; // kappa = -1/tau_inp
 
-        arma::mat aux_alpha; // - alpha_ETU / tau_ETU = log(C_ETU)
-        arma::mat aux_gamma; // - gamma_ETU / tau_ETU = log(D_ETU)
+        arma::mat aux_alpha; // - alpha / tau = log(C)
+        arma::mat aux_gamma; // - gamma / tau = log(D)
 
-        arma::mat aux_alpha_exp; // exp(- alpha_ETU / tau_ETU), also labelled C_ETU
-        arma::mat aux_gamma_exp; // exp(- gamma_ETU / tau_ETU), also labelled D_ETU
+        arma::mat aux_alpha_exp; // exp(- alpha / tau), also labelled C
+        arma::mat aux_gamma_exp; // exp(- gamma / tau), also labelled D
 
         // member functions
-        void build(const arma::mat& alpha_ETU, const arma::mat& gamma_ETU, const arma::mat& tau_ETU, bool need_norm_ETU);
+        void build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, bool need_norm_inp);
         
         void trans();
 
@@ -66,6 +66,12 @@ class ces
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys) const;
+
+        arma::mat dmu_x0(const arma::mat& a_xs, const arma::mat& b_ys) const;
+        arma::mat dmu_0y(const arma::mat& a_xs, const arma::mat& b_ys) const;
+
+        arma::mat dparams_M(const arma::mat& a_xs, const arma::mat& b_ys) const;
+        arma::mat dparams_M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::mat* delta_params_M) const;
 
         arma::mat Mx0(const arma::mat& a_x) const;
         arma::mat M0y(const arma::mat& b_y) const;
