@@ -369,6 +369,7 @@ dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, 
 //
 // market transpose
 
+/*
 template<typename Tg, typename Th, typename Tt>
 void 
 dse<Tg,Th,Tt>::trans()
@@ -387,6 +388,28 @@ dse<Tg,Th,Tt>::trans()
     Tg arums_G_temp = arums_G;
     arums_G = arums_H;
     arums_H = arums_G_temp;
+    //
+}
+*/
+
+template<typename Tg, typename Th, typename Tt>
+dse<Th,Tg,Tt> 
+dse<Tg,Th,Tt>::trans()
+{
+    dse<Th,Tg,Tt> new_market;
+
+    new_market.nbX = nbY;
+    new_market.nbY = nbX;
+
+    new_market.n = m;
+    new_market.m = n;
+    // Keith: fill in normalization later
+
+    new_market.trans_obj = trans_obj;
+    new_market.trans_obj.trans();
+
+    new_market.arums_G = arums_H;
+    new_market.arums_H = arums_G;
     //
 }
 
