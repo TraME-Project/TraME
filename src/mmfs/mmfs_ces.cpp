@@ -157,6 +157,62 @@ const
 }
 
 arma::mat 
+trame::mmfs::ces::dmu_0y(const arma::mat& a_xs, const arma::mat& b_ys)
+const
+{
+    arma::mat term_1 = arma::exp(aux_alpha + elem_prod(kappa, arma::log(a_xs)));
+    arma::mat term_2 = arma::exp(aux_gamma + arma::trans(elem_prod(arma::trans(kappa), arma::log(b_ys))));
+
+    arma::mat mu_s = arma::exp( - tau % arma::log((term_1 + term_2)/2) ); 
+
+    arma::mat ret = aux_gamma_exp % arma::trans(arma::exp( elem_prod(arma::trans(1 - kappa), arma::log(arma::trans(mu_s) / a_xs)) )) / 2.0;
+    //
+    return ret;
+}
+
+arma::mat 
+trame::mmfs::ces::dparams_M(const arma::mat& a_xs, const arma::mat& b_ys)
+const
+{
+    return this->dparams_M(a_xs,b_ys,NULL);
+}
+
+arma::mat 
+trame::mmfs::ces::dparams_M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::mat* delta_params_M)
+const
+{
+    arma::mat a_xs_kappa = arma::exp(elem_prod(kappa, arma::log(a_xs))); // mux0s^kappa
+    arma::mat b_ys_kappa = arma::exp(arma::trans(elem_prod(arma::trans(kappa), arma::log(b_ys)))); // t(mu0ys^tkappa))
+
+    arma::mat term_1 = aux_alpha_exp % a_xs_kappa;
+    arma::mat term_2 = aux_gamma_exp % b_ys_kappa;
+
+    arma::mat mu_s = arma::exp( - tau % arma::log((term_1 + term_2)/2) );\
+    arma::mat mu_s_kappa = arma::exp(elem_prod(1 - kappa, arma::log(mu_s)));
+
+    arma::mat numer = (mu_s / kappa) % ( term_1 % arma::log(a_xs) + aux_gamma_exp % arma::trans(arma::log(b_ys)) % b_ys_kappa - arma::log(mu_s) );
+    arma::mat denom = term_1 + term_2;
+
+    arma::mat der_1 = mu_s_kappa % a_xs_kappa / 2.0;
+    arma::mat der_2 = mu_s_kappa % b_ys_kappa / 2.0;
+    arma::mat der_3 = numer / denom;
+
+    arma::mat ret;
+
+    if (delta_params_M) {
+        arma::mat delta_params_1 = arma::reshape((*delta_params_M).rows(0,nbX*nbY-1),nbX,nbY);
+        arma::mat delta_params_2 = arma::reshape((*delta_params_M).rows(nbX*nbY,2*nbX*nbY-1),nbX,nbY);
+        arma::mat delta_params_3 = arma::reshape((*delta_params_M).rows(2*nbX*nbY,3*nbX*nbY-1),nbX,nbY);
+
+        ret = arma::vectorise(delta_params_1 % der_1 + delta_params_2 % der_2 + delta_params_3 % der_3);
+    } else {
+        ret = arma::join_rows( arma::join_rows( arma::diagmat(arma::vectorise(der_1)), arma::diagmat(arma::vectorise(der_2)) ), arma::diagmat(arma::vectorise(der_3)) );
+    }
+    //
+    return ret;
+}
+
+arma::mat 
 trame::mmfs::ces::Mx0(const arma::mat& a_x)
 const
 {

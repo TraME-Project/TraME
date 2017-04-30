@@ -72,6 +72,8 @@ trame::mmfs::min::trans()
 //
 // MFE-related functions
 
+// matching function
+
 arma::mat 
 trame::mmfs::min::M(const arma::mat& a_xs, const arma::mat& b_ys)
 const
@@ -89,7 +91,7 @@ const
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
     arma::mat term_1 = elem_prod(a_xs, aux_alpha_exp(x_ind,y_ind));
-    arma::mat term_2 = arma::trans( elem_prod(b_ys, arma::trans(aux_alpha_exp(x_ind,y_ind))) );
+    arma::mat term_2 = arma::trans( elem_prod(b_ys, arma::trans(aux_gamma_exp(x_ind,y_ind))) );
 
     arma::mat ret = arma::min(term_1, term_2);
     //
@@ -104,7 +106,7 @@ const
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) nbY-1);
     //
     arma::mat term_1 = a_xs * aux_alpha_exp(x_ind,y_ind);
-    arma::mat term_2 = arma::trans( elem_prod(b_ys, arma::trans(aux_alpha_exp(x_ind,y_ind))) );
+    arma::mat term_2 = arma::trans( elem_prod(b_ys, arma::trans(aux_gamma_exp(x_ind,y_ind))) );
 
     arma::mat ret = arma::min(term_1, term_2);
     //
@@ -119,9 +121,75 @@ const
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) nbY-1);
     //
     arma::mat term_1 = elem_prod(a_xs, aux_alpha_exp(x_ind,y_ind));
-    arma::mat term_2 = b_ys * aux_alpha_exp(x_ind,y_ind);
+    arma::mat term_2 = b_ys * aux_gamma_exp(x_ind,y_ind);
 
     arma::mat ret = arma::min(term_1, term_2);
+    //
+    return ret;
+}
+
+//
+
+arma::mat 
+trame::mmfs::min::dmu_x0(const arma::mat& a_xs, const arma::mat& b_ys)
+const
+{
+    arma::mat term_1 = elem_prod(a_xs, aux_alpha_exp);
+    arma::mat term_2 = arma::trans( elem_prod(b_ys, arma::trans(aux_gamma_exp)) );
+
+    arma::mat check_mat = arma::zeros(term_1.n_rows,term_1.n_cols);
+    check_mat.elem(arma::find(term_1 <= term_2)).ones();
+
+    arma::mat ret = check_mat % aux_alpha_exp;
+    //
+    return ret;
+}
+
+arma::mat 
+trame::mmfs::min::dmu_0y(const arma::mat& a_xs, const arma::mat& b_ys)
+const
+{
+    arma::mat term_1 = elem_prod(a_xs, aux_alpha_exp);
+    arma::mat term_2 = arma::trans( elem_prod(b_ys, arma::trans(aux_gamma_exp)) );
+
+    arma::mat check_mat = arma::zeros(term_1.n_rows,term_1.n_cols);
+    check_mat.elem(arma::find(term_1 >= term_2)).ones();
+
+    arma::mat ret = check_mat % aux_gamma_exp;
+    //
+    return ret;
+}
+
+arma::mat 
+trame::mmfs::min::dparams_M(const arma::mat& a_xs, const arma::mat& b_ys)
+const
+{
+    return this->dparams_M(a_xs,b_ys,NULL);
+}
+
+arma::mat 
+trame::mmfs::min::dparams_M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::mat* delta_params_M)
+const
+{
+    arma::mat term_1 = elem_prod(a_xs, aux_alpha_exp);
+    arma::mat term_2 = arma::trans( elem_prod(b_ys, arma::trans(aux_gamma_exp)) );
+
+    arma::mat check_mat = arma::zeros(term_1.n_rows,term_1.n_cols);
+    check_mat.elem(arma::find(term_1 <= term_2)).ones();
+
+    arma::mat der_1 = a_xs % check_mat;
+    arma::mat der_2 = arma::trans(a_xs % arma::trans(1 - check_mat));
+
+    arma::mat ret;
+
+    if (delta_params_M) {
+        arma::mat delta_params_1 = arma::reshape((*delta_params_M).rows(0,nbX*nbY-1),nbX,nbY);
+        arma::mat delta_params_2 = arma::reshape((*delta_params_M).rows(nbX*nbY,2*nbX*nbY-1),nbX,nbY);
+
+        ret = arma::vectorise(delta_params_1 % der_1 + delta_params_2 % der_2);
+    } else {
+        ret = arma::join_rows( arma::diagmat(arma::vectorise(der_1)), arma::diagmat(arma::vectorise(der_2)) );
+    }
     //
     return ret;
 }
