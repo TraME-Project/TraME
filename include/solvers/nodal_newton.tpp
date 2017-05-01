@@ -41,6 +41,7 @@ nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out,
     //
     int nbX = market.nbX;
     int nbY = market.nbY;
+
     double sigma = market.sigma; // we don't check for arums_G.sigma == arums_H.sigma
 
     trame_mfe_opt_data<Tt> opt_data;
@@ -48,7 +49,6 @@ nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out,
 
     arma::vec sol_vec = -sigma*arma::join_cols(arma::log(market.n/2.0),arma::log(market.m/2.0)); // initial guess
     
-    //success = nodal_newton_optim(sol_vec,nodal_newton_opt_objfn<Tt>,&opt_data);
     success = nodal_newton_optim(sol_vec,nodal_newton_opt_objfn<Tt>,&opt_data,nodal_newton_jacobian<Tt>,&opt_data);
     //
     // construct equilibrium objects
@@ -79,9 +79,11 @@ nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out,
         *V_out = sigma * arma::trans(arma::log(elem_div(mu.t(),mu_0y_s)));
     }
 
-    /*if (val_out) {
+    /*
+    if (val_out) {
         *val_out = val;
-    }*/
+    }
+    */
     //
     return success;
 }

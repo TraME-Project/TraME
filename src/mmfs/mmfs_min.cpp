@@ -66,7 +66,6 @@ trame::mmfs::min::trans()
 
     aux_alpha_exp = aux_gamma_exp.t();
     aux_gamma_exp = aux_alpha_exp_temp.t();
-    //
 }
 
 //

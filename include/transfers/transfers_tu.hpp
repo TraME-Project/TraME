@@ -52,6 +52,9 @@ class tu
         
         void trans();
 
+        void mmf(mmfs::geo& mmf_obj) const; // generate an MMF object from transfers
+        mmfs::geo mmf() const;
+
         //
         // DSE-related functions
         arma::mat Psi(const arma::mat& U, const arma::mat& V) const;

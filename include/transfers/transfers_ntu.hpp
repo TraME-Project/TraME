@@ -55,6 +55,9 @@ class ntu
         
         void trans();
 
+        void mmf(mmfs::min& mmf_obj) const; // generate an MMF object from transfers
+        mmfs::min mmf() const;
+
         //
         // DSE-related functions
         arma::mat Psi(const arma::mat& U, const arma::mat& V) const;

@@ -60,6 +60,9 @@ class etu
         
         void trans();
 
+        void mmf(mmfs::ces& mmf_obj) const; // generate an MMF object from transfers
+        mmfs::ces mmf() const;
+
         //
         // DSE-related functions
         arma::mat Psi(const arma::mat& U, const arma::mat& V) const;

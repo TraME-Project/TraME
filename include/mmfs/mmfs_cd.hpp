@@ -48,7 +48,7 @@ class cd
         arma::mat phi;
 
         arma::mat aux_zeta; // could be 1 - lambda;
-        arma::mat aux_phi_exp; // aux_phi_exp = exp(phi); will probably end up as exp(phi / sigma) when using MFE; K
+        arma::mat aux_phi_exp; // also known as K; aux_phi_exp = exp(phi); will probably end up as exp(phi / sigma) when using MFE
 
         // member functions
         void build(const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp);

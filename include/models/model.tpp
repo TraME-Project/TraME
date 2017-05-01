@@ -381,9 +381,11 @@ model<Tm>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* 
     trame_model_mle_opt_data<Tm> *d = reinterpret_cast<trame_model_mle_opt_data<Tm>*>(opt_data);
 
     bool by_individual = d->by_individual;
-    double scale = d->scale;
+
     int nbX = d->model_obj.nbX;
     int nbY = d->model_obj.nbY;
+
+    double scale = d->scale;
 
     arma::mat mu_hat = d->mu_hat;
     arma::vec mu_hat_x0 = d->mu_hat_x0;
@@ -447,7 +449,7 @@ model<Tm>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void*
     int nbParams = d->nbParams;
     arma::mat C_hat = d->C_hat;
     arma::mat kron_term = d->kron_term;
-    //    
+    //
     arma::mat U = arma::reshape(vals_inp.rows(0,nbX*nbY-1),nbX,nbY);
 
     arma::mat theta = vals_inp.rows(nbX*nbY,nbParams + nbX*nbY - 1);

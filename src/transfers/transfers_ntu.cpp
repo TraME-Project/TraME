@@ -68,6 +68,23 @@ trame::transfers::ntu::trans()
     //
 }
 
+void
+trame::transfers::ntu::mmf(mmfs::min& mmf_obj)
+const
+{
+    mmf_obj.build(alpha,gamma,need_norm);
+}
+
+trame::mmfs::min
+trame::transfers::ntu::mmf()
+const
+{
+    mmfs::min mmf_obj;
+    this->mmf(mmf_obj);
+    //
+    return mmf_obj;
+}
+
 //
 // DSE-related functions
 

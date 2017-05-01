@@ -78,7 +78,6 @@ trame::mmfs::ces::trans()
 
     arma::mat aux_alpha_exp = aux_gamma_exp.t();
     arma::mat aux_gamma_exp = aux_alpha_exp_temp.t();
-    //
 }
 
 //

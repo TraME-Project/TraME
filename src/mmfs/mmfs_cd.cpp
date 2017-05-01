@@ -65,7 +65,6 @@ trame::mmfs::cd::trans()
 
     phi = phi.t();
     aux_phi_exp = aux_phi_exp.t();
-    //
 }
 
 //

@@ -58,6 +58,23 @@ trame::transfers::tu::trans()
     aux_phi_exp = aux_phi_exp.t();
 }
 
+void
+trame::transfers::tu::mmf(mmfs::geo& mmf_obj)
+const
+{
+    mmf_obj.build(phi,need_norm);
+}
+
+trame::mmfs::geo
+trame::transfers::tu::mmf()
+const
+{
+    mmfs::geo mmf_obj;
+    this->mmf(mmf_obj);
+    //
+    return mmf_obj;
+}
+
 //
 // DSE-related functions
 

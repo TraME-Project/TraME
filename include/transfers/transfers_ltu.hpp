@@ -55,6 +55,9 @@ class ltu
         
         void trans();
 
+        void mmf(mmfs::cd& mmf_obj) const; // generate an MMF object from transfers
+        mmfs::cd mmf() const;
+
         //
         // DSE-related functions
         arma::mat Psi(const arma::mat& U, const arma::mat& V) const;
