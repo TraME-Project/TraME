@@ -92,9 +92,7 @@ arma::mat
 trame::transfers::ntu::Psi(const arma::mat& U, const arma::mat& V)
 const
 {
-    arma::mat ret = this->Psi(U,V,NULL,NULL);
-    //
-    return ret;
+    return this->Psi(U,V,NULL,NULL);
 }
 
 // Implicit Parameterization
@@ -148,9 +146,7 @@ arma::mat
 trame::transfers::ntu::du_Psi(const arma::mat& U, const arma::mat& V)
 const
 {
-    arma::mat ret = this->du_Psi(U,V,NULL,NULL);
-    //
-    return ret;
+    return this->du_Psi(U,V,NULL,NULL);
 }
 
 arma::mat 
@@ -195,8 +191,7 @@ const
 arma::mat 
 trame::transfers::ntu::dtheta_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dtheta)
 {
-    arma::mat ret = this->dtheta_Psi(U,V,&dtheta);
-    return ret;
+    return this->dtheta_Psi(U,V,&dtheta);
 }
 
 arma::mat 
@@ -223,9 +218,7 @@ arma::mat
 trame::transfers::ntu::Ucal(const arma::mat& vs)
 const
 {
-    arma::mat ret = this->Ucal(vs,NULL,NULL);
-    //
-    return ret;
+    return this->Ucal(vs,NULL,NULL);
 }
 
 arma::mat 
@@ -257,9 +250,7 @@ arma::mat
 trame::transfers::ntu::Vcal(const arma::mat& us)
 const
 {
-    arma::mat ret = this->Vcal(us,NULL,NULL);
-    //
-    return ret;
+    return this->Vcal(us,NULL,NULL);
 }
 
 arma::mat 
@@ -291,9 +282,7 @@ arma::mat
 trame::transfers::ntu::UW(const arma::mat& Ws)
 const
 {
-    arma::mat ret = this->UW(Ws,NULL,NULL);
-    //
-    return ret;
+    return this->UW(Ws,NULL,NULL);
 }
 
 arma::mat 
@@ -321,9 +310,7 @@ arma::mat
 trame::transfers::ntu::VW(const arma::mat& Ws)
 const
 {
-    arma::mat ret = this->VW(Ws,NULL,NULL);
-    //
-    return ret;
+    return this->VW(Ws,NULL,NULL);
 }
 
 arma::mat 
@@ -351,9 +338,7 @@ arma::mat
 trame::transfers::ntu::dw_UW(const arma::mat& Ws)
 const
 {
-    arma::mat ret = this->dw_UW(Ws,NULL,NULL);
-    //
-    return ret;
+    return this->dw_UW(Ws,NULL,NULL);
 }
 
 arma::mat 
@@ -372,9 +357,7 @@ arma::mat
 trame::transfers::ntu::dw_VW(const arma::mat& Ws)
 const
 {
-    arma::mat ret = this->dw_VW(Ws,NULL,NULL);
-    //
-    return ret;
+    return this->dw_VW(Ws,NULL,NULL);
 }
 
 arma::mat 
@@ -392,9 +375,7 @@ const
 arma::mat 
 trame::transfers::ntu::WU(const arma::mat& Us)
 {
-    arma::mat ret = this->WU(Us,NULL,NULL);
-    //
-    return ret;
+    return this->WU(Us,NULL,NULL);
 }
 
 arma::mat 
@@ -411,9 +392,7 @@ trame::transfers::ntu::WU(const arma::mat& Us, arma::uvec* xs, arma::uvec* ys)
 arma::mat 
 trame::transfers::ntu::WV(const arma::mat& Vs)
 {
-    arma::mat ret = this->WV(Vs,NULL,NULL);
-    //
-    return ret;
+    return this->WV(Vs,NULL,NULL);
 }
 
 arma::mat 
