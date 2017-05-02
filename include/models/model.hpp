@@ -70,7 +70,7 @@ class model
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
 
-        bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp);
+        bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp);
 
         // solve wrappers
         bool solve(arma::mat& mu_sol);

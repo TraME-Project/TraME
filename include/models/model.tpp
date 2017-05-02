@@ -212,7 +212,7 @@ model<Tm>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat&
 
 template<typename Tm>
 bool 
-model<Tm>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, arma::mat* theta_0_inp)
+model<Tm>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
 {
     bool success = false;
     //
