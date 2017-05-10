@@ -99,10 +99,10 @@ class rsc
         arma::mat D2Gstar(const arma::vec& n, const arma::mat& mu_inp, bool x_first);
         void D2Gstar(arma::mat &hess, const arma::vec& n, const arma::mat& mu_inp, bool x_first);
 
-        arma::mat dtheta_NablaGstar(const arma::vec& n, arma::mat* dtheta_inp, bool x_first);
-        void dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dtheta_inp, bool x_first);
-        arma::mat dtheta_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dtheta_inp, bool x_first);
-        void dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dtheta_inp, bool x_first);
+        arma::mat dparams_NablaGstar(const arma::vec& n, arma::mat* dparams_inp, bool x_first);
+        void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dparams_inp, bool x_first);
+        arma::mat dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first);
+        void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first);
         
         empirical simul();
         empirical simul(int* nbDraws, int* seed);

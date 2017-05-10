@@ -76,8 +76,8 @@ class etu
         arma::mat du_Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys) const;
         arma::mat du_Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys) const;
 
-        arma::mat dtheta_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dtheta);
-        arma::mat dtheta_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dtheta);
+        arma::mat dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dparams);
+        arma::mat dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dparams);
 
         arma::mat Ucal(const arma::mat& vs) const;
         arma::mat Ucal(const arma::mat& vs, arma::uvec* xs, arma::uvec* ys) const;

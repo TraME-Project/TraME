@@ -344,37 +344,37 @@ trame::arums::logit::D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& 
 }
 
 arma::mat 
-trame::arums::logit::dtheta_NablaGstar(const arma::vec& n, arma::mat* dtheta_inp, bool x_first)
+trame::arums::logit::dparams_NablaGstar(const arma::vec& n, arma::mat* dparams_inp, bool x_first)
 {
     arma::mat ret;
-    this->dtheta_NablaGstar(ret,n,mu_sol,dtheta_inp,x_first);
+    this->dparams_NablaGstar(ret,n,mu_sol,dparams_inp,x_first);
     //
     return ret;
 }
 
 void 
-trame::arums::logit::dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dtheta_inp, bool x_first)
+trame::arums::logit::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dparams_inp, bool x_first)
 {
-    this->dtheta_NablaGstar(ret,n,mu_sol,dtheta_inp,x_first);
+    this->dparams_NablaGstar(ret,n,mu_sol,dparams_inp,x_first);
 }
 
 arma::mat 
-trame::arums::logit::dtheta_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dtheta_inp, bool x_first)
+trame::arums::logit::dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first)
 {
     arma::mat ret;
-    this->dtheta_NablaGstar(ret,n,mu_inp,dtheta_inp,x_first);
+    this->dparams_NablaGstar(ret,n,mu_inp,dparams_inp,x_first);
     //
     return ret;
 }
 
 void 
-trame::arums::logit::dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dtheta_inp, bool x_first)
+trame::arums::logit::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first)
 {
     arma::mat logmu_temp, mu_x0;
 
-    arma::mat dtheta = (dtheta_inp) ? *dtheta_inp : arma::ones(1,1);
+    arma::mat dparams = (dparams_inp) ? *dparams_inp : arma::ones(1,1);
     
-    if (dtheta.n_elem==0) {
+    if (dparams.n_elem==0) {
         ret.zeros(nbX*nbY,0);
     } else {
         if (outsideOption) {
@@ -386,7 +386,7 @@ trame::arums::logit::dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, const
                 logmu_temp = arma::vectorise(arma::trans(arma::log(mu_inp/mu_x0)));
             }
             //
-            ret = arma::vectorise(dtheta) % logmu_temp;
+            ret = arma::vectorise(dparams) % logmu_temp;
         } else {
             if (x_first) {
                 logmu_temp = arma::vectorise(log(mu_inp));
@@ -394,7 +394,7 @@ trame::arums::logit::dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, const
                 logmu_temp = arma::vectorise(arma::trans(arma::log(mu_inp)));
             }
             //
-            ret = arma::vectorise(dtheta) % logmu_temp;
+            ret = arma::vectorise(dparams) % logmu_temp;
         }
     }
 }

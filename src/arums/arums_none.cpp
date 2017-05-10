@@ -188,7 +188,7 @@ trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
 }
 
 arma::vec 
-trame::arums::none::dtheta_NablaGstar()
+trame::arums::none::dparams_NablaGstar()
 {
     arma::vec ret = arma::zeros(nbX*nbY,1);
     return ret;

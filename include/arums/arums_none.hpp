@@ -67,7 +67,7 @@ class none
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out);
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
         
-        arma::vec dtheta_NablaGstar();
+        arma::vec dparams_NablaGstar();
         
         empirical simul();
         empirical simul(int* nbDraws, int* seed);

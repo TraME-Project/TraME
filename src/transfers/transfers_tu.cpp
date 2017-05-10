@@ -179,20 +179,20 @@ const
 }
 
 arma::mat 
-trame::transfers::tu::dtheta_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dtheta)
+trame::transfers::tu::dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dparams)
 {
-    return this->dtheta_Psi(U,V,&dtheta);
+    return this->dparams_Psi(U,V,&dparams);
 }
 
 arma::mat 
-trame::transfers::tu::dtheta_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dtheta)
+trame::transfers::tu::dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dparams)
 {
     arma::mat ret(nbX,nbY);
     //
-    if (!dtheta) {
+    if (!dparams) {
         ret = - 0.5*arma::eye(nbX*nbY,nbX*nbY);
     } else {
-        ret = - (*dtheta)/2;
+        ret = - (*dparams)/2;
     }
     //
     return ret;

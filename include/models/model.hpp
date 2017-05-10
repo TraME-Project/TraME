@@ -63,7 +63,7 @@ class model
 
         void build_market_TU(const arma::mat& theta);
         template<typename Ta, typename Tb> void build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp);
-        template<typename Ta, typename Tb> void build_market_TU(const arma::mat& theta, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed);
+        template<typename Ta, typename Tb> void build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp, int nbDraws, int seed);
 
         void dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu);
 

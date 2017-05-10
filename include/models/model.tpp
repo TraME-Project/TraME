@@ -80,16 +80,16 @@ model<Tm>::build(const arma::mat& X_inp, const arma::mat& Y_inp)
 }
 
 template<typename Tm>
-inline 
-void 
+inline
+void
 model<Tm>::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp)
 {
     this->build_int(X_inp,Y_inp,&n_inp,&m_inp);
 }
 
 template<typename Tm>
-inline 
-void 
+inline
+void
 model<Tm>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp)
 {
     need_norm = false;
@@ -135,13 +135,27 @@ model<Tm>::build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const 
 template<typename Tm> 
 template<typename Ta, typename Tb>
 void 
-model<Tm>::build_market_TU(const arma::mat& theta, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed)
+model<Tm>::build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp, int nbDraws, int seed)
 {
     market_obj.build(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,nbDraws,seed,need_norm);
 }
 
 //
 // gradients
+
+template<typename Tm>
+void 
+model<Tm>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+{
+    build_market_TU(theta); // need to replace this later with general 'parametric_market'
+
+    // arma::mat dparams_Psi, dparams_G, dparams_H;
+    // dparam(dtheta,dparams_Psi,&dparams_G,&dparams_H);
+    arma::mat dparams_Psi;
+    dparam(dtheta,dparams_Psi,NULL,NULL);
+    //
+    dmodel_mu(market_obj,dparams_Psi,mu_out,mu_x0_out,mu_0y_out,dmu_out);
+}
 
 template<typename Tm>
 void 
@@ -191,20 +205,6 @@ dmodel_mu(const dse<Tg,Th,Tt>& market_obj, const arma::mat& dparams_Psi, arma::m
     mu_x0_out = mu_x0;
     mu_0y_out = mu_0y;
     dmu_out = dmu;
-}
-
-template<typename Tm>
-void 
-model<Tm>::dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
-{
-    build_market_TU(theta); // need to replace this later with general 'parametric_market'
-
-    // arma::mat dparams_Psi, dparams_G, dparams_H;
-    // dparam(dtheta,dparams_Psi,&dparams_G,&dparams_H);
-    arma::mat dparams_Psi;
-    dparam(dtheta,dparams_Psi,NULL,NULL);
-    //
-    dmodel_mu(market_obj,dparams_Psi,mu_out,mu_x0_out,mu_0y_out,dmu_out);
 }
 
 //

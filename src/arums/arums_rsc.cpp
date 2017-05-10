@@ -434,35 +434,35 @@ trame::arums::rsc::D2Gstar(arma::mat& hess, const arma::vec& n, const arma::mat&
 }
 
 arma::mat 
-trame::arums::rsc::dtheta_NablaGstar(const arma::vec& n, arma::mat* dtheta_inp, bool x_first)
+trame::arums::rsc::dparams_NablaGstar(const arma::vec& n, arma::mat* dparams_inp, bool x_first)
 {
     arma::mat ret;
-    this->dtheta_NablaGstar(ret,n,mu_sol,dtheta_inp,x_first);
+    this->dparams_NablaGstar(ret,n,mu_sol,dparams_inp,x_first);
     //
     return ret;
 }
 
 void 
-trame::arums::rsc::dtheta_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dtheta_inp, bool x_first)
+trame::arums::rsc::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dparams_inp, bool x_first)
 {
-    this->dtheta_NablaGstar(ret,n,mu_sol,dtheta_inp,x_first);
+    this->dparams_NablaGstar(ret,n,mu_sol,dparams_inp,x_first);
 }
 
 arma::mat 
-trame::arums::rsc::dtheta_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dtheta_inp, bool x_first)
+trame::arums::rsc::dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first)
 {
     arma::mat ret;
-    this->dtheta_NablaGstar(ret,n,mu_inp,dtheta_inp,x_first);
+    this->dparams_NablaGstar(ret,n,mu_inp,dparams_inp,x_first);
     //
     return ret;
 }
 
 void 
-trame::arums::rsc::dtheta_NablaGstar(arma::mat& ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dtheta, bool x_first)
+trame::arums::rsc::dparams_NablaGstar(arma::mat& ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams, bool x_first)
 {
-    arma::mat dtheta_mat = (dtheta) ? *dtheta : arma::eye(nbParams,nbParams);
+    arma::mat dparams_mat = (dparams) ? *dparams : arma::eye(nbParams,nbParams);
 
-    int nbDirs = std::floor(dtheta_mat.n_elem / (nbX*nbX*(nbY+1)));
+    int nbDirs = std::floor(dparams_mat.n_elem / (nbX*nbX*(nbY+1)));
 
     ret.set_size(nbX*nbY,nbX*nbDirs);
     ret.zeros();
@@ -502,7 +502,7 @@ trame::arums::rsc::dtheta_NablaGstar(arma::mat& ret, const arma::vec& n, const a
 
         e_mat = arma::diagmat( arma::join_cols(arma::zeros(1,1),quantile(ts)) );
 
-        ret(mat_inds_3.col(i),mat_inds_1.col(i)) = - aux_Influence_lhs.slice(i) * e_mat * aux_Influence_rhs.slice(i) * dtheta_mat(mat_inds_2.col(i),mat_inds_2.col(i));
+        ret(mat_inds_3.col(i),mat_inds_1.col(i)) = - aux_Influence_lhs.slice(i) * e_mat * aux_Influence_rhs.slice(i) * dparams_mat(mat_inds_2.col(i),mat_inds_2.col(i));
     }
 }
 

@@ -184,25 +184,25 @@ const
 }
 
 arma::mat 
-trame::transfers::ltu::dtheta_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dtheta)
+trame::transfers::ltu::dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dparams)
 {
-    return this->dtheta_Psi(U,V,&dtheta);
+    return this->dparams_Psi(U,V,&dparams);
 }
 
 arma::mat 
-trame::transfers::ltu::dtheta_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dtheta)
+trame::transfers::ltu::dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dparams)
 {
     arma::mat ret(nbX,nbY);
     //
     arma::vec U_minus_V = arma::vectorise(U - V);
 
-    if (!dtheta) {
+    if (!dparams) {
         ret = arma::join_rows(arma::diagmat(U_minus_V),-arma::eye(nbX*nbY,nbX*nbY));
     } else {
-        arma::mat dtheta_1 = dtheta->rows(0,nbX*nbY-1);
-        arma::mat dtheta_2 = dtheta->rows(nbX*nbY,2*nbX*nbY-1);
+        arma::mat dparams_1 = dparams->rows(0,nbX*nbY-1);
+        arma::mat dparams_2 = dparams->rows(nbX*nbY,2*nbX*nbY-1);
         //
-        ret = arma::vectorise(U_minus_V % dtheta_1 - dtheta_2);
+        ret = arma::vectorise(U_minus_V % dparams_1 - dparams_2);
     }
     //
     return ret;
