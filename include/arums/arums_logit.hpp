@@ -38,8 +38,10 @@ class logit
         int nbX;
         int nbY;
         int nbParams;
-        double sigma = 1.0; // this obviates issues with general market construction (DSE)
+
         bool outsideOption = true;
+
+        double sigma = 1.0; // this obviates issues with general market construction (DSE)
         
         // input objects
         arma::mat U;

@@ -34,7 +34,7 @@
 
 #include "trame.hpp"
 
-void 
+void
 trame::mmfs::cd::build(const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp)
 {
     need_norm = need_norm_inp;
@@ -50,7 +50,7 @@ trame::mmfs::cd::build(const arma::mat& lambda_inp, const arma::mat& phi_inp, bo
     aux_phi_exp = arma::exp(phi_inp);
 }
 
-void 
+void
 trame::mmfs::cd::trans()
 {
     int nbX_temp = nbX;
@@ -72,7 +72,7 @@ trame::mmfs::cd::trans()
 
 // matching function
 
-arma::mat 
+arma::mat
 trame::mmfs::cd::M(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
@@ -81,8 +81,8 @@ const
     return ret;
 }
 
-arma::mat 
-trame::mmfs::cd::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat
+trame::mmfs::cd::M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -97,11 +97,11 @@ const
     return ret;
 }
 
-arma::mat 
-trame::mmfs::cd::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat
+trame::mmfs::cd::M(const double& a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
-    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1); 
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) nbY-1);
     //
     arma::mat term_1 = arma::exp(lambda(x_ind,y_ind) * std::log(a_xs));
@@ -113,17 +113,17 @@ const
     return ret;
 }
 
-arma::mat 
-trame::mmfs::cd::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys)
+arma::mat
+trame::mmfs::cd::M(const arma::mat& a_xs, const double& b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
-    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1); 
+    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) nbY-1);
     //
     arma::mat term_1 = arma::exp(elem_prod(lambda(x_ind,y_ind), arma::log(a_xs)));
     arma::mat term_2 = arma::exp(aux_zeta(x_ind,y_ind) * std::log(b_ys));
     arma::mat term_3 = aux_phi_exp(x_ind,y_ind);
-        
+
     arma::mat ret = term_1 % term_2 % term_3;
     //
     return ret;
@@ -131,7 +131,7 @@ const
 
 //
 
-arma::mat 
+arma::mat
 trame::mmfs::cd::dmu_x0(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
@@ -144,7 +144,7 @@ const
     return ret;
 }
 
-arma::mat 
+arma::mat
 trame::mmfs::cd::dmu_0y(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
@@ -157,14 +157,14 @@ const
     return ret;
 }
 
-arma::mat 
+arma::mat
 trame::mmfs::cd::dparams_M(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
     return this->dparams_M(a_xs,b_ys,NULL);
 }
 
-arma::mat 
+arma::mat
 trame::mmfs::cd::dparams_M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::mat* delta_params_M)
 const
 {
@@ -191,14 +191,14 @@ const
     return ret;
 }
 
-arma::mat 
+arma::mat
 trame::mmfs::cd::Mx0(const arma::mat& a_x)
 const
 {
     return a_x;
 }
 
-arma::mat 
+arma::mat
 trame::mmfs::cd::M0y(const arma::mat& b_y)
 const
 {

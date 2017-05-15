@@ -225,9 +225,7 @@ trame::arums::rsc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
 double 
 trame::arums::rsc::Gstar(const arma::vec& n)
 {
-    double val = this->Gstar(n,mu_sol,U_sol);
-    //
-    return val;
+    return this->Gstar(n,mu_sol,U_sol);
 }
 
 double 

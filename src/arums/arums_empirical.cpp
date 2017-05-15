@@ -68,9 +68,7 @@ trame::arums::empirical::build(int nbX_inp, int nbY_inp, const arma::cube& atoms
 double 
 trame::arums::empirical::G(const arma::vec& n)
 {
-    double val = this->G(n,U,mu_sol);
-    //
-    return val;
+    return this->G(n,U,mu_sol);
 }
 
 double 
@@ -118,9 +116,7 @@ trame::arums::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x
 double 
 trame::arums::empirical::Gstar(const arma::vec& n)
 {
-    double val = this->Gstar(n,mu_sol,U_sol);
-    //
-    return val;
+    return this->Gstar(n,mu_sol,U_sol);
 }
 
 double 

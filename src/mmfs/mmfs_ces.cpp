@@ -95,7 +95,7 @@ const
 }
 
 arma::mat 
-trame::mmfs::ces::M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+trame::mmfs::ces::M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1); 
@@ -110,7 +110,7 @@ const
 }
 
 arma::mat 
-trame::mmfs::ces::M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys)
+trame::mmfs::ces::M(const double& a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1); 
@@ -125,7 +125,7 @@ const
 }
 
 arma::mat 
-trame::mmfs::ces::M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys)
+trame::mmfs::ces::M(const arma::mat& a_xs, const double& b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1); 

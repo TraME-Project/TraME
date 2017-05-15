@@ -51,15 +51,18 @@ class cd
         arma::mat aux_phi_exp; // also known as K; aux_phi_exp = exp(phi); will probably end up as exp(phi / sigma) when using MFE
 
         // member functions
+        ~cd(){};
+         cd(){};
+
         void build(const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp);
-        
+
         void trans();
 
         //
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys) const;
-        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys) const;
+        arma::mat M(const double& a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys) const;
+        arma::mat M(const arma::mat& a_xs, const double& b_ys, const arma::uvec* xs, const arma::uvec* ys) const;
 
         arma::mat dmu_x0(const arma::mat& a_xs, const arma::mat& b_ys) const;
         arma::mat dmu_0y(const arma::mat& a_xs, const arma::mat& b_ys) const;

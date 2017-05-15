@@ -49,9 +49,7 @@ trame::arums::none::build(int nbX_inp, int nbY_inp)
 double 
 trame::arums::none::G(const arma::vec& n)
 {   
-    double val = this->G(n,U,mu_sol);
-    //
-    return val;
+    return this->G(n,U,mu_sol);
 }
 
 double 
@@ -182,16 +180,13 @@ trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
 double 
 trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
-    double val_x = this->Gbarx(Ubar_x, mubar_x, U_x_out, mu_x_out);
-    //
-    return val_x;
+    return this->Gbarx(Ubar_x, mubar_x, U_x_out, mu_x_out);
 }
 
 arma::vec 
 trame::arums::none::dparams_NablaGstar()
 {
-    arma::vec ret = arma::zeros(nbX*nbY,1);
-    return ret;
+    return arma::zeros(nbX*nbY,1);
 }
 
 trame::arums::empirical 

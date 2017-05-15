@@ -51,15 +51,18 @@ class min
         arma::mat aux_gamma_exp; // exp(gamma / sigma), also labelled B
 
         // member functions
+        ~min(){};
+         min(){};
+
         void build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp);
         
         void trans();
         
         //
         arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys) const;
-        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat M(const double& a_xs, const arma::mat& b_ys, arma::uvec* xs, arma::uvec* ys) const;
-        arma::mat M(const arma::mat& a_xs, const double& b_ys, arma::uvec* xs, arma::uvec* ys) const;
+        arma::mat M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys) const;
+        arma::mat M(const double& a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys) const;
+        arma::mat M(const arma::mat& a_xs, const double& b_ys, const arma::uvec* xs, const arma::uvec* ys) const;
 
         arma::mat dmu_x0(const arma::mat& a_xs, const arma::mat& b_ys) const;
         arma::mat dmu_0y(const arma::mat& a_xs, const arma::mat& b_ys) const;

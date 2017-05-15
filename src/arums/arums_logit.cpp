@@ -64,9 +64,7 @@ trame::arums::logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outs
 double 
 trame::arums::logit::G(const arma::vec& n)
 {   
-    double val = this->G(n,U,mu_sol);
-    //
-    return val;
+    return this->G(n,U,mu_sol);
 }
 
 double 
@@ -84,9 +82,7 @@ trame::arums::logit::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu
 double 
 trame::arums::logit::Gstar(const arma::vec& n)
 {
-    double val = this->Gstar(n,mu_sol,U_sol);
-    //
-    return val;
+    return this->Gstar(n,mu_sol,U_sol);
 }
 
 double 
@@ -147,14 +143,13 @@ trame::arums::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x
 double 
 trame::arums::logit::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
 {   
-    int i;
     double val=0.0, val_temp;
     
     U_out.set_size(nbX,nbY);
     mu_out.set_size(nbX,nbY);
     arma::mat U_x_temp, mu_x_temp;
     //
-    for (i=0; i<nbX; i++) {
+    for (int i=0; i<nbX; i++) {
         val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp);
         //
         val += n(i)*val_temp;
@@ -203,9 +198,7 @@ trame::arums::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, ar
 double 
 trame::arums::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
 {
-    double val_x = this->Gbarx(Ubar_x, mubar_x, U_x_out, mu_x_out);
-    //
-    return val_x;
+    return this->Gbarx(Ubar_x, mubar_x, U_x_out, mu_x_out);
 }
 
 arma::mat 
