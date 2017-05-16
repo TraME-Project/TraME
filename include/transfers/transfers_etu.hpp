@@ -47,19 +47,20 @@ class etu
         arma::mat alpha;
         arma::mat gamma;
         arma::mat tau;
-        arma::mat kappa; // kappa_ETU = -1/tau_inp
 
-        arma::mat aux_alpha; // - alpha_ETU / tau_ETU = log(C_ETU)
-        arma::mat aux_gamma; // - gamma_ETU / tau_ETU = log(D_ETU)
+        arma::mat kappa; // kappa_inp = -1/tau_inp
 
-        arma::mat aux_alpha_exp; // exp(- alpha_ETU / tau_ETU), also labelled C_ETU
-        arma::mat aux_gamma_exp; // exp(- gamma_ETU / tau_ETU), also labelled D_ETU
+        arma::mat aux_alpha; // - alpha_inp / tau_inp = log(C)
+        arma::mat aux_gamma; // - gamma_inp / tau_inp = log(D)
+
+        arma::mat aux_alpha_exp; // exp(- alpha_inp / tau_inp), also labelled C
+        arma::mat aux_gamma_exp; // exp(- gamma_inp / tau_inp), also labelled D
 
         // member functions
         ~etu(){};
          etu(){};
 
-        void build(const arma::mat& alpha_ETU, const arma::mat& gamma_ETU, const arma::mat& tau_ETU, bool need_norm_ETU);
+        void build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, bool need_norm_inp);
         
         void trans();
 

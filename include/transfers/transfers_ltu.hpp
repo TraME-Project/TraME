@@ -47,14 +47,14 @@ class ltu
         arma::mat lambda;
         arma::mat phi;
 
-        arma::mat aux_zeta; // could be 1 - lambda_LTU;
-        arma::mat aux_phi_exp; // aux_phi_exp = exp(phi); will probably end up as exp(phi / sigma) when using MFE, K_LTU
+        arma::mat aux_zeta; // could be 1 - lambda_inp;
+        arma::mat aux_phi_exp; // aux_phi_exp = exp(phi); will probably end up as exp(phi / sigma) when using MFE; also labelled K
 
         // member functions
         ~ltu(){};
          ltu(){};
         
-        void build(const arma::mat& lambda_LTU, const arma::mat& phi_LTU, bool need_norm_LTU);
+        void build(const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp);
         
         void trans();
 

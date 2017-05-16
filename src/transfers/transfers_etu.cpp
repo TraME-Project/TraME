@@ -34,24 +34,25 @@
 #include "trame.hpp"
 
 void 
-trame::transfers::etu::build(const arma::mat& alpha_ETU, const arma::mat& gamma_ETU, const arma::mat& tau_ETU, bool need_norm_ETU)
+trame::transfers::etu::build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, bool need_norm_inp)
 {
-    need_norm = need_norm_ETU;
+    need_norm = need_norm_inp;
 
-    nbX = alpha_ETU.n_rows;
-    nbY = alpha_ETU.n_cols;
+    nbX = alpha_inp.n_rows;
+    nbY = alpha_inp.n_cols;
     nbParams = 3*nbX*nbY;
 
-    alpha = alpha_ETU;
-    gamma = gamma_ETU;
-    tau   = tau_ETU;
-    kappa = - 1.0 / tau_ETU;
+    alpha = alpha_inp;
+    gamma = gamma_inp;
+    tau   = tau_inp;
+    
+    kappa = - 1.0 / tau_inp;
 
-    aux_alpha = - elem_div(alpha_ETU, tau_ETU);
-    aux_gamma = - elem_div(gamma_ETU, tau_ETU);
+    aux_alpha = - elem_div(alpha_inp, tau_inp);
+    aux_gamma = - elem_div(gamma_inp, tau_inp);
 
-    aux_alpha_exp = arma::exp(- elem_div(alpha_ETU, tau_ETU));
-    aux_gamma_exp = arma::exp(- elem_div(gamma_ETU, tau_ETU));
+    aux_alpha_exp = arma::exp(- elem_div(alpha_inp, tau_inp));
+    aux_gamma_exp = arma::exp(- elem_div(gamma_inp, tau_inp));
 }
 
 void 

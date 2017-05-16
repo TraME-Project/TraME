@@ -47,14 +47,14 @@ class ntu
         arma::mat alpha;
         arma::mat gamma;
 
-        arma::mat aux_alpha_exp; // exp(alpha_NTU / sigma), also labelled A_NTU
-        arma::mat aux_gamma_exp; // exp(gamma_NTU / sigma), also labelled B_NTU
+        arma::mat aux_alpha_exp; // exp(alpha_inp / sigma), also labelled A
+        arma::mat aux_gamma_exp; // exp(gamma_inp / sigma), also labelled B
 
         // member functions
         ~ntu(){};
          ntu(){};
         
-        void build(const arma::mat& alpha_NTU, const arma::mat& gamma_NTU, bool need_norm_NTU);
+        void build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp);
         
         void trans();
 

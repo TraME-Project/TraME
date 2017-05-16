@@ -34,16 +34,16 @@
 #include "trame.hpp"
 
 void 
-trame::transfers::tu::build(const arma::mat& phi_TU, bool need_norm_TU)
+trame::transfers::tu::build(const arma::mat& phi_inp, bool need_norm_inp)
 {
-    need_norm = need_norm_TU;
+    need_norm = need_norm_inp;
 
-    nbX = phi_TU.n_rows;
-    nbY = phi_TU.n_cols;
+    nbX = phi_inp.n_rows;
+    nbY = phi_inp.n_cols;
     nbParams = nbX*nbY;
 
-    phi = phi_TU;
-    aux_phi_exp = arma::exp(phi_TU / 2.0);
+    phi = phi_inp;
+    aux_phi_exp = arma::exp(phi_inp / 2.0);
 }
 
 void 

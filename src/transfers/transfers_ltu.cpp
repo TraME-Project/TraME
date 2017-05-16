@@ -34,19 +34,19 @@
 #include "trame.hpp"
 
 void 
-trame::transfers::ltu::build(const arma::mat& lambda_LTU, const arma::mat& phi_LTU, bool need_norm_LTU)
+trame::transfers::ltu::build(const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp)
 {
-    need_norm = need_norm_LTU;
+    need_norm = need_norm_inp;
 
-    nbX = lambda_LTU.n_rows;
-    nbY = lambda_LTU.n_cols;
+    nbX = lambda_inp.n_rows;
+    nbY = lambda_inp.n_cols;
     nbParams = 2*nbX*nbY;
 
-    lambda = lambda_LTU;
-    phi = phi_LTU;
+    lambda = lambda_inp;
+    phi = phi_inp;
 
-    aux_zeta = 1 - lambda_LTU;
-    aux_phi_exp = arma::exp(phi_LTU);
+    aux_zeta = 1 - lambda_inp;
+    aux_phi_exp = arma::exp(phi_inp);
 }
 
 void 

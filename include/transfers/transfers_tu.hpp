@@ -45,13 +45,13 @@ class tu
         int nbParams;
 
         arma::mat phi;
-        arma::mat aux_phi_exp; // exp(phi_inp/(2*sigma)), also labelled K_TU
+        arma::mat aux_phi_exp; // exp(phi_inp/(2*sigma)), also labelled K
 
         // member functions
         ~tu(){};
          tu(){};
         
-        void build(const arma::mat& phi_TU, bool need_norm_TU);
+        void build(const arma::mat& phi_inp, bool need_norm_inp);
         
         void trans();
 

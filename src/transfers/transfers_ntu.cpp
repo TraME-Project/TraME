@@ -34,19 +34,19 @@
 #include "trame.hpp"
 
 void 
-trame::transfers::ntu::build(const arma::mat& alpha_NTU, const arma::mat& gamma_NTU, bool need_norm_NTU)
+trame::transfers::ntu::build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp)
 {
-    need_norm = need_norm_NTU;
+    need_norm = need_norm_inp;
 
-    nbX = alpha_NTU.n_rows;
-    nbY = alpha_NTU.n_cols;
+    nbX = alpha_inp.n_rows;
+    nbY = alpha_inp.n_cols;
     nbParams = 2*nbX*nbY;
 
-    alpha = alpha_NTU;
-    gamma = gamma_NTU;
+    alpha = alpha_inp;
+    gamma = gamma_inp;
 
-    aux_alpha_exp = arma::exp(alpha_NTU);
-    aux_gamma_exp = arma::exp(gamma_NTU);
+    aux_alpha_exp = arma::exp(alpha_inp);
+    aux_gamma_exp = arma::exp(gamma_inp);
 }
 
 void 
