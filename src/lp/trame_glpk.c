@@ -156,7 +156,7 @@ QUIT:
 }
 
 //
-// for use with sparse  constraint matrix A
+// for use with sparse constraint matrix A
 int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbeg, int* vind, double* vval, 
                       int model_opt_sense, double* rhs, char* constr_sense, double* lb, double* ub, 
                       double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)

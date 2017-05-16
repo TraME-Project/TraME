@@ -59,22 +59,7 @@ class dse
         void build(const arma::vec& n_inp, const arma::vec& m_inp);
         void build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_inp);
 
-        // ETU
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, bool need_norm_inp);
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
-        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
-
-        // LTU and NTU
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp);
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
-        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
-
-        // TU
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, bool need_norm_inp);
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
-        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
-
-        //void trans();
+        void trans(dse<Th,Tg,Tt>& trans_market_obj);
         dse<Th,Tg,Tt> trans();
 
         bool solve(arma::mat& mu_sol);
@@ -87,7 +72,7 @@ class dse<Tg,Th,transfers::etu>
 {
     public:
         // build objects
-        bool ETU = false;
+        bool ETU = true;
         bool LTU = false;
         bool NTU = false;
         bool TU  = false;
@@ -114,7 +99,8 @@ class dse<Tg,Th,transfers::etu>
         void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
         template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
-        void trans();
+        void trans(dse<Th,Tg,transfers::etu>& trans_market_obj);
+        dse<Th,Tg,transfers::etu> trans();
 
         bool solve(arma::mat& mu_sol);
         bool solve(arma::mat& mu_sol, const char* solver);
@@ -127,7 +113,7 @@ class dse<Tg,Th,transfers::ltu>
     public:
         // build objects
         bool ETU = false;
-        bool LTU = false;
+        bool LTU = true;
         bool NTU = false;
         bool TU  = false;
 
@@ -153,7 +139,8 @@ class dse<Tg,Th,transfers::ltu>
         void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
         template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
-        void trans();
+        void trans(dse<Th,Tg,transfers::ltu>& trans_market_obj);
+        dse<Th,Tg,transfers::ltu> trans();
 
         bool solve(arma::mat& mu_sol);
         bool solve(arma::mat& mu_sol, const char* solver);
@@ -167,7 +154,7 @@ class dse<Tg,Th,transfers::ntu>
         // build objects
         bool ETU = false;
         bool LTU = false;
-        bool NTU = false;
+        bool NTU = true;
         bool TU  = false;
 
         bool need_norm;
@@ -188,11 +175,12 @@ class dse<Tg,Th,transfers::ntu>
         void build(const arma::vec& n_inp, const arma::vec& m_inp);
         void build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_inp);
 
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda, const arma::mat& phi, bool need_norm_inp);
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
-        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha, const arma::mat& gamma, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
-        void trans();
+        void trans(dse<Th,Tg,transfers::ntu>& trans_market_obj);
+        dse<Th,Tg,transfers::ntu> trans();
 
         bool solve(arma::mat& mu_sol);
         bool solve(arma::mat& mu_sol, const char* solver);
@@ -207,7 +195,7 @@ class dse<Tg,Th,transfers::tu>
         bool ETU = false;
         bool LTU = false;
         bool NTU = false;
-        bool TU  = false;
+        bool TU  = true;
 
         bool need_norm;
         bool outsideOption;
@@ -231,7 +219,8 @@ class dse<Tg,Th,transfers::tu>
         void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
         template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
 
-        void trans();
+        void trans(dse<Th,Tg,transfers::tu>& trans_market_obj);
+        dse<Th,Tg,transfers::tu> trans();
 
         bool solve(arma::mat& mu_sol);
         bool solve(arma::mat& mu_sol, const char* solver);

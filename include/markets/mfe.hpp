@@ -64,9 +64,9 @@ class mfe
         void trans();
 
         arma::vec marg_x_inv(const arma::mat& B_ys) const;
-        arma::vec marg_x_inv(const arma::mat& B_ys, arma::uvec* xs) const;
+        arma::vec marg_x_inv(const arma::mat& B_ys, const arma::uvec* xs) const;
         arma::vec marg_y_inv(const arma::mat& A_xs) const;
-        arma::vec marg_y_inv(const arma::mat& A_xs, arma::uvec* ys) const;
+        arma::vec marg_y_inv(const arma::mat& A_xs, const arma::uvec* ys) const;
 
         bool solve(arma::mat& mu_sol);
         bool solve(arma::mat& mu_sol, const char* solver);

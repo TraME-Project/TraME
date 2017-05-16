@@ -77,7 +77,7 @@ class empirical
 
     private:
         /*
-         * these private member objects are mostly used by LP solvers
+         * these private member objects are used by the LP solvers
          */
         void presolve_LP_Gstar();
         void presolve_LP_Gbar();

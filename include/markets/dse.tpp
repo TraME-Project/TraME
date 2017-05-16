@@ -393,24 +393,33 @@ dse<Tg,Th,Tt>::trans()
 */
 
 template<typename Tg, typename Th, typename Tt>
+void 
+dse<Tg,Th,Tt>::trans(dse<Th,Tg,Tt>& trans_market_obj)
+{
+    trans_market_obj.nbX = nbY;
+    trans_market_obj.nbY = nbX;
+
+    trans_market_obj.n = m;
+    trans_market_obj.m = n;
+    // Keith: fill in normalization later
+
+    trans_market_obj.trans_obj = trans_obj;
+    trans_market_obj.trans_obj.trans();
+
+    trans_market_obj.arums_G = arums_H;
+    trans_market_obj.arums_H = arums_G;
+    //
+}
+
+template<typename Tg, typename Th, typename Tt>
 dse<Th,Tg,Tt> 
 dse<Tg,Th,Tt>::trans()
 {
     dse<Th,Tg,Tt> new_market;
 
-    new_market.nbX = nbY;
-    new_market.nbY = nbX;
-
-    new_market.n = m;
-    new_market.m = n;
-    // Keith: fill in normalization later
-
-    new_market.trans_obj = trans_obj;
-    new_market.trans_obj.trans();
-
-    new_market.arums_G = arums_H;
-    new_market.arums_H = arums_G;
+    this->trans(new_market);
     //
+    return new_market;
 }
 
 template<typename Tg, typename Th, typename Tt>

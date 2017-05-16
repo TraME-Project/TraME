@@ -109,7 +109,7 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::Psi(const arma::mat& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -124,7 +124,7 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::Psi(const double& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -139,7 +139,7 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::Psi(const arma::mat& U, const double& V, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -176,7 +176,7 @@ const
 }
 
 arma::mat
-trame::transfers::etu::du_Psi(const arma::mat& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::du_Psi(const arma::mat& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -188,7 +188,7 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::du_Psi(const double& U, const arma::mat& V, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::du_Psi(const double& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -200,7 +200,7 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::du_Psi(const arma::mat& U, const double& V, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::du_Psi(const arma::mat& U, const double& V, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -267,7 +267,7 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::Ucal(const arma::mat& vs, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::Ucal(const arma::mat& vs, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -301,7 +301,7 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::Vcal(const arma::mat& us, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::Vcal(const arma::mat& us, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -335,7 +335,7 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::UW(const arma::mat& Ws, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -363,7 +363,7 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::VW(const arma::mat& Ws, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -391,7 +391,7 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::dw_UW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::dw_UW(const arma::mat& Ws, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -410,7 +410,7 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::dw_VW(const arma::mat& Ws, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::dw_VW(const arma::mat& Ws, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
@@ -428,7 +428,7 @@ trame::transfers::etu::WU(const arma::mat& Us)
 }
 
 arma::mat 
-trame::transfers::etu::WU(const arma::mat& Us, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::WU(const arma::mat& Us, const arma::uvec* xs, const arma::uvec* ys)
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
@@ -449,7 +449,7 @@ trame::transfers::etu::WV(const arma::mat& Vs)
 }
 
 arma::mat 
-trame::transfers::etu::WV(const arma::mat& Vs, arma::uvec* xs, arma::uvec* ys)
+trame::transfers::etu::WV(const arma::mat& Vs, const arma::uvec* xs, const arma::uvec* ys)
 {
     arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);

@@ -68,9 +68,7 @@ arma::mat
 trame::mmfs::geo::M(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
-    arma::mat ret = this->M(a_xs,b_ys,NULL,NULL);
-    //
-    return ret;
+    return this->M(a_xs,b_ys,NULL,NULL);
 }
 
 arma::mat 
