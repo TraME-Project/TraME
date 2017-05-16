@@ -45,7 +45,7 @@ trame::transfers::etu::build(const arma::mat& alpha_inp, const arma::mat& gamma_
     alpha = alpha_inp;
     gamma = gamma_inp;
     tau   = tau_inp;
-    
+
     kappa = - 1.0 / tau_inp;
 
     aux_alpha = - elem_div(alpha_inp, tau_inp);
@@ -82,18 +82,18 @@ trame::transfers::etu::trans()
 }
 
 void
-trame::transfers::etu::mmf(mmfs::ces& mmf_obj)
+trame::transfers::etu::gen_mmf(mmfs::ces& mmf_obj)
 const
 {
     mmf_obj.build(alpha,gamma,tau,need_norm);
 }
 
 trame::mmfs::ces
-trame::transfers::etu::mmf()
+trame::transfers::etu::gen_mmf()
 const
 {
     mmfs::ces mmf_obj;
-    this->mmf(mmf_obj);
+    this->gen_mmf(mmf_obj);
     //
     return mmf_obj;
 }

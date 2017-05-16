@@ -64,8 +64,8 @@ class etu
         
         void trans();
 
-        void mmf(mmfs::ces& mmf_obj) const; // generate an MMF object from transfers
-        mmfs::ces mmf() const;
+        void gen_mmf(mmfs::ces& mmf_obj) const; // generate an MMF object from transfers
+        mmfs::ces gen_mmf() const;
 
         //
         // DSE-related functions

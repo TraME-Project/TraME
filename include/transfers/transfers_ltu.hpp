@@ -58,8 +58,8 @@ class ltu
         
         void trans();
 
-        void mmf(mmfs::cd& mmf_obj) const; // generate an MMF object from transfers
-        mmfs::cd mmf() const;
+        void gen_mmf(mmfs::cd& mmf_obj) const; // generate an MMF object from transfers
+        mmfs::cd gen_mmf() const;
 
         //
         // DSE-related functions

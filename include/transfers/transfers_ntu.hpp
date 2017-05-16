@@ -58,8 +58,8 @@ class ntu
         
         void trans();
 
-        void mmf(mmfs::min& mmf_obj) const; // generate an MMF object from transfers
-        mmfs::min mmf() const;
+        void gen_mmf(mmfs::min& mmf_obj) const; // generate an MMF object from transfers
+        mmfs::min gen_mmf() const;
 
         //
         // DSE-related functions

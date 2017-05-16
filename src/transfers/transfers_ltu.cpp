@@ -68,18 +68,18 @@ trame::transfers::ltu::trans()
 }
 
 void
-trame::transfers::ltu::mmf(mmfs::cd& mmf_obj)
+trame::transfers::ltu::gen_mmf(mmfs::cd& mmf_obj)
 const
 {
     mmf_obj.build(lambda,phi,need_norm);
 }
 
 trame::mmfs::cd
-trame::transfers::ltu::mmf()
+trame::transfers::ltu::gen_mmf()
 const
 {
     mmfs::cd mmf_obj;
-    this->mmf(mmf_obj);
+    this->gen_mmf(mmf_obj);
     //
     return mmf_obj;
 }

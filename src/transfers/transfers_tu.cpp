@@ -59,18 +59,18 @@ trame::transfers::tu::trans()
 }
 
 void
-trame::transfers::tu::mmf(mmfs::geo& mmf_obj)
+trame::transfers::tu::gen_mmf(mmfs::geo& mmf_obj)
 const
 {
     mmf_obj.build(phi,need_norm);
 }
 
 trame::mmfs::geo
-trame::transfers::tu::mmf()
+trame::transfers::tu::gen_mmf()
 const
 {
     mmfs::geo mmf_obj;
-    this->mmf(mmf_obj);
+    this->gen_mmf(mmf_obj);
     //
     return mmf_obj;
 }

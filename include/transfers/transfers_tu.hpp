@@ -55,8 +55,8 @@ class tu
         
         void trans();
 
-        void mmf(mmfs::geo& mmf_obj) const; // generate an MMF object from transfers
-        mmfs::geo mmf() const;
+        void gen_mmf(mmfs::geo& mmf_obj) const; // generate an MMF object from transfers
+        mmfs::geo gen_mmf() const;
 
         //
         // DSE-related functions
