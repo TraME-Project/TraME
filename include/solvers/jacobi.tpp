@@ -82,8 +82,7 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
     // w_low setup
     arma::mat w_low;
     if (!w_low_inp) {
-        dse<Tg,Th,Tt> market_trans = market;
-        market_trans.trans();
+        dse<Th,Tg,Tt> market_trans = market.trans();
 
         w_low = -arma::trans(w_upper_bound(market_trans));
     } else {
