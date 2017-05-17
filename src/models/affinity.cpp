@@ -28,7 +28,7 @@
  * 09/20/2016
  *
  * This version:
- * 11/27/2016
+ * 05/16/2017
  */
 
 #include "trame.hpp"
@@ -83,8 +83,8 @@ trame::affinity::build_market(const arma::mat& theta)
     arma::mat Phi_mkt = Phi_xy(arma::vectorise(theta));
     Phi_mkt.reshape(nbX,nbY);
 
-    trame::mfe<trame::mmfs::geo> mkt_ret;
-    mkt_ret.build(n,m,Phi_mkt,&sigma,false);
+    trame::mfe<trame::mmfs::geo> mkt_ret(sigma,false);
+    mkt_ret.build(n,m,Phi_mkt);
     //
     return mkt_ret;
 }

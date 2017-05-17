@@ -24,7 +24,7 @@ make install
 
 ### Authors
 
-Alfred Galichon, Keith O'Hara, and Simon Weber
+Alfred Galichon, Keith O'Hara
 
 ### License
 
