@@ -22,7 +22,7 @@
   ################################################################################*/
 
 /*
- * Geometric Marriage Matching Functions (MMFs) class
+ * Geometric Matching Market Functions (MMFs) class
  * (Corresponds to TU transfers class)
  *
  * Keith O'Hara

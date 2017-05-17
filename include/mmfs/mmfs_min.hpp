@@ -22,7 +22,7 @@
   ################################################################################*/
 
 /*
- * Leontief Marriage Matching Functions (MMFs) class
+ * Leontief Matching Market Functions (MMFs) class
  * (Corresponds to NTU transfers class)
  *
  * Keith O'Hara

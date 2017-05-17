@@ -22,7 +22,7 @@
   ################################################################################*/
 
 /*
- * Constant Elasticity of Substitution (CES) Marriage Matching Functions (MMFs) class
+ * Constant Elasticity of Substitution (CES) Matching Market Functions (MMFs) class
  * (Corresponds to the ETU transfers class)
  *
  * Keith O'Hara

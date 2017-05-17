@@ -22,7 +22,7 @@
   ################################################################################*/
 
 /*
- * Cobb-Douglas (CD) Marriage Matching Functions (MMFs) class
+ * Cobb-Douglas (CD) Matching Market Functions (MMFs) class
  * Corresponds to LTU transfers class
  *
  * Keith O'Hara

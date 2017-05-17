@@ -64,7 +64,7 @@ class mfe
         void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& mmfs_params_inp_1, const arma::mat& mmfs_params_inp_2);
         void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& mmfs_params_inp_1, const arma::mat& mmfs_params_inp_2, const arma::mat& mmfs_params_inp_3);
 
-        void trans();
+        void trans(); // market transpose
 
         arma::vec marg_x_inv(const arma::mat& B_ys) const;
         arma::vec marg_x_inv(const arma::mat& B_ys, const arma::uvec* xs) const;
