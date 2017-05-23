@@ -395,6 +395,7 @@ dse<Tg,Th,Tt>::trans()
 template<typename Tg, typename Th, typename Tt>
 void 
 dse<Tg,Th,Tt>::trans(dse<Th,Tg,Tt>& trans_market_obj)
+const
 {
     trans_market_obj.nbX = nbY;
     trans_market_obj.nbY = nbX;
@@ -414,6 +415,7 @@ dse<Tg,Th,Tt>::trans(dse<Th,Tg,Tt>& trans_market_obj)
 template<typename Tg, typename Th, typename Tt>
 dse<Th,Tg,Tt> 
 dse<Tg,Th,Tt>::trans()
+const
 {
     dse<Th,Tg,Tt> new_market;
 

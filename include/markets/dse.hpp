@@ -59,8 +59,8 @@ class dse
         void build(const arma::vec& n_inp, const arma::vec& m_inp);
         void build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_inp);
 
-        void trans(dse<Th,Tg,Tt>& trans_market_obj);
-        dse<Th,Tg,Tt> trans();
+        void trans(dse<Th,Tg,Tt>& trans_market_obj) const;
+        dse<Th,Tg,Tt> trans() const;
 
         bool solve(arma::mat& mu_sol);
         bool solve(arma::mat& mu_sol, const char* solver);
