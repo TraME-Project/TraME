@@ -34,10 +34,9 @@
 //
 // short build function
 
-template<typename Tg, typename Th, typename Tt>
 inline
 void 
-dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp)
+dse_base::build(const arma::vec& n_inp, const arma::vec& m_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -50,10 +49,9 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp)
     outsideOption = true;
 }
 
-template<typename Tg, typename Th, typename Tt>
 inline
 void 
-dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_inp)
+dse_base::build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -486,9 +484,9 @@ dse<Tg,Th,Tt>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, cons
         if (sig=='a') {
             res = arc_newton(*this,mu_sol,U_out,V_out);
         }
-        /*if (sig=='c') { // only works with empirical case
-            res = cupids_lp(*this,mu_sol);
-        }*/
+        // if (sig=='c') { // only works with empirical case
+        //     res = cupids_lp(*this,mu_sol);
+        // }
         if (sig=='d') {
             res = darum(*this,mu_sol,U_out,V_out);
         }
