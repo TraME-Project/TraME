@@ -534,3 +534,23 @@ cube_sum(const arma::cube& cube_inp, int which_dim)
     //
     return ret;
 }
+
+//
+// mirror R's approach to creating a matrix from an array; take each slice and vectorise that matrix
+
+inline
+arma::mat 
+cube_to_mat(const arma::cube& cube_inp)
+{
+    int dim_0 = cube_inp.n_rows;
+    int dim_1 = cube_inp.n_cols;
+    int dim_2 = cube_inp.n_slices;
+
+    arma::mat mat_out(dim_0*dim_1,dim_2);
+
+    for(int k = 0; k < dim_2; k++) {
+        mat_out.col(k) = arma::vectorise(cube_inp.slice(k));
+    }
+
+    return mat_out;
+}

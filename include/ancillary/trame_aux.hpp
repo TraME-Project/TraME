@@ -53,6 +53,7 @@ inline arma::mat elem_max(const double& comp_val, const arma::mat& mat_1);
 inline double elem_max(const double& comp_val_1, const double& comp_val_2);
 
 inline arma::mat cube_sum(const arma::cube& cube_inp, int which_dim);
+inline arma::mat cube_to_mat(const arma::cube& cube_inp);
 
 #include "trame_aux.ipp"
 
