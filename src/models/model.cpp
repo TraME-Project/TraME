@@ -116,8 +116,8 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
 {
     bool success = false;
     //
-    arma::mat kron_mat = Phi_xy();
-    arma::mat kron_mat_2 = arma::reshape(kron_mat.t(),nbParams*nbX,nbY);
+    arma::mat kron_mat = model_data;
+    arma::mat kron_mat_2 = arma::reshape(kron_mat.t(),dim_theta*nbX,nbY);
 
     arma::vec C_hat = arma::vectorise(arma::vectorise(mu_hat)*kron_mat);
     //
@@ -139,11 +139,11 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     int nbI = n_i.n_elem;
     int nbJ = m_j.n_elem;
 
-    arma::mat kron_data_mat = - arma::reshape(kron_mat_2*I_yj,nbParams,nbX*nbJ);
+    arma::mat kron_data_mat = - arma::reshape(kron_mat_2*I_yj,dim_theta,nbX*nbJ);
     /*
      * use batch allocation to construct the sparse constraint matrix (A)
      *
-     * A_sp_t size: (nbI + nbJ + nbX*nbY + nbParams) x (nbI*nbY + nbJ*nbX)
+     * A_sp_t size: (nbI + nbJ + nbX*nbY + dim_theta) x (nbI*nbY + nbJ*nbX)
      *
      * first block involves nbY blocks of nbI diagonal matrices, so nbI x (nbY*nbI) 
      *
@@ -157,7 +157,7 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
      * fourth block is filled from (nbI*nbY+1,nbI*nbY + nbJ*nbX) with kron_data_mat
      */
     int jj, kk, ll, count_val = 0;
-    int num_nonzero_elem = nbI*nbY + nbJ*nbX + nbX*nbY*nbDraws_1 + nbY*nbDraws_2*nbX + nbParams*nbJ*nbX;
+    int num_nonzero_elem = nbI*nbY + nbJ*nbX + nbX*nbY*nbDraws_1 + nbY*nbDraws_2*nbX + dim_theta*nbJ*nbX;
 
     arma::umat location_mat_1(2,num_nonzero_elem);
     arma::rowvec vals_mat_1(num_nonzero_elem);
@@ -208,7 +208,7 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
         }
     }
 
-    for (jj=0; jj < nbParams; jj++) { // fourth block, data
+    for (jj=0; jj < dim_theta; jj++) { // fourth block, data
         for (kk=0; kk < nbJ*nbX; kk++) {
             location_mat_1(0,count_val) = nbI + nbJ + nbX*nbY + jj;
             location_mat_1(1,count_val) = nbI*nbY + kk;
@@ -246,7 +246,7 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
         sense_lp[jj] = '>';
     }
 
-    arma::vec lb_lp(epsilon0_i.n_elem + eta_0j.n_elem + nbX*nbY + nbParams);
+    arma::vec lb_lp(epsilon0_i.n_elem + eta_0j.n_elem + nbX*nbY + dim_theta);
     lb_lp.rows(0,epsilon0_i.n_elem-1) = arma::vectorise(epsilon0_i);
     lb_lp.rows(epsilon0_i.n_elem,epsilon0_i.n_elem + eta_0j.n_elem - 1) = eta_0j;
     lb_lp.rows(epsilon0_i.n_elem + eta_0j.n_elem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
@@ -276,7 +276,7 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
             arma::mat mu_iy = arma::reshape(dual_mat(arma::span(0,nbI*nbY-1),0),nbI,nbY);
             arma::mat mu = I_ix.t() * mu_iy;
 
-            theta_hat = sol_mat(arma::span(nbI+nbJ+nbX*nbY,nbI+nbJ+nbX*nbY+nbParams-1),0);
+            theta_hat = sol_mat(arma::span(nbI+nbJ+nbX*nbY,nbI+nbJ+nbX*nbY+dim_theta-1),0);
             //
             // package up solution
             if (mu_out) {
