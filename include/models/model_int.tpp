@@ -102,11 +102,11 @@ model_build_int(const dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& X_
     int nbX = X_inp.n_rows;
     int nbY = Y_inp.n_rows;
 
-    int dX = X_inp.n_cols;
-    int dY = Y_inp.n_cols;
+    // int dX = X_inp.n_cols;
+    // int dY = Y_inp.n_cols;
 
     arma::mat eX = arma::ones(nbX,1);
-    arma::mat eY = arma::ones(nbX,1);
+    arma::mat eY = arma::ones(nbY,1);
     //
     arma::mat model_data = arma::abs(arma::kron(eY,X_inp) - arma::kron(Y_inp,eX));
 
