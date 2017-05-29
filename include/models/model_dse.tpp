@@ -108,11 +108,6 @@ model<dse<Tg,Th,Tt>>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, 
     m = (m_inp) ? *m_inp : arma::ones(nbY,1);
     //
     model_data = model_build_int(market_obj,X_inp,Y_inp);
-    arma::mat phi_xy_temp = arma::kron(Y_inp,X_inp);
-    arma::cube phi_xyk_temp(phi_xy_temp.memptr(),nbX,nbY,dim_theta,false); // share memory
-
-    // phi_xyk = phi_xyk_temp;
-    model_data = cube_to_mat(phi_xyk_temp);
 }
 
 //
@@ -122,7 +117,7 @@ template<typename Tg, typename Th, typename Tt>
 void 
 model<dse<Tg,Th,Tt>>::model_to_market(const arma::mat& theta)
 {
-    market_obj.build(n,m,Phi_xy_theta(theta),NULL,need_norm);
+    model_to_market_int(market_obj,model_data,theta,n,m,nbX,nbY,dX,dY,need_norm);
 }
 
 // template<typename Tm>

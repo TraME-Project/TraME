@@ -38,6 +38,9 @@ template<typename Tm>
 arma::mat model_build_int(const Tm& market_obj, const arma::mat& X_inp, const arma::mat& Y_inp);
 
 template<typename Tm>
+void model_to_market_int(Tm& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm);
+
+template<typename Tm>
 void model_dmu(const Tm& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out);
 
 //
@@ -67,33 +70,6 @@ struct trame_model_mle_opt_data {
 
 //
 // functions with specializations
-
-template<typename Tg, typename Th, typename Tt>
-void
-model_dmu(const dse<Tg,Th,Tt>& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
-{
-    arma::mat mu, U, V;
-    market_obj.solve(mu,U,V,NULL);
-
-    arma::vec mu_x0 = market_obj.n - arma::sum(mu,1);
-    arma::vec mu_0y = market_obj.m - arma::trans(arma::sum(mu,0));
-
-    arma::vec du_Psi_vec = arma::vectorise(market_obj.trans_obj.du_Psi(U,V));
-    arma::vec dv_Psi_vec = 1.0 - du_Psi_vec;
-    //
-    arma::mat HessGstar = market_obj.arums_G.D2Gstar(market_obj.n,mu,true);
-    arma::mat HessHstar = market_obj.arums_H.D2Gstar(market_obj.m,mu.t(),false);
-    //
-    arma::mat denom = elem_prod(du_Psi_vec,HessGstar) + elem_prod(dv_Psi_vec,HessHstar);
-    arma::mat term_1 = market_obj.trans_obj.dparams_Psi(U,V,dtheta_Psi);
-
-    arma::mat dmu = - arma::solve(denom,term_1);
-    //
-    mu_out = mu;
-    mu_x0_out = mu_x0;
-    mu_0y_out = mu_0y;
-    dmu_out = dmu;
-}
 
 template<typename Tg, typename Th>
 arma::mat 
@@ -131,4 +107,55 @@ model_build_int(const dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& X_i
     arma::mat model_data = cube_to_mat(phi_xyk_temp);
 
     return model_data;
+}
+
+template<typename Tg, typename Th>
+void
+model_to_market_int(dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm)
+{
+    arma::mat theta_1 = theta.rows(0,dX-1);
+    arma::mat theta_2 = theta.rows(dX,dX+dY-1);
+    double theta_3 = theta(theta.n_rows-1);
+
+    arma::mat alpha = arma::reshape(model_data*theta_1,nbX,nbY);
+    arma::mat gamma = arma::reshape(model_data*theta_2,nbX,nbY);
+    arma::mat tau(nbX,nbY);
+    tau.fill(theta_3);
+
+    market_obj.build(n,m,alpha,gamma,tau,need_norm);
+}
+
+template<typename Tg, typename Th>
+void 
+model_to_market_int(dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm)
+{
+    arma::mat phi = arma::reshape(model_data*theta,nbX,nbY);
+    market_obj.build(n,m,phi,need_norm);
+}
+
+template<typename Tg, typename Th, typename Tt>
+void
+model_dmu(const dse<Tg,Th,Tt>& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+{
+    arma::mat mu, U, V;
+    market_obj.solve(mu,U,V,NULL);
+
+    arma::vec mu_x0 = market_obj.n - arma::sum(mu,1);
+    arma::vec mu_0y = market_obj.m - arma::trans(arma::sum(mu,0));
+
+    arma::vec du_Psi_vec = arma::vectorise(market_obj.trans_obj.du_Psi(U,V));
+    arma::vec dv_Psi_vec = 1.0 - du_Psi_vec;
+    //
+    arma::mat HessGstar = market_obj.arums_G.D2Gstar(market_obj.n,mu,true);
+    arma::mat HessHstar = market_obj.arums_H.D2Gstar(market_obj.m,mu.t(),false);
+    //
+    arma::mat denom = elem_prod(du_Psi_vec,HessGstar) + elem_prod(dv_Psi_vec,HessHstar);
+    arma::mat term_1 = market_obj.trans_obj.dparams_Psi(U,V,dtheta_Psi);
+
+    arma::mat dmu = - arma::solve(denom,term_1);
+    //
+    mu_out = mu;
+    mu_x0_out = mu_x0;
+    mu_0y_out = mu_0y;
+    dmu_out = dmu;
 }
