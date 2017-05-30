@@ -95,8 +95,6 @@ class model<dse<Tg,Th,Tt>> : public model_base
         void build_int(const arma::cube& phi_xyk_inp, const arma::vec* n_inp, const arma::vec* m_inp);
         void build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp);
 
-        // arma::mat Phi_xy();
-        arma::mat Phi_xy_theta(const arma::mat& theta);
         void initial_theta(arma::mat& params);
 
         // optimization-related objects

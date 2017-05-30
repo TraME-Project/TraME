@@ -111,7 +111,7 @@ model<dse<Tg,Th,Tt>>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, 
 }
 
 //
-// build markets (TU case only right now)
+// build markets
 
 template<typename Tg, typename Th, typename Tt>
 void 
@@ -305,15 +305,6 @@ model<dse<Tg,Th,Tt>>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const
 
 //
 // internal
-
-template<typename Tg, typename Th, typename Tt>
-inline
-arma::mat 
-model<dse<Tg,Th,Tt>>::Phi_xy_theta(const arma::mat& theta)
-{
-    arma::mat ret = arma::reshape(model_data * theta,nbX,nbY);
-    return ret;
-}
 
 template<typename Tg, typename Th, typename Tt>
 inline
