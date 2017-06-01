@@ -66,7 +66,6 @@ model<dse<Tg,Th,Tt>>::build_int(const arma::cube& phi_xyk_inp, const arma::vec* 
     n = (n_inp) ? *n_inp : arma::ones(nbX,1);
     m = (m_inp) ? *m_inp : arma::ones(nbY,1);
 
-    // phi_xyk = phi_xyk_inp;
     model_data = cube_to_mat(phi_xyk_inp); // Phi_xy = matrix(phi_xyk)
 }
 
@@ -120,21 +119,12 @@ model<dse<Tg,Th,Tt>>::model_to_market(const arma::mat& theta)
     model_to_market_int(market_obj,model_data,theta,n,m,nbX,nbY,dX,dY,need_norm);
 }
 
-// template<typename Tm>
-// void 
-// model<dse<Tg,Th,Tt>>::build_market_TU(const arma::mat& theta)
-// {
-//     market_obj.build(n,m,Phi_xy_theta(theta),NULL,need_norm);
-// }
-
-// general arums input
-// template<typename Tm>
-// template<typename Ta, typename Tb>
-// void 
-// model<dse<Tg,Th,Tt>>::build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp)
-// {
-//     market_obj.build(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,need_norm);
-// }
+template<typename Tg, typename Th, typename Tt>
+void 
+model<dse<Tg,Th,Tt>>::model_to_market(const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp)
+{
+    model_to_market_int(market_obj,model_data,theta,arums_G_inp,arums_H_inp,n,m,nbX,nbY,dX,dY,need_norm);
+}
 
 // empirical version
 // template<typename Tm> 

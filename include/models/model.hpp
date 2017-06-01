@@ -60,7 +60,6 @@ class model<dse<Tg,Th,Tt>> : public model_base
     public:
         // build objects
         arma::mat model_data;
-        // arma::cube phi_xyk;
 
         dse<Tg,Th,Tt> market_obj;
         // member functions
@@ -69,11 +68,10 @@ class model<dse<Tg,Th,Tt>> : public model_base
         void build(const arma::mat& X_inp, const arma::mat& Y_inp);
         void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp);
 
-        // void build_market_TU(const arma::mat& theta);
-        // template<typename Ta, typename Tb> void build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp);
         // template<typename Ta, typename Tb> void build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp, int nbDraws, int seed);
 
         void model_to_market(const arma::mat& theta);
+        void model_to_market(const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp);
 
         void dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_Psi_out);
         void dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_Psi_out, arma::mat* dtheta_G_out, arma::mat* dtheta_H_out);

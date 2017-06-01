@@ -40,6 +40,9 @@ arma::mat model_build_int(const Tm& market_obj, const arma::mat& X_inp, const ar
 template<typename Tm>
 void model_to_market_int(Tm& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm);
 
+template<typename Tg, typename Th, typename Tt>
+void model_to_market_int(dse<Tg,Th,Tt>& market_obj, const arma::mat& model_data, const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm);
+
 template<typename Tm>
 void model_dmu(const Tm& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out);
 
@@ -109,6 +112,8 @@ model_build_int(const dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& X_i
     return model_data;
 }
 
+// model |-> market
+
 template<typename Tg, typename Th>
 void
 model_to_market_int(dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm)
@@ -126,12 +131,38 @@ model_to_market_int(dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& mode
 }
 
 template<typename Tg, typename Th>
+void
+model_to_market_int(dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& model_data, const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm)
+{
+    arma::mat theta_1 = theta.rows(0,dX-1);
+    arma::mat theta_2 = theta.rows(dX,dX+dY-1);
+    double theta_3 = theta(theta.n_rows-1);
+
+    arma::mat alpha = arma::reshape(model_data*theta_1,nbX,nbY);
+    arma::mat gamma = arma::reshape(model_data*theta_2,nbX,nbY);
+    arma::mat tau(nbX,nbY);
+    tau.fill(theta_3);
+
+    market_obj.build(n,m,alpha,gamma,tau,arums_G_inp,arums_H_inp,need_norm);
+}
+
+template<typename Tg, typename Th>
 void 
 model_to_market_int(dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm)
 {
     arma::mat phi = arma::reshape(model_data*theta,nbX,nbY);
     market_obj.build(n,m,phi,need_norm);
 }
+
+template<typename Tg, typename Th>
+void 
+model_to_market_int(dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& model_data, const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm)
+{
+    arma::mat phi = arma::reshape(model_data*theta,nbX,nbY);
+    market_obj.build(n,m,phi,arums_G_inp,arums_H_inp,need_norm);
+}
+
+// gradient
 
 template<typename Tg, typename Th, typename Tt>
 void
