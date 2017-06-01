@@ -94,6 +94,7 @@ class model<dse<Tg,Th,Tt>> : public model_base
         void build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp);
 
         void initial_theta(arma::mat& params);
+        arma::mat initial_theta();
 
         // optimization-related objects
         bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);

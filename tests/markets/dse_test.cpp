@@ -7,6 +7,7 @@
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/markets
  *
  * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include/trame dse_test.cpp -o dse.test -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I./../../include dse_test.cpp -o dse.test -L./../../ -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -33,8 +34,8 @@ int main()
     printf("\n");
     //
     // TU
-    trame::dse<trame::none,trame::tu> dse_obj_TU;
-    dse_obj_TU.build_TU(n,m,phi,false);
+    trame::dse<trame::arums::none,trame::arums::none,trame::transfers::tu> dse_obj_TU;
+    dse_obj_TU.build(n,m,phi,false);
     //
     double val;
     arma::vec mux0, mu0y, u, v;
@@ -63,13 +64,13 @@ int main()
     int nbX_d = n_d.n_elem;
     int nbY_d = m_d.n_elem;
     //
-    trame::dse<trame::logit,trame::ntu> dse_obj_NTU;
+    trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::ntu> dse_obj_NTU;
 
-    trame::logit logit_d_1, logit_d_2;
+    trame::arums::logit logit_d_1, logit_d_2;
     logit_d_1.build(nbX_d,nbY_d,1.0,true);
     logit_d_2.build(nbY_d,nbX_d,1.0,true);
 
-    dse_obj_NTU.build_NTU(n_d,m_d,alpha_d,gamma_d,logit_d_1,logit_d_2,false);
+    dse_obj_NTU.build(n_d,m_d,alpha_d,gamma_d,logit_d_1,logit_d_2,false);
     //
     arma::mat mu_NTU, U, V;
     //trame::darum(dse_obj_NTU, true, NULL, mu_NTU, mux0, mu0y, U, V);

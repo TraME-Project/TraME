@@ -44,7 +44,7 @@ template<typename Tg, typename Th, typename Tt>
 void model_to_market_int(dse<Tg,Th,Tt>& market_obj, const arma::mat& model_data, const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm);
 
 template<typename Tm>
-void model_dmu(const Tm& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out);
+void model_dmu(Tm& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out);
 
 //
 // structs
@@ -166,7 +166,7 @@ model_to_market_int(dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& model
 
 template<typename Tg, typename Th, typename Tt>
 void
-model_dmu(const dse<Tg,Th,Tt>& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+model_dmu(dse<Tg,Th,Tt>& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
 {
     arma::mat mu, U, V;
     market_obj.solve(mu,U,V,NULL);

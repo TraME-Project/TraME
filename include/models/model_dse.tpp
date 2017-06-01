@@ -186,7 +186,7 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     int max_iter = 5000;
 
     arma::vec theta_0;
-    (theta_0_inp) ? theta_0 = *theta_0_inp : initial_theta(theta_0);
+    (theta_0_inp) ? (theta_0 = *theta_0_inp) : theta_0 = initial_theta();
 
     model_to_market(theta_0);
 
@@ -302,6 +302,14 @@ void
 model<dse<Tg,Th,Tt>>::initial_theta(arma::mat& params)
 {
     params.zeros(dim_theta,1);
+}
+
+template<typename Tg, typename Th, typename Tt>
+inline
+arma::mat 
+model<dse<Tg,Th,Tt>>::initial_theta()
+{
+    return arma::zeros(dim_theta,1);
 }
 
 //

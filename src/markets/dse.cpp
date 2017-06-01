@@ -43,35 +43,45 @@ bool
 dse<arums::empirical,arums::empirical,transfers::tu>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
-
-    if (solver) { // not NULL
-        if (sig=='c') {
-            res = cupids_lp(*this,mu_sol);
-        }
-        if (sig=='e') {
-            res = eap_nash(*this,mu_sol);
-        }
-        if (sig=='j') {
-            res = jacobi(*this,mu_sol);
-        }
-        if (sig=='m') {
-            res = max_welfare(*this,mu_sol);
-        }
-        if (sig=='o') {
-            res = oap_lp(*this,mu_sol);
-        }
-    } /*else {
-        if (NTU) {
-            res = darum(*this,mu_sol);
-        } else if (TU) {
-            res = max_welfare(*this,mu_sol);
-        } else {
-            res = jacobi(*this,mu_sol);
-        }
-    }*/
+    res = cupids_lp(*this,mu_sol);
     //
     return res;
 }
+
+// template<>
+// bool
+// dse<arums::empirical,arums::empirical,transfers::tu>::solve(arma::mat& mu_sol, const char* solver)
+// {
+//     bool res = false;
+//     const char sig = (solver != NULL) ? solver[0] : char(0);
+
+//     if (solver) { // not NULL
+//         if (sig=='c') {
+//             res = cupids_lp(*this,mu_sol);
+//         }
+//         if (sig=='e') {
+//             res = eap_nash(*this,mu_sol);
+//         }
+//         if (sig=='j') {
+//             res = jacobi(*this,mu_sol);
+//         }
+//         if (sig=='m') {
+//             res = max_welfare(*this,mu_sol);
+//         }
+//         if (sig=='o') {
+//             res = oap_lp(*this,mu_sol);
+//         }
+//     } /*else {
+//         if (NTU) {
+//             res = darum(*this,mu_sol);
+//         } else if (TU) {
+//             res = max_welfare(*this,mu_sol);
+//         } else {
+//             res = jacobi(*this,mu_sol);
+//         }
+//     }*/
+//     //
+//     return res;
+// }
 
 }
