@@ -84,6 +84,8 @@ namespace trame
     #include "solvers/nodal_newton.hpp"
     #include "solvers/oap_lp.hpp"
 
+    #include "solvers/equil_solve.hpp"
+
     // models
     #include "models/affinity.hpp"
     #include "models/model.hpp"

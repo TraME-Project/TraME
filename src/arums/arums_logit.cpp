@@ -133,6 +133,7 @@ trame::arums::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x
         val_x = this->Gstarx(mu_x_inp.row(x).t(),U_x_out);
     } else if (mu_x_inp.n_rows == 1 && mu_x_inp.n_cols > 1) { 
         val_x = this->Gstarx(mu_x_inp.t(),U_x_out);
+        // val_x = this->Gstarx(mu_x_inp,U_x_out);
     } else {
         val_x = this->Gstarx(mu_x_inp,U_x_out);
     }

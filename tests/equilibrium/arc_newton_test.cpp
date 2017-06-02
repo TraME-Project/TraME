@@ -6,7 +6,7 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/equilibrium
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include arc_newton_test.cpp -o arc_newton.test -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I./../../include arc_newton_test.cpp -o arc_newton.test -L./../../ -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -31,27 +31,29 @@ int main()
     printf("\n");
     //
     // TU
-    trame::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
+    trame::arums::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
     
-    trame::mfe<trame::mmf> mfe_obj_TU;
-    trame::dse<trame::logit> dse_obj_TU;
+    trame::mfe<trame::mmfs::geo> mfe_obj_TU;
+    trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::tu> dse_obj_TU;
 
-    mfe_obj_TU.build_TU(n,m,phi,&sigma,false);
-    dse_obj_TU.build_TU(n,m,phi,logit_1,logit_2,false);
+    mfe_obj_TU.build(n,m,phi);
+    dse_obj_TU.build(n,m,phi,logit_1,logit_2,false);
     //
     //
     //double tol = 1E-06;
     //int max_iter = 5000;
 
-    arma::mat mu_TU_1, mu_TU_2;
+    arma::mat mu_TU_1, mu_TU_2, mu_TU_3;
     trame::ipfp(mfe_obj_TU,mu_TU_1);
 
     //trame::max_welfare(dse_obj_TU,mu_TU_2);
     //dse_obj_TU.solve(mu_TU_2, (char*) "maxWelfare");
     trame::arc_newton(dse_obj_TU,mu_TU_2);
+    trame::jacobi(dse_obj_TU,mu_TU_3);
 
     arma::cout << "Solution of TU-logit problem using ipfp:\n" << mu_TU_1 << arma::endl;
     arma::cout << "Solution of TU-logit problem using arc_newton:\n" << mu_TU_2 << arma::endl;
+    arma::cout << "Solution of TU-logit problem using jacobi:\n" << mu_TU_3 << arma::endl;
     //
     printf("\n*===================    End of arc_newton Test    ===================*\n");
     printf("\n");

@@ -73,12 +73,20 @@ int main()
     dse_obj_NTU.build(n_d,m_d,alpha_d,gamma_d,logit_d_1,logit_d_2,false);
     //
     arma::mat mu_NTU, U, V;
-    //trame::darum(dse_obj_NTU, true, NULL, mu_NTU, mux0, mu0y, U, V);
-    trame::darum(dse_obj_NTU, mu_NTU);
-    //dse_obj_NTU.solve(mu_NTU);
-    //dse_obj_NTU.solve(mu_NTU,(char*) "darum");
+    // trame::darum(dse_obj_NTU, true, NULL, mu_NTU, mux0, mu0y, U, V);
+    // trame::darum(dse_obj_NTU, mu_NTU);
+    dse_obj_NTU.solve(mu_NTU);
+    // dse_obj_NTU.solve(mu_NTU,(char*) "darum");
 
-    std::cout << "Solution of NTU-logit problem using darum:\n" << mu_NTU << std::endl;
+    std::cout << "Solution of NTU-logit problem using DA-RUM:\n" << mu_NTU << std::endl;
+
+    // //
+    trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::tu> dse_obj_TU_2;
+
+    dse_obj_TU_2.build(n_d,m_d,alpha_d + gamma_d,logit_d_1,logit_d_2,false);
+
+    // dse_obj_TU_2.solve(mu_TU);
+    dse_obj_TU_2.solve(mu_TU,(char*) "m");
     //
     printf("\n*===================    End of DSE Test    ===================*\n");
     printf("\n");

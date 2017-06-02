@@ -6,7 +6,7 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/equilibrium
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include jacobi_test.cpp -o jacobi.test -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I./../../include jacobi_test.cpp -o jacobi.test -L./../../ -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -42,11 +42,11 @@ int main()
     printf("\n");
     //
     // TU
-    trame::dse<trame::logit> dse_obj_TU;
+    trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::tu> dse_obj_TU;
 
-    trame::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
+    trame::arums::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
 
-    dse_obj_TU.build_TU(n,m,phi,logit_1,logit_2,false);
+    dse_obj_TU.build(n,m,phi,logit_1,logit_2,false);
     //
     arma::vec mux0, mu0y;
     arma::mat mu_TU, U, V;
@@ -56,9 +56,9 @@ int main()
     arma::cout << "Solution of TU-logit problem using jacobi:\n" << mu_TU << arma::endl;
     //
     // NTU
-    trame::dse<trame::logit> dse_obj_NTU;
+    trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::ntu> dse_obj_NTU;
 
-    dse_obj_NTU.build_NTU(n,m,alpha,gamma,logit_1,logit_2,false);
+    dse_obj_NTU.build(n,m,alpha,gamma,logit_1,logit_2,false);
     //
     arma::mat mu_NTU;
     //trame::jacobi(dse_obj_NTU, true, NULL, NULL, NULL, mu_NTU, mux0, mu0y, U, V);

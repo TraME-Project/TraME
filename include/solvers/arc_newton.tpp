@@ -31,6 +31,7 @@
  * 03/22/2017
  */
 
+//
 // internal arc_newton
 
 template<typename Tg, typename Th, typename Tt>
@@ -47,7 +48,6 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
 
     arma::vec sol_vec = arma::vectorise(w_upper_bound(market));
     
-    //success = arc_newton_optim(sol_vec,arc_newton_opt_objfn<Ta>,&opt_data);
     success = arc_newton_optim(sol_vec,arc_newton_opt_objfn<Tg,Th,Tt>,&opt_data,arc_newton_jacobian<Tg,Th,Tt>,&opt_data);
     //
     // construct equilibrium objects
@@ -85,6 +85,7 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
     return success;
 }
 
+//
 // wrappers 
 
 template<typename Tg, typename Th, typename Tt>
@@ -141,7 +142,8 @@ arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out,
     return res;
 }
 
-// optimization function
+//
+// optimization functions
 
 template<typename Tg, typename Th, typename Tt>
 arma::vec 

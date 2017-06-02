@@ -392,22 +392,40 @@ dse<Tg,Th,Tt>::trans()
 
 template<typename Tg, typename Th, typename Tt>
 void 
+trans_market(const dse<Tg,Th,Tt>& market_obj, dse<Th,Tg,Tt>& trans_market_obj)
+{
+    trans_market_obj.nbX = market_obj.nbY;
+    trans_market_obj.nbY = market_obj.nbX;
+
+    trans_market_obj.n = market_obj.m;
+    trans_market_obj.m = market_obj.n;
+    // Keith: fill in normalization later
+
+    trans_market_obj.trans_obj = market_obj.trans_obj;
+    trans_market_obj.trans_obj.trans();
+
+    trans_market_obj.arums_G = market_obj.arums_H;
+    trans_market_obj.arums_H = market_obj.arums_G;
+    //
+}
+
+// template<typename Tg, typename Th, typename Tt>
+// dse<Th,Tg,Tt> 
+// trans_market(const dse<Tg,Th,Tt>& market_obj)
+// {
+//     dse<Th,Tg,Tt> new_market;
+
+//     trans_market(market_obj,new_market);
+//     //
+//     return new_market;
+// }
+
+template<typename Tg, typename Th, typename Tt>
+void 
 dse<Tg,Th,Tt>::trans(dse<Th,Tg,Tt>& trans_market_obj)
 const
 {
-    trans_market_obj.nbX = nbY;
-    trans_market_obj.nbY = nbX;
-
-    trans_market_obj.n = m;
-    trans_market_obj.m = n;
-    // Keith: fill in normalization later
-
-    trans_market_obj.trans_obj = trans_obj;
-    trans_market_obj.trans_obj.trans();
-
-    trans_market_obj.arums_G = arums_H;
-    trans_market_obj.arums_H = arums_G;
-    //
+    trans_market(*this,trans_market_obj);
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -417,16 +435,99 @@ const
 {
     dse<Th,Tg,Tt> new_market;
 
-    this->trans(new_market);
+    trans_market(*this,new_market);
     //
     return new_market;
 }
+
+template<typename Tg, typename Th>
+void 
+dse<Tg,Th,transfers::etu>::trans(dse<Th,Tg,transfers::etu>& trans_market_obj)
+const
+{
+    trans_market(*this,trans_market_obj);
+}
+
+template<typename Tg, typename Th>
+dse<Th,Tg,transfers::etu> 
+dse<Tg,Th,transfers::etu>::trans()
+const
+{
+    dse<Th,Tg,transfers::etu> new_market;
+
+    trans_market(*this,new_market);
+    //
+    return new_market;
+}
+
+template<typename Tg, typename Th>
+void 
+dse<Tg,Th,transfers::ltu>::trans(dse<Th,Tg,transfers::ltu>& trans_market_obj)
+const
+{
+    trans_market(*this,trans_market_obj);
+}
+
+template<typename Tg, typename Th>
+dse<Th,Tg,transfers::ltu> 
+dse<Tg,Th,transfers::ltu>::trans()
+const
+{
+    dse<Th,Tg,transfers::ltu> new_market;
+
+    trans_market(*this,new_market);
+    //
+    return new_market;
+}
+
+template<typename Tg, typename Th>
+void 
+dse<Tg,Th,transfers::ntu>::trans(dse<Th,Tg,transfers::ntu>& trans_market_obj)
+const
+{
+    trans_market(*this,trans_market_obj);
+}
+
+template<typename Tg, typename Th>
+dse<Th,Tg,transfers::ntu> 
+dse<Tg,Th,transfers::ntu>::trans()
+const
+{
+    dse<Th,Tg,transfers::ntu> new_market;
+
+    trans_market(*this,new_market);
+    //
+    return new_market;
+}
+
+template<typename Tg, typename Th>
+void 
+dse<Tg,Th,transfers::tu>::trans(dse<Th,Tg,transfers::tu>& trans_market_obj)
+const
+{
+    trans_market(*this,trans_market_obj);
+}
+
+template<typename Tg, typename Th>
+dse<Th,Tg,transfers::tu> 
+dse<Tg,Th,transfers::tu>::trans()
+const
+{
+    dse<Th,Tg,transfers::tu> new_market;
+
+    trans_market(*this,new_market);
+    //
+    return new_market;
+}
+
+//
+// solve functions
 
 template<typename Tg, typename Th, typename Tt>
 bool 
 dse<Tg,Th,Tt>::solve(arma::mat& mu_sol)
 {
-    bool res = this->solve(mu_sol,NULL);
+    bool res = equil_solve(*this,mu_sol);
     //
     return res;
 }
@@ -435,40 +536,7 @@ template<typename Tg, typename Th, typename Tt>
 bool 
 dse<Tg,Th,Tt>::solve(arma::mat& mu_sol, const char* solver)
 {
-    bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
-    
-    if (solver) { // not NULL
-        if (sig=='a') {
-            res = arc_newton(*this,mu_sol);
-        }
-        /*if (sig=='c') { // only works with empirical case
-            res = cupids_lp(*this,mu_sol);
-        }*/
-        if (sig=='d') {
-            res = darum(*this,mu_sol);
-        }
-        if (sig=='e') {
-            res = eap_nash(*this,mu_sol);
-        }
-        if (sig=='j') {
-            res = jacobi(*this,mu_sol);
-        }
-        if (sig=='m') {
-            res = max_welfare(*this,mu_sol);
-        }
-        if (sig=='o') {
-            res = oap_lp(*this,mu_sol);
-        }
-    }/* else { // default
-        if (NTU) {
-            res = darum(*this,mu_sol);
-        } else if (TU) {
-            res = max_welfare(*this,mu_sol);
-        } else {
-            res = jacobi(*this,mu_sol);
-        }
-    }*/
+    bool res = equil_solve(*this,mu_sol,solver);
     //
     return res;
 }
@@ -477,40 +545,115 @@ template<typename Tg, typename Th, typename Tt>
 bool 
 dse<Tg,Th,Tt>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
-    bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
-    
-    if (solver) { // not NULL
-        if (sig=='a') {
-            res = arc_newton(*this,mu_sol,U_out,V_out);
-        }
-        // if (sig=='c') { // only works with empirical case
-        //     res = cupids_lp(*this,mu_sol);
-        // }
-        if (sig=='d') {
-            res = darum(*this,mu_sol,U_out,V_out);
-        }
-        if (sig=='e') {
-            res = eap_nash(*this,mu_sol,U_out,V_out);
-        }
-        if (sig=='j') {
-            res = jacobi(*this,mu_sol,U_out,V_out);
-        }
-        if (sig=='m') {
-            res = max_welfare(*this,mu_sol,U_out,V_out);
-        }
-        if (sig=='o') {
-            res = oap_lp(*this,mu_sol,U_out,V_out);
-        }
-    }/* else { // default
-        if (NTU) {
-            res = darum(*this,mu_sol,U_out,V_out);
-        } else if (TU) {
-            res = max_welfare(*this,mu_sol,U_out,V_out);
-        } else {
-            res = jacobi(*this,mu_sol,U_out,V_out);
-        }
-    }*/
+    bool res = equil_solve(*this,U_out,V_out,mu_sol,solver);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::etu>::solve(arma::mat& mu_sol)
+{
+    bool res = equil_solve(*this,mu_sol);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::etu>::solve(arma::mat& mu_sol, const char* solver)
+{
+    bool res = equil_solve(*this,mu_sol,solver);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::etu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
+{
+    bool res = equil_solve(*this,U_out,V_out,mu_sol,solver);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::ltu>::solve(arma::mat& mu_sol)
+{
+    bool res = equil_solve(*this,mu_sol);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::ltu>::solve(arma::mat& mu_sol, const char* solver)
+{
+    bool res = equil_solve(*this,mu_sol,solver);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::ltu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
+{
+    bool res = equil_solve(*this,U_out,V_out,mu_sol,solver);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::ntu>::solve(arma::mat& mu_sol)
+{
+    bool res = equil_solve(*this,mu_sol);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::ntu>::solve(arma::mat& mu_sol, const char* solver)
+{
+    bool res = equil_solve(*this,mu_sol,solver);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::ntu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
+{
+    bool res = equil_solve(*this,U_out,V_out,mu_sol,solver);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::tu>::solve(arma::mat& mu_sol)
+{
+    bool res = equil_solve(*this,mu_sol);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::tu>::solve(arma::mat& mu_sol, const char* solver)
+{
+    bool res = equil_solve(*this,mu_sol,solver);
+    //
+    return res;
+}
+
+template<typename Tg, typename Th>
+bool 
+dse<Tg,Th,transfers::tu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
+{
+    bool res = equil_solve(*this,U_out,V_out,mu_sol,solver);
     //
     return res;
 }
