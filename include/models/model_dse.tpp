@@ -186,7 +186,7 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     int max_iter = 5000;
 
     arma::vec theta_0;
-    (theta_0_inp) ? (theta_0 = *theta_0_inp) : theta_0 = initial_theta();
+    (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0 = initial_theta();
 
     model_to_market(theta_0);
 
@@ -221,7 +221,7 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
 template<typename Tg, typename Th, typename Tt>
 bool 
-model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
+model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
 {
     bool success = false;
     //
@@ -231,7 +231,7 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat)
     int max_iter = 5000;
 
     arma::vec theta_0;
-    initial_theta(theta_0);
+    (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0 = initial_theta();
 
     arma::mat dtheta_Psi;
     dtheta(NULL,dtheta_Psi);

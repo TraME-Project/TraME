@@ -51,14 +51,14 @@ int main()
     TU_logit_model.build(X_vals,Y_vals,n,m);
     
     //double val_hat;
-    arma::mat theta_hat;
-    TU_logit_model.mme(mu_hat,theta_hat);
+    arma::mat theta_hat_mme, theta_hat_mle;
+    TU_logit_model.mme(mu_hat,theta_hat_mme,NULL);
     
-    arma::cout << "theta_hat mme: \n" << theta_hat << arma::endl;
+    arma::cout << "theta_hat mme: \n" << theta_hat_mme << arma::endl;
 
-    TU_logit_model.mle(mu_hat,theta_hat,NULL);
+    TU_logit_model.mle(mu_hat,theta_hat_mle,NULL);
 
-    // arma::cout << "theta_hat mle: \n" << theta_hat << arma::endl;
+    arma::cout << "theta_hat mle: \n" << theta_hat_mle << arma::endl;
 
     // aff_model.mme_regul(mu_hat,lambda,theta_hat,val_hat,NULL,NULL,NULL,NULL);
 

@@ -545,7 +545,7 @@ template<typename Tg, typename Th, typename Tt>
 bool 
 dse<Tg,Th,Tt>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
-    bool res = equil_solve(*this,U_out,V_out,mu_sol,solver);
+    bool res = equil_solve(*this,mu_sol,U_out,V_out,solver);
     //
     return res;
 }
@@ -572,7 +572,7 @@ template<typename Tg, typename Th>
 bool 
 dse<Tg,Th,transfers::etu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
-    bool res = equil_solve(*this,U_out,V_out,mu_sol,solver);
+    bool res = equil_solve(*this,mu_sol,U_out,V_out,solver);
     //
     return res;
 }
@@ -599,7 +599,7 @@ template<typename Tg, typename Th>
 bool 
 dse<Tg,Th,transfers::ltu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
-    bool res = equil_solve(*this,U_out,V_out,mu_sol,solver);
+    bool res = equil_solve(*this,mu_sol,U_out,V_out,solver);
     //
     return res;
 }
@@ -626,7 +626,7 @@ template<typename Tg, typename Th>
 bool 
 dse<Tg,Th,transfers::ntu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
-    bool res = equil_solve(*this,U_out,V_out,mu_sol,solver);
+    bool res = equil_solve(*this,mu_sol,U_out,V_out,solver);
     //
     return res;
 }
@@ -653,7 +653,7 @@ template<typename Tg, typename Th>
 bool 
 dse<Tg,Th,transfers::tu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
-    bool res = equil_solve(*this,U_out,V_out,mu_sol,solver);
+    bool res = equil_solve(*this,mu_sol,U_out,V_out,solver);
     //
     return res;
 }

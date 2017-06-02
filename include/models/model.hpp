@@ -78,7 +78,7 @@ class model<dse<Tg,Th,Tt>> : public model_base
 
         void dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu);
 
-        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
+        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp);
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
 
         bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp);
