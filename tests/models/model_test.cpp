@@ -4,6 +4,9 @@
  * Keith O'Hara
  * 11/27/2016
  *
+ * This version:
+ * 06/01/2017
+ *
  * g++-mp-5 -O2 -Wall -std=c++11 -I/usr/local/include/trame model_test.cpp -o model.test -L/usr/local/lib -ltrame -framework Accelerate
  * g++-mp-5 -O2 -Wall -std=c++11 -I./../../include model_test.cpp -o model.test -L./../../ -ltrame -framework Accelerate
  */

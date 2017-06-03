@@ -28,7 +28,7 @@
  * 08/15/2016
  *
  * This version:
- * 03/13/2017
+ * 06/03/2017
  */
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
@@ -38,7 +38,7 @@ class ntu
     public:
         // build objects
         bool need_norm;
-        
+
         int transfers_type = 1;
         int nbX;
         int nbY;
@@ -53,9 +53,9 @@ class ntu
         // member functions
         ~ntu(){};
          ntu(){};
-        
+
         void build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, bool need_norm_inp);
-        
+
         void trans();
 
         void gen_mmf(mmfs::min& mmf_obj) const; // generate an MMF object from transfers
@@ -74,8 +74,8 @@ class ntu
         arma::mat du_Psi(const double& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;
         arma::mat du_Psi(const arma::mat& U, const double& V, const arma::uvec* xs, const arma::uvec* ys) const;
 
-        arma::mat dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dparams);
-        arma::mat dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dparams);
+        arma::mat dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dparams) const;
+        arma::mat dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dparams) const;
 
         arma::mat Ucal(const arma::mat& vs) const;
         arma::mat Ucal(const arma::mat& vs, const arma::uvec* xs, const arma::uvec* ys) const;

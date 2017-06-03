@@ -28,7 +28,7 @@
  * 08/15/2016
  *
  * This version:
- * 03/12/2017
+ * 06/03/2017
  */
 
 #include "trame.hpp"
@@ -180,12 +180,14 @@ const
 
 arma::mat 
 trame::transfers::tu::dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dparams)
+const
 {
     return this->dparams_Psi(U,V,&dparams);
 }
 
 arma::mat 
 trame::transfers::tu::dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dparams)
+const
 {
     arma::mat ret(nbX,nbY);
     //
