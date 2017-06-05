@@ -31,8 +31,8 @@
  * 02/07/2017
  */
 
-#ifndef _bfgs_HPP
-#define _bfgs_HPP
+#ifndef _optim_bfgs_HPP
+#define _optim_bfgs_HPP
 
 bool bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data);
 bool bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double& value_out);

@@ -34,6 +34,9 @@
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
 
+#ifndef _trame_mmfs_cd_HPP
+#define _trame_mmfs_cd_HPP
+
 class cd
 {
     public:
@@ -73,3 +76,5 @@ class cd
         arma::mat Mx0(const arma::mat& a_x) const;
         arma::mat M0y(const arma::mat& b_y) const;
 };
+
+#endif

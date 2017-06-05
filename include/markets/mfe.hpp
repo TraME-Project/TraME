@@ -31,6 +31,9 @@
  * 05/16/2017
  */
 
+#ifndef _trame_mfe_market_HPP
+#define _trame_mfe_market_HPP
+
 template<class Tt>
 class mfe
 {
@@ -94,3 +97,5 @@ struct trame_mfe_zeroin_data {
 };
 
 #include "mfe.tpp"
+
+#endif

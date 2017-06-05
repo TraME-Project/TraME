@@ -31,6 +31,9 @@
  * 05/23/2017
  */
 
+#ifndef _trame_dse_market_HPP
+#define _trame_dse_market_HPP
+
 class dse_base
 {
     public:
@@ -172,3 +175,5 @@ void trans_market(const dse<Tg,Th,Tt>& market_obj, dse<Th,Tg,Tt>& trans_market_o
 // dse<Th,Tg,Tt> trans_market(const dse<Tg,Th,Tt>& market_obj);
 
 #include "dse.tpp"
+
+#endif

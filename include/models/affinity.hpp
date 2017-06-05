@@ -31,6 +31,9 @@
  * 11/27/2016
  */
 
+#ifndef _trame_models_affinity_HPP
+#define _trame_models_affinity_HPP
+
 class affinity
 {
     public:
@@ -65,7 +68,7 @@ class affinity
         bool mme(const arma::mat& mu_hat);
         bool mme(const arma::mat& mu_hat, const arma::mat& lambda);
         bool mme(const arma::mat& mu_hat, const arma::mat* lambda, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp);
-    
+
     private:
         void build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp, const double* sigma_inp);
 
@@ -80,7 +83,7 @@ class affinity
 struct trame_mme_woregal_opt_data {
     int max_iter_ipfp;
     double tol_ipfp;
-    
+
     int nbX;
     int nbY;
 
@@ -103,3 +106,5 @@ struct trame_mme_woregal_opt_data {
 
     arma::mat phi_xy; // should be (nbX*nbY) x (nbParams)
 };
+
+#endif

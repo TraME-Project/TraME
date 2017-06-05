@@ -31,6 +31,9 @@
  * 05/27/2017
  */
 
+#ifndef _trame_model_HPP
+#define _trame_model_HPP
+
 class model_base
 {
     public:
@@ -106,3 +109,5 @@ class model<dse<Tg,Th,Tt>> : public model_base
 
 #include "model_int.tpp"
 #include "model_dse.tpp"
+
+#endif
