@@ -10,3 +10,4 @@ Makefile
 *.so
 *.test
 *.vscode
+include/armadillo*
