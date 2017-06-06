@@ -41,7 +41,7 @@ if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
         # cp -a ${WDIR}/arma_tmp/include/. ${WDIR}/include
         rm -rf ${WDIR}/arma_tmp
         ARMA_INCLUDE_PATH="-I./include"
-        
+
         echo ""
     fi
     echo "TraME: ARMA_INCLUDE_PATH set to ${ARMA_INCLUDE_PATH}"
@@ -157,10 +157,56 @@ elif [[ $OSTYPE == *linux* ]] ; then
         LP_LIBS="-lgurobi65"
         LP_LIB_RPATH="-Wl,-rpath,${grb_dirs[$nmb_dirs-1]}/linux64/lib"
     else
-        LP_INCLUDE_PATH=
-        LP_LIB_PATH=
-        LP_LIBS=
-        LP_LIB_RPATH=
+        # look for GLPK, or download it
+        if [ -f ${WDIR}/glpk_tmp/include/glpk.h ]; then
+            LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
+            LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
+            LP_LIBS="-lglpk"
+            LP_LIB_RPATH=
+        elif [ -f /usr/include/glpk.h ]; then
+            LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/usr/include"
+            LP_LIB_PATH="-L/usr/lib"
+            LP_LIBS="-lglpk"
+            LP_LIB_RPATH=
+        elif [ -f /usr/local/include/glpk.h ]; then
+            LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/usr/local/include"
+            LP_LIB_PATH="-L/usr/local/lib"
+            LP_LIBS="-lglpk"
+            LP_LIB_RPATH=
+        elif [ -f /opt/include/glpk.h ]; then
+            LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/opt/include"
+            LP_LIB_PATH="-L/opt/lib"
+            LP_LIBS="-lglpk"
+            LP_LIB_RPATH=
+        elif [ -f /opt/local/include/glpk.h ]; then
+            LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/opt/local/include"
+            LP_LIB_PATH="-L/opt/local/lib"
+            LP_LIBS="-lglpk"
+            LP_LIB_RPATH=
+        else
+            echo "TraME: cannot find a LP solver files. Downloading GLPK"
+            echo ""
+
+            mkdir ${WDIR}/glpk_tmp
+            cd glpk_tmp
+            curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.61.tar.gz
+            tar -xzf glpk-4.61.tar.gz
+            cd glpk-4.61
+            ./configure --prefix=${WDIR}/glpk_tmp
+            make
+            make PREFIX=${WDIR}/glpk_tmp install
+            cd ${WDIR}
+
+            rm -f ${WDIR}/glpk_tmp/glpk-4.61.tar.gz
+            rm -rf ${WDIR}/glpk_tmp/glpk-4.61
+            echo ""
+
+            LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
+            LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
+            LP_LIBS="-lglpk"
+            LP_LIB_RPATH=
+        fi
+    echo "TraME: using GLPK. LP_INCLUDE_PATH set to ${LP_INCLUDE_PATH}"
     fi
 else
     TRAME_BLAS_LAPACK="-lblas -llapack"
