@@ -11,3 +11,4 @@ Makefile
 *.test
 *.vscode
 include/armadillo*
+glpk_tmp

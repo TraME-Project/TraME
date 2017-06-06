@@ -125,6 +125,11 @@ $(TRAME_DIR)/$(SHLIB): $(OBJECTS_TRAME)
 clean:
 	@rm -f *.so ./tests/*/*.test ./tests/*/*.o $(TRAME_SRC_DIR)/*/*.o
 
+.PHONY: vclean
+vclean:
+	@rm -f *.so ./tests/*/*.test ./tests/*/*.o $(TRAME_SRC_DIR)/*/*.o
+	@rm -rf ./include/armadillo* ./glpk_tmp
+
 .PHONY: install
 install: $(SHLIB)
 	@cp $(TRAME_DIR)/$(SHLIB) $(INSTALL_PATH)/lib/$(SHLIB)
