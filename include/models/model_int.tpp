@@ -23,12 +23,13 @@
 
 /*
  * general model class
+ * internal functions
  *
  * Keith O'Hara
  * 11/19/2016
  *
  * This version:
- * 05/27/2017
+ * 06/06/2017
  */
 
 //

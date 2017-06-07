@@ -22,13 +22,13 @@
   ################################################################################*/
 
 /*
- * general model class
+ * model<mfe> class
  *
  * Keith O'Hara
  * 11/19/2016
  *
  * This version:
- * 05/27/2017
+ * 06/06/2017
  */
 
 // Note: 'theta' refers to model parameters;'params' refers to the structural parameters
