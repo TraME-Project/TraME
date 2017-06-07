@@ -96,7 +96,7 @@ class model<dse<Tg,Th,Tt>> : public model_base
         void build_int(const arma::cube& phi_xyk_inp, const arma::vec* n_inp, const arma::vec* m_inp);
         void build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp);
 
-        void initial_theta(arma::mat& params);
+        void initial_theta(arma::mat& theta_0);
         arma::mat initial_theta();
 
         // optimization-related objects
@@ -107,7 +107,53 @@ class model<dse<Tg,Th,Tt>> : public model_base
         static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 
+template<typename Tt>
+class model<mfe<Tt>> : public model_base
+{
+    public:
+        // build objects
+        arma::mat model_data;
+
+        mfe<Tt> market_obj;
+        // member functions
+        void build(const arma::mat& X_inp, const arma::mat& Y_inp);
+        void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp);
+        void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp, const double& sigma_inp);
+
+        void model_to_market(const arma::mat& theta);
+
+        void dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_M_out);
+        arma::mat dtheta(const arma::mat* delta_theta_inp);
+
+        bool mme_regul(const arma::mat& mu_hat, const double& lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp);
+        bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp);
+
+        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
+        bool mme(const arma::mat& mu_hat, double lambda_inp, arma::mat& theta_hat);
+        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
+
+        // solve wrappers
+        bool solve(arma::mat& mu_sol);
+        bool solve(arma::mat& mu_sol, const char* solver);
+        bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
+
+    private:
+        // internal build functions
+        void build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp, const double* sigma_inp);
+
+        void initial_theta(arma::mat& theta_0);
+        arma::mat initial_theta();
+
+        arma::mat Phi_k(const arma::mat& mu_hat);
+
+        // optimization-related objects
+
+        bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp);
+        static double model_mfe_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
+};
+
 #include "model_int.tpp"
 #include "model_dse.tpp"
+#include "model_mfe.tpp"
 
 #endif

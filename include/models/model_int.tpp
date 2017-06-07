@@ -43,6 +43,9 @@ void model_to_market_int(Tm& market_obj, const arma::mat& model_data, const arma
 template<typename Tg, typename Th, typename Tt>
 void model_to_market_int(dse<Tg,Th,Tt>& market_obj, const arma::mat& model_data, const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm);
 
+template<typename Tt>
+void model_to_market_int(mfe<Tt>& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, double sigma, bool need_norm);
+
 template<typename Tm>
 void model_dmu(Tm& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out);
 
@@ -71,6 +74,33 @@ struct trame_model_mle_opt_data {
     model<Tm> model_obj;
 };
 
+struct trame_model_mfe_mme_opt_data {
+    int max_iter_ipfp;
+    double tol_ipfp;
+
+    int nbX;
+    int nbY;
+
+    int dX;
+    int dY;
+
+    double sigma;
+
+    arma::vec p;
+    arma::vec q;
+
+    arma::mat IX;
+    arma::mat tIY;
+
+    arma::mat f;
+    arma::mat g;
+
+    arma::mat v;
+    arma::mat Pi_hat;
+
+    arma::mat phi_xy; // should be (nbX*nbY) x (nbParams)
+};
+
 //
 // functions with specializations
 
@@ -95,6 +125,27 @@ model_build_int(const dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& X_
 template<typename Tg, typename Th>
 arma::mat 
 model_build_int(const dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& X_inp, const arma::mat& Y_inp)
+{
+    int nbX = X_inp.n_rows;
+    int nbY = Y_inp.n_rows;
+
+    int dX = X_inp.n_cols;
+    int dY = Y_inp.n_cols;
+
+    int dim_theta = dX*dY;
+    //
+    arma::mat phi_xy_temp = arma::kron(Y_inp,X_inp);
+    arma::cube phi_xyk_temp(phi_xy_temp.memptr(),nbX,nbY,dim_theta,false); // share memory
+
+    arma::mat model_data = cube_to_mat(phi_xyk_temp);
+
+    return model_data;
+}
+
+template<>
+inline
+arma::mat 
+model_build_int(const mfe<mmfs::geo>& market_obj, const arma::mat& X_inp, const arma::mat& Y_inp)
 {
     int nbX = X_inp.n_rows;
     int nbY = Y_inp.n_rows;
@@ -160,6 +211,17 @@ model_to_market_int(dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& model
 {
     arma::mat phi = arma::reshape(model_data*theta,nbX,nbY);
     market_obj.build(n,m,phi,arums_G_inp,arums_H_inp,need_norm);
+}
+
+template<>
+inline
+void 
+model_to_market_int(mfe<mmfs::geo>& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, double sigma, bool need_norm)
+{
+    arma::mat phi = arma::reshape(model_data*theta,nbX,nbY);
+
+    market_obj.build(sigma,need_norm);
+    market_obj.build(n,m,phi);
 }
 
 // gradient

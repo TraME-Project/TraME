@@ -299,9 +299,9 @@ model<dse<Tg,Th,Tt>>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const
 template<typename Tg, typename Th, typename Tt>
 inline
 void 
-model<dse<Tg,Th,Tt>>::initial_theta(arma::mat& params)
+model<dse<Tg,Th,Tt>>::initial_theta(arma::mat& theta_0)
 {
-    params.zeros(dim_theta,1);
+    theta_0.zeros(dim_theta,1);
 }
 
 template<typename Tg, typename Th, typename Tt>

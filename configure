@@ -54,7 +54,6 @@ TRAME_INSTALL_PATH="/usr/local"
 if [[ $OSTYPE == darwin* ]] ; then
     if [[ !(-z ${TRAME_R_VERSION+x}) ]]; then 
         TRAME_SHLIB_FLAGS="-dynamiclib -install_name "@loader_path/${TRAME_SHLIB_NAME}" -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress"
-        # TRAME_SHLIB_FLAGS="-dynamiclib -install_name "@loader_path/${TRAME_SHLIB_NAME}""
 
         TRAME_BLAS_LAPACK="${TRAME_LAPACK_LIBS} ${TRAME_BLAS_LIBS}"
     else
@@ -64,7 +63,6 @@ if [[ $OSTYPE == darwin* ]] ; then
         else
             TRAME_SHLIB_FLAGS="-dynamiclib -install_name "${TRAME_INSTALL_PATH}/lib/${TRAME_SHLIB_NAME}" -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress"
         fi
-        # TRAME_SHLIB_FLAGS="-dynamiclib -install_name "${TRAME_INSTALL_PATH}/lib/${TRAME_SHLIB_NAME}""
 
         TRAME_BLAS_LAPACK="-framework Accelerate"
     fi

@@ -66,6 +66,29 @@ int main()
     // aff_model.mme_regul(mu_hat,lambda,theta_hat,val_hat,NULL,NULL,NULL,NULL);
 
     //
+    // Affinity model
+
+    nbX = 100;
+    nbY = 100;
+
+    X_vals = arma::randu(nbX,10);
+    Y_vals = arma::randu(nbY,10);
+
+    trame::model<trame::mfe<trame::mmfs::geo>> aff_model;
+    aff_model.build(X_vals,Y_vals);
+    
+    double lambda = 0.15;
+    double val_hat_1, val_hat_2;
+    mu_hat = arma::ones(nbX,nbY)/(nbX);
+    arma::mat theta_hat_aff;
+
+    aff_model.mme_regul(mu_hat,lambda,theta_hat_aff,val_hat_1,NULL,NULL,NULL,NULL);
+    std::cout << "the_val with regularization: " << val_hat_1 << std::endl;
+    aff_model.mme_woregul(mu_hat,theta_hat_aff,val_hat_2,NULL,NULL,NULL,NULL);
+    std::cout << "the_val without regularization: " << val_hat_2 << std::endl;
+    // arma::cout << "theta_hat: \n" << theta_hat << arma::endl;
+
+    //
     printf("\n*===================    End of general model Test    ===================*\n");
     printf("\n");
     //
