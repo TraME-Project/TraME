@@ -31,6 +31,9 @@
  * 02/21/2017
  */
 
+#ifndef _trame_arums_probit_HPP
+#define _trame_arums_probit_HPP
+
 class probit
 {
     public:
@@ -68,3 +71,5 @@ class probit
     private:
          void build_prv(int nbX_inp, int nbY_inp, double* rho_inp, bool outsideOption_inp);
 };
+
+#endif

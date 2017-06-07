@@ -31,6 +31,9 @@
  * 02/21/2017
  */
 
+#ifndef _trame_arums_rusc_HPP
+#define _trame_arums_rusc_HPP
+
 class rusc
 {
     public:
@@ -80,3 +83,5 @@ class rusc
         void simul(empirical& obj_out);
         void simul(empirical& obj_out, int* nbDraws, int* seed);
 };
+
+#endif

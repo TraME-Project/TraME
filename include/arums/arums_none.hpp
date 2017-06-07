@@ -31,6 +31,9 @@
  * 02/11/2017
  */
 
+#ifndef _trame_arums_none_HPP
+#define _trame_arums_none_HPP
+
 class none
 {
     public:
@@ -74,3 +77,5 @@ class none
         void simul(empirical& obj_out);
         void simul(empirical& obj_out, int* nbDraws, int* seed);
 };
+
+#endif

@@ -28,8 +28,8 @@
  * 11/28/2014
  */
 
-#ifndef _logit_transform_HPP
-#define _logit_transform_HPP
+#ifndef _trame_logit_transform_HPP
+#define _trame_logit_transform_HPP
 
 arma::vec logit_trans(const arma::vec& pars, const arma::vec& lower_bounds, const arma::vec& upper_bounds);
 arma::vec logit_trans(const arma::vec& pars);

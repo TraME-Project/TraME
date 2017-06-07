@@ -31,6 +31,9 @@
  * 02/21/2017
  */
 
+#ifndef _trame_arums_rsc_HPP
+#define _trame_arums_rsc_HPP
+
 class rsc
 {
     public:
@@ -145,3 +148,5 @@ struct trame_rsc_gbar_opt_data {
     arma::vec (*quantile_eps_vec)(arma::vec x, double* dist_pars);
     double* dist_pars;
 };
+
+#endif

@@ -28,8 +28,8 @@
  * 05/10/2016
  */
 
-#ifndef _zeroin_HPP
-#define _zeroin_HPP
+#ifndef _trame_zeroin_HPP
+#define _trame_zeroin_HPP
 
 //#include <cmath> // for abs value
 //#include <limits>

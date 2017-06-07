@@ -31,6 +31,9 @@
  * 02/21/2017
  */
 
+#ifndef _trame_arums_logit_HPP
+#define _trame_arums_logit_HPP
+
 class logit
 {
     public:
@@ -101,3 +104,5 @@ struct trame_logit_zeroin_data {
     arma::mat exp_Ubar_X;
     arma::mat mubar_X;
 };
+
+#endif

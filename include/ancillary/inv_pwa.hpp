@@ -28,8 +28,8 @@
  * 08/08/2016
  */
 
-#ifndef _inv_pwa_HPP
-#define _inv_pwa_HPP
+#ifndef _trame_inv_pwa_HPP
+#define _trame_inv_pwa_HPP
 
 arma::vec inv_pwa(const arma::vec& a, const arma::mat& B, const arma::mat& C, const double& k);
 

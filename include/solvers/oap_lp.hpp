@@ -57,4 +57,3 @@ bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool& x_first_
 #include "oap_lp.tpp"
 
 #endif
-

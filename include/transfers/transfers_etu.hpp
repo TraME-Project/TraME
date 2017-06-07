@@ -31,6 +31,9 @@
  * 06/03/2017
  */
 
+#ifndef _trame_transfers_etu_HPP
+#define _trame_transfers_etu_HPP
+
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
 
 class etu
@@ -107,3 +110,5 @@ class etu
         arma::mat WV(const arma::mat& Vs);
         arma::mat WV(const arma::mat& Vs, const arma::uvec* xs, const arma::uvec* ys);
 };
+
+#endif

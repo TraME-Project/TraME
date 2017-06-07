@@ -31,6 +31,9 @@
  * 02/21/2017
  */
 
+#ifndef _trame_arums_empirical_HPP
+#define _trame_arums_empirical_HPP
+
 class empirical
 {
     public:
@@ -99,3 +102,5 @@ class empirical
         int* vbeg_Gbar;
         double* vval_Gbar;
 };
+
+#endif
