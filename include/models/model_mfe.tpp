@@ -37,8 +37,8 @@
 // build
 
 template<typename Tt>
-inline 
-void 
+inline
+void
 model<mfe<Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp)
 {
     this->build_int(X_inp,Y_inp,NULL,NULL,NULL);
@@ -92,7 +92,7 @@ model<mfe<Tt>>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const 
 // build markets
 
 template<typename Tt>
-void 
+void
 model<mfe<Tt>>::model_to_market(const arma::mat& theta)
 {
     model_to_market_int(market_obj,model_data,theta,n,m,nbX,nbY,dX,dY,need_norm);
@@ -102,7 +102,7 @@ model<mfe<Tt>>::model_to_market(const arma::mat& theta)
 // gradients
 
 template<typename Tt>
-void 
+void
 model<mfe<Tt>>::dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_M_out)
 {
     arma::mat delta_theta_mat = (delta_theta_inp) ? *delta_theta_inp : arma::eye(dim_theta,dim_theta);
@@ -168,7 +168,7 @@ model<mfe<Tt>>::dtheta(const arma::mat* delta_theta_inp)
 // }
 
 template<typename Tt>
-bool 
+bool
 model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
 {
     bool success = false;
@@ -244,7 +244,7 @@ model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doubl
 }
 
 template<typename Tt>
-bool 
+bool
 model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double& lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
 {
     bool success = false;
@@ -357,7 +357,7 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double& lambda, arma::m
 // solve wrappers
 
 template<typename Tt>
-bool 
+bool
 model<mfe<Tt>>::solve(arma::mat& mu_sol)
 {
     bool res = market_obj.solve(mu_sol,NULL);
@@ -366,7 +366,7 @@ model<mfe<Tt>>::solve(arma::mat& mu_sol)
 }
 
 template<typename Tt>
-bool 
+bool
 model<mfe<Tt>>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = market_obj.solve(mu_sol,solver);
@@ -375,7 +375,7 @@ model<mfe<Tt>>::solve(arma::mat& mu_sol, const char* solver)
 }
 
 template<typename Tt>
-bool 
+bool
 model<mfe<Tt>>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
 {
     bool res = market_obj.solve(mu_sol,U,V,solver);
@@ -388,7 +388,7 @@ model<mfe<Tt>>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char*
 
 template<typename Tt>
 inline
-void 
+void
 model<mfe<Tt>>::initial_theta(arma::mat& theta_0)
 {
     theta_0.zeros(dim_theta,1);
@@ -396,7 +396,7 @@ model<mfe<Tt>>::initial_theta(arma::mat& theta_0)
 
 template<typename Tt>
 inline
-arma::mat 
+arma::mat
 model<mfe<Tt>>::initial_theta()
 {
     return arma::zeros(dim_theta,1);
@@ -404,7 +404,7 @@ model<mfe<Tt>>::initial_theta()
 
 template<typename Tt>
 inline
-arma::mat 
+arma::mat
 model<mfe<Tt>>::Phi_k(const arma::mat& mu_hat)
 {
     arma::mat ret = arma::vectorise(arma::trans(arma::vectorise(mu_hat))*model_data);
@@ -416,7 +416,7 @@ model<mfe<Tt>>::Phi_k(const arma::mat& mu_hat)
 // optimization-related functions
 
 template<typename Tt>
-bool 
+bool
 model<mfe<Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
 {
     bool success = generic_optim(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
@@ -425,7 +425,7 @@ model<mfe<Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (
 }
 
 template<typename Tt>
-double 
+double
 model<mfe<Tt>>::model_mfe_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
 {
     trame_model_mfe_mme_opt_data *d = reinterpret_cast<trame_model_mfe_mme_opt_data*>(opt_data);

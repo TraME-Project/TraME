@@ -38,15 +38,15 @@ namespace trame
 {
 
 // we specialize because cupids_lp is only defined for empirical classes
-template<>
-bool
-dse<arums::empirical,arums::empirical,transfers::tu>::solve(arma::mat& mu_sol, const char* solver)
-{
-    bool res = false;
-    res = cupids_lp(*this,mu_sol);
-    //
-    return res;
-}
+// template<>
+// bool
+// dse<arums::empirical,arums::empirical,transfers::tu>::solve(arma::mat& mu_sol, const char* solver)
+// {
+//     bool res = false;
+//     res = cupids_lp(*this,mu_sol);
+//     //
+//     return res;
+// }
 
 // template<>
 // bool

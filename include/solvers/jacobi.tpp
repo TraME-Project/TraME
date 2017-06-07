@@ -32,7 +32,7 @@
  */
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::mat* w_up_inp, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp)
 {
     bool success = false;
@@ -189,7 +189,7 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
 // wrappers
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
     bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL);
@@ -198,7 +198,7 @@ jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp)
 {
     bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,NULL);
@@ -207,7 +207,7 @@ jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp)
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp)
 {
     bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
@@ -216,7 +216,7 @@ jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp)
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
 {
     bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
@@ -225,7 +225,7 @@ jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, co
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL);
@@ -234,7 +234,7 @@ jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::m
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 jacobi(const dse<Tg,Th,Tt>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp)
 {
     bool res = jacobi_int(market,&w_low_inp,&w_up_inp,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,tol_inp,max_iter_inp);
@@ -246,7 +246,7 @@ jacobi(const dse<Tg,Th,Tt>& market, const arma::mat& w_low_inp, const arma::mat&
 // root-finding function
 
 template<typename Tg, typename Th, typename Tt>
-double 
+double
 jacobi_zeroin_fn(double z, void* opt_data)
 {
     trame_jacobi_zeroin_data<Tg,Th,Tt> *d = reinterpret_cast<trame_jacobi_zeroin_data<Tg,Th,Tt>*>(opt_data);

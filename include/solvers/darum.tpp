@@ -34,7 +34,7 @@
 // internal darum
 
 template<typename Tg, typename Th>
-bool 
+bool
 darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp)
 {
     bool success = false;
@@ -108,7 +108,7 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
 // wrappers 
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
     bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL);
@@ -117,7 +117,7 @@ darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp)
 {
     bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,NULL);
@@ -126,7 +126,7 @@ darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp)
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp)
 {
     bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
@@ -135,7 +135,7 @@ darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp)
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
 {
     bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
@@ -144,7 +144,7 @@ darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, con
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = darum_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL);
@@ -153,7 +153,7 @@ darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::ma
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp)
 {
     bool res = darum_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,tol_inp,max_iter_inp);

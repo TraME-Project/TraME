@@ -106,7 +106,7 @@ struct trame_model_mfe_mme_opt_data {
 // functions with specializations
 
 template<typename Tg, typename Th>
-arma::mat 
+arma::mat
 model_build_int(const dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& X_inp, const arma::mat& Y_inp)
 {
     int nbX = X_inp.n_rows;
@@ -124,7 +124,7 @@ model_build_int(const dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& X_
 }
 
 template<typename Tg, typename Th>
-arma::mat 
+arma::mat
 model_build_int(const dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& X_inp, const arma::mat& Y_inp)
 {
     int nbX = X_inp.n_rows;
@@ -145,7 +145,7 @@ model_build_int(const dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& X_i
 
 template<>
 inline
-arma::mat 
+arma::mat
 model_build_int(const mfe<mmfs::geo>& market_obj, const arma::mat& X_inp, const arma::mat& Y_inp)
 {
     int nbX = X_inp.n_rows;
@@ -199,7 +199,7 @@ model_to_market_int(dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& mode
 }
 
 template<typename Tg, typename Th>
-void 
+void
 model_to_market_int(dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm)
 {
     arma::mat phi = arma::reshape(model_data*theta,nbX,nbY);
@@ -207,7 +207,7 @@ model_to_market_int(dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& model
 }
 
 template<typename Tg, typename Th>
-void 
+void
 model_to_market_int(dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& model_data, const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm)
 {
     arma::mat phi = arma::reshape(model_data*theta,nbX,nbY);
@@ -216,7 +216,7 @@ model_to_market_int(dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& model
 
 template<>
 inline
-void 
+void
 model_to_market_int(mfe<mmfs::geo>& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, double sigma, bool need_norm)
 {
     arma::mat phi = arma::reshape(model_data*theta,nbX,nbY);

@@ -34,7 +34,7 @@
 // internal cupids_lp
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out)
 {
     bool success = false;
@@ -223,7 +223,7 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 // wrappers
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
     bool res = cupids_lp_int(market,&mu_out,NULL,NULL,NULL,NULL);
@@ -232,7 +232,7 @@ cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = cupids_lp_int(market,&mu_out,NULL,NULL,&U_out,&V_out);
@@ -241,7 +241,7 @@ cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out)
 {
     bool res = cupids_lp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out);

@@ -28,11 +28,11 @@
  * 08/01/2016
  *
  * This version:
- * 06/01/2017
+ * 06/07/2017
  */
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol)
 {
     bool res = equil_solve(market_obj,mu_sol,NULL);
@@ -41,7 +41,7 @@ equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol)
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
@@ -83,7 +83,7 @@ equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, const char* solv
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
     bool res = false;
@@ -128,7 +128,7 @@ equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, arma::mat& U_out
 // specializations
 
 template<typename Tg, typename Th>
-bool 
+bool
 equil_solve(const dse<Tg,Th,transfers::tu>& market_obj, arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
@@ -152,7 +152,7 @@ equil_solve(const dse<Tg,Th,transfers::tu>& market_obj, arma::mat& mu_sol, const
 }
 
 template<typename Tg, typename Th>
-bool 
+bool
 equil_solve(const dse<Tg,Th,transfers::tu>& market_obj, arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
     bool res = false;
@@ -171,6 +171,18 @@ equil_solve(const dse<Tg,Th,transfers::tu>& market_obj, arma::mat& mu_sol, arma:
     } else { // default
         res = max_welfare(market_obj,mu_sol,U_out,V_out);
     }
+    //
+    return res;
+}
+
+// we specialize because cupids_lp is only defined for empirical classes
+template<>
+inline
+bool
+equil_solve(const dse<arums::empirical,arums::empirical,transfers::tu>& market_obj, arma::mat& mu_sol, const char* solver)
+{
+    bool res = false;
+    res = cupids_lp(market_obj,mu_sol);
     //
     return res;
 }

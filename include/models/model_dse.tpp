@@ -37,24 +37,24 @@
 // first method to build
 
 template<typename Tg, typename Th, typename Tt>
-inline 
-void 
+inline
+void
 model<dse<Tg,Th,Tt>>::build(const arma::cube& phi_xyk_inp)
 {
     this->build_int(phi_xyk_inp,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
-inline 
-void 
+inline
+void
 model<dse<Tg,Th,Tt>>::build(const arma::cube& phi_xyk_inp, const arma::vec& n_inp, const arma::vec& m_inp)
 {
     this->build_int(phi_xyk_inp,&n_inp,&m_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
-inline 
-void 
+inline
+void
 model<dse<Tg,Th,Tt>>::build_int(const arma::cube& phi_xyk_inp, const arma::vec* n_inp, const arma::vec* m_inp)
 {
     need_norm = false;
@@ -73,8 +73,8 @@ model<dse<Tg,Th,Tt>>::build_int(const arma::cube& phi_xyk_inp, const arma::vec* 
 // second method to build
 
 template<typename Tg, typename Th, typename Tt>
-inline 
-void 
+inline
+void
 model<dse<Tg,Th,Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp)
 {
     this->build_int(X_inp,Y_inp,NULL,NULL);
@@ -113,14 +113,14 @@ model<dse<Tg,Th,Tt>>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, 
 // build markets
 
 template<typename Tg, typename Th, typename Tt>
-void 
+void
 model<dse<Tg,Th,Tt>>::model_to_market(const arma::mat& theta)
 {
     model_to_market_int(market_obj,model_data,theta,n,m,nbX,nbY,dX,dY,need_norm);
 }
 
 template<typename Tg, typename Th, typename Tt>
-void 
+void
 model<dse<Tg,Th,Tt>>::model_to_market(const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp)
 {
     model_to_market_int(market_obj,model_data,theta,arums_G_inp,arums_H_inp,n,m,nbX,nbY,dX,dY,need_norm);
@@ -129,7 +129,7 @@ model<dse<Tg,Th,Tt>>::model_to_market(const arma::mat& theta, const Tg& arums_G_
 // empirical version
 // template<typename Tm> 
 // template<typename Ta, typename Tb>
-// void 
+// void
 // model<dse<Tg,Th,Tt>>::build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp, int nbDraws, int seed)
 // {
 //     market_obj.build(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,nbDraws,seed,need_norm);
@@ -139,14 +139,14 @@ model<dse<Tg,Th,Tt>>::model_to_market(const arma::mat& theta, const Tg& arums_G_
 // gradients
 
 template<typename Tg, typename Th, typename Tt>
-void 
+void
 model<dse<Tg,Th,Tt>>::dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_Psi_out)
 {
     this->dtheta(delta_theta_inp,dtheta_Psi_out,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
-void 
+void
 model<dse<Tg,Th,Tt>>::dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_Psi_out, arma::mat* dtheta_G_out, arma::mat* dtheta_H_out)
 {
     arma::mat delta_theta_mat = (delta_theta_inp) ? *delta_theta_inp : arma::eye(dim_theta,dim_theta);
@@ -162,7 +162,7 @@ model<dse<Tg,Th,Tt>>::dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta
 }
 
 template<typename Tg, typename Th, typename Tt>
-void 
+void
 model<dse<Tg,Th,Tt>>::dtheta_mu(const arma::mat& theta, const arma::mat* delta_theta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
 {
     model_to_market(theta); // need to replace this later with general 'parametric_market'
@@ -177,7 +177,7 @@ model<dse<Tg,Th,Tt>>::dtheta_mu(const arma::mat& theta, const arma::mat* delta_t
 // MLE
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
 {
     bool success = false;
@@ -220,7 +220,7 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 // MME
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
 {
     bool success = false;
@@ -267,7 +267,7 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 // solve wrappers
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 model<dse<Tg,Th,Tt>>::solve(arma::mat& mu_sol)
 {
     bool res = market_obj.solve(mu_sol,NULL);
@@ -276,7 +276,7 @@ model<dse<Tg,Th,Tt>>::solve(arma::mat& mu_sol)
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 model<dse<Tg,Th,Tt>>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = market_obj.solve(mu_sol,solver);
@@ -285,7 +285,7 @@ model<dse<Tg,Th,Tt>>::solve(arma::mat& mu_sol, const char* solver)
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 model<dse<Tg,Th,Tt>>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver)
 {
     bool res = market_obj.solve(mu_sol,U,V,solver);
@@ -298,7 +298,7 @@ model<dse<Tg,Th,Tt>>::solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const
 
 template<typename Tg, typename Th, typename Tt>
 inline
-void 
+void
 model<dse<Tg,Th,Tt>>::initial_theta(arma::mat& theta_0)
 {
     theta_0.zeros(dim_theta,1);
@@ -316,7 +316,7 @@ model<dse<Tg,Th,Tt>>::initial_theta()
 // optimization-related functions
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
 {
     bool success = generic_optim(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
@@ -325,7 +325,7 @@ model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<do
 }
 
 template<typename Tg, typename Th, typename Tt>
-double 
+double
 model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_vec, void* opt_data)
 {
     trame_model_mle_opt_data<dse<Tg,Th,Tt>> *d = reinterpret_cast<trame_model_mle_opt_data<dse<Tg,Th,Tt>>*>(opt_data);
@@ -380,7 +380,7 @@ model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_
 }
 
 template<typename Tg, typename Th, typename Tt>
-bool 
+bool
 model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
 {
     bool success = generic_optim(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
@@ -389,7 +389,7 @@ model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<do
 }
 
 template<typename Tg, typename Th, typename Tt>
-double 
+double
 model<dse<Tg,Th,Tt>>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
 {
     trame_model_mme_opt_data<dse<Tg,Th,Tt>> *d = reinterpret_cast<trame_model_mme_opt_data<dse<Tg,Th,Tt>>*>(opt_data);
