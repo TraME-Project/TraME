@@ -49,7 +49,12 @@ fi
 
 TRAME_OPT_FLAGS="-O2"
 TRAME_SHLIB_NAME="libtrame.so"
-TRAME_INSTALL_PATH="/usr/local"
+
+if [[ $OSTYPE == *linux* ]] ; then
+    TRAME_INSTALL_PATH="/usr"
+else 
+    TRAME_INSTALL_PATH="/usr/local"
+fi
 
 if [[ $OSTYPE == darwin* ]] ; then
     if [[ !(-z ${TRAME_R_VERSION+x}) ]]; then 
@@ -143,7 +148,7 @@ if [[ $OSTYPE == darwin* ]] ; then
     fi
 elif [[ $OSTYPE == *linux* ]] ; then
     TRAME_OPT_FLAGS="-fPIC ${TRAME_OPT_FLAGS}"
-    TRAME_SHLIB_FLAGS="-fPIC -shared"
+    TRAME_SHLIB_FLAGS="-fPIC -shared -L/usr/lib -Wl,-Bsymbolic-functions -Wl,-z,relro "
     TRAME_BLAS_LAPACK="-lblas -llapack"
 
     if [ -d "/opt/gurobi"* ] ; then
