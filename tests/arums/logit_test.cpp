@@ -7,6 +7,7 @@
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/arums
  *
  * g++-mp-5 -O2 -Wall -std=c++11 -I/usr/local/include/trame logit_test.cpp -o logit.test -L/usr/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I./../../include logit_test.cpp -o logit.test -L./../../ -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -75,14 +76,14 @@ int main()
     std::cout << "Gbar val: \n" << val_Gbar << "\nGbar-sim val: \n" << val_Gbar_sim << std::endl;
     //
     // Hessian tests
-    /*arma::mat H;
-    arma::mat Hstar;
+    // arma::mat H;
+    // arma::mat Hstar;
     
-    logits.D2G(H, n, true);
-    logits.D2Gstar(Hstar, n, true);
+    // logits.D2G(H, n, true);
+    // logits.D2Gstar(Hstar, n, true);
     
-    arma::cout << "\nD2G: \n" << H << arma::endl;
-    arma::cout << "D2G*: \n" << Hstar << arma::endl;*/
+    // arma::cout << "\nD2G: \n" << H << arma::endl;
+    // arma::cout << "D2G*: \n" << Hstar << arma::endl;
     //
     printf("\n*===================   End of Logit Test   ===================*\n");
     printf("\n");
