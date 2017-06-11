@@ -44,7 +44,7 @@ class dse_base
         bool TU  = false;
 
         bool need_norm;
-        bool outsideOption;
+        bool outside_option;
 
         int nbX;
         int nbY;

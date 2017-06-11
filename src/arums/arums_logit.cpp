@@ -28,50 +28,57 @@
  * 08/08/2016
  *
  * This version:
- * 02/21/2017
+ * 06/10/2017
  */
 
 #include "trame.hpp"
+
+//
+// build functions
 
 trame::arums::logit::logit(int nbX_inp, int nbY_inp)
 {   
     this->build(nbX_inp,nbY_inp);
 }
 
-trame::arums::logit::logit(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp)
+trame::arums::logit::logit(int nbX_inp, int nbY_inp, double sigma_inp, bool outside_option_inp)
 {   
-    this->build(nbX_inp,nbY_inp,sigma_inp,outsideOption_inp);
+    this->build(nbX_inp,nbY_inp,sigma_inp,outside_option_inp);
 }
 
-void 
+void
 trame::arums::logit::build(int nbX_inp, int nbY_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
-    nbParams = 1;
+    dim_params = 1;
 }
 
-void 
-trame::arums::logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outsideOption_inp)
+void
+trame::arums::logit::build(int nbX_inp, int nbY_inp, double sigma_inp, bool outside_option_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
-    nbParams = 1;
+    dim_params = 1;
     sigma = sigma_inp;
-    outsideOption = outsideOption_inp;
+    outside_option = outside_option_inp;
 }
 
-double 
+//
+// indirect utility
+
+double
 trame::arums::logit::G(const arma::vec& n)
 {   
     return this->G(n,U,mu_sol);
 }
 
-double 
+double
 trame::arums::logit::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
+const
 {   
     arma::mat expU = arma::exp(U_inp / sigma);
-    arma::vec denom = (outsideOption) ? (1.0 + arma::sum(expU,1)) : 0.0 + arma::sum(expU,1); // the '0.0 + ' fixes a compiling bug
+    arma::vec denom = (outside_option) ? (1.0 + arma::sum(expU,1)) : 0.0 + arma::sum(expU,1); // the '0.0 + ' fixes a compiling bug
     //
     mu_out = elem_prod(n/denom, expU);
     double val = sigma*arma::accu(n % arma::log(denom));
@@ -79,20 +86,24 @@ trame::arums::logit::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu
     return val;
 }
 
-double 
+//
+// Fenchel transform of G
+
+double
 trame::arums::logit::Gstar(const arma::vec& n)
 {
     return this->Gstar(n,mu_sol,U_sol);
 }
 
-double 
+double
 trame::arums::logit::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
+const
 {
     double val = 0.0;
 
     arma::mat n_repd = arma::repmat(n,1,nbY);
     //
-    if (outsideOption) {
+    if (outside_option) {
         arma::vec mu_x0 = n - arma::sum(mu_inp,1);
         
         val   = sigma * ( arma::accu(mu_inp % arma::log(mu_inp/n_repd)) + arma::accu(mu_x0 % arma::log(mu_x0/n)) );
@@ -105,12 +116,13 @@ trame::arums::logit::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::ma
     return val;
 }
 
-double 
+double
 trame::arums::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out)
+const
 {
     double val_x = 0.0;
     //
-    if (outsideOption) {
+    if (outside_option) {
         double mu0 = 1 - arma::accu(mu_x_inp);
         
         val_x   = sigma * ( mu0 * std::log(mu0) + arma::accu(mu_x_inp % arma::log(mu_x_inp)) );
@@ -124,8 +136,9 @@ trame::arums::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out)
 }
 
 // just to conform with other arums classes
-double 
+double
 trame::arums::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
+const
 {
     double val_x = 0.0;
 
@@ -141,8 +154,12 @@ trame::arums::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x
     return val_x;
 }
 
-double 
+//
+// Gbar is used by DARUM
+
+double
 trame::arums::logit::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
+const
 {   
     double val=0.0, val_temp;
     
@@ -161,23 +178,13 @@ trame::arums::logit::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const a
     return val;
 }
 
-double 
-trame::arums::logit::differMargX(double z, void* opt_data)
-{
-    trame_logit_zeroin_data *d = reinterpret_cast<trame_logit_zeroin_data*>(opt_data);
-
-    arma::mat temp_mat = arma::min(z * d->exp_Ubar_X, d->mubar_X);
-    double ret = z + arma::accu(temp_mat) - 1;
-    //
-    return ret;
-}
-
-double 
+double
 trame::arums::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out)
+const
 {
     double valx = 0.0;
 
-    if (outsideOption) {
+    if (outside_option) {
         arma::mat exp_Ubar_X = arma::exp(Ubar_x/sigma);
         
         trame_logit_zeroin_data root_data;
@@ -195,15 +202,31 @@ trame::arums::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, ar
     return valx;
 }
 
-// just to conform with other arums classes
-double 
+// just to conform with the other arums classes
+double
 trame::arums::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+const
 {
     return this->Gbarx(Ubar_x, mubar_x, U_x_out, mu_x_out);
 }
 
-arma::mat 
+double
+trame::arums::logit::differMargX(double z, void* opt_data)
+{
+    trame_logit_zeroin_data *d = reinterpret_cast<trame_logit_zeroin_data*>(opt_data);
+
+    arma::mat temp_mat = arma::min(z * d->exp_Ubar_X, d->mubar_X);
+    double ret = z + arma::accu(temp_mat) - 1;
+    //
+    return ret;
+}
+
+//
+// Hessian
+
+arma::mat
 trame::arums::logit::D2G(const arma::vec& n, bool x_first)
+const
 {
     arma::mat ret;
     this->D2G(ret,n,U,x_first);
@@ -211,10 +234,11 @@ trame::arums::logit::D2G(const arma::vec& n, bool x_first)
     return ret;
 }
 
-void 
+void
 trame::arums::logit::D2G(arma::mat& H, const arma::vec& n, bool x_first)
+const
 {
-    // NOTE: the formula is the same regardless of whether outsideOption is true
+    // NOTE: the formula is the same regardless of whether outside_option is true
     
     arma::mat mu_xy = mu_sol;
     H.zeros(nbX*nbY,nbX*nbY);
@@ -240,8 +264,9 @@ trame::arums::logit::D2G(arma::mat& H, const arma::vec& n, bool x_first)
     }
 }
 
-arma::mat 
+arma::mat
 trame::arums::logit::D2G(const arma::vec& n, const arma::mat& U_inp, bool x_first)
+const
 {
     arma::mat ret;
     this->D2G(ret,n,U_inp,x_first);
@@ -249,10 +274,11 @@ trame::arums::logit::D2G(const arma::vec& n, const arma::mat& U_inp, bool x_firs
     return ret;
 }
 
-void 
+void
 trame::arums::logit::D2G(arma::mat& H, const arma::vec& n, const arma::mat& U_inp, bool x_first)
+const
 {
-    // NOTE: the formula is the same regardless of whether outsideOption is true
+    // NOTE: the formula is the same regardless of whether outside_option is true
 
     arma::mat mu_xy;
     this->G(n,U_inp,mu_xy);
@@ -280,8 +306,9 @@ trame::arums::logit::D2G(arma::mat& H, const arma::vec& n, const arma::mat& U_in
     }
 }
 
-arma::mat 
+arma::mat
 trame::arums::logit::D2Gstar(const arma::vec& n, bool x_first)
+const
 {
     arma::mat ret;
     this->D2Gstar(ret,n,mu,x_first);
@@ -289,14 +316,16 @@ trame::arums::logit::D2Gstar(const arma::vec& n, bool x_first)
     return ret;
 }
 
-void 
+void
 trame::arums::logit::D2Gstar(arma::mat &ret, const arma::vec& n, bool x_first)
+const
 {
     this->D2Gstar(ret,n,mu,x_first);
 }
 
-arma::mat 
+arma::mat
 trame::arums::logit::D2Gstar(const arma::vec& n, const arma::mat& mu_inp, bool x_first)
+const
 {
     arma::mat ret;
     this->D2Gstar(ret,n,mu_inp,x_first);
@@ -304,10 +333,11 @@ trame::arums::logit::D2Gstar(const arma::vec& n, const arma::mat& mu_inp, bool x
     return ret;
 }
 
-void 
+void
 trame::arums::logit::D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, bool x_first)
+const
 {
-    // NOTE: the formula is the same regardless of whether outsideOption == 1 or 0
+    // NOTE: the formula is the same regardless of whether outside_option == 1 or 0
 
     arma::vec mu_x0 = n - arma::sum(mu_inp,1);
     arma::vec mu_x0_recip = arma::ones(mu_x0.n_rows,1) / mu_x0; // reciprocal of mu_x0
@@ -337,8 +367,12 @@ trame::arums::logit::D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& 
     H *= sigma;
 }
 
-arma::mat 
+//
+// dparams gradient
+
+arma::mat
 trame::arums::logit::dparams_NablaGstar(const arma::vec& n, arma::mat* dparams_inp, bool x_first)
+const
 {
     arma::mat ret;
     this->dparams_NablaGstar(ret,n,mu_sol,dparams_inp,x_first);
@@ -346,14 +380,16 @@ trame::arums::logit::dparams_NablaGstar(const arma::vec& n, arma::mat* dparams_i
     return ret;
 }
 
-void 
+void
 trame::arums::logit::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dparams_inp, bool x_first)
+const
 {
     this->dparams_NablaGstar(ret,n,mu_sol,dparams_inp,x_first);
 }
 
-arma::mat 
+arma::mat
 trame::arums::logit::dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first)
+const
 {
     arma::mat ret;
     this->dparams_NablaGstar(ret,n,mu_inp,dparams_inp,x_first);
@@ -361,8 +397,9 @@ trame::arums::logit::dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_
     return ret;
 }
 
-void 
+void
 trame::arums::logit::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first)
+const
 {
     arma::mat logmu_temp, mu_x0;
 
@@ -371,7 +408,7 @@ trame::arums::logit::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, cons
     if (dparams.n_elem==0) {
         ret.zeros(nbX*nbY,0);
     } else {
-        if (outsideOption) {
+        if (outside_option) {
             mu_x0 = arma::repmat(n - arma::sum(mu_inp,1),1,mu_inp.n_cols);
             
             if (x_first) {
@@ -393,36 +430,51 @@ trame::arums::logit::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, cons
     }
 }
 
-trame::arums::empirical 
+//
+// simulation
+
+trame::arums::empirical
 trame::arums::logit::simul()
+const
 {
     empirical emp_obj;
     
-    this->simul(emp_obj,NULL,NULL);
+    this->simul_int(emp_obj,NULL,NULL);
     //
     return emp_obj;
 }
 
-trame::arums::empirical 
-trame::arums::logit::simul(int* nbDraws, int* seed)
+trame::arums::empirical
+trame::arums::logit::simul(int nbDraws, int seed)
+const
 {
     empirical emp_obj;
     
-    this->simul(emp_obj,nbDraws,seed);
+    this->simul_int(emp_obj,&nbDraws,&seed);
     //
     return emp_obj;
 }
 
-void 
+void
 trame::arums::logit::simul(empirical& obj_out)
+const
 {
-    this->simul(obj_out,NULL,NULL);
+    this->simul_int(obj_out,NULL,NULL);
 }
 
-void 
-trame::arums::logit::simul(empirical& obj_out, int* nbDraws, int* seed_val)
+void
+trame::arums::logit::simul(empirical& obj_out, int nbDraws, int seed)
+const
+{
+    this->simul_int(obj_out,&nbDraws,&seed);
+}
+
+void
+trame::arums::logit::simul_int(empirical& obj_out, int* nbDraws, int* seed_val)
+const
 {
     int n_draws = 0;
+
     if (nbDraws) {
         n_draws = *nbDraws;
     } else {
@@ -432,14 +484,15 @@ trame::arums::logit::simul(empirical& obj_out, int* nbDraws, int* seed_val)
         n_draws = 1000;
 #endif
     }
-    //
+    
     if (seed_val) {
         arma::arma_rng::set_seed(*seed_val);
     }
     //
     // note: digamma(1) \approx -0.5772156649
     arma::cube atoms;
-    if (outsideOption) {
+
+    if (outside_option) {
         atoms = -0.5772156649 - sigma * arma::log( - arma::log(arma::randu(n_draws,nbY+1,nbX)) );
     } else {
         atoms = -0.5772156649 - sigma * arma::log( - arma::log(arma::randu(n_draws,nbY,nbX)) );
@@ -448,17 +501,17 @@ trame::arums::logit::simul(empirical& obj_out, int* nbDraws, int* seed_val)
     obj_out.nbX = nbX;
     obj_out.nbY = nbY;
 
-    obj_out.nbParams = atoms.n_elem;
+    obj_out.dim_params = atoms.n_elem;
     obj_out.atoms = atoms;
     obj_out.aux_nbDraws = n_draws;
 
-    obj_out.xHomogenous = false;
-    obj_out.outsideOption = outsideOption;
+    obj_out.x_homogeneous = false;
+    obj_out.outside_option = outside_option;
 
-    if (outsideOption) {
-        obj_out.nbOptions = nbY + 1;
+    if (outside_option) {
+        obj_out.nb_options = nbY + 1;
     } else {
-        obj_out.nbOptions = nbY;
+        obj_out.nb_options = nbY;
     }
     //
     if (seed_val) {

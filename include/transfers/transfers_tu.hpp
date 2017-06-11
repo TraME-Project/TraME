@@ -45,7 +45,7 @@ class tu
         int transfers_type = 1;
         int nbX;
         int nbY;
-        int nbParams;
+        int dim_params;
 
         arma::mat phi;
         arma::mat aux_phi_exp; // exp(phi_inp/(2*sigma)), also labelled K

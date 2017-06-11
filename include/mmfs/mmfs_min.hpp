@@ -45,7 +45,7 @@ class min
         
         int nbX;
         int nbY;
-        int nbParams;
+        int dim_params;
 
         arma::mat alpha;
         arma::mat gamma;

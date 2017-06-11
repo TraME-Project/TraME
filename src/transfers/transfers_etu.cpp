@@ -40,7 +40,7 @@ trame::transfers::etu::build(const arma::mat& alpha_inp, const arma::mat& gamma_
 
     nbX = alpha_inp.n_rows;
     nbY = alpha_inp.n_cols;
-    nbParams = 3*nbX*nbY;
+    dim_params = 3*nbX*nbY;
 
     alpha = alpha_inp;
     gamma = gamma_inp;

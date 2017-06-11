@@ -53,8 +53,8 @@ trame::build_disaggregate_epsilon(arma::vec n, const trame::arums::empirical& ar
     I_ix.zeros(nbI,nbX);
     //
     for (int x=0; x < nbX; x++) {
-        if (arums_emp_inp.xHomogenous) {
-            epsilon = arums_emp_inp.atoms;
+        if (arums_emp_inp.x_homogeneous) {
+            epsilon = arums_emp_inp.atoms.slice(0);
         } else {
             epsilon = arums_emp_inp.atoms.slice(x);
         }

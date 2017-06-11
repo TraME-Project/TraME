@@ -41,7 +41,7 @@ trame::mmfs::min::build(const arma::mat& alpha_NTU, const arma::mat& gamma_NTU, 
 
     nbX = alpha_NTU.n_rows;
     nbY = alpha_NTU.n_cols;
-    nbParams = 2*nbX*nbY;
+    dim_params = 2*nbX*nbY;
 
     alpha = alpha_NTU;
     gamma = gamma_NTU;

@@ -41,7 +41,7 @@ trame::mmfs::geo::build(const arma::mat& phi_TU, bool need_norm_TU)
 
     nbX = phi_TU.n_rows;
     nbY = phi_TU.n_cols;
-    nbParams = nbX*nbY;
+    dim_params = nbX*nbY;
 
     phi = phi_TU;
     aux_phi_exp = arma::exp(phi_TU / 2.0);

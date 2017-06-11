@@ -40,7 +40,7 @@ trame::transfers::tu::build(const arma::mat& phi_inp, bool need_norm_inp)
 
     nbX = phi_inp.n_rows;
     nbY = phi_inp.n_cols;
-    nbParams = nbX*nbY;
+    dim_params = nbX*nbY;
 
     phi = phi_inp;
     aux_phi_exp = arma::exp(phi_inp / 2.0);

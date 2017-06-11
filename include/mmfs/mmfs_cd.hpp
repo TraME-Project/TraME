@@ -45,7 +45,7 @@ class cd
 
         int nbX;
         int nbY;
-        int nbParams;
+        int dim_params;
 
         arma::mat lambda;
         arma::mat phi;

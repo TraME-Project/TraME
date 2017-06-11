@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 02/11/2017
+ * 06/10/2017
  */
 
 #ifndef _trame_arums_none_HPP
@@ -40,7 +40,7 @@ class none
         // build objects
         int nbX;
         int nbY;
-        int nbParams;
+        int dim_params;
         
         // input objects
         arma::mat mu;
@@ -58,24 +58,30 @@ class none
         void build(int nbX_inp, int nbY_inp);
         
         double G(const arma::vec& n);
-        double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out);
-        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out);
-        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x);
+        double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out) const;
+        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out) const;
+        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x) const;
 
         double Gstar(const arma::vec& n);
-        double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out);
-        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
+        double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out) const;
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x) const;
         
-        double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out);
-        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out);
-        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
+        double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out) const;
+        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out) const;
+        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x) const;
         
-        arma::vec dparams_NablaGstar();
+        arma::mat dparams_NablaGstar(const arma::vec& n, arma::mat* dparams_inp, bool x_first) const;
+        void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dparams_inp, bool x_first) const;
+        arma::mat dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first) const;
+        void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first) const;
         
-        empirical simul();
-        empirical simul(int* nbDraws, int* seed);
-        void simul(empirical& obj_out);
-        void simul(empirical& obj_out, int* nbDraws, int* seed);
+        empirical simul() const;
+        empirical simul(int nbDraws, int seed) const;
+        void simul(empirical& obj_out) const;
+        void simul(empirical& obj_out, int nbDraws, int seed) const;
+
+    private:
+        void simul_int(empirical& obj_out, int* nbDraws, int* seed) const;
 };
 
 #endif

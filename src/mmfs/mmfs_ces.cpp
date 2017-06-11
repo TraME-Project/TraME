@@ -41,7 +41,7 @@ trame::mmfs::ces::build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, 
 
     nbX = alpha_inp.n_rows;
     nbY = alpha_inp.n_cols;
-    nbParams = 3*nbX*nbY;
+    dim_params = 3*nbX*nbY;
 
     alpha = alpha_inp;
     gamma = gamma_inp;

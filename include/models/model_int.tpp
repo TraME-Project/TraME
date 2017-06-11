@@ -99,7 +99,7 @@ struct trame_model_mfe_mme_opt_data {
     arma::mat v;
     arma::mat Pi_hat;
 
-    arma::mat phi_xy; // should be (nbX*nbY) x (nbParams)
+    arma::mat phi_xy; // should be (nbX*nbY) x (dim_params)
 };
 
 //

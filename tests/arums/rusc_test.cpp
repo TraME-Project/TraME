@@ -108,7 +108,7 @@ int main()
     arma::cout << "\nD2Gstar: \n" << hess << arma::endl;
     //
     arma::mat nablaGstar;
-    arma::mat dtheta = arma::eye(rusc_obj.nbParams,rusc_obj.nbParams);
+    arma::mat dtheta = arma::eye(rusc_obj.dim_params,rusc_obj.dim_params);
 
     rusc_obj.dtheta_NablaGstar(nablaGstar,n,&dtheta,true);
 

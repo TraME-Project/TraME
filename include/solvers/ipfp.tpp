@@ -67,11 +67,11 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
         ax = market.marg_x_inv(by);
         by = market.marg_y_inv(ax);
 
-        /* Keith: need to add this later
-        if (noSingles) {
+        // Keith: need to add this later
+        // if (noSingles) {
             
-        }
-        */
+        // }
+        
 
         val_new = arma::join_cols(ax,by);
         val_err = arma::abs(val_new - val_old);
@@ -82,8 +82,10 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
     if (err <= tol && iter < max_iter) {
         success = true;
     }
+
     //
     // Construct the equilibrium outcome based on 'ax' and 'by' obtained above
+    
     if (mu_out || mu_x0_out || mu_0y_out || U_out || V_out || u_out || v_out) {
 
         arma::mat mu = market.mmfs_obj.M(ax,by);

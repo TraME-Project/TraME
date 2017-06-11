@@ -40,7 +40,7 @@ class mfe
     public:
         // build objects
         bool need_norm = false;
-        bool outsideOption = true;
+        bool outside_option = true;
 
         int nbX;
         int nbY;
