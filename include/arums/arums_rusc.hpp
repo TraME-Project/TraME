@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 02/21/2017
+ * 06/10/2017
  */
 
 #ifndef _trame_arums_rusc_HPP
@@ -40,8 +40,8 @@ class rusc
         // build objects
         int nbX;
         int nbY;
-        int nbParams;
-        bool outsideOption;
+        int dim_params;
+        bool outside_option;
         
         arma::mat zeta;
         arma::mat aux_ord;
@@ -62,26 +62,29 @@ class rusc
         ~rusc(){};
          rusc(){};
         explicit rusc(int nbX_inp, int nbY_inp);
-        explicit rusc(arma::mat zeta_inp, bool outsideOption_inp);
+        explicit rusc(arma::mat zeta_inp, bool outside_option_inp);
 
         void build(int nbX_inp, int nbY_inp);
-        void build(arma::mat zeta_inp, bool outsideOption_inp);
+        void build(arma::mat zeta_inp, bool outside_option_inp);
         
         double G(const arma::vec& n);
-        double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out);
-        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x);
+        double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out) const;
+        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x) const;
         
         double Gstar(const arma::vec& n);
-        double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out);
-        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x);
+        double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out) const;
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x) const;
         
-        double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out);
-        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x);
+        double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out) const;
+        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x) const;
         
-        empirical simul();
-        empirical simul(int* nbDraws, int* seed);
-        void simul(empirical& obj_out);
-        void simul(empirical& obj_out, int* nbDraws, int* seed);
+        empirical simul() const;
+        empirical simul(int nbDraws, int seed) const;
+        void simul(empirical& obj_out) const;
+        void simul(empirical& obj_out, int nbDraws, int seed) const;
+
+    private:
+        void simul_int(empirical& obj_out, int* nbDraws, int* seed) const;
 };
 
 #endif

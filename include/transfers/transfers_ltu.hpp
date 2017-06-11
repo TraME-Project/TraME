@@ -45,7 +45,7 @@ class ltu
         int transfers_type = 1;
         int nbX;
         int nbY;
-        int nbParams;
+        int dim_params;
 
         arma::mat lambda;
         arma::mat phi;

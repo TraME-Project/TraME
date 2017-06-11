@@ -62,7 +62,7 @@ trame::affinity::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const
     dX = X_inp.n_cols;
     dY = Y_inp.n_cols;
 
-    nbParams = dX*dY;
+    dim_params = dX*dY;
 
     sigma = (sigma_inp) ? *sigma_inp : 1.0;
     //
@@ -92,7 +92,7 @@ trame::affinity::build_market(const arma::mat& theta)
 void 
 trame::affinity::dparam(arma::mat* dparams_inp, arma::mat& dparamsPsi_out, arma::mat* dparamsG_out, arma::mat* dparamsH_out)
 {
-    arma::mat dparams_mat = (dparams_inp) ? *dparams_inp : arma::eye(nbParams,nbParams);
+    arma::mat dparams_mat = (dparams_inp) ? *dparams_inp : arma::eye(dim_params,dim_params);
 
     dparamsPsi_out = Phi_xy(dparams_mat);
     //
@@ -138,7 +138,7 @@ trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doub
     arma::mat Pi_hat = mu_hat / total_mass;
     arma::mat v = arma::zeros(1,nbY);
 
-    arma::mat phi_xy = arma::reshape(phi_xyk_aux,nbX*nbY,nbParams);
+    arma::mat phi_xy = arma::reshape(phi_xyk_aux,nbX*nbY,dim_params);
     //
     // add optimization data
     trame_mme_woregal_opt_data opt_data;
@@ -166,7 +166,7 @@ trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doub
     opt_data.v = v;
     opt_data.Pi_hat = Pi_hat;
 
-    opt_data.phi_xy = phi_xy; // should be (nbX*nbY) x (nbParams)
+    opt_data.phi_xy = phi_xy; // should be (nbX*nbY) x (dim_params)
     //
     arma::vec opt_vec = arma::zeros(dX*dY,1);
 
@@ -300,7 +300,7 @@ trame::affinity::Phi_xyk()
 arma::mat 
 trame::affinity::Phi_xy(const arma::mat& lambda)
 {
-    arma::mat phi_xyk_temp = arma::reshape(phi_xyk_aux,nbX*nbY,nbParams); 
+    arma::mat phi_xyk_temp = arma::reshape(phi_xyk_aux,nbX*nbY,dim_params); 
     arma::mat ret = phi_xyk_temp * lambda;
     //
     return ret;
@@ -309,7 +309,7 @@ trame::affinity::Phi_xy(const arma::mat& lambda)
 arma::mat 
 trame::affinity::Phi_k(const arma::mat& mu_hat)
 {
-    arma::mat phi_xyk_temp = arma::reshape(phi_xyk_aux,nbX*nbY,nbParams); 
+    arma::mat phi_xyk_temp = arma::reshape(phi_xyk_aux,nbX*nbY,dim_params); 
     arma::mat ret = arma::vectorise(arma::trans(arma::vectorise(mu_hat))*phi_xyk_temp);
     //arma::mat ret = phi_xyk_temp.t() * arma::vectorise(mu_hat);
     //
@@ -319,7 +319,7 @@ trame::affinity::Phi_k(const arma::mat& mu_hat)
 void 
 trame::affinity::init_param(arma::mat& params)
 {
-    params.zeros(nbParams,1);
+    params.zeros(dim_params,1);
 }
 
 /*
@@ -354,7 +354,7 @@ trame::affinity::mme_woregul_opt_objfn(const arma::vec& vals_inp, arma::vec* gra
     arma::mat v = d->v;
     arma::mat Pi_hat = d->Pi_hat;
 
-    arma::mat phi_xy = d->phi_xy; // should be (nbX*nbY) x (nbParams), replaces a member function call
+    arma::mat phi_xy = d->phi_xy; // should be (nbX*nbY) x (dim_params), replaces a member function call
     //
     arma::mat Phi = arma::reshape(phi_xy * vals_inp,nbX,nbY);
     //

@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 02/21/2017
+ * 06/10/2017
  */
 
 #ifndef _trame_arums_probit_HPP
@@ -40,10 +40,10 @@ class probit
         // build objects
         int nbX;
         int nbY;
-        int nbParams;
-        int aux_nbOptions;
+        int dim_params;
+        int aux_nb_options;
         
-        bool outsideOption;
+        bool outside_option;
         
         double rho;
         
@@ -53,23 +53,25 @@ class probit
         ~probit(){};
          probit(){};
         explicit probit(int nbX_inp, int nbY_inp);
-        explicit probit(int nbX_inp, int nbY_inp, bool outsideOption_inp);
-        explicit probit(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp);
+        explicit probit(int nbX_inp, int nbY_inp, bool outside_option_inp);
+        explicit probit(int nbX_inp, int nbY_inp, double rho_inp, bool outside_option_inp);
 
         void build(int nbX_inp, int nbY_inp);
-        void build(int nbX_inp, int nbY_inp, bool outsideOption_inp);
-        void build(int nbX_inp, int nbY_inp, double rho_inp, bool outsideOption_inp);
+        void build(int nbX_inp, int nbY_inp, bool outside_option_inp);
+        void build(int nbX_inp, int nbY_inp, double rho_inp, bool outside_option_inp);
 
         void unifCorrelCovMatrices();
         void unifCorrelCovMatrices(double rho_inp);
 
-        empirical simul();
-        empirical simul(int* nbDraws, int* seed);
-        void simul(empirical& obj_out);
-        void simul(empirical& obj_out, int* nbDraws, int* seed);
+        empirical simul() const;
+        empirical simul(int nbDraws, int seed) const;
+        void simul(empirical& obj_out) const;
+        void simul(empirical& obj_out, int nbDraws, int seed) const;
     
     private:
-         void build_prv(int nbX_inp, int nbY_inp, double* rho_inp, bool outsideOption_inp);
+         void build_int(int nbX_inp, int nbY_inp, double* rho_inp, bool outside_option_inp);
+
+         void simul_int(empirical& obj_out, int* nbDraws, int* seed) const;
 };
 
 #endif

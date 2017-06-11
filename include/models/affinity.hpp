@@ -45,7 +45,7 @@ class affinity
 
         int dX;
         int dY;
-        int nbParams;
+        int dim_params;
 
         double sigma;
 
@@ -104,7 +104,7 @@ struct trame_mme_woregal_opt_data {
     arma::mat v;
     arma::mat Pi_hat;
 
-    arma::mat phi_xy; // should be (nbX*nbY) x (nbParams)
+    arma::mat phi_xy; // should be (nbX*nbY) x (dim_params)
 };
 
 #endif

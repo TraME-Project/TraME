@@ -40,7 +40,7 @@ trame::transfers::ltu::build(const arma::mat& lambda_inp, const arma::mat& phi_i
 
     nbX = lambda_inp.n_rows;
     nbY = lambda_inp.n_cols;
-    nbParams = 2*nbX*nbY;
+    dim_params = 2*nbX*nbY;
 
     lambda = lambda_inp;
     phi = phi_inp;

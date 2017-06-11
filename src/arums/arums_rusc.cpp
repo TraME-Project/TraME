@@ -28,40 +28,43 @@
  * 08/08/2016
  *
  * This version:
- * 02/22/2017
+ * 06/10/2017
  */
 
 #include "trame.hpp"
+
+//
+// build functions
 
 trame::arums::rusc::rusc(int nbX_inp, int nbY_inp)
 {
     this->build(nbX_inp, nbY_inp);
 }
 
-trame::arums::rusc::rusc(arma::mat zeta_inp, bool outsideOption_inp)
+trame::arums::rusc::rusc(arma::mat zeta_inp, bool outside_option_inp)
 {
-    this->build(zeta_inp, outsideOption_inp);
+    this->build(zeta_inp, outside_option_inp);
 }
 
-void 
+void
 trame::arums::rusc::build(int nbX_inp, int nbY_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
 }
 
-void 
-trame::arums::rusc::build(arma::mat zeta_inp, bool outsideOption_inp)
+void
+trame::arums::rusc::build(arma::mat zeta_inp, bool outside_option_inp)
 {
-    if (!outsideOption_inp) {
-        printf("outsideOption=F not implemented yet on RUSC arums\n");
+    if (!outside_option_inp) {
+        printf("outside_option=F not implemented yet on RUSC arums\n");
         return;
     }
     //
-    outsideOption = true;
+    outside_option = true;
     nbX = zeta_inp.n_rows;
     nbY = zeta_inp.n_cols - 1;
-    nbParams = zeta_inp.n_elem;
+    dim_params = zeta_inp.n_elem;
     
     zeta = zeta_inp;
     aux_ord = arma::zeros(nbX,nbY+1);
@@ -99,7 +102,10 @@ trame::arums::rusc::build(arma::mat zeta_inp, bool outsideOption_inp)
     }
 }
 
-double 
+//
+// indirect utility
+
+double
 trame::arums::rusc::G(const arma::vec& n)
 {   
     double val = this->G(n,U,mu_sol);
@@ -107,8 +113,9 @@ trame::arums::rusc::G(const arma::vec& n)
     return val;
 }
 
-double 
+double
 trame::arums::rusc::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
+const
 {   
     double val=0.0, val_x_temp;
     
@@ -126,8 +133,9 @@ trame::arums::rusc::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_
     return val;
 }
 
-double 
+double
 trame::arums::rusc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
+const
 {
     int nbAlt = nbY + 1;
     int j,y,z;
@@ -181,7 +189,10 @@ trame::arums::rusc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
     return val_x;
 }
 
-double 
+//
+// Fenchel transform of G
+
+double
 trame::arums::rusc::Gstar(const arma::vec& n)
 {
     double val = this->Gstar(n,mu_sol,U_sol);
@@ -189,8 +200,9 @@ trame::arums::rusc::Gstar(const arma::vec& n)
     return val;
 }
 
-double 
+double
 trame::arums::rusc::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
+const
 {   ;
     double val=0.0, val_x_temp;
     
@@ -208,8 +220,9 @@ trame::arums::rusc::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat
     return val;
 }
 
-double 
+double
 trame::arums::rusc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
+const
 {
     double val_x = 0;
     
@@ -221,8 +234,12 @@ trame::arums::rusc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
     return val_x;
 }
 
-double 
+//
+// Gbar is used by DARUM
+
+double
 trame::arums::rusc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
+const
 {   
     double val=0.0, val_temp;
     
@@ -242,8 +259,9 @@ trame::arums::rusc::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const ar
     return val;
 }
 
-double 
+double
 trame::arums::rusc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+const
 {
     int nbAlt = nbY + 1;
     double val_x = 0.0;
@@ -289,34 +307,51 @@ trame::arums::rusc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
     return val_x;
 }
 
-trame::arums::empirical 
+//
+// simulation
+
+trame::arums::empirical
 trame::arums::rusc::simul()
+const
 {
     empirical emp_obj;
-    this->simul(emp_obj,NULL,NULL);
+    
+    this->simul_int(emp_obj,NULL,NULL);
     //
     return emp_obj;
 }
 
-trame::arums::empirical 
-trame::arums::rusc::simul(int* nbDraws, int* seed)
+trame::arums::empirical
+trame::arums::rusc::simul(int nbDraws, int seed)
+const
 {
     empirical emp_obj;
-    this->simul(emp_obj,nbDraws,seed);
+    
+    this->simul_int(emp_obj,&nbDraws,&seed);
     //
     return emp_obj;
 }
 
-void 
+void
 trame::arums::rusc::simul(empirical& obj_out)
+const
 {
-    this->simul(obj_out,NULL,NULL);
+    this->simul_int(obj_out,NULL,NULL);
 }
 
-void 
-trame::arums::rusc::simul(empirical& obj_out, int* nbDraws, int* seed_val)
+void
+trame::arums::rusc::simul(empirical& obj_out, int nbDraws, int seed)
+const
+{
+    this->simul_int(obj_out,&nbDraws,&seed);
+}
+
+void
+trame::arums::rusc::simul_int(empirical& obj_out, int* nbDraws, int* seed_val)
+const
 {
     int n_draws = 0;
+
     if (nbDraws) {
         n_draws = *nbDraws;
     } else {
@@ -339,16 +374,16 @@ trame::arums::rusc::simul(empirical& obj_out, int* nbDraws, int* seed_val)
     //
     obj_out.nbX = nbX;
     obj_out.nbY = nbY;
-    obj_out.nbParams = atoms.n_elem;
+    obj_out.dim_params = atoms.n_elem;
     obj_out.atoms = atoms;
     obj_out.aux_nbDraws = n_draws;
-    obj_out.xHomogenous = false;
-    obj_out.outsideOption = outsideOption;
+    obj_out.x_homogeneous = false;
+    obj_out.outside_option = outside_option;
     
-    if (outsideOption) {
-        obj_out.nbOptions = nbY + 1;
+    if (outside_option) {
+        obj_out.nb_options = nbY + 1;
     } else {
-        obj_out.nbOptions = nbY;
+        obj_out.nb_options = nbY;
     }
     //
     arma::arma_rng::set_seed_random(); // need to reset the seed

@@ -40,18 +40,15 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
 {
     bool success = false;
     //
-    int nbX = market.nbX;
-    int nbY = market.nbY;
-
     trame_market_opt_data<Tg,Th,Tt> opt_data;
     opt_data.market = market;
 
-    arma::vec sol_vec = arma::vectorise(w_upper_bound(market));
+    arma::vec sol_vec = arma::vectorise(w_upper_bound(market)); // get initial values
     
     success = arc_newton_optim(sol_vec,arc_newton_opt_objfn<Tg,Th,Tt>,&opt_data,arc_newton_jacobian<Tg,Th,Tt>,&opt_data);
     //
     // construct equilibrium objects
-    arma::mat sol_mat = arma::reshape(sol_vec,nbX,nbY);
+    arma::mat sol_mat = arma::reshape(sol_vec,market.nbX,market.nbY);
     arma::mat U = market.trans_obj.UW(sol_mat);
 
     Tg* arums_G = const_cast<Tg*>(&market.arums_G); // Keith: this recast is unsafe, change later

@@ -46,7 +46,7 @@ dse_base::build(const arma::vec& n_inp, const arma::vec& m_inp)
     n = n_inp;
     m = m_inp;
 
-    outsideOption = true;
+    outside_option = true;
 }
 
 inline
@@ -61,7 +61,7 @@ dse_base::build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_i
     n = n_inp;
     m = m_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
 }
 
 //
@@ -80,7 +80,7 @@ dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G.build(nbX,nbY);
     arums_H.build(nbY,nbX);
@@ -104,7 +104,7 @@ dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G = arums_G_inp;
     arums_H = arums_H_inp;
@@ -129,7 +129,7 @@ dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G_inp.simul(arums_G,nbDraws,seed);
     arums_H_inp.simul(arums_H,nbDraws,seed);
@@ -155,7 +155,7 @@ dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G.build(nbX,nbY);
     arums_H.build(nbY,nbX);
@@ -179,7 +179,7 @@ dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G = arums_G_inp;
     arums_H = arums_H_inp;
@@ -204,7 +204,7 @@ dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G_inp.simul(arums_G,nbDraws,seed);
     arums_H_inp.simul(arums_H,nbDraws,seed);
@@ -230,7 +230,7 @@ dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G.build(nbX,nbY);
     arums_H.build(nbY,nbX);
@@ -254,7 +254,7 @@ dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G = arums_G_inp;
     arums_H = arums_H_inp;
@@ -279,7 +279,7 @@ dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G_inp.simul(arums_G,nbDraws,seed);
     arums_H_inp.simul(arums_H,nbDraws,seed);
@@ -305,7 +305,7 @@ dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, 
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G.build(nbX,nbY); // this avoids nbX and nbY not being set in arums
     arums_H.build(nbY,nbX);
@@ -329,7 +329,7 @@ dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, 
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G = arums_G_inp;
     arums_H = arums_H_inp;
@@ -354,7 +354,7 @@ dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, 
 
     need_norm = need_norm_inp;
 
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
     //
     arums_G_inp.simul(arums_G,nbDraws,seed);
     arums_H_inp.simul(arums_H,nbDraws,seed);

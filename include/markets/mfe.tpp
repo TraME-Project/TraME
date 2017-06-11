@@ -72,7 +72,7 @@ mfe<Tt>::build(double sigma_inp, bool need_norm_inp)
     sigma = sigma_inp;
 
     need_norm = need_norm_inp;
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
 }
 
 template<typename Tt>
@@ -88,7 +88,7 @@ mfe<Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, double sigma_inp,
     sigma = sigma_inp;
 
     need_norm = need_norm_inp;
-    outsideOption = (need_norm_inp) ? false : true;
+    outside_option = (need_norm_inp) ? false : true;
 }
 
 //

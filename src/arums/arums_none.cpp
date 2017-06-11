@@ -22,38 +22,45 @@
   ################################################################################*/
 
 /*
- * none additive random utility model (ARUM) class
+ * No hetergeneity (none) additive random utility model (ARUM) class
  *
  * Keith O'Hara
  * 08/08/2016
  *
  * This version:
- * 02/11/2017
+ * 06/10/2017
  */
 
 #include "trame.hpp"
+
+//
+// build functions
 
 trame::arums::none::none(int nbX_inp, int nbY_inp)
 {   
     this->build(nbX_inp,nbY_inp);
 }
 
-void 
+void
 trame::arums::none::build(int nbX_inp, int nbY_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
-    nbParams = 0;
+    dim_params = 0;
 }
 
-double 
+//
+// indirect utility
+
+double
 trame::arums::none::G(const arma::vec& n)
 {   
     return this->G(n,U,mu_sol);
 }
 
-double 
+double
 trame::arums::none::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
+const
 {   
     double val=0.0, val_x;
     
@@ -70,8 +77,9 @@ trame::arums::none::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_
     return val;
 }
 
-double 
+double
 trame::arums::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out)
+const
 {
     arma::uvec temp_vec = which_max(U_x_inp, 0);
     int y = temp_vec(0);
@@ -90,6 +98,7 @@ trame::arums::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out)
 // just to conform with other arums classes
 double 
 trame::arums::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
+const
 {
     double val_x = 0.0;
 
@@ -104,7 +113,10 @@ trame::arums::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
     return val_x;
 }
 
-double 
+//
+// Fenchel transform of G
+
+double
 trame::arums::none::Gstar(const arma::vec& n)
 {   
     printf("Gstar not yet defined for no arums case.\n");
@@ -112,24 +124,30 @@ trame::arums::none::Gstar(const arma::vec& n)
     return 0.0;
 }
 
-double 
+double
 trame::arums::none::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
+const
 {   
     printf("Gstar not yet defined for no arums case.\n");
 
     return 0.0;
 }
 
-double 
+double
 trame::arums::none::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
+const
 {   
     printf("Gstarx not yet defined for no arums case.\n");
 
     return 0.0;
 }
 
-double 
+//
+// Gbar is used by DARUM
+
+double
 trame::arums::none::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
+const
 {   
     double val=0.0, val_temp;
     
@@ -148,8 +166,9 @@ trame::arums::none::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const ar
     return val;
 }
 
-double 
+double
 trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out)
+const
 {
     int count_int=0;
     int nbY0 = Ubar_x.n_elem;
@@ -177,48 +196,95 @@ trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
 }
 
 // just to conform with other arums classes
-double 
+double
 trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+const
 {
     return this->Gbarx(Ubar_x, mubar_x, U_x_out, mu_x_out);
 }
 
-arma::vec 
-trame::arums::none::dparams_NablaGstar()
+//
+// dparams gradient
+
+arma::mat
+trame::arums::none::dparams_NablaGstar(const arma::vec& n, arma::mat* dparams_inp, bool x_first)
+const
 {
-    return arma::zeros(nbX*nbY,1);
+    arma::mat ret;
+    this->dparams_NablaGstar(ret,n,mu_sol,dparams_inp,x_first);
+    //
+    return ret;
 }
 
-trame::arums::empirical 
+void
+trame::arums::none::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dparams_inp, bool x_first)
+const
+{
+    this->dparams_NablaGstar(ret,n,mu_sol,dparams_inp,x_first);
+}
+
+arma::mat
+trame::arums::none::dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first)
+const
+{
+    arma::mat ret;
+    this->dparams_NablaGstar(ret,n,mu_inp,dparams_inp,x_first);
+    //
+    return ret;
+}
+
+void
+trame::arums::none::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first)
+const
+{
+    ret = arma::zeros(nbX*nbY,1);
+}
+
+//
+// simulation
+
+trame::arums::empirical
 trame::arums::none::simul()
+const
 {
     empirical emp_obj;
     
-    this->simul(emp_obj,NULL,NULL);
+    this->simul_int(emp_obj,NULL,NULL);
     //
     return emp_obj;
 }
 
-trame::arums::empirical 
-trame::arums::none::simul(int* nbDraws, int* seed)
+trame::arums::empirical
+trame::arums::none::simul(int nbDraws, int seed)
+const
 {
     empirical emp_obj;
     
-    this->simul(emp_obj,nbDraws,seed);
+    this->simul_int(emp_obj,&nbDraws,&seed);
     //
     return emp_obj;
 }
 
-void 
+void
 trame::arums::none::simul(empirical& obj_out)
+const
 {
-    this->simul(obj_out,NULL,NULL);
+    this->simul_int(obj_out,NULL,NULL);
 }
 
-void 
-trame::arums::none::simul(empirical& obj_out, int* nbDraws, int* seed_val)
+void
+trame::arums::none::simul(empirical& obj_out, int nbDraws, int seed)
+const
+{
+    this->simul_int(obj_out,&nbDraws,&seed);
+}
+
+void
+trame::arums::none::simul_int(empirical& obj_out, int* nbDraws, int* seed_val)
+const
 {
     int n_draws = 0;
+
     if (nbDraws) {
         n_draws = *nbDraws;
     } else {
@@ -229,19 +295,14 @@ trame::arums::none::simul(empirical& obj_out, int* nbDraws, int* seed_val)
 #endif
     }
     //
-    if (seed_val) {
-        arma::arma_rng::set_seed(*seed_val);
-    }
-    //
-    arma::cube atoms(n_draws,nbY+1,nbX);
-    atoms.fill(0);
+    arma::cube atoms = arma::zeros(n_draws,nbY+1,nbX);
     //
     obj_out.nbX = nbX;
     obj_out.nbY = nbY;
-    obj_out.nbParams = atoms.n_elem;
+    obj_out.dim_params = atoms.n_elem;
     obj_out.atoms = atoms;
     obj_out.aux_nbDraws = n_draws;
-    obj_out.xHomogenous = false;
+    obj_out.x_homogeneous = false;
     //
     if (seed_val) {
         arma::arma_rng::set_seed_random(); // need to reset the seed

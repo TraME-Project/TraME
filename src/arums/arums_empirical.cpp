@@ -28,51 +28,61 @@
  * 08/08/2016
  *
  * This version:
- * 02/22/2017
+ * 06/10/2017
  */
 
 #include "trame.hpp"
+
+//
+// build functions
 
 trame::arums::empirical::empirical(int nbX_inp, int nbY_inp)
 {
     this->build(nbX_inp, nbY_inp);
 }
 
-trame::arums::empirical::empirical(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
+trame::arums::empirical::empirical(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool x_homogeneous_inp, bool outside_option_inp)
 {
-    this->build(nbX_inp, nbY_inp, atoms_inp, xHomogenous_inp, outsideOption_inp);
+    this->build(nbX_inp, nbY_inp, atoms_inp, x_homogeneous_inp, outside_option_inp);
 }
 
-void 
+void
 trame::arums::empirical::build(int nbX_inp, int nbY_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
 }
 
-void 
-trame::arums::empirical::build(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool xHomogenous_inp, bool outsideOption_inp)
+void
+trame::arums::empirical::build(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool x_homogeneous_inp, bool outside_option_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
 
     atoms = atoms_inp;
 
-    nbParams = atoms_inp.n_elem;
+    dim_params = atoms_inp.n_elem;
     aux_nbDraws = atoms.n_rows;
 
-    xHomogenous = xHomogenous_inp;
-    outsideOption = outsideOption_inp;
+    x_homogeneous = x_homogeneous_inp;
+    outside_option = outside_option_inp;
+
+    presolve_LP_Gstar();
+    presolve_LP_Gbar();
 }
 
-double 
+//
+// indirect utility
+
+double
 trame::arums::empirical::G(const arma::vec& n)
 {
     return this->G(n,U,mu_sol);
 }
 
-double 
+double
 trame::arums::empirical::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
+const
 {
     double val=0.0, val_x;
     mu_out.set_size(nbX,nbY);
@@ -89,13 +99,14 @@ trame::arums::empirical::G(const arma::vec& n, const arma::mat& U_inp, arma::mat
     return val;
 }
 
-double 
+double
 trame::arums::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
+const
 {
     mu_x_out.set_size(nbY,1);
     //
-    arma::mat U_xs = (outsideOption) ? arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1)) : U_x_inp;
-    arma::mat Utilde = (xHomogenous) ? arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(0) : arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(x);
+    arma::mat U_xs = (outside_option) ? arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1)) : U_x_inp;
+    arma::mat Utilde = (x_homogeneous) ? arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(0) : arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(x);
     //
     arma::vec argmaxs = arma::max(Utilde,1);       // take max over dim = 1
     arma::uvec argmax_inds = which_max(Utilde,1);
@@ -113,17 +124,21 @@ trame::arums::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x
     return val_x;
 }
 
-double 
+//
+// Fenchel transform of G
+
+double
 trame::arums::empirical::Gstar(const arma::vec& n)
 {
     return this->Gstar(n,mu_sol,U_sol);
 }
 
-double 
+double
 trame::arums::empirical::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
+const
 {
     if (!TRAME_PRESOLVED_GSTAR) {
-        presolve_LP_Gstar();
+        printf("TraME: Gstar cannot be called before first running presolve.\n");
     }
     //
     double val = 0.0, val_x = 0.0;
@@ -141,21 +156,22 @@ trame::arums::empirical::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma
     return val;
 }
 
-double 
+double
 trame::arums::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
+const
 {
     if (!TRAME_PRESOLVED_GSTAR) {
-        presolve_LP_Gstar();
+        printf("TraME: Gstarx cannot be called before first running presolve.\n");
     }
     //
     int jj;
 
-    arma::mat Phi = (xHomogenous) ? atoms.slice(0) : atoms.slice(x);
+    arma::mat Phi = (x_homogeneous) ? atoms.slice(0) : atoms.slice(x);
     //
     arma::vec p = arma::ones(aux_nbDraws,1)/aux_nbDraws;
     arma::mat q;
 
-    if (outsideOption) {
+    if (outside_option) {
         arma::mat temp_q(1,1);
         temp_q(0,0) = 1 - arma::accu(mu_x_inp);
         q = arma::join_cols(arma::vectorise(mu_x_inp),temp_q);
@@ -184,7 +200,7 @@ trame::arums::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, i
         if (LP_optimal) {
             arma::mat u = dual_mat.col(0).rows(0,aux_nbDraws-1);
 
-            if (outsideOption) {
+            if (outside_option) {
                 arma::mat U_x_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY);
                 U_x_out = - U_x_temp.rows(0,nbY-1) + arma::as_scalar(U_x_temp.row(nbY));
             } else {
@@ -205,11 +221,15 @@ trame::arums::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, i
     return val_x;
 }
 
-double 
+//
+// Gbar is used by DARUM
+
+double
 trame::arums::empirical::Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out)
+const
 {
     if (!TRAME_PRESOLVED_GBAR) {
-        presolve_LP_Gbar();
+        printf("TraME: Gbar cannot be called before first running presolve.\n");
     }
     //
     double val=0.0, val_temp;
@@ -229,23 +249,24 @@ trame::arums::empirical::Gbar(const arma::mat& Ubar, const arma::mat& mubar, con
     return val;
 }
 
-double 
+double
 trame::arums::empirical::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+const
 {
     if (!TRAME_PRESOLVED_GBAR) {
-        presolve_LP_Gbar();
+        printf("TraME: Gbarx cannot be called before first running presolve.\n");
     }
     //
     int jj;
     double val_x=0.0;
     arma::mat Phi, U_x_temp;
 
-    if (!outsideOption) {
-        printf("Gbarx not implemented for empirical with outsideOption = false\n");
+    if (!outside_option) {
+        printf("Gbarx not implemented for empirical with outside_option = false\n");
         return 0;
     }
 
-    if (xHomogenous) {
+    if (x_homogeneous) {
         Phi = atoms.slice(0);
     } else {
         Phi = atoms.slice(x);
@@ -292,11 +313,10 @@ trame::arums::empirical::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x
     return val_x;
 }
 
-/*
- * presolve functions for Gstar and Gbar
- */
+//
+// presolve functions for Gstar and Gbar
 
-void 
+void
 trame::arums::empirical::presolve_LP_Gstar()
 {
     /*
@@ -312,10 +332,10 @@ trame::arums::empirical::presolve_LP_Gstar()
 
     int jj, kk, count_val=0;
 
-    arma::umat location_mat(2,aux_nbDraws*nbOptions*2);
-    arma::rowvec vals_mat(aux_nbDraws*nbOptions*2);
+    arma::umat location_mat(2,aux_nbDraws*nb_options*2);
+    arma::rowvec vals_mat(aux_nbDraws*nb_options*2);
 
-    for (kk=0; kk<nbOptions; kk++) {
+    for (kk=0; kk<nb_options; kk++) {
         for (jj=0; jj<aux_nbDraws; jj++) {
             location_mat(0,count_val) = jj + kk*aux_nbDraws;
             location_mat(1,count_val) = jj;
@@ -335,7 +355,7 @@ trame::arums::empirical::presolve_LP_Gstar()
     k_Gstar = A_sp_Gstar_t.n_cols; // cols as we're working with the transpose
     n_Gstar = A_sp_Gstar_t.n_rows; // rows as we're working with the transpose
 
-    numnz_Gstar = aux_nbDraws*nbOptions*2;
+    numnz_Gstar = aux_nbDraws*nb_options*2;
 
     const arma::uword* row_vals = &(*A_sp_Gstar_t.row_indices);
     const arma::uword* col_vals = &(*A_sp_Gstar_t.col_ptrs);
@@ -356,7 +376,7 @@ trame::arums::empirical::presolve_LP_Gstar()
     TRAME_PRESOLVED_GSTAR = true;
 }
 
-void 
+void
 trame::arums::empirical::presolve_LP_Gbar()
 {
     /*
@@ -438,7 +458,7 @@ void empirical::presolve_LP()
     int jj;
     //
     // Gstar
-    arma::sp_mat A_sp_Gstar = arma::join_cols(kron_sp(arma::ones(1,nbOptions),arma::speye(aux_nbDraws,aux_nbDraws)),kron_sp(arma::speye(nbOptions,nbOptions),arma::ones(1,aux_nbDraws)));
+    arma::sp_mat A_sp_Gstar = arma::join_cols(kron_sp(arma::ones(1,nb_options),arma::speye(aux_nbDraws,aux_nbDraws)),kron_sp(arma::speye(nb_options,nb_options),arma::ones(1,aux_nbDraws)));
 
     k_Gstar = A_sp_Gstar.n_rows;
     n_Gstar = A_sp_Gstar.n_cols;
