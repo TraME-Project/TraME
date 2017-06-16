@@ -28,6 +28,7 @@
 #include <limits>
 
 #include "misc/TRAME_OPTIONS.hpp"
+#include "optim/optim.hpp"
 
 namespace trame
 {
@@ -39,7 +40,6 @@ namespace trame
     #include "ancillary/zeroin.hpp"
 
     #include "lp/generic_lp.hpp"
-    #include "optim/optim.hpp"
 
     // heterogeneity
     namespace arums {

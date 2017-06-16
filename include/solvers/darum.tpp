@@ -56,8 +56,8 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
 
     // Tg* arums_G = const_cast<Tg*>(&market.arums_G); // Keith: this recast is unsafe, change later
     // Th* arums_H = const_cast<Th*>(&market.arums_H);
-    Tg* arums_G = &market.arums_G;
-    Th* arums_H = &market.arums_H;
+    const Tg* arums_G = &market.arums_G;
+    const Th* arums_H = &market.arums_H;
 
     arma::mat mu_NR = arma::max(n * arma::ones(1,nbY), arma::ones(nbX,1) * m.t());
     //
