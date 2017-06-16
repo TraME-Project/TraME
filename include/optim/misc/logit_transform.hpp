@@ -16,35 +16,22 @@
   ##
   ################################################################################*/
 
-#ifndef OPTIMLIB_INCLUDES
-#define OPTIMLIB_INCLUDES
+/*
+ * Generalized logit transform
+ *
+ * Keith O'Hara
+ * 11/28/2014
+ */
 
-#include "armadillo"
+#ifndef _optim_logit_transform_HPP
+#define _optim_logit_transform_HPP
 
-#include "misc/OPTIM_OPTIONS.hpp"
+arma::vec logit_trans(const arma::vec& pars, const arma::vec& lower_bounds, const arma::vec& upper_bounds);
+arma::vec logit_trans(const arma::vec& pars);
+double logit_trans(const double& pars, const double& lower_bounds, const double& upper_bounds);
 
-namespace optim
-{
-    // structs
-    #include "misc/optim_structs.hpp"
-
-    // misc files
-    #include "misc/misc.hpp"
-
-    // line search
-    #include "line_search/line_search.hpp"
-
-    // unconstrained optimization
-    #include "unconstrained/unconstrained.hpp"
-
-    // constrained optimization
-    #include "constrained/constrained.hpp"
-
-    // generic wrappers
-    #include "generic/generic.hpp"
-
-    // solving systems of nonlinear equations
-    #include "zeros/zeros.hpp"
-}
+arma::vec logit_inv_trans(const arma::vec& pars_trans, const arma::vec& lower_bounds, const arma::vec& upper_bounds);
+arma::vec logit_inv_trans(const arma::vec& pars_trans);
+double logit_inv_trans(const double& pars_trans, const double& lower_bounds, const double& upper_bounds);
 
 #endif

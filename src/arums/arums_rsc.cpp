@@ -373,7 +373,7 @@ const
 
     opt_data.dist_pars = dist_pars;
     //
-    bool success = generic_constr_optim(sol_vec,lb,ub,Gbar_opt_objfn,&opt_data,Gbar_opt_constr,&opt_data,&obj_val);
+    bool success = optim::generic_constr_optim(sol_vec,lb,ub,Gbar_opt_objfn,&opt_data,Gbar_opt_constr,&opt_data,obj_val);
     //
     if (success) {
         mu_x_out = sol_vec;

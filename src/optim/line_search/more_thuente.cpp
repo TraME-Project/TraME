@@ -1,23 +1,18 @@
 /*################################################################################
   ##
-  ##   Copyright (C) 2015 - 2017 the TraME Team:
-  ##      Alfred Galichon
-  ##      Keith O'Hara
+  ##   Copyright (C) 2016-2017 Keith O'Hara
   ##
-  ##   This file is part of TraME.
+  ##   This file is part of the OptimLib C++ library.
   ##
-  ##   TraME is free software: you can redistribute it and/or modify
+  ##   OptimLib is free software: you can redistribute it and/or modify
   ##   it under the terms of the GNU General Public License as published by
   ##   the Free Software Foundation, either version 2 of the License, or
   ##   (at your option) any later version.
   ##
-  ##   TraME is distributed in the hope that it will be useful,
+  ##   OptimLib is distributed in the hope that it will be useful,
   ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
   ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ##   GNU General Public License for more details.
-  ##
-  ##   You should have received a copy of the GNU General Public License
-  ##   along with TraME. If not, see <http://www.gnu.org/licenses/>.
   ##
   ################################################################################*/
 
@@ -33,12 +28,11 @@
  * 01/11/2017
  */
 
-#include "trame.hpp"
+#include "optim.hpp"
 
-double 
-trame::line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::vec& direc, double* wolfe_cons_1_inp, double* wolfe_cons_2_inp, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
+double optim::line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::vec& direc, double* wolfe_cons_1_inp, double* wolfe_cons_2_inp, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
-    int max_iter = 100;
+    int iter_max = 100;
 
     double step_min = 0.0;
     double step_max = 10.0;
@@ -87,7 +81,7 @@ trame::line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::ve
         step = std::max(step,step_min);
         step = std::min(step,step_max);
 
-        if ((bracket && (step <= st_min || step >= st_max)) || iter >= max_iter-1 || infoc == 0 || (bracket && st_max-st_min <= xtol*st_max)) {
+        if ((bracket && (step <= st_min || step >= st_max)) || iter >= iter_max-1 || infoc == 0 || (bracket && st_max-st_min <= xtol*st_max)) {
             step = st_best;
         }
 
@@ -106,7 +100,7 @@ trame::line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::ve
         if (step == step_min && (f_step > armijo_check || dgrad >= dgrad_test)) {
             info = 4;
         }
-        if (iter >= max_iter) {
+        if (iter >= iter_max) {
             info = 3;
         }
         if (bracket && st_max-st_min <= xtol*st_max) {
@@ -157,18 +151,8 @@ trame::line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::ve
     return step;
 }
 
-double 
-trame::mt_sup_norm(double a, double b, double c)
-{
-    double ret = std::max(std::abs(a), std::abs(b));
-    ret = std::max(ret, std::abs(c));
-
-    return ret;
-}
-
 // update 'interval of uncertainty'
-int 
-trame::mt_step(double& st_best, double& f_best, double& d_best, double& st_other, double& f_other, double& d_other, double& step, double& f_step, double& d_step, bool& bracket, double step_min, double step_max)
+int optim::mt_step(double& st_best, double& f_best, double& d_best, double& st_other, double& f_other, double& d_other, double& step, double& f_step, double& d_step, bool& bracket, double step_min, double step_max)
 {
     bool bound = false;
     int info = 0;
@@ -326,4 +310,12 @@ trame::mt_step(double& st_best, double& f_best, double& d_best, double& st_other
     }
     //
     return info;
+}
+
+double optim::mt_sup_norm(double a, double b, double c)
+{
+    double ret = std::max(std::abs(a), std::abs(b));
+    ret = std::max(ret, std::abs(c));
+
+    return ret;
 }

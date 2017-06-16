@@ -16,35 +16,4 @@
   ##
   ################################################################################*/
 
-#ifndef OPTIMLIB_INCLUDES
-#define OPTIMLIB_INCLUDES
-
-#include "armadillo"
-
-#include "misc/OPTIM_OPTIONS.hpp"
-
-namespace optim
-{
-    // structs
-    #include "misc/optim_structs.hpp"
-
-    // misc files
-    #include "misc/misc.hpp"
-
-    // line search
-    #include "line_search/line_search.hpp"
-
-    // unconstrained optimization
-    #include "unconstrained/unconstrained.hpp"
-
-    // constrained optimization
-    #include "constrained/constrained.hpp"
-
-    // generic wrappers
-    #include "generic/generic.hpp"
-
-    // solving systems of nonlinear equations
-    #include "zeros/zeros.hpp"
-}
-
-#endif
+#include "sumt.hpp"

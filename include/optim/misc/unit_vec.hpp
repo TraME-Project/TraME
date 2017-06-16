@@ -16,35 +16,18 @@
   ##
   ################################################################################*/
 
-#ifndef OPTIMLIB_INCLUDES
-#define OPTIMLIB_INCLUDES
+/*
+ * unit vector
+ *
+ * Keith O'Hara
+ * 11/28/2014
+ */
 
-#include "armadillo"
+#ifndef _optim_unit_vec_HPP
+#define _optim_unit_vec_HPP
 
-#include "misc/OPTIM_OPTIONS.hpp"
+inline arma::vec unit_vec(int j, int n);
 
-namespace optim
-{
-    // structs
-    #include "misc/optim_structs.hpp"
-
-    // misc files
-    #include "misc/misc.hpp"
-
-    // line search
-    #include "line_search/line_search.hpp"
-
-    // unconstrained optimization
-    #include "unconstrained/unconstrained.hpp"
-
-    // constrained optimization
-    #include "constrained/constrained.hpp"
-
-    // generic wrappers
-    #include "generic/generic.hpp"
-
-    // solving systems of nonlinear equations
-    #include "zeros/zeros.hpp"
-}
+#include "unit_vec.ipp"
 
 #endif

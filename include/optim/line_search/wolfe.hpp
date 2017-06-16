@@ -16,35 +16,24 @@
   ##
   ################################################################################*/
 
-#ifndef OPTIMLIB_INCLUDES
-#define OPTIMLIB_INCLUDES
+/*
+ *  Wolfe's method for line search
+ *
+ * – the starting point t_init of the line-search;
+ * – the direction of search d;
+ * – a merit-function t |-> q(t), defined for t >= 0, representing f(x + td).
+ *
+ * Keith O'Hara
+ * 12/23/2016
+ *
+ * This version:
+ * 01/01/2017
+ */
 
-#include "armadillo"
+#ifndef _optim_line_search_wolfe_HPP
+#define _optim_line_search_wolfe_HPP
 
-#include "misc/OPTIM_OPTIONS.hpp"
-
-namespace optim
-{
-    // structs
-    #include "misc/optim_structs.hpp"
-
-    // misc files
-    #include "misc/misc.hpp"
-
-    // line search
-    #include "line_search/line_search.hpp"
-
-    // unconstrained optimization
-    #include "unconstrained/unconstrained.hpp"
-
-    // constrained optimization
-    #include "constrained/constrained.hpp"
-
-    // generic wrappers
-    #include "generic/generic.hpp"
-
-    // solving systems of nonlinear equations
-    #include "zeros/zeros.hpp"
-}
+double line_search_wolfe_simple(double t_init, const arma::vec& x, const arma::vec& d, double* c_1_inp, double* c_2_inp, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data);
+double line_search_wolfe_cubic(double t_init, const arma::vec& x, const arma::vec& d, double* c_1_inp, double* c_2_inp, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data);
 
 #endif

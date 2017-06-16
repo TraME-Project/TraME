@@ -419,7 +419,17 @@ template<typename Tt>
 bool
 model<mfe<Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
 {
-    bool success = generic_optim(init_out_vals,opt_objfn,opt_data,value_out,err_tol_inp,max_iter_inp);
+    optim::optim_opt_settings opt_params;
+
+    if (err_tol_inp) {
+        opt_params.err_tol = *err_tol_inp;
+    }
+
+    if (max_iter_inp) {
+        opt_params.iter_max = *max_iter_inp;
+    }
+
+    bool success = optim::generic_optim_int(init_out_vals,opt_objfn,opt_data,value_out,&opt_params);
     //
     return success;
 }

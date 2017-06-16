@@ -36,7 +36,7 @@
 bool 
 trame::arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
 {
-    bool success = broyden_df(init_out_vals,opt_objfn,opt_data);
+    bool success = optim::broyden_df(init_out_vals,opt_objfn,opt_data);
     //
     return success;
 }
@@ -45,7 +45,7 @@ bool
 trame::arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
                              std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data)
 {
-    bool success = broyden_df(init_out_vals,opt_objfn,opt_data,jacob_objfn,jacob_data);
+    bool success = optim::broyden_df(init_out_vals,opt_objfn,opt_data,jacob_objfn,jacob_data);
     //
     return success;
 }

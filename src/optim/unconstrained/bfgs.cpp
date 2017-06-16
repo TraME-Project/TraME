@@ -1,23 +1,18 @@
 /*################################################################################
   ##
-  ##   Copyright (C) 2015 - 2017 the TraME Team:
-  ##      Alfred Galichon
-  ##      Keith O'Hara
+  ##   Copyright (C) 2016-2017 Keith O'Hara
   ##
-  ##   This file is part of TraME.
+  ##   This file is part of the OptimLib C++ library.
   ##
-  ##   TraME is free software: you can redistribute it and/or modify
+  ##   OptimLib is free software: you can redistribute it and/or modify
   ##   it under the terms of the GNU General Public License as published by
   ##   the Free Software Foundation, either version 2 of the License, or
   ##   (at your option) any later version.
   ##
-  ##   TraME is distributed in the hope that it will be useful,
+  ##   OptimLib is distributed in the hope that it will be useful,
   ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
   ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ##   GNU General Public License for more details.
-  ##
-  ##   You should have received a copy of the GNU General Public License
-  ##   along with TraME. If not, see <http://www.gnu.org/licenses/>.
   ##
   ################################################################################*/
 
@@ -28,43 +23,21 @@
  * 12/23/2016
  *
  * This version:
- * 02/21/2017
+ * 06/12/2017
  */
 
-#include "trame.hpp"
+#include "optim.hpp"
 
-bool 
-trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
-{
-    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,NULL,NULL,NULL);
-    //
-    return success;
-}
-
-bool 
-trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double& value_out)
-{
-    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,&value_out,NULL,NULL);
-    //
-    return success;
-}
-
-bool 
-trame::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double& value_out, double err_tol_inp, int max_iter_inp)
-{
-    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,&value_out,&err_tol_inp,&max_iter_inp);
-    //
-    return success;
-}
-
-bool 
-trame::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
+bool
+optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, optim_opt_settings* opt_params)
 {
     // notation: 'p' stands for '+1'.
     //
     bool success = false;
-    int max_iter = (max_iter_inp) ? *max_iter_inp : 1000;
-    double err_tol = (err_tol_inp) ? *err_tol_inp : 1e-08;
+    
+    int conv_failure_switch = (opt_params) ? opt_params->conv_failure_switch : OPTIM_CONV_FAILURE_POLICY;
+    int iter_max = (opt_params) ? opt_params->iter_max : OPTIM_DEFAULT_ITER_MAX;
+    double err_tol = (opt_params) ? opt_params->err_tol : OPTIM_DEFAULT_ERR_TOL;
 
     double wolfe_cons_1 = 1E-03; // line search tuning parameters
     double wolfe_cons_2 = 0.90;
@@ -111,7 +84,7 @@ trame::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
     // begin loop
     int iter = 0;
 
-    while (err > err_tol && iter < max_iter) {
+    while (err > err_tol && iter < iter_max) {
         iter++;
         //
         d = - W*grad;
@@ -140,23 +113,39 @@ trame::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
         grad = grad_p;
     }
     //
-    if (err <= err_tol && iter <= max_iter) {
-        init_out_vals = x_p;
-        success = true;
+    error_reporting(init_out_vals,x_p,opt_objfn,opt_data,success,value_out,err,err_tol,iter,iter_max,conv_failure_switch);
+    //
+    return success;
+}
 
-        if (value_out) {
-            *value_out = opt_objfn(init_out_vals,NULL,opt_data);
-        }
-    } else {
-        //printf("bfgs failure: max_iter reached before convergence could be achieved.\n");
-        //printf("bfgs failure: best guess:\n");
-        //arma::cout << x_p.t() << arma::endl;
-        //std::cout << "error: " << err << std::endl;
+bool
+optim::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
+{
+    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,NULL,NULL);
+    //
+    return success;
+}
 
-        if (err < 1E-06) {
-            init_out_vals = x_p;
-        }
-    }
+bool
+optim::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim_opt_settings& opt_params)
+{
+    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,NULL,&opt_params);
+    //
+    return success;
+}
+
+bool
+optim::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double& value_out)
+{
+    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,&value_out,NULL);
+    //
+    return success;
+}
+
+bool
+optim::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double& value_out, optim_opt_settings& opt_params)
+{
+    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,&value_out,&opt_params);
     //
     return success;
 }
