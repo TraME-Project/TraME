@@ -28,7 +28,7 @@
  * 08/16/2016
  *
  * This version:
- * 03/22/2017
+ * 06/16/2017
  */
 
 // internal max_welfare
@@ -62,8 +62,10 @@ max_welfare_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma:
     // construct equilibrium objects
     arma::mat U = arma::reshape(sol_vec,nbX,nbY);
 
-    Tg* arums_G = const_cast<Tg*>(&market.arums_G); // Keith: this recast is unsafe, change later
-    Th* arums_H = const_cast<Th*>(&market.arums_H);
+    // Tg* arums_G = const_cast<Tg*>(&market.arums_G); // Keith: this recast is unsafe, change later
+    // Th* arums_H = const_cast<Th*>(&market.arums_H);
+    Tg* arums_G = &market.arums_G;
+    Th* arums_H = &market.arums_H;
     
     arma::mat mu_G, mu_H;
     double val_G = arums_G->G(market.n,U,mu_G);

@@ -28,7 +28,7 @@
  * 01/17/2016
  *
  * This version:
- * 03/22/2017
+ * 06/16/2017
  */
 
 //
@@ -51,7 +51,8 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
     arma::mat sol_mat = arma::reshape(sol_vec,market.nbX,market.nbY);
     arma::mat U = market.trans_obj.UW(sol_mat);
 
-    Tg* arums_G = const_cast<Tg*>(&market.arums_G); // Keith: this recast is unsafe, change later
+    // Tg* arums_G = const_cast<Tg*>(&market.arums_G); // Keith: this recast is unsafe, change later
+    Tg* arums_G = &market.arums_G;
     
     arma::mat mu_G;
     arums_G->G(market.n,U,mu_G);

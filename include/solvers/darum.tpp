@@ -28,7 +28,7 @@
  * 08/16/2016
  *
  * This version:
- * 03/22/2017
+ * 06/16/2017
  */
 
 // internal darum
@@ -54,8 +54,10 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
     arma::mat alpha = market.trans_obj.alpha;
     arma::mat gamma = market.trans_obj.gamma;
 
-    Tg* arums_G = const_cast<Tg*>(&market.arums_G); // Keith: this recast is unsafe, change later
-    Th* arums_H = const_cast<Th*>(&market.arums_H);
+    // Tg* arums_G = const_cast<Tg*>(&market.arums_G); // Keith: this recast is unsafe, change later
+    // Th* arums_H = const_cast<Th*>(&market.arums_H);
+    Tg* arums_G = &market.arums_G;
+    Th* arums_H = &market.arums_H;
 
     arma::mat mu_NR = arma::max(n * arma::ones(1,nbY), arma::ones(nbX,1) * m.t());
     //
