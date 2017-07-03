@@ -48,7 +48,7 @@ int main()
     arma::cout << "zeta: \n" << zeta << arma::endl;
     //
     // rusc object
-    trame::rusc rusc_obj;
+    trame::arums::rusc rusc_obj;
     rusc_obj.U = U;
     rusc_obj.mu = mu;
 
@@ -59,7 +59,7 @@ int main()
     int n_draws = 1000;
     trame::arums::empirical rusc_sim;
     
-    rusc_obj.simul(rusc_sim, &n_draws, &sim_seed);
+    rusc_obj.simul(rusc_sim, n_draws, sim_seed);
     
     rusc_sim.U = U;
     rusc_sim.mu = mu;

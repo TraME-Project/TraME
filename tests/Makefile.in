@@ -1,0 +1,56 @@
+
+# core compiling options
+CC  = @CC@
+CXX = @CXX@
+FC  = @FC@
+
+CXX_STD = -std=c++11
+OPT_FLAGS = @TRAME_OPT_FLAGS@
+
+ARMA_INCLUDE_PATH = @ARMA_INCLUDE_PATH@
+
+# install location
+INSTALL_PATH=@TRAME_INSTALL_PATH@
+
+# source directories
+SDIR = ./..
+TRAME_DIR = $(SDIR)
+TRAME_HEADER_DIR = $(SDIR)/include
+TRAME_TEST_DIR = .
+
+# general flags
+CXXFLAGS = $(CXX_STD) -Wall $(OPT_FLAGS) $(ARMA_INCLUDE_PATH) -I$(TRAME_HEADER_DIR)
+LIBS= -L@TRAME_INSTALL_PATH@ -l@TRAME_SHLIB_NAME@ @TRAME_BLAS_LAPACK@
+
+# TraME Test Files
+SOURCES_TRAME_ANC= $(TRAME_TEST_DIR)/ancillary/inv_pwa.cpp
+OBJECTS_TRAME_ANC= $(SOURCES_TRAME_ANC:.cpp=.test)
+
+SOURCES_TRAME_ARUMS= $(TRAME_TEST_DIR)/arums/logit.cpp $(TRAME_TEST_DIR)/arums/none.cpp $(TRAME_TEST_DIR)/arums/probit.cpp $(TRAME_TEST_DIR)/arums/rsc.cpp $(TRAME_TEST_DIR)/arums/rusc.cpp
+OBJECTS_TRAME_ARUMS= $(SOURCES_TRAME_ARUMS:.cpp=.test)
+
+#SOURCES_TRAME_MMFS= $(TRAME_TEST_DIR)/mmfs/mmfs_ces.cpp $(TRAME_TEST_DIR)/mmfs/mmfs_cd.cpp $(TRAME_TEST_DIR)/mmfs/mmfs_min.cpp $(TRAME_TEST_DIR)/mmfs/mmfs_geo.cpp
+#OBJECTS_TRAME_MMFS= $(SOURCES_TRAME_MMFS:.cpp=.o)
+
+#SOURCES_TRAME_MDLS= $(TRAME_TEST_DIR)/models/affinity.cpp $(TRAME_TEST_DIR)/models/model.cpp
+#OBJECTS_TRAME_MDLS= $(SOURCES_TRAME_MDLS:.cpp=.o)
+
+#SOURCES_TRAME_SLVRS= $(TRAME_TEST_DIR)/solvers/arc_newton.cpp $(TRAME_TEST_DIR)/solvers/aux_solvers.cpp $(TRAME_TEST_DIR)/solvers/max_welfare.cpp $(TRAME_TEST_DIR)/solvers/nodal_newton.cpp
+#OBJECTS_TRAME_SLVRS= $(SOURCES_TRAME_SLVRS:.cpp=.o)
+
+#SOURCES_TRAME_TRANS= $(TRAME_TEST_DIR)/transfers/transfers_etu.cpp $(TRAME_TEST_DIR)/transfers/transfers_ltu.cpp $(TRAME_TEST_DIR)/transfers/transfers_ntu.cpp $(TRAME_TEST_DIR)/transfers/transfers_tu.cpp
+#OBJECTS_TRAME_TRANS= $(SOURCES_TRAME_TRANS:.cpp=.o)
+
+all: $(OBJECTS_TRAME_ANC) $(OBJECTS_TRAME_ARUMS)
+
+# core TraME files
+$(TRAME_TEST_DIR)/ancillary/%.test: $(TRAME_TEST_DIR)/ancillary/%.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@ $(LIBS)
+
+$(TRAME_TEST_DIR)/arums/%.test: $(TRAME_TEST_DIR)/arums/%.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@ $(LIBS)
+
+# cleanup and install
+.PHONY: clean
+clean:
+	@rm -f *.so ./*/*.test

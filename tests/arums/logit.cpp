@@ -3,11 +3,9 @@
  *
  * Keith O'Hara
  * 05/17/2016
- * 
- * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/arums
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/usr/local/include/trame logit_test.cpp -o logit.test -L/usr/local/lib -ltrame -framework Accelerate
- * g++-mp-5 -O2 -Wall -std=c++11 -I./../../include logit_test.cpp -o logit.test -L./../../ -ltrame -framework Accelerate
+ * This version:
+ * 07/03/2017
  */
 
 #include "trame.hpp"
@@ -26,8 +24,8 @@ int main()
     mu << 1.0 << 3.0 << 1.0 << arma::endr
        << 2.0 << 1.0 << 3.0 << arma::endr;
 
-    int nbX = U.n_rows;
-    int nbY = U.n_cols;
+    const int nbX = U.n_rows;
+    const int nbY = U.n_cols;
     
     arma::vec n = arma::sum(mu,1);
     //
@@ -40,9 +38,9 @@ int main()
     // setup
     trame::arums::logit logits(nbX,nbY);
 
-    trame::arums::empirical logit_sim;
-    int sim_seed = 1777, n_draws = 1000;
-    logits.simul(logit_sim, &n_draws, &sim_seed);
+    trame::arums::empirical logit_sim(nbX,nbY);
+    const int sim_seed = 1777, n_draws = 1000;
+    logits.simul(logit_sim, n_draws, sim_seed);
     //
     // first compute optimal assignment (mu)
     arma::mat mu_sol, mu_sol_sim;
@@ -52,7 +50,7 @@ int main()
     
     std::cout << "G(U) and G-sim(U): \n" << G_val << " and " << G_sim_val << std::endl;
     arma::cout << "\nG -> mu: \n" << mu_sol << "\nG-sim -> mu: \n" << mu_sol_sim << arma::endl;
-    arma::cout << "mu normalized" << trame::elem_div(mu_sol,n) << arma::endl;
+    arma::cout << "mu normalized:\n" << trame::elem_div(mu_sol,n) << arma::endl;
     //
     // solution to dual problem U*
     arma::mat U_star, U_star_sim;

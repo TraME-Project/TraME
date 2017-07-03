@@ -6,8 +6,8 @@
  * 
  * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/aux
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include inv_pwa_test.cpp -c -o inv_pwa_test.o
- * g++-mp-5 -O2 -Wall -o inv_pwa.test inv_pwa_test.o -L/opt/local/lib -ltrame -framework Accelerate
+ * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include inv_pwa.cpp -c -o inv_pwa_test.o
+ * g++-mp-7 -O2 -Wall inv_pwa.cpp -o inv_pwa.test -L/opt/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -21,7 +21,6 @@ int main()
     double k = 1;
     // this should return a value of 1
     arma::vec res = trame::inv_pwa(a,B,C,k);
-    arma::cout << res << arma::endl;
     //
     return 0;
 }

@@ -47,7 +47,7 @@ int main()
     int sim_seed = 1777, n_draws = 1000;
     trame::arums::empirical emp_obj;
     
-    probits.simul(emp_obj, &n_draws, &sim_seed);
+    probits.simul(emp_obj, n_draws, sim_seed);
     //
     // first compute optimal assignment (mu)
     arma::mat mu_sol, mu_sol_sim;

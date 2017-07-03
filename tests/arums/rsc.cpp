@@ -50,7 +50,7 @@ int main()
     // empirical object:
     int sim_seed = 1777, n_draws = 1000;
     trame::arums::empirical rsc_sim;
-    rsc_obj.simul(rsc_sim, &n_draws, &sim_seed);
+    rsc_obj.simul(rsc_sim, n_draws, sim_seed);
     //
     // first compute optimal assignment (mu)
     arma::mat mu_sol, mu_sol_sim;
@@ -98,9 +98,9 @@ int main()
     arma::mat nablaGstar;
     arma::mat dtheta = arma::eye(rsc_obj.dim_params,rsc_obj.dim_params);
 
-    rsc_obj.dtheta_NablaGstar(nablaGstar,n,mu,&dtheta,true);
+    rsc_obj.dparams_NablaGstar(nablaGstar,n,mu,&dtheta,true);
 
-    arma::cout << "\ndtheta_NablaGstar: \n" << nablaGstar << arma::endl;
+    arma::cout << "\nparams_NablaGstar: \n" << nablaGstar << arma::endl;
     //
     printf("\n*===================   End of RSC Test   ===================*\n");
     printf("\n");
