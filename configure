@@ -1,6 +1,14 @@
 #!/bin/bash
 ## TraME config script
 
+while getopts b: option
+do
+ case "${option}"
+ in
+ b) TRAME_DEV=${OPTARG};;
+ esac
+done
+
 if [ -z ${CC+x} ]; then 
     CC=gcc
 fi
@@ -12,9 +20,9 @@ if [ -z ${FC+x} ]; then
 fi
 
 if [[ !(-z ${KEITH_DEV_SETTINGS+x}) ]]; then
-    CC=gcc-mp-5
-    CXX=g++-mp-5
-    FC=gfortran-mp-5
+    CC=gcc-mp-7
+    CXX=g++-mp-7
+    FC=gfortran-mp-7
 fi
 
 WDIR=${PWD}

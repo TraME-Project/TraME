@@ -52,26 +52,26 @@ class probit
         // member functions
         ~probit(){};
          probit(){};
-        explicit probit(int nbX_inp, int nbY_inp);
-        explicit probit(int nbX_inp, int nbY_inp, bool outside_option_inp);
-        explicit probit(int nbX_inp, int nbY_inp, double rho_inp, bool outside_option_inp);
+        explicit probit(const int nbX_inp, const int nbY_inp);
+        explicit probit(const int nbX_inp, const int nbY_inp, const bool outside_option_inp);
+        explicit probit(const int nbX_inp, const int nbY_inp, const double rho_inp, const bool outside_option_inp);
 
-        void build(int nbX_inp, int nbY_inp);
-        void build(int nbX_inp, int nbY_inp, bool outside_option_inp);
-        void build(int nbX_inp, int nbY_inp, double rho_inp, bool outside_option_inp);
+        void build(const int nbX_inp, const int nbY_inp);
+        void build(const int nbX_inp, const int nbY_inp, const bool outside_option_inp);
+        void build(const int nbX_inp, const int nbY_inp, const double rho_inp, const bool outside_option_inp);
 
         void unifCorrelCovMatrices();
-        void unifCorrelCovMatrices(double rho_inp);
+        void unifCorrelCovMatrices(const double rho_inp);
 
         empirical simul() const;
-        empirical simul(int nbDraws, int seed) const;
+        empirical simul(const int nbDraws, const int seed) const;
         void simul(empirical& obj_out) const;
-        void simul(empirical& obj_out, int nbDraws, int seed) const;
+        void simul(empirical& obj_out, const int nbDraws, const int seed) const;
     
     private:
-         void build_int(int nbX_inp, int nbY_inp, double* rho_inp, bool outside_option_inp);
+         void build_int(const int nbX_inp, const int nbY_inp, const double* rho_inp, const bool outside_option_inp);
 
-         void simul_int(empirical& obj_out, int* nbDraws, int* seed) const;
+         void simul_int(empirical& obj_out, const int* nbDraws, const int* seed) const;
 };
 
 #endif

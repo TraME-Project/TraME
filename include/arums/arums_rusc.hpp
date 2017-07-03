@@ -61,30 +61,30 @@ class rusc
         // member functions
         ~rusc(){};
          rusc(){};
-        explicit rusc(int nbX_inp, int nbY_inp);
-        explicit rusc(arma::mat zeta_inp, bool outside_option_inp);
+        explicit rusc(const int nbX_inp, const int nbY_inp);
+        explicit rusc(const arma::mat& zeta_inp, const bool outside_option_inp);
 
-        void build(int nbX_inp, int nbY_inp);
-        void build(arma::mat zeta_inp, bool outside_option_inp);
+        void build(const int nbX_inp, const int nbY_inp);
+        void build(const arma::mat& zeta_inp, const bool outside_option_inp);
         
         double G(const arma::vec& n);
         double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out) const;
-        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x) const;
+        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const int x) const;
         
         double Gstar(const arma::vec& n);
         double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out) const;
-        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x) const;
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const int x) const;
         
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out) const;
-        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x) const;
+        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x) const;
         
         empirical simul() const;
-        empirical simul(int nbDraws, int seed) const;
+        empirical simul(int nbDraws, const int seed) const;
         void simul(empirical& obj_out) const;
-        void simul(empirical& obj_out, int nbDraws, int seed) const;
+        void simul(empirical& obj_out, const int nbDraws, const int seed) const;
 
     private:
-        void simul_int(empirical& obj_out, int* nbDraws, int* seed) const;
+        void simul_int(empirical& obj_out, const int* nbDraws, const int* seed) const;
 };
 
 #endif

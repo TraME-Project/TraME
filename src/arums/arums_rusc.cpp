@@ -36,25 +36,25 @@
 //
 // build functions
 
-trame::arums::rusc::rusc(int nbX_inp, int nbY_inp)
+trame::arums::rusc::rusc(const int nbX_inp, const int nbY_inp)
 {
     this->build(nbX_inp, nbY_inp);
 }
 
-trame::arums::rusc::rusc(arma::mat zeta_inp, bool outside_option_inp)
+trame::arums::rusc::rusc(const arma::mat& zeta_inp, const bool outside_option_inp)
 {
     this->build(zeta_inp, outside_option_inp);
 }
 
 void
-trame::arums::rusc::build(int nbX_inp, int nbY_inp)
+trame::arums::rusc::build(const int nbX_inp, const int nbY_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
 }
 
 void
-trame::arums::rusc::build(arma::mat zeta_inp, bool outside_option_inp)
+trame::arums::rusc::build(const arma::mat& zeta_inp, const bool outside_option_inp)
 {
     if (!outside_option_inp) {
         printf("outside_option=F not implemented yet on RUSC arums\n");
@@ -134,7 +134,7 @@ const
 }
 
 double
-trame::arums::rusc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
+trame::arums::rusc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const int x)
 const
 {
     int nbAlt = nbY + 1;
@@ -221,7 +221,7 @@ const
 }
 
 double
-trame::arums::rusc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x)
+trame::arums::rusc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const int x)
 const
 {
     double val_x = 0;
@@ -260,7 +260,7 @@ const
 }
 
 double
-trame::arums::rusc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x)
+trame::arums::rusc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x)
 const
 {
     int nbAlt = nbY + 1;
@@ -322,7 +322,7 @@ const
 }
 
 trame::arums::empirical
-trame::arums::rusc::simul(int nbDraws, int seed)
+trame::arums::rusc::simul(const int nbDraws, const int seed)
 const
 {
     empirical emp_obj;
@@ -340,14 +340,14 @@ const
 }
 
 void
-trame::arums::rusc::simul(empirical& obj_out, int nbDraws, int seed)
+trame::arums::rusc::simul(empirical& obj_out, const int nbDraws, const int seed)
 const
 {
     this->simul_int(obj_out,&nbDraws,&seed);
 }
 
 void
-trame::arums::rusc::simul_int(empirical& obj_out, int* nbDraws, int* seed_val)
+trame::arums::rusc::simul_int(empirical& obj_out, const int* nbDraws, const int* seed_val)
 const
 {
     int n_draws = 0;
@@ -372,19 +372,23 @@ const
         atoms.slice(i) = arma::randu(n_draws,1) * zeta.row(i);
     }
     //
-    obj_out.nbX = nbX;
-    obj_out.nbY = nbY;
-    obj_out.dim_params = atoms.n_elem;
-    obj_out.atoms = atoms;
-    obj_out.aux_nbDraws = n_draws;
-    obj_out.x_homogeneous = false;
-    obj_out.outside_option = outside_option;
+    obj_out.build(nbX,nbY,atoms,false,outside_option);
+
+    // obj_out.nbX = nbX;
+    // obj_out.nbY = nbY;
+    // obj_out.dim_params = atoms.n_elem;
+    // obj_out.atoms = atoms;
+    // obj_out.aux_nbDraws = n_draws;
+    // obj_out.x_homogeneous = false;
+    // obj_out.outside_option = outside_option;
     
-    if (outside_option) {
-        obj_out.nb_options = nbY + 1;
-    } else {
-        obj_out.nb_options = nbY;
-    }
+    // if (outside_option) {
+    //     obj_out.nb_options = nbY + 1;
+    // } else {
+    //     obj_out.nb_options = nbY;
+    // }
     //
-    arma::arma_rng::set_seed_random(); // need to reset the seed
+    if (seed_val) {
+        arma::arma_rng::set_seed_random(); // need to reset the seed
+    }
 }

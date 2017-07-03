@@ -1,15 +1,15 @@
 langauge: cpp
+compiler: gcc
 sudo: required
 dist: trusty
 
-
 env:
     global:
-        - FC=gfortran-4.8
+        - FC=gfortran
 
 install:
     - sudo apt-get update
-    - sudo apt-get install gcc-4.8 gfortran-4.8 libblas-dev liblapack-dev
+    - sudo apt-get install libblas-dev liblapack-dev
 
 script:
   - ./configure && make

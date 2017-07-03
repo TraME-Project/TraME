@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 06/10/2017
+ * 07/03/2017
  */
 
 #include "trame.hpp"
@@ -77,8 +77,8 @@ double
 trame::arums::logit::G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out)
 const
 {   
-    arma::mat expU = arma::exp(U_inp / sigma);
-    arma::vec denom = (outside_option) ? (1.0 + arma::sum(expU,1)) : 0.0 + arma::sum(expU,1); // the '0.0 + ' fixes a compiling bug
+    const arma::mat expU = arma::exp(U_inp / sigma);
+    const arma::vec denom = (outside_option) ? (1.0 + arma::sum(expU,1)) : 0.0 + arma::sum(expU,1); // the '0.0 + ' fixes a compiling bug
     //
     mu_out = elem_prod(n/denom, expU);
     double val = sigma*arma::accu(n % arma::log(denom));
@@ -498,21 +498,23 @@ const
         atoms = -0.5772156649 - sigma * arma::log( - arma::log(arma::randu(n_draws,nbY,nbX)) );
     }
     //
-    obj_out.nbX = nbX;
-    obj_out.nbY = nbY;
+    obj_out.build(nbX,nbY,atoms,false,outside_option);
 
-    obj_out.dim_params = atoms.n_elem;
-    obj_out.atoms = atoms;
-    obj_out.aux_nbDraws = n_draws;
+    // obj_out.nbX = nbX;
+    // obj_out.nbY = nbY;
 
-    obj_out.x_homogeneous = false;
-    obj_out.outside_option = outside_option;
+    // obj_out.atoms = atoms;
+    // obj_out.dim_params = atoms.n_elem;
+    // obj_out.aux_nbDraws = n_draws;
 
-    if (outside_option) {
-        obj_out.nb_options = nbY + 1;
-    } else {
-        obj_out.nb_options = nbY;
-    }
+    // obj_out.x_homogeneous = false;
+    // obj_out.outside_option = outside_option;
+
+    // if (outside_option) {
+    //     obj_out.nb_options = nbY + 1;
+    // } else {
+    //     obj_out.nb_options = nbY;
+    // }
     //
     if (seed_val) {
         arma::arma_rng::set_seed_random(); // need to reset the seed

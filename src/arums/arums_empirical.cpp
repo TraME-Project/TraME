@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 06/10/2017
+ * 07/03/2017
  */
 
 #include "trame.hpp"
@@ -36,25 +36,25 @@
 //
 // build functions
 
-trame::arums::empirical::empirical(int nbX_inp, int nbY_inp)
+trame::arums::empirical::empirical(const int nbX_inp, const int nbY_inp)
 {
     this->build(nbX_inp, nbY_inp);
 }
 
-trame::arums::empirical::empirical(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool x_homogeneous_inp, bool outside_option_inp)
+trame::arums::empirical::empirical(const int nbX_inp, const int nbY_inp, const arma::cube& atoms_inp, const bool x_homogeneous_inp, const bool outside_option_inp)
 {
     this->build(nbX_inp, nbY_inp, atoms_inp, x_homogeneous_inp, outside_option_inp);
 }
 
 void
-trame::arums::empirical::build(int nbX_inp, int nbY_inp)
+trame::arums::empirical::build(const int nbX_inp, const int nbY_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
 }
 
 void
-trame::arums::empirical::build(int nbX_inp, int nbY_inp, const arma::cube& atoms_inp, bool x_homogeneous_inp, bool outside_option_inp)
+trame::arums::empirical::build(const int nbX_inp, const int nbY_inp, const arma::cube& atoms_inp, const bool x_homogeneous_inp, const bool outside_option_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -66,6 +66,8 @@ trame::arums::empirical::build(int nbX_inp, int nbY_inp, const arma::cube& atoms
 
     x_homogeneous = x_homogeneous_inp;
     outside_option = outside_option_inp;
+
+    nb_options = (outside_option_inp) ? nbY_inp + 1 : nbY_inp;
 
     presolve_LP_Gstar();
     presolve_LP_Gbar();
@@ -100,19 +102,18 @@ const
 }
 
 double
-trame::arums::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, int x)
+trame::arums::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const int x)
 const
 {
     mu_x_out.set_size(nbY,1);
     //
     arma::mat U_xs = (outside_option) ? arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1)) : U_x_inp;
-    arma::mat Utilde = (x_homogeneous) ? arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(0) : arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(x);
+    const arma::mat Utilde = (x_homogeneous) ? arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(0) : arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(x);
     //
-    arma::vec argmaxs = arma::max(Utilde,1);       // take max over dim = 1
-    arma::uvec argmax_inds = which_max(Utilde,1);
+    const arma::vec argmaxs = arma::max(Utilde,1);       // take max over dim = 1
+    const arma::uvec argmax_inds = which_max(Utilde,1);
 
-    double thesum = arma::accu(argmaxs);
-    double val_x = thesum / (double)(aux_nbDraws);
+    double val_x = arma::accu(argmaxs) / (double)(aux_nbDraws);
     //
     arma::uvec temp_find;
 
@@ -164,9 +165,7 @@ const
         printf("TraME: Gstarx cannot be called before first running presolve.\n");
     }
     //
-    int jj;
-
-    arma::mat Phi = (x_homogeneous) ? atoms.slice(0) : atoms.slice(x);
+    const arma::mat Phi = (x_homogeneous) ? atoms.slice(0) : atoms.slice(x);
     //
     arma::vec p = arma::ones(aux_nbDraws,1)/aux_nbDraws;
     arma::mat q;
@@ -174,6 +173,7 @@ const
     if (outside_option) {
         arma::mat temp_q(1,1);
         temp_q(0,0) = 1 - arma::accu(mu_x_inp);
+
         q = arma::join_cols(arma::vectorise(mu_x_inp),temp_q);
     } else {
         q = arma::vectorise(mu_x_inp);
@@ -184,7 +184,7 @@ const
     arma::vec rhs_grbi = arma::join_cols(p,q);
 
     char* sense_grbi = new char[k_Gstar];
-    for (jj=0; jj<k_Gstar; jj++) {
+    for (int jj=0; jj<k_Gstar; jj++) {
         sense_grbi[jj] = '=';
     }
 
@@ -232,14 +232,14 @@ const
         printf("TraME: Gbar cannot be called before first running presolve.\n");
     }
     //
-    double val=0.0, val_temp;
+    double val = 0.0;
 
     U_out.set_size(nbX,nbY);
     mu_out.set_size(nbX,nbY);
     arma::mat U_x_temp, mu_x_temp;
     //
     for (int i=0; i<nbX; i++) {
-        val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
+        const double val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
 
         val += n(i)*val_temp;
         U_out.row(i) = arma::trans(U_x_temp);
@@ -257,8 +257,6 @@ const
         printf("TraME: Gbarx cannot be called before first running presolve.\n");
     }
     //
-    int jj;
-    double val_x=0.0;
     arma::mat Phi, U_x_temp;
 
     if (!outside_option) {
@@ -281,7 +279,7 @@ const
     arma::vec rhs_grbi = arma::join_cols(rhs_grbi_1,rhs_grbi_2);
 
     char* sense_grbi = new char[k_Gbar];
-    for (jj=0; jj<k_Gbar; jj++) {
+    for (int jj=0; jj<k_Gbar; jj++) {
         sense_grbi[jj] = '<';
     }
 
@@ -291,6 +289,8 @@ const
 
     arma::mat sol_mat(n_Gbar,2);
     arma::mat dual_mat(k_Gbar,2);
+
+    double val_x = 0.0;
 
     try {
         LP_optimal = generic_LP(k_Gbar, n_Gbar, obj_grbi.memptr(), numnz_Gbar, vbeg_Gbar, vind_Gbar, vval_Gbar, modelSense, rhs_grbi.memptr(), sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
@@ -330,18 +330,18 @@ trame::arums::empirical::presolve_LP_Gstar()
      * constructing a sparse matrix and then (ex-post) inserting values.
      */
 
-    int jj, kk, count_val=0;
+    int jj = 0, count_val=0;
 
     arma::umat location_mat(2,aux_nbDraws*nb_options*2);
     arma::rowvec vals_mat(aux_nbDraws*nb_options*2);
 
-    for (kk=0; kk<nb_options; kk++) {
-        for (jj=0; jj<aux_nbDraws; jj++) {
+    for (int kk=0; kk < nb_options; kk++) {
+        for (jj=0; jj < aux_nbDraws; jj++) {
             location_mat(0,count_val) = jj + kk*aux_nbDraws;
             location_mat(1,count_val) = jj;
             ++count_val;
         }
-        for (jj=0; jj<aux_nbDraws; jj++) {
+        for (jj=0; jj < aux_nbDraws; jj++) {
             location_mat(0,count_val) = jj + kk*aux_nbDraws;
             location_mat(1,count_val) = kk + aux_nbDraws;
             ++count_val;
@@ -390,7 +390,7 @@ trame::arums::empirical::presolve_LP_Gbar()
      * constructing a sparse matrix and then (ex-post) inserting values.
      */
 
-    int jj, kk, count_val=0;
+    int jj = 0, count_val=0;
 
     arma::umat location_mat_2(2,nbY + aux_nbDraws*nbY + aux_nbDraws*(nbY+1));
     arma::rowvec vals_mat_2(nbY + aux_nbDraws*nbY + aux_nbDraws*(nbY+1));
@@ -404,7 +404,7 @@ trame::arums::empirical::presolve_LP_Gbar()
         ++count_val;
     }
 
-    for (kk=0; kk < (nbY+1); kk++) {
+    for (int kk=0; kk < (nbY+1); kk++) {
         if (kk < nbY) { // top section 
             for (jj=0; jj<aux_nbDraws; jj++) {
                 location_mat_2(0,count_val) = kk;

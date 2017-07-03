@@ -36,57 +36,52 @@
 //
 // build functions
 
-trame::arums::probit::probit(int nbX_inp, int nbY_inp)
+trame::arums::probit::probit(const int nbX_inp, const int nbY_inp)
 {   
     this->build(nbX_inp, nbY_inp);
 }
 
-trame::arums::probit::probit(int nbX_inp, int nbY_inp, bool outside_option_inp)
+trame::arums::probit::probit(const int nbX_inp, const int nbY_inp, const bool outside_option_inp)
 {   
     this->build_int(nbX_inp, nbY_inp, NULL, outside_option_inp);
 }
 
-trame::arums::probit::probit(int nbX_inp, int nbY_inp, double rho_inp, bool outside_option_inp)
+trame::arums::probit::probit(const int nbX_inp, const int nbY_inp, const double rho_inp, const bool outside_option_inp)
 {   
     this->build_int(nbX_inp, nbY_inp, &rho_inp, outside_option_inp);
 }
 
 void
-trame::arums::probit::build(int nbX_inp, int nbY_inp)
+trame::arums::probit::build(const int nbX_inp, const int nbY_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
 }
 
 void
-trame::arums::probit::build(int nbX_inp, int nbY_inp, bool outside_option_inp)
+trame::arums::probit::build(const int nbX_inp, const int nbY_inp, const bool outside_option_inp)
 {   
     this->build_int(nbX_inp, nbY_inp, NULL, outside_option_inp);
 }
 
 void
-trame::arums::probit::build(int nbX_inp, int nbY_inp, double rho_inp, bool outside_option_inp)
+trame::arums::probit::build(const int nbX_inp, const int nbY_inp, const double rho_inp, const bool outside_option_inp)
 {   
     this->build_int(nbX_inp, nbY_inp, &rho_inp, outside_option_inp);
 }
 
 void
-trame::arums::probit::build_int(int nbX_inp, int nbY_inp, double* rho_inp, bool outside_option_inp)
+trame::arums::probit::build_int(const int nbX_inp, const int nbY_inp, const double* rho_inp, const bool outside_option_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
     outside_option = outside_option_inp;
 
-    if (rho_inp) {
-        rho = *rho_inp;
-    }
+    rho = (rho_inp) ? *rho_inp : 0.0;
     //
-    if (outside_option_inp) {
-        aux_nb_options = nbY + 1;
-    } else {
-        aux_nb_options = nbY;
-    }
-    dim_params = (nbX_inp * aux_nb_options * (aux_nb_options-1))/2;
+    aux_nb_options = (outside_option_inp) ? nbY + 1 : nbY;
+
+    dim_params = (nbX_inp * aux_nb_options * (aux_nb_options-1))/2; // Keith: check this
 }
 
 void
@@ -96,9 +91,9 @@ trame::arums::probit::unifCorrelCovMatrices()
 }
 
 void
-trame::arums::probit::unifCorrelCovMatrices(double rho_inp)
+trame::arums::probit::unifCorrelCovMatrices(const double rho_inp)
 {
-    arma::mat Sig = rho_inp * arma::ones(aux_nb_options,aux_nb_options) + (1-rho_inp) * arma::eye(aux_nb_options,aux_nb_options);
+    arma::mat Sig = rho_inp * arma::ones(aux_nb_options,aux_nb_options) + (1.0 - rho_inp) * arma::eye(aux_nb_options,aux_nb_options);
     
     if (outside_option) {
         Sig.col(aux_nb_options-1).fill(0);
@@ -129,7 +124,7 @@ const
 }
 
 trame::arums::empirical
-trame::arums::probit::simul(int nbDraws, int seed)
+trame::arums::probit::simul(const int nbDraws, const int seed)
 const
 {
     empirical emp_obj;
@@ -147,14 +142,14 @@ const
 }
 
 void
-trame::arums::probit::simul(empirical& obj_out, int nbDraws, int seed)
+trame::arums::probit::simul(empirical& obj_out, const int nbDraws, const int seed)
 const
 {
     this->simul_int(obj_out,&nbDraws,&seed);
 }
 
 void
-trame::arums::probit::simul_int(empirical& obj_out, int* nbDraws, int* seed_val)
+trame::arums::probit::simul_int(empirical& obj_out, const int* nbDraws, const int* seed_val)
 const
 {
     int n_draws = 0;
@@ -184,19 +179,21 @@ const
         atoms.slice(j) = arma::randn(n_draws,aux_nb_options) * SqrtCovar;
     }
     //
-    obj_out.nbX = nbX;
-    obj_out.nbY = nbY;
-    obj_out.dim_params = atoms.n_elem;
-    obj_out.atoms = atoms;
-    obj_out.aux_nbDraws = n_draws;
-    obj_out.x_homogeneous = false;
-    obj_out.outside_option = outside_option;
+    obj_out.build(nbX,nbY,atoms,false,outside_option);
 
-    if (outside_option) {
-        obj_out.nb_options = nbY + 1;
-    } else {
-        obj_out.nb_options = nbY;
-    }
+    // obj_out.nbX = nbX;
+    // obj_out.nbY = nbY;
+    // obj_out.dim_params = atoms.n_elem;
+    // obj_out.atoms = atoms;
+    // obj_out.aux_nbDraws = n_draws;
+    // obj_out.x_homogeneous = false;
+    // obj_out.outside_option = outside_option;
+
+    // if (outside_option) {
+    //     obj_out.nb_options = nbY + 1;
+    // } else {
+    //     obj_out.nb_options = nbY;
+    // }
     //
     if (seed_val) {
         arma::arma_rng::set_seed_random(); // need to reset the seed
