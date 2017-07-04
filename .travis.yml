@@ -5,11 +5,11 @@ dist: trusty
 
 env:
     global:
-        - FC=gfortran
+        - FC=gfortran-4.8
 
 install:
     - sudo apt-get update
-    - sudo apt-get install libblas-dev liblapack-dev
+    - sudo apt-get install gfortran libblas-dev liblapack-dev
 
 script:
   - ./configure && make
