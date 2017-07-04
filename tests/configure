@@ -40,14 +40,14 @@ if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
     elif [ -f /opt/local/include/armadillo ]; then
         ARMA_INCLUDE_PATH="-I/opt/local/include"
     else 
-        echo "TraME tests: cannot find armadillo library."
+        echo "TraME tests: cannot find the armadillo library."
         echo ""
         exit 1
     fi
     echo "TraME: ARMA_INCLUDE_PATH set to ${ARMA_INCLUDE_PATH}"
 fi
 
-TRAME_OPT_FLAGS="-O2"
+TRAME_OPT_FLAGS="-g -O0 -Wall --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
 TRAME_SHLIB_NAME="trame"
 
 if [[ !(-z ${TRAME_DEV+x}) ]]; then

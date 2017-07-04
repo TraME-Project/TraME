@@ -30,18 +30,20 @@ SOURCES_TRAME_ARUMS= $(TRAME_TEST_DIR)/arums/logit.cpp $(TRAME_TEST_DIR)/arums/n
 OBJECTS_TRAME_ARUMS= $(SOURCES_TRAME_ARUMS:.cpp=.test)
 
 #SOURCES_TRAME_MMFS= $(TRAME_TEST_DIR)/mmfs/mmfs_ces.cpp $(TRAME_TEST_DIR)/mmfs/mmfs_cd.cpp $(TRAME_TEST_DIR)/mmfs/mmfs_min.cpp $(TRAME_TEST_DIR)/mmfs/mmfs_geo.cpp
-#OBJECTS_TRAME_MMFS= $(SOURCES_TRAME_MMFS:.cpp=.o)
+SOURCES_TRAME_MMFS= $(TRAME_TEST_DIR)/mmfs/geo.cpp
+OBJECTS_TRAME_MMFS= $(SOURCES_TRAME_MMFS:.cpp=.test)
 
 #SOURCES_TRAME_MDLS= $(TRAME_TEST_DIR)/models/affinity.cpp $(TRAME_TEST_DIR)/models/model.cpp
-#OBJECTS_TRAME_MDLS= $(SOURCES_TRAME_MDLS:.cpp=.o)
+#OBJECTS_TRAME_MDLS= $(SOURCES_TRAME_MDLS:.cpp=.test)
 
 #SOURCES_TRAME_SLVRS= $(TRAME_TEST_DIR)/solvers/arc_newton.cpp $(TRAME_TEST_DIR)/solvers/aux_solvers.cpp $(TRAME_TEST_DIR)/solvers/max_welfare.cpp $(TRAME_TEST_DIR)/solvers/nodal_newton.cpp
-#OBJECTS_TRAME_SLVRS= $(SOURCES_TRAME_SLVRS:.cpp=.o)
+SOURCES_TRAME_SLVRS= $(TRAME_TEST_DIR)/solvers/arc_newton.cpp
+OBJECTS_TRAME_SLVRS= $(SOURCES_TRAME_SLVRS:.cpp=.test)
 
 #SOURCES_TRAME_TRANS= $(TRAME_TEST_DIR)/transfers/transfers_etu.cpp $(TRAME_TEST_DIR)/transfers/transfers_ltu.cpp $(TRAME_TEST_DIR)/transfers/transfers_ntu.cpp $(TRAME_TEST_DIR)/transfers/transfers_tu.cpp
-#OBJECTS_TRAME_TRANS= $(SOURCES_TRAME_TRANS:.cpp=.o)
+#OBJECTS_TRAME_TRANS= $(SOURCES_TRAME_TRANS:.cpp=.test)
 
-all: $(OBJECTS_TRAME_ANC) $(OBJECTS_TRAME_ARUMS)
+all: $(OBJECTS_TRAME_ANC) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_MMFS) $(OBJECTS_TRAME_SLVRS)
 
 # core TraME files
 $(TRAME_TEST_DIR)/ancillary/%.test: $(TRAME_TEST_DIR)/ancillary/%.cpp
@@ -49,6 +51,12 @@ $(TRAME_TEST_DIR)/ancillary/%.test: $(TRAME_TEST_DIR)/ancillary/%.cpp
 
 $(TRAME_TEST_DIR)/arums/%.test: $(TRAME_TEST_DIR)/arums/%.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@ $(LIBS)
+
+$(TRAME_TEST_DIR)/mmfs/geo.test: $(TRAME_TEST_DIR)/mmfs/geo.cpp
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LIBS)
+
+$(TRAME_TEST_DIR)/solvers/arc_newton.test: $(TRAME_TEST_DIR)/solvers/arc_newton.cpp
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LIBS)
 
 # cleanup and install
 .PHONY: clean

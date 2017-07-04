@@ -1,13 +1,34 @@
+/*################################################################################
+  ##
+  ##   Copyright (C) 2015 - 2017 the TraME Team:
+  ##      Alfred Galichon
+  ##      Keith O'Hara
+  ##
+  ##   This file is part of TraME.
+  ##
+  ##   TraME is free software: you can redistribute it and/or modify
+  ##   it under the terms of the GNU General Public License as published by
+  ##   the Free Software Foundation, either version 2 of the License, or
+  ##   (at your option) any later version.
+  ##
+  ##   TraME is distributed in the hope that it will be useful,
+  ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ##   GNU General Public License for more details.
+  ##
+  ##   You should have received a copy of the GNU General Public License
+  ##   along with TraME. If not, see <http://www.gnu.org/licenses/>.
+  ##
+  ################################################################################*/
+
 /*
- * RUSC class test
+ * rusc class test
  *
  * Keith O'Hara
- * 09/30/2016
+ * 05/17/2016
  *
- * cd ~/Desktop/SCM/GitHub/TraME/src/tests/arums
- *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/opt/local/include -I./../../headers -I/usr/local/include rusc_test.cpp -c -o rusc_test.o
- * g++-mp-5 -O2 -Wall -o rusc.test rusc_test.o -L/opt/local/lib -ltrame -framework Accelerate
+ * This version:
+ * 07/03/2017
  */
 
 #include "trame.hpp"
