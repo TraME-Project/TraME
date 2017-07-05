@@ -1,12 +1,13 @@
 #!/bin/bash
 ## TraME config script
 
-while getopts b: option
+while getopts b:c: option
 do
- case "${option}"
- in
- b) TRAME_DEV=${OPTARG};;
- esac
+    case "${option}"
+    in
+    b) TRAME_BUILD=${OPTARG};;
+    c) TRAME_COVERAGE=${OPTARG};;
+    esac
 done
 
 if [ -z ${CC+x} ]; then 
@@ -55,7 +56,13 @@ if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
     echo "TraME: ARMA_INCLUDE_PATH set to ${ARMA_INCLUDE_PATH}"
 fi
 
-TRAME_OPT_FLAGS="-O2"
+if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
+    echo "TraME tests: coverage build"
+    TRAME_OPT_FLAGS="-g -O0 -Wall --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
+else
+    TRAME_OPT_FLAGS="-O2"
+fi
+
 TRAME_SHLIB_NAME="libtrame.so"
 
 if [[ $OSTYPE == *linux* ]] ; then
@@ -70,7 +77,7 @@ if [[ $OSTYPE == darwin* ]] ; then
 
         TRAME_BLAS_LAPACK="${TRAME_LAPACK_LIBS} ${TRAME_BLAS_LIBS}"
     else
-        if [[ !(-z ${TRAME_DEV+x}) ]]; then
+        if [[ "${TRAME_BUILD}" == "dev" ]]; then
             echo "TraME: dev version"
             TRAME_SHLIB_FLAGS="-dynamiclib -install_name "${WDIR}/${TRAME_SHLIB_NAME}" -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress"
         else
@@ -239,6 +246,10 @@ else
     LP_LIB_PATH=
     LP_LIBS=
     LP_LIB_RPATH=
+fi
+
+if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
+    TRAME_SHLIB_FLAGS="--coverage ${TRAME_SHLIB_FLAGS}"
 fi
 
 sed -e "s|@CC@|${CC}|" \

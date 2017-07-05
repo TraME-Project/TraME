@@ -12,3 +12,7 @@ Makefile
 *.vscode
 include/armadillo*
 glpk_tmp
+*.gcda
+*.gcno
+*.gcov
+*.dSYM

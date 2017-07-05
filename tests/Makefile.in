@@ -15,7 +15,7 @@ INSTALL_PATH=@TRAME_INSTALL_PATH@
 # source directories
 SDIR = ./..
 TRAME_DIR = $(SDIR)
-TRAME_HEADER_DIR = $(SDIR)/include
+TRAME_HEADER_DIR = @TRAME_INCLUDE_PATH@
 TRAME_TEST_DIR = .
 
 # general flags
@@ -61,4 +61,4 @@ $(TRAME_TEST_DIR)/solvers/arc_newton.test: $(TRAME_TEST_DIR)/solvers/arc_newton.
 # cleanup and install
 .PHONY: clean
 clean:
-	@rm -f *.so ./*/*.test
+	@rm -rf *.so ./*/*.gcov ./*/*.gcno ./*/*.gcda ./*/*.dSYM ./*/*.test

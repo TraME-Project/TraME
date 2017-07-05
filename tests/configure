@@ -1,12 +1,13 @@
 #!/bin/bash
-## TraME config script
+## TraME tests config script
 
-while getopts b: option
+while getopts b:c: option
 do
- case "${option}"
- in
- b) TRAME_DEV=${OPTARG};;
- esac
+    case "${option}"
+    in
+    b) TRAME_BUILD=${OPTARG};;
+    c) TRAME_COVERAGE=${OPTARG};;
+    esac
 done
 
 if [ -z ${CC+x} ]; then 
@@ -29,7 +30,7 @@ WDIR=${PWD}
 
 if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
     echo "TraME: ARMA_INCLUDE_PATH not set"
-    if [ -f ${WDIR}/include/armadillo ]; then 
+    if [ -f ${WDIR}/../include/armadillo ]; then 
         ARMA_INCLUDE_PATH="-I./../include"
     elif [ -f /usr/include/armadillo ]; then
         ARMA_INCLUDE_PATH="-I/usr/include"
@@ -44,15 +45,27 @@ if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
         echo ""
         exit 1
     fi
-    echo "TraME: ARMA_INCLUDE_PATH set to ${ARMA_INCLUDE_PATH}"
 fi
 
-TRAME_OPT_FLAGS="-g -O0 -Wall --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
+echo "TraME tests: ARMA_INCLUDE_PATH set to ${ARMA_INCLUDE_PATH}"
+
+# coverage build? used for codecov
+
+if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
+    echo "TraME tests: coverage build"
+    TRAME_OPT_FLAGS="-g -O0 -Wall --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
+else
+    TRAME_OPT_FLAGS="-O2"
+fi
+
 TRAME_SHLIB_NAME="trame"
 
-if [[ !(-z ${TRAME_DEV+x}) ]]; then
+# dev build
+
+if [[ "${TRAME_BUILD}" == "dev" ]]; then
     echo "TraME: dev version"
     cd ..
+    TRAME_INCLUDE_PATH=${PWD}/include
     TRAME_INSTALL_PATH=${PWD}
     cd tests
 else
@@ -62,6 +75,8 @@ else
         TRAME_INSTALL_PATH="/usr/local"
     fi
 fi
+
+# BLAS and LAPACK settings
 
 if [[ $OSTYPE == darwin* ]] ; then
         TRAME_BLAS_LAPACK="-framework Accelerate"
@@ -78,5 +93,6 @@ sed -e "s|@CC@|${CC}|" \
     -e "s|@TRAME_BLAS_LAPACK@|${TRAME_BLAS_LAPACK}|" \
     -e "s|@TRAME_OPT_FLAGS@|${TRAME_OPT_FLAGS}|" \
     -e "s|@TRAME_SHLIB_NAME@|${TRAME_SHLIB_NAME}|" \
+    -e "s|@TRAME_INCLUDE_PATH@|${TRAME_INCLUDE_PATH}|" \
     -e "s|@TRAME_INSTALL_PATH@|${TRAME_INSTALL_PATH}|" \
     Makefile.in > Makefile
