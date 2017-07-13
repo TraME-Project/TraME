@@ -58,7 +58,7 @@ nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out,
     arma::vec mu_x0_s = arma::exp(-us/sigma);
     arma::vec mu_0y_s = arma::exp(-vs/sigma);
 
-    arma::mat mu = market.mmf_obj.M(mu_x0_s,mu_0y_s);
+    arma::mat mu = market.mmfs_obj.M(mu_x0_s,mu_0y_s);
     //
     // return equilibrium objects
     if (mu_out) {
@@ -162,7 +162,7 @@ nodal_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
     arma::vec mu_x0_s = arma::exp(-us/sigma);
     arma::vec mu_0y_s = arma::exp(-vs/sigma);
 
-    arma::mat mu = d->market.mmf_obj.M(mu_x0_s,mu_0y_s);
+    arma::mat mu = d->market.mmfs_obj.M(mu_x0_s,mu_0y_s);
     //
     arma::vec ret = arma::join_cols(mu_x0_s + arma::sum(mu,1) - d->market.n, mu_0y_s + arma::trans(arma::sum(mu,0)) - d->market.m);
     //
@@ -185,20 +185,20 @@ nodal_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
     arma::vec mu_x0_s = arma::exp(-us/sigma);
     arma::vec mu_0y_s = arma::exp(-vs/sigma);
 
-    arma::mat mu = d->market.mmf_obj.M(mu_x0_s,mu_0y_s);
+    arma::mat mu = d->market.mmfs_obj.M(mu_x0_s,mu_0y_s);
     //
-    arma::mat du_s = d->market.mmfs_obj.du_Psi(us,vs);
-    arma::mat dv_s = 1.0 - du_s;
+    // arma::mat du_s = d->market.mmfs_obj.du_Psi(us,vs);
+    arma::mat du_s = d->market.mmfs_obj.dmu_x0(mu_x0_s,mu_0y_s);
+    arma::mat dv_s = d->market.mmfs_obj.dmu_0y(mu_x0_s,mu_0y_s);
 
-    arma::mat Delta_11 = arma::diagmat(mu_x0_s + arma::sum(mu%du_s,1));
-    arma::mat Delta_12 = mu%dv_s;
+    arma::mat Delta_11 = - arma::diagmat(mu_x0_s % (1.0 + arma::sum(du_s,1)));
+    arma::mat Delta_22 = - arma::diagmat(mu_0y_s % (1.0 + arma::trans(arma::sum(dv_s,0))));
 
-    arma::mat Delta_21 = arma::trans(mu%du_s);
-    arma::mat Delta_22 = arma::diagmat(mu_0y_s + arma::trans(arma::sum(mu%dv_s,0)));
 
-    arma::mat Delta = arma::join_cols( arma::join_rows(Delta_11,Delta_12), arma::join_rows(Delta_21,Delta_22) );
+    arma::mat Delta_12 = - arma::trans(elem_prod(mu_0y_s,dv_s.t()));
+    arma::mat Delta_21 = - arma::trans(elem_prod(mu_x0_s,du_s));
 
-    arma::mat ret = - Delta / sigma;
+    arma::mat ret = arma::join_cols( arma::join_rows(Delta_11,Delta_12), arma::join_rows(Delta_21,Delta_22) );
     //
     return ret;
 }
