@@ -37,8 +37,8 @@ SOURCES_LPXX= $(TRAME_SRC_DIR)/lp/generic_lp.cpp
 OBJECTS_LPXX= $(TRAME_SRC_DIR)/lp/generic_lp.o
 
 # general flags
-CFLAGS = -Wall $(OPT_FLAGS) $(LP_CFLAGS) -I$(TRAME_HEADER_DIR)
-CXXFLAGS = $(CXX_STD) -Wall $(OPT_FLAGS) $(ARMA_INCLUDE_PATH) $(LP_CXXFLAGS) -I$(TRAME_HEADER_DIR)
+CFLAGS = $(OPT_FLAGS) $(LP_CFLAGS) -I$(TRAME_HEADER_DIR)
+CXXFLAGS = $(CXX_STD) $(OPT_FLAGS) $(ARMA_INCLUDE_PATH) $(LP_CXXFLAGS) -I$(TRAME_HEADER_DIR)
 FFLAGS = $(OPT_FLAGS)
 LIBS= -lgfortran @TRAME_BLAS_LAPACK@
 
@@ -140,11 +140,11 @@ $(TRAME_DIR)/$(SHLIB): $(OBJECTS_TRAME)
 # cleanup and install
 .PHONY: clean
 clean:
-	@rm -f *.so ./tests/*/*.test ./tests/*/*.o $(TRAME_SRC_DIR)/*/*.o
+	@rm -f *.so ./tests/*/*.test ./tests/*/*.o $(TRAME_SRC_DIR)/*/*.o $(TRAME_SRC_DIR)/*/*.gcov $(TRAME_SRC_DIR)/*/*.gcno $(TRAME_SRC_DIR)/*/*.gcda $(TRAME_SRC_DIR)/*/*.dSYM $(TRAME_SRC_DIR)/*/*/*.o $(TRAME_SRC_DIR)/*/*/*.gcov $(TRAME_SRC_DIR)/*/*/*.gcno $(TRAME_SRC_DIR)/*/*/*.gcda $(TRAME_SRC_DIR)/*/*/*.dSYM
 
 .PHONY: vclean
 vclean:
-	@rm -f *.so ./tests/*/*.test ./tests/*/*.o $(TRAME_SRC_DIR)/*/*.o
+	@rm -f *.so ./tests/*/*.test ./tests/*/*.o $(TRAME_SRC_DIR)/*/*.o $(TRAME_SRC_DIR)/*/*.gcov $(TRAME_SRC_DIR)/*/*.gcno $(TRAME_SRC_DIR)/*/*.gcda $(TRAME_SRC_DIR)/*/*.dSYM $(TRAME_SRC_DIR)/*/*/*.o $(TRAME_SRC_DIR)/*/*/*.gcov $(TRAME_SRC_DIR)/*/*/*.gcno $(TRAME_SRC_DIR)/*/*/*.gcda $(TRAME_SRC_DIR)/*/*/*.dSYM
 	@rm -rf ./include/armadillo* ./glpk_tmp
 
 .PHONY: install
