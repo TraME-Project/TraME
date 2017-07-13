@@ -163,7 +163,12 @@ if [[ $OSTYPE == darwin* ]] ; then
     fi
 elif [[ $OSTYPE == *linux* ]] ; then
     TRAME_OPT_FLAGS="-fPIC ${TRAME_OPT_FLAGS}"
-    TRAME_SHLIB_FLAGS="-fPIC -shared -L/usr/lib -Wl,-Bsymbolic-functions -Wl,-z,relro "
+    if [[ "${TRAME_BUILD}" == "dev" ]]; then
+        echo "TraME: dev version"
+        TRAME_SHLIB_FLAGS="-fPIC -shared -L{WDIR} -Wl,-Bsymbolic-functions -Wl,-z,relro "
+    else
+        TRAME_SHLIB_FLAGS="-fPIC -shared -L/usr/lib -Wl,-Bsymbolic-functions -Wl,-z,relro "
+    fi
     TRAME_BLAS_LAPACK="-lblas -llapack"
 
     # look for any Gurobi directories, then choose the latest one
