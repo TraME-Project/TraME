@@ -30,9 +30,7 @@ WDIR=${PWD}
 
 if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
     echo "TraME: ARMA_INCLUDE_PATH not set"
-    if [ -f ${WDIR}/../include/armadillo ]; then 
-        ARMA_INCLUDE_PATH="-I./../include"
-    elif [ -f /usr/include/armadillo ]; then
+    if [ -f /usr/include/armadillo ]; then
         ARMA_INCLUDE_PATH="-I/usr/include"
     elif [ -f /usr/local/include/armadillo ]; then
         ARMA_INCLUDE_PATH="-I/usr/local/include"
@@ -55,7 +53,7 @@ if [[ "${TRAME_COVERAGE}" == "y" ]]; then
     echo "TraME tests: coverage build"
     TRAME_OPT_FLAGS="-g -O0 -Wall --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
 else
-    TRAME_OPT_FLAGS="-O2"
+    TRAME_OPT_FLAGS="-O3"
 fi
 
 TRAME_SHLIB_NAME="trame"
@@ -64,10 +62,10 @@ TRAME_SHLIB_NAME="trame"
 
 if [[ "${TRAME_BUILD}" == "dev" ]]; then
     echo "TraME: dev version"
-    cd ..
+    cd ../..
     TRAME_INCLUDE_PATH=${PWD}/include
     TRAME_INSTALL_PATH=${PWD}
-    cd tests
+    cd tests/arums
 else
     if [[ $OSTYPE == *linux* ]] ; then
         TRAME_INSTALL_PATH="/usr"
