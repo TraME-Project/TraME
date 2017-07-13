@@ -2,6 +2,7 @@
 cd ..
 export ARMA_INCLUDE_PATH="-I$PWD/include"
 export CXXCOV=gcov
+export LD_LIBRARY_PATH="$PWD/glpk_tmp/lib":$LD_LIBRARY_PATH
 cd tests
 
 cd arums
