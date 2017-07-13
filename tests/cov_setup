@@ -5,7 +5,17 @@ export CXXCOV=gcov
 export LD_LIBRARY_PATH="$PWD:$PWD/glpk_tmp/lib":$LD_LIBRARY_PATH
 cd tests
 
-cd arums
+cd ancillary
+./configure -b dev -c y
+make
+./cov_check
+
+cd ../arums
+./configure -b dev -c y
+make
+./cov_check
+
+cd ../mmfs
 ./configure -b dev -c y
 make
 ./cov_check
