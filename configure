@@ -165,7 +165,7 @@ elif [[ $OSTYPE == *linux* ]] ; then
     TRAME_OPT_FLAGS="-fPIC ${TRAME_OPT_FLAGS}"
     if [[ "${TRAME_BUILD}" == "dev" ]]; then
         echo "TraME: dev version"
-        TRAME_SHLIB_FLAGS="-fPIC -shared -L{WDIR} -Wl,-Bsymbolic-functions -Wl,-z,relro "
+        TRAME_SHLIB_FLAGS="-fPIC -shared -L${WDIR} -Wl,-Bsymbolic-functions -Wl,-z,relro "
     else
         TRAME_SHLIB_FLAGS="-fPIC -shared -L/usr/lib -Wl,-Bsymbolic-functions -Wl,-z,relro "
     fi
