@@ -38,8 +38,8 @@ int main()
     arma::mat lambda_LTU = lambda/(lambda+zeta);
     arma::mat phi_LTU = (lambda%alpha + zeta%gamma) / (lambda+zeta);
 
-    trame::dse<trame::none> dse_obj_LTU;
-    dse_obj_LTU.build_LTU(n,m,lambda_LTU,phi_LTU,false);
+    trame::dse<trame::arums::none,trame::arums::none,trame::transfers::ltu> dse_obj_LTU;
+    dse_obj_LTU.build(n,m,lambda_LTU,phi_LTU,false);
     //
     arma::vec mux0, mu0y, u, v;
     arma::mat mu_LTU;

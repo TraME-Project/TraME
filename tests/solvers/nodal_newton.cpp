@@ -32,11 +32,11 @@ int main()
     printf("\n");
     //
     // TU
-    trame::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
+    // trame::arums::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
     
-    trame::mfe<trame::mmf> mfe_obj_TU;
+    trame::mfe<trame::mmfs::geo> mfe_obj_TU(sigma,false);
 
-    mfe_obj_TU.build_TU(n,m,phi,&sigma,false);
+    mfe_obj_TU.build(n,m,phi);
     //
     //
     //double tol = 1E-06;

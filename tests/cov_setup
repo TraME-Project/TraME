@@ -20,6 +20,11 @@ cd ../mmfs
 make
 ./cov_check
 
+cd ../solvers
+./configure -b dev -c y
+make
+./cov_check
+
 cd ../..
 rm -rf ./include/armadillo*
 cd tests

@@ -40,13 +40,13 @@ int main()
     printf("\n");
     //
     // NTU
-    trame::dse<trame::logit> dse_obj_NTU;
+    trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::ntu> dse_obj_NTU;
 
-    trame::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
+    trame::arums::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
     //logit_1.build(nbX,nbY,1.0,true);
     //logit_2.build(nbY,nbX,1.0,true);
 
-    dse_obj_NTU.build_NTU(n,m,alpha,gamma,logit_1,logit_2,false);
+    dse_obj_NTU.build(n,m,alpha,gamma,logit_1,logit_2,false);
     //
     arma::mat mu_NTU, U, V;
     //trame::darum(dse_obj_NTU, true, NULL, mu_NTU, mux0, mu0y, U, V);

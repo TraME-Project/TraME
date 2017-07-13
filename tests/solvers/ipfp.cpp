@@ -39,14 +39,14 @@ int main()
     printf("\n");
     //
     // TU, 
-    trame::mfe<trame::mmf> mfe_obj_TU;
-    mfe_obj_TU.build_TU(n,m,phi,&sigma,false);
+    trame::mfe<trame::mmfs::geo> mfe_obj_TU(sigma,false);
+    mfe_obj_TU.build(n,m,phi);
 
-    trame::mfe<trame::mmf> mfe_obj_LTU;
-    mfe_obj_LTU.build_LTU(n,m,lambda_LTU,phi_LTU,&sigma,false);
+    trame::mfe<trame::mmfs::cd> mfe_obj_LTU(sigma,false);
+    mfe_obj_LTU.build(n,m,lambda_LTU,phi_LTU);
 
-    trame::mfe<trame::mmf> mfe_obj_NTU;
-    mfe_obj_NTU.build_NTU(n,m,alpha,gamma,&sigma,false);
+    trame::mfe<trame::mmfs::min> mfe_obj_NTU(sigma,false);
+    mfe_obj_NTU.build(n,m,alpha,gamma);
     //
     //
     double tol = 1E-06;

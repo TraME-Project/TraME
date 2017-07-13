@@ -33,8 +33,8 @@ int main()
     printf("\n");
     //
     // TU
-    trame::dse<trame::none> dse_obj_TU;
-    dse_obj_TU.build_TU(n,m,phi,false);
+    trame::dse<trame::arums::none,trame::arums::none,trame::transfers::tu> dse_obj_TU;
+    dse_obj_TU.build(n,m,phi,false);
     //
     //double val;
     //arma::vec mux0, mu0y, u, v;

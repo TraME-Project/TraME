@@ -36,16 +36,16 @@ int main()
     printf("\n");
     //
     // TU logit
-    trame::dse<trame::arums::empirical> dse_obj_TU;
+    trame::dse<trame::arums::empirical,trame::arums::empirical,trame::transfers::tu> dse_obj_TU;
 
-    trame::logit logit_1, logit_2;
+    trame::arums::logit logit_1, logit_2;
     logit_1.build(nbX,nbY,1.0,true);
     logit_2.build(nbY,nbX,1.0,true);
 
-    trame::arums::empirical logit_sim_1 = logit_1.simul(&nbDraws_1,NULL);
-    trame::arums::empirical logit_sim_2 = logit_2.simul(&nbDraws_2,NULL);
+    trame::arums::empirical logit_sim_1 = logit_1.simul(nbDraws_1,123);
+    trame::arums::empirical logit_sim_2 = logit_2.simul(nbDraws_2,321);
 
-    dse_obj_TU.build_TU(n,m,phi,logit_sim_1,logit_sim_2,false);
+    dse_obj_TU.build(n,m,phi,logit_sim_1,logit_sim_2,false);
     //
     arma::vec mux0, mu0y;
     arma::mat mu_TU, U, V;
@@ -56,21 +56,21 @@ int main()
     arma::cout << "mu:\n" << mu_TU << arma::endl;
     //
     // TU probit
-    trame::dse<trame::arums::empirical> dse_obj_TU_2;
+    trame::dse<trame::arums::empirical,trame::arums::empirical,trame::transfers::tu> dse_obj_TU_2;
 
     double rho = 0.3;
 
-    trame::probit probit_1, probit_2;
+    trame::arums::probit probit_1, probit_2;
     probit_1.build(nbX,nbY,rho,true);
     probit_2.build(nbY,nbX,rho,true);
 
     probit_1.unifCorrelCovMatrices();
     probit_2.unifCorrelCovMatrices();
 
-    trame::arums::empirical probit_sim_1 = probit_1.simul(&nbDraws_1,NULL);
-    trame::arums::empirical probit_sim_2 = probit_2.simul(&nbDraws_2,NULL);
+    trame::arums::empirical probit_sim_1 = probit_1.simul(nbDraws_1,456);
+    trame::arums::empirical probit_sim_2 = probit_2.simul(nbDraws_2,654);
 
-    dse_obj_TU_2.build_TU(n,m,phi,probit_sim_1,probit_sim_2,false);
+    dse_obj_TU_2.build(n,m,phi,probit_sim_1,probit_sim_2,false);
     //
     arma::mat mu_TU_2;
 
