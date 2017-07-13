@@ -1,6 +1,6 @@
 
 cd ..
-ARMA_INCLUDE_PATH="-I$PWD/include"
+export ARMA_INCLUDE_PATH="-I$PWD/include"
 export CXXCOV=gcov
 cd tests
 
