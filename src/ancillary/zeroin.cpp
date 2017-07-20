@@ -26,106 +26,99 @@
  *
  * Keith O'Hara
  * 05/10/2016
+ *
+ * This version:
+ * 07/17/2017
  */
 
 #include "trame.hpp"
 
 double 
-trame::zeroin(double ax, double bx, double (*f)(double x, void* opt_data), void* opt_data, double* tol_inp, int* max_iter_inp)
+trame::zeroin(const double ax, const double bx, std::function<double (const double val_inp, void* opt_data)> zero_objfn, void* opt_data, const double* tol_inp, const int* max_iter_inp)
 {
-	double a,b,c;
-	double fa;
-	double fb;
-	double fc;
+    const double tol = (tol_inp) ? *tol_inp : 1E-12;
+    const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
+    //
+    double fa = zero_objfn(ax,opt_data);
+    double fb = zero_objfn(bx,opt_data);
 
-	double tol;
-    int max_iter;
+    // check endpoints
+    if (fa == 0.0) {
+        return ax;
+    }
+    if (fb == 0.0) {
+        return bx;
+    }
+
+    double a = ax, b = bx, c = ax;
+    double fc = fa;
     
-    if (tol_inp) {
-        tol = *tol_inp;
-    } else {
-        tol = 1E-12;
+    //
+    int iter = 0;
+    
+    const double eps_temp = std::numeric_limits<double>::epsilon();
+    const double tol_act = 2*eps_temp*std::abs(b) + tol/2;
+
+    double p, q, prev_step, new_step;
+    double t1, cb, t2;
+    
+    new_step = (c - b)/2;
+    
+    while (std::abs(new_step) > tol_act && iter < max_iter) {
+        iter++;
+        prev_step = b - a;
+            
+        if ( std::abs(fc) < std::abs(fb) ) {
+            a = b;  b = c;  c = a;
+            fa=fb;  fb=fc;  fc=fa;
+        }
+        
+        new_step = (c - b)/2;
+
+        if ( std::abs(prev_step) >= tol_act && std::abs(fa) > std::abs(fb) ) {
+            
+            cb = c - b;
+
+            if ( a==c ) {
+                t1 = fb/fa;
+                p = cb*t1;
+                q = 1.0 - t1;
+            } else {
+                q = fa/fc;  t1 = fb/fc;  t2 = fb/fa;
+                p = t2 * ( cb*q*(q-t1) - (b-a)*(t1-1.0) );
+                q = (q-1.0) * (t1-1.0) * (t2-1.0);
+            }
+
+            if ( p > 0.0 ) {
+                q = -q;
+            } else {
+                p = -p;
+            }
+
+            if ( p < (0.75*cb*q-std::abs(tol_act*q)/2) && p < std::abs(prev_step*q/2) ) {
+                new_step = p/q;
+            }
+        }
+
+        if ( std::abs(new_step) < tol_act ) {
+            if ( new_step > 0.0 ) {
+                new_step = tol_act;
+            } else {
+                new_step = -tol_act;
+            }
+        }
+
+        a = b;
+        fa = fb;
+
+        b += new_step;  
+        fb = zero_objfn(b,opt_data);
+
+        if ( (fb > 0.0 && fc > 0.0) || (fb < 0.0 && fc < 0.0) ) {
+            c = a;
+            fc = fa;
+        }
     }
-
-    if (max_iter_inp) {
-        max_iter = *max_iter_inp;
-    } else {
-        max_iter = 10000;
-    }
-		
-	a = ax;  b = bx;  fa = (*f)(a,opt_data);  fb = (*f)(b,opt_data);
-	c = a;   fc = fa;
-	
-	// check endpoints
-	if(fa == 0.0){
-		return b;
-	}
-	if(fb == 0.0){
-		return b;
-	}
-	
-	// otherwise begin iterations
-	int iter = 0;
-	
-	double eps_temp = std::numeric_limits<double>::epsilon();
-	double tol_act = 2*eps_temp*fabs(b) + tol/2;
-
-	double p, q, prev_step, new_step;
-	//register double t1,cb,t2;
-	double t1,cb,t2; // Keith: register is deprecated as of C++-11
-	
-	new_step = (c - b)/2;
-	
-	while(fabs(new_step) > tol_act && iter < max_iter){
-		iter++;
-		prev_step = b-a;
-			
-		if( fabs(fc) < fabs(fb) ){
-			a = b;  b = c;  c = a;
-			fa=fb;  fb=fc;  fc=fa;
-		}
-		
-		new_step = (c-b)/2;
-
-		if( fabs(prev_step) >= tol_act	&& fabs(fa) > fabs(fb) ){
-			
-			cb = c - b;
-						
-			if( a==c ){
-				t1 = fb/fa;
-				p = cb*t1;
-				q = 1.0 - t1;
-			}else{
-				q = fa/fc;  t1 = fb/fc;  t2 = fb/fa;
-				p = t2 * ( cb*q*(q-t1) - (b-a)*(t1-1.0) );
-				q = (q-1.0) * (t1-1.0) * (t2-1.0);
-			}
-						
-			if( p > 0.0 ){
-				q = -q;
-			}else{
-				p = -p;
-			}
-
-			if( p < (0.75*cb*q-fabs(tol_act*q)/2) && p < fabs(prev_step*q/2) ){
-				new_step = p/q;
-			}
-		}
-				
-		if( fabs(new_step) < tol_act ){
-			if( new_step > 0.0 ){
-				new_step = tol_act;
-			}else{
-				new_step = -tol_act;
-			}
-		}
-						
-		a = b;  fa = fb;
-		b += new_step;  fb = (*f)(b,opt_data);
-		if( (fb > 0.0 && fc > 0.0) || (fb < 0.0 && fc < 0.0) ){
-			c = a;  fc = fa;
-		}
-	}
-	//
-	return b;
+    //
+    return b;
 }

@@ -127,7 +127,7 @@ model<dse<Tg,Th,Tt>>::model_to_market(const arma::mat& theta, const Tg& arums_G_
 }
 
 // empirical version
-// template<typename Tm> 
+// template<typename Tm>
 // template<typename Ta, typename Tb>
 // void
 // model<dse<Tg,Th,Tt>>::build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp, int nbDraws, int seed)
@@ -198,11 +198,11 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     //
     // add optimization data
     trame_model_mle_opt_data<dse<Tg,Th,Tt>> opt_data;
-    
+
     opt_data.model_obj = *this;
     opt_data.by_individual = by_individual;
     opt_data.scale = scale;
-    
+
     opt_data.mu_hat = mu_hat;
     opt_data.mu_hat_x0 = mu_hat_x0;
     opt_data.mu_hat_0y = mu_hat_0y;
@@ -230,8 +230,9 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     double err_tol = 1E-06;
     int max_iter = 5000;
 
-    arma::vec theta_0;
+    arma::vec theta_0(dim_theta);
     (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0 = initial_theta();
+    // (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0.ones(); // geting weird error with arums::none if we set initial theta = 0
 
     arma::mat dtheta_Psi;
     dtheta(NULL,dtheta_Psi);
@@ -243,7 +244,7 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     //
     // add optimization data
     trame_model_mme_opt_data<dse<Tg,Th,Tt>> opt_data;
-    
+
     opt_data.market = market_obj;
     opt_data.dim_theta = dim_theta;
     opt_data.C_hat = C_hat;
@@ -306,7 +307,7 @@ model<dse<Tg,Th,Tt>>::initial_theta(arma::mat& theta_0)
 
 template<typename Tg, typename Th, typename Tt>
 inline
-arma::mat 
+arma::mat
 model<dse<Tg,Th,Tt>>::initial_theta()
 {
     return arma::zeros(dim_theta,1);
@@ -430,12 +431,13 @@ model<dse<Tg,Th,Tt>>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* 
     double val_G = d->market.arums_G.G(d->market.n,U,mu_G);
     double val_H = d->market.arums_H.G(d->market.m,arma::trans(phi_mat - U),mu_H);
     //
+    // std::cout << "val_G = " << val_G << ". val_H = " << val_H << std::endl;
     double ret = val_G + val_H - arma::accu(theta%C_hat);
 
     if (grad) {
         arma::vec grad_U = arma::vectorise(mu_G - mu_H.t());
         arma::vec grad_theta = arma::vectorise( arma::trans(arma::vectorise(mu_H.t())) * kron_term ) - C_hat;
-        
+
         *grad = arma::join_cols(grad_U,grad_theta);
     }
     //

@@ -7,8 +7,8 @@
  * This version:
  * 06/01/2017
  *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/usr/local/include/trame model_test.cpp -o model.test -L/usr/local/lib -ltrame -framework Accelerate
- * g++-mp-5 -O2 -Wall -std=c++11 -I./../../include model_test.cpp -o model.test -L./../../ -ltrame -framework Accelerate
+ * g++-mp-7 -O2 -Wall -std=c++11 -I/usr/local/include/trame model_test.cpp -o model.test -L/usr/local/lib -ltrame -framework Accelerate
+ * g++-mp-7 -O2 -Wall -std=c++11 -I./../../include model_test.cpp -o model.test -L./../../ -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -39,7 +39,7 @@ int main()
 
     arma::mat A = arma::ones(dX,dY);
     arma::mat phi = X_vals*A*Y_vals.t();
-    
+
     trame::mfe<trame::mmfs::geo> mfe_obj_TU;
     // mfe_obj_TU.build(n,m,phi,&sigma,false);
     mfe_obj_TU.build(n,m,phi);
@@ -52,16 +52,25 @@ int main()
     //
     trame::model<trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::tu>> TU_logit_model;
     TU_logit_model.build(X_vals,Y_vals,n,m);
-    
+
     //double val_hat;
     arma::mat theta_hat_mme, theta_hat_mle;
     TU_logit_model.mme(mu_hat,theta_hat_mme,NULL);
-    
+
     arma::cout << "theta_hat mme: \n" << theta_hat_mme << arma::endl;
 
     TU_logit_model.mle(mu_hat,theta_hat_mle,NULL);
 
     arma::cout << "theta_hat mle: \n" << theta_hat_mle << arma::endl;
+
+    // arums_none
+    trame::model< trame::dse<trame::arums::none, trame::arums::none, trame::transfers::tu> > TU_none_model;
+    TU_none_model.build(X_vals,Y_vals,n,m);
+
+    arma::mat theta_0 = arma::zeros(dX*dY,1);
+    TU_none_model.mme(mu_hat,theta_hat_mme,&theta_0);
+
+    arma::cout << "theta_hat mme for arums_none: \n" << theta_hat_mme << arma::endl;
 
     // aff_model.mme_regul(mu_hat,lambda,theta_hat,val_hat,NULL,NULL,NULL,NULL);
 
@@ -76,7 +85,7 @@ int main()
 
     trame::model<trame::mfe<trame::mmfs::geo>> aff_model;
     aff_model.build(X_vals,Y_vals);
-    
+
     double lambda = 0.15;
     double val_hat_1, val_hat_2;
     mu_hat = arma::ones(nbX,nbY)/(nbX);
@@ -93,10 +102,10 @@ int main()
     printf("\n");
     //
     end = std::chrono::system_clock::now();
-        
+
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-        
+
     std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
     //

@@ -26,34 +26,37 @@
  *
  * Keith O'Hara
  * 08/08/2016
+ *
+ * This version:
+ * 07/17/2017
  */
 
 #ifndef _trame_aux_HPP
 #define _trame_aux_HPP
 
-inline arma::uvec which_max(const arma::mat& X, int which_dim);
-inline arma::vec unit_vec(int j, int n);
-inline arma::uvec uvec_linspace(int a, int b);
+arma::uvec which_max(const arma::mat& X, const int which_dim);
+arma::vec unit_vec(const int j, const int n);
+arma::uvec uvec_linspace(const int a, const int b);
 
-inline arma::mat elem_add(const arma::mat& mat_1, const arma::mat& mat_2);
-inline arma::mat elem_sub(const arma::mat& mat_1, const arma::mat& mat_2);
-inline arma::mat elem_prod(const arma::mat& mat_1, const arma::mat& mat_2);
-inline arma::mat elem_div(const arma::mat& mat_1, const arma::mat& mat_2);
+arma::mat elem_add(const arma::mat& mat_1, const arma::mat& mat_2);
+arma::mat elem_sub(const arma::mat& mat_1, const arma::mat& mat_2);
+arma::mat elem_prod(const arma::mat& mat_1, const arma::mat& mat_2);
+arma::mat elem_div(const arma::mat& mat_1, const arma::mat& mat_2);
 
-inline double elem_min(const arma::mat& mat_1);
-inline arma::mat elem_min(const arma::mat& mat_1, const arma::mat& mat_2);
-inline arma::mat elem_min(const arma::mat& mat_1, const double& comp_val);
-inline arma::mat elem_min(const double& comp_val, const arma::mat& mat_1);
-inline double elem_min(const double& comp_val_1, const double& comp_val_2);
+double elem_min(const arma::mat& mat_1);
+arma::mat elem_min(const arma::mat& mat_1, const arma::mat& mat_2);
+arma::mat elem_min(const arma::mat& mat_1, const double comp_val);
+arma::mat elem_min(const double comp_val, const arma::mat& mat_1);
+double elem_min(const double comp_val_1, const double comp_val_2);
 
-inline double elem_max(const arma::mat& mat_1);
-inline arma::mat elem_max(const arma::mat& mat_1, const arma::mat& mat_2);
-inline arma::mat elem_max(const arma::mat& mat_1, const double& comp_val);
-inline arma::mat elem_max(const double& comp_val, const arma::mat& mat_1);
-inline double elem_max(const double& comp_val_1, const double& comp_val_2);
+double elem_max(const arma::mat& mat_1);
+arma::mat elem_max(const arma::mat& mat_1, const arma::mat& mat_2);
+arma::mat elem_max(const arma::mat& mat_1, const double comp_val);
+arma::mat elem_max(const double comp_val, const arma::mat& mat_1);
+double elem_max(const double comp_val_1, const double comp_val_2);
 
-inline arma::mat cube_sum(const arma::cube& cube_inp, int which_dim);
-inline arma::mat cube_to_mat(const arma::cube& cube_inp);
+arma::mat cube_sum(const arma::cube& cube_inp, const int which_dim);
+arma::mat cube_to_mat(const arma::cube& cube_inp);
 
 #include "trame_aux.ipp"
 

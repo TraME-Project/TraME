@@ -23,7 +23,7 @@
  * 12/23/2016
  *
  * This version:
- * 06/12/2017
+ * 07/18/2017
  */
 
 #include "optim.hpp"
@@ -35,17 +35,18 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
     //
     bool success = false;
     
-    int conv_failure_switch = (opt_params) ? opt_params->conv_failure_switch : OPTIM_CONV_FAILURE_POLICY;
-    int iter_max = (opt_params) ? opt_params->iter_max : OPTIM_DEFAULT_ITER_MAX;
-    double err_tol = (opt_params) ? opt_params->err_tol : OPTIM_DEFAULT_ERR_TOL;
+    const int conv_failure_switch = (opt_params) ? opt_params->conv_failure_switch : OPTIM_CONV_FAILURE_POLICY;
+    const int iter_max = (opt_params) ? opt_params->iter_max : OPTIM_DEFAULT_ITER_MAX;
+    const double err_tol = (opt_params) ? opt_params->err_tol : OPTIM_DEFAULT_ERR_TOL;
 
-    double wolfe_cons_1 = 1E-03; // line search tuning parameters
-    double wolfe_cons_2 = 0.90;
+    const double wolfe_cons_1 = 1E-03; // line search tuning parameters
+    const double wolfe_cons_2 = 0.90;
     //
     int n_vals = init_out_vals.n_elem;
     arma::vec x = init_out_vals;
 
     arma::mat W = arma::eye(n_vals,n_vals); // initial approx. to (inverse) Hessian 
+    arma::mat I_mat = arma::eye(n_vals,n_vals);
     //
     // initialization
     arma::vec grad(n_vals); // gradient
@@ -56,28 +57,38 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
         return true;
     }
     // if ||gradient(initial values)|| > tolerance, then continue
-    double t_init = 1; // initial line search value
+    double t_line = 1.0; // initial line search value
     arma::vec d = - W*grad; // direction
 
     arma::vec x_p = x, grad_p = grad;
-    line_search_mt(t_init, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
+    // line_search_mt(t_line, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
+    t_line = line_search_mt(1.0, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
 
     err = arma::accu(arma::abs(grad_p)); // check updated values
     if (err <= err_tol) {
         init_out_vals = x_p;
         return true;
     }
+
+    if (t_line < 1E-14) {
+        // x_p.ones();
+        x_p.randu();
+        t_line = line_search_mt(1.0, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
+    }
     // if ||gradient(x_p)|| > tolerance, then continue
     arma::vec s = x_p - x;
     arma::vec y = grad_p - grad;
 
+    if (arma::norm(s,2) < 1E-14) {
+        init_out_vals = x_p;
+        return true;
+    }
+
     // update W
     double W_denom_term = arma::dot(y,s);
 
-    arma::mat W_term_1 = s*y.t()*W + W*y*s.t();
-    arma::mat W_term_2 = (1.0 + arma::dot(y,W*y) / W_denom_term) * s*s.t();
-
-    W -= (W_term_1 - W_term_2) / W_denom_term; // update inverse Hessian approximation
+    arma::mat W_term_1 = I_mat - s*y.t() / W_denom_term;
+    W = W_term_1*W*W_term_1.t() + s*s.t() / W_denom_term; // update inverse Hessian approximation
 
     grad = grad_p;
     //
@@ -88,26 +99,28 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
         iter++;
         //
         d = - W*grad;
-        line_search_mt(t_init, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
+        t_line = line_search_mt(1.0, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, opt_objfn, opt_data);
         
-        err = arma::accu(arma::abs(grad_p));
+        // err = arma::accu(arma::abs(grad_p));
+        err = arma::norm(grad_p, 2);
         if (err <= err_tol) {
             break;
         }
+
         // if ||gradient(x_p)|| > tolerance, then continue
         s = x_p - x;
         y = grad_p - grad;
+
+        err = arma::norm(s, 2);
+
         // update W
         W_denom_term = arma::dot(y,s);
 
-        if (std::abs(W_denom_term) < 1E-08) {
-            W_denom_term = 1E-08;
+        if (W_denom_term > 1E-12) { // checking the curvature condition
+            W_term_1 = I_mat - s*y.t() / W_denom_term;
+        
+            W = W_term_1*W*W_term_1.t() + s*s.t() / W_denom_term;
         }
-
-        W_term_1 = s*y.t()*W + W*y*s.t();
-        W_term_2 = (1.0 + arma::dot(y,W*y) / W_denom_term) * s*s.t();
-
-        W -= (W_term_1 - W_term_2) / W_denom_term;
         //
         x = x_p;
         grad = grad_p;
@@ -121,31 +134,23 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
 bool
 optim::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
 {
-    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,NULL,NULL);
-    //
-    return success;
+    return bfgs_int(init_out_vals,opt_objfn,opt_data,NULL,NULL);
 }
 
 bool
 optim::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim_opt_settings& opt_params)
 {
-    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,NULL,&opt_params);
-    //
-    return success;
+    return bfgs_int(init_out_vals,opt_objfn,opt_data,NULL,&opt_params);
 }
 
 bool
 optim::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double& value_out)
 {
-    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,&value_out,NULL);
-    //
-    return success;
+    return bfgs_int(init_out_vals,opt_objfn,opt_data,&value_out,NULL);
 }
 
 bool
 optim::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double& value_out, optim_opt_settings& opt_params)
 {
-    bool success = bfgs_int(init_out_vals,opt_objfn,opt_data,&value_out,&opt_params);
-    //
-    return success;
+    return bfgs_int(init_out_vals,opt_objfn,opt_data,&value_out,&opt_params);
 }

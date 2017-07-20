@@ -26,14 +26,14 @@
  *
  * Keith O'Hara
  * 05/10/2016
+ *
+ * This version:
+ * 07/17/2017
  */
 
 #ifndef _trame_zeroin_HPP
 #define _trame_zeroin_HPP
 
-//#include <cmath> // for abs value
-//#include <limits>
-
-double zeroin(double ax, double bx, double (*f)(double x, void* opt_data), void* opt_data, double* tol_inp, int* max_iter_inp);
+double zeroin(const double ax, const double bx, std::function<double (const double val_inp, void* opt_data)> zero_objfn, void* opt_data, const double* tol_inp, const int* max_iter_inp);
 
 #endif
