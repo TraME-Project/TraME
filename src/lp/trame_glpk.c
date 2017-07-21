@@ -85,17 +85,31 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
         // c'x
         glp_set_obj_coef(lp, i+1, obj[i]);
 
-        // set bounds on x
+        // set bounds on x; note 'isinf' cannot distinguish between +inf or -inf
         if (has_lb && has_ub) {
-            if (lb[i] == ub[i]) {
+            if (isinf(lb[i]) && isinf(ub[i])) {
+                glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
+            } else if (isinf(lb[i]) && !isinf(ub[i])) {
+                glp_set_col_bnds(lp, i+1, GLP_UP, 0.0, ub[i]);
+            } else if (!isinf(lb[i]) && isinf(ub[i])) {
+                glp_set_col_bnds(lp, i+1, GLP_LO, lb[i], 0.0);
+            } else if (lb[i] == ub[i]) {
                 glp_set_col_bnds(lp, i+1, GLP_FX, lb[i], ub[i]);
             } else {
                 glp_set_col_bnds(lp, i+1, GLP_DB, lb[i], ub[i]);
             }
         } else if (has_lb && !has_ub) {
-            glp_set_col_bnds(lp, i+1, GLP_LO, lb[i], 0.0);
+            if (isinf(lb[i])) {
+                glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
+            } else {
+                glp_set_col_bnds(lp, i+1, GLP_LO, lb[i], 0.0);
+            }
         } else if (!has_lb && has_ub) {
-            glp_set_col_bnds(lp, i+1, GLP_UP, 0.0, ub[i]);
+            if (isinf(ub[i])) {
+                glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
+            } else {
+                glp_set_col_bnds(lp, i+1, GLP_UP, 0.0, ub[i]);
+            }
         } else if (!has_lb && !has_ub) {
             glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
         }
@@ -218,17 +232,31 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbe
         // c'x
         glp_set_obj_coef(lp, i+1, obj[i]);
 
-        // set bounds on x
+        // set bounds on x; note 'isinf' cannot distinguish between +inf or -inf
         if (has_lb && has_ub) {
-            if (lb[i] == ub[i]) {
+            if (isinf(lb[i]) && isinf(ub[i])) {
+                glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
+            } else if (isinf(lb[i]) && !isinf(ub[i])) {
+                glp_set_col_bnds(lp, i+1, GLP_UP, 0.0, ub[i]);
+            } else if (!isinf(lb[i]) && isinf(ub[i])) {
+                glp_set_col_bnds(lp, i+1, GLP_LO, lb[i], 0.0);
+            } else if (lb[i] == ub[i]) {
                 glp_set_col_bnds(lp, i+1, GLP_FX, lb[i], ub[i]);
             } else {
                 glp_set_col_bnds(lp, i+1, GLP_DB, lb[i], ub[i]);
             }
         } else if (has_lb && !has_ub) {
-            glp_set_col_bnds(lp, i+1, GLP_LO, lb[i], 0.0);
+            if (isinf(lb[i])) {
+                glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
+            } else {
+                glp_set_col_bnds(lp, i+1, GLP_LO, lb[i], 0.0);
+            }
         } else if (!has_lb && has_ub) {
-            glp_set_col_bnds(lp, i+1, GLP_UP, 0.0, ub[i]);
+            if (isinf(ub[i])) {
+                glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
+            } else {
+                glp_set_col_bnds(lp, i+1, GLP_UP, 0.0, ub[i]);
+            }
         } else if (!has_lb && !has_ub) {
             glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
         }
