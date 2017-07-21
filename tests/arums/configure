@@ -1,7 +1,7 @@
 #!/bin/bash
 ## TraME tests config script
 
-while getopts b:c: option
+while getopts b:c option
 do
     case "${option}"
     in

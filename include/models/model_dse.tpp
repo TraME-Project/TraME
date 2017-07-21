@@ -227,12 +227,11 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     //
     // double xtol_rel = (xtol_rel_inp) ? *xtol_rel_inp : 1E-04;
     // int max_eval = (max_eval_inp) ? *max_eval_inp : 1E05;
-    double err_tol = 1E-06;
+    double err_tol = 1E-04;
     int max_iter = 5000;
 
     arma::vec theta_0(dim_theta);
     (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0 = initial_theta();
-    // (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0.ones(); // geting weird error with arums::none if we set initial theta = 0
 
     arma::mat dtheta_Psi;
     dtheta(NULL,dtheta_Psi);
