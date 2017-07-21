@@ -8,7 +8,7 @@
  * 06/01/2017
  *
  * g++-mp-7 -O2 -Wall -std=c++11 -I/usr/local/include/trame model_test.cpp -o model.test -L/usr/local/lib -ltrame -framework Accelerate
- * g++-mp-7 -O2 -Wall -std=c++11 -I./../../include model_test.cpp -o model.test -L./../../ -ltrame -framework Accelerate
+ * g++-mp-7 -O2 -Wall -std=c++11 -I./../../include model.cpp -o model.test -L./../../ -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"

@@ -6,22 +6,22 @@ export LD_LIBRARY_PATH="$PWD:$PWD/glpk_tmp/lib":$LD_LIBRARY_PATH
 cd tests
 
 cd ancillary
-./configure -b dev -c y
+./configure -b dev -c
 make
 ./cov_check
 
 cd ../arums
-./configure -b dev -c y
+./configure -b dev -c
 make
 ./cov_check
 
 cd ../mmfs
-./configure -b dev -c y
+./configure -b dev -c
 make
 ./cov_check
 
 cd ../solvers
-./configure -b dev -c y
+./configure -b dev -c
 make
 ./cov_check
 

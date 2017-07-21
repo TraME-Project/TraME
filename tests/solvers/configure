@@ -6,7 +6,7 @@ do
     case "${option}"
     in
     b) TRAME_BUILD=${OPTARG};;
-    c) TRAME_COVERAGE=${OPTARG};;
+    c) TRAME_COVERAGE="y";;
     esac
 done
 

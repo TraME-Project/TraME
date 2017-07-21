@@ -2,14 +2,13 @@
 ## TraME config script
 
 # inputs
-while getopts b:c:l:o: option
-do
-    case "${option}"
-    in
-    b) TRAME_BUILD=${OPTARG};;
-    c) TRAME_COVERAGE=${OPTARG};;
-    l) TRAME_LP=${OPTARG};;
-    o) TRAME_OPT=${OPTARG};;
+# while getopts :b:c:l:o: option; do
+while getopts :b:cl:o option; do
+    case "${option}" in
+        b) TRAME_BUILD=${OPTARG};;
+        c) TRAME_COVERAGE="y";;
+        l) TRAME_LP=${OPTARG};;
+        o) TRAME_OPT=${OPTARG};;
     esac
 done
 

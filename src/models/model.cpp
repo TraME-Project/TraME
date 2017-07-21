@@ -111,7 +111,7 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
 }*/
 
 template<>
-bool 
+bool
 model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out)
 {
     bool success = false;
@@ -306,5 +306,67 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     //
     return success;
 }
+
+// //
+// // marp proj
+
+// template<>
+// bool
+// model<dse<arums::none,arums::none,transfers::tu>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
+// {
+//     bool success = false;
+//     printf("I got called\n");
+//     //
+//     arma::mat kron_term = model_data;
+//     arma::mat C_hat = arma::vectorise(arma::trans(arma::vectorise(mu_hat)) * kron_term);
+//     //
+//     arma::vec obj_lp = arma::join_cols(n,arma::join_cols(m,arma::zeros(dim_theta,1)));
+
+//     arma::mat A_11_lp = arma::kron(arma::ones(nbY,1), arma::eye(nbX,nbX));
+//     arma::mat A_12_lp = arma::kron(arma::eye(nbY,nbY), arma::ones(nbX,1));
+//     arma::mat A_1_lp = arma::join_rows(A_11_lp, arma::join_rows(A_12_lp,-kron_term));
+
+//     arma::mat A_2_lp = arma::join_rows(arma::zeros(1,nbX+nbY),arma::trans(arma::vectorise(C_hat)));
+
+//     arma::mat A_lp = arma::join_cols(A_1_lp, A_2_lp);
+
+//     arma::vec rhs_lp = arma::join_cols(arma::zeros(nbX*nbY,1),arma::ones(1,1));
+
+//     arma::vec lb_lp = arma::zeros(nbX + nbY + dim_theta);
+//     lb_lp.rows(nbX+nbY-1,nbX+nbY+dim_theta-1).fill(-1E10);
+
+//     int k_lp = A_lp.n_rows;
+//     int n_lp = A_lp.n_cols;
+
+//     char* sense_lp = new char[k_lp];
+//     for (int jj=0; jj < k_lp - 1; jj++) {
+//         sense_lp[jj] = '>';
+//     }
+//     sense_lp[k_lp-1] = '=';
+
+//     int modelSense = 0; // minimize
+
+//     arma::mat sol_mat(n_lp, 2);
+//     arma::mat dual_mat(k_lp, 2);
+
+//     bool LP_optimal = false;
+//     double val_lp = 0.0;
+//     //
+//     try {
+//         LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+
+//         if (LP_optimal) {
+//             theta_hat = sol_mat(arma::span(nbX+nbY,nbX+nbY+dim_theta-1),0);
+//             //
+//             success = true;
+//         } else {
+//             std::cout << "Non-optimal value found during optimization" << std::endl;
+//         }
+//     } catch(...) {
+//         std::cout << "Exception during optimization" << std::endl;
+//     }
+//     //
+//     return success;
+// }
 
 }
