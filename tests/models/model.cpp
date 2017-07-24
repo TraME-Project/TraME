@@ -19,8 +19,8 @@ int main()
     start = std::chrono::system_clock::now();
     //
     // inputs:
-    int nbX = 6;
-    int nbY = 5;
+    int nbX = 5;
+    int nbY = 4;
     int dX = 3;
     int dY = 3;
 
@@ -67,8 +67,8 @@ int main()
     trame::model< trame::dse<trame::arums::none, trame::arums::none, trame::transfers::tu> > TU_none_model;
     TU_none_model.build(X_vals,Y_vals,n,m);
 
-    arma::mat theta_0 = arma::zeros(dX*dY,1);
-    TU_none_model.mme(mu_hat,theta_hat_mme,&theta_0);
+    // arma::mat theta_0 = arma::zeros(dX*dY,1);
+    TU_none_model.mme(mu_hat,theta_hat_mme,NULL);
 
     arma::cout << "theta_hat mme for arums_none: \n" << theta_hat_mme << arma::endl;
 
