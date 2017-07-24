@@ -64,7 +64,7 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
     } else if (model_opt_sense==1) { // maximize
         glp_set_obj_dir(lp, GLP_MAX);
     } else {
-        printf("unrecognized input for model_opt_sense; should be 0 or 1.\n");
+        printf("unrecognized input for model_opt_sense; should be 0 (minimize) or 1 (maximize).\n");
         goto QUIT;
     }
 
@@ -74,7 +74,7 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
     for (j=0; j < n_constr; j++) {
         if (constr_sense[j]=='<') {
             glp_set_row_bnds(lp, j+1, GLP_UP, 0.0, rhs[j]);
-        } else if (constr_sense[i]=='>') {
+        } else if (constr_sense[j]=='>') {
             glp_set_row_bnds(lp, j+1, GLP_LO, rhs[j], 0.0);
         } else {
             glp_set_row_bnds(lp, j+1, GLP_FX, rhs[j], rhs[j]);
@@ -128,7 +128,7 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
     int glpk_status = glp_get_status(lp);
 
     if (glpk_status==GLP_OPT) {
-        printf("GLPK: optimal solution found\n");
+        // printf("GLPK: optimal solution found\n");
         success = 1;
     } else { // need to recompute without presolve
         if (glpk_status==GLP_FEAS) {
@@ -197,7 +197,7 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbe
     } else if (model_opt_sense==1) { // maximize
         glp_set_obj_dir(lp, GLP_MAX);
     } else {
-        printf("unrecognized input for model_opt_sense; should be 0 or 1.\n");
+        printf("unrecognized input for model_opt_sense; should be 0 (minimize) or 1 (maximize).\n");
         goto QUIT;
     }
 
