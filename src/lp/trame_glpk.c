@@ -85,7 +85,7 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
         // c'x
         glp_set_obj_coef(lp, i+1, obj[i]);
 
-        // set bounds on x; note 'isinf' cannot distinguish between +inf or -inf
+        // set bounds on x; note 'isinf' cannot distinguish between +inf and -inf
         if (has_lb && has_ub) {
             if (isinf(lb[i]) && isinf(ub[i])) {
                 glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
@@ -232,7 +232,7 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbe
         // c'x
         glp_set_obj_coef(lp, i+1, obj[i]);
 
-        // set bounds on x; note 'isinf' cannot distinguish between +inf or -inf
+        // set bounds on x; note 'isinf' cannot distinguish between +inf and -inf
         if (has_lb && has_ub) {
             if (isinf(lb[i]) && isinf(ub[i])) {
                 glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
