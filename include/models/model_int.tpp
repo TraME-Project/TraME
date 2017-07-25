@@ -104,6 +104,10 @@ struct trame_model_mfe_mme_opt_data {
 
 //
 // functions with specializations
+//
+
+//
+// build function
 
 template<typename Tg, typename Th>
 arma::mat
@@ -111,14 +115,8 @@ model_build_int(const dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& X_
 {
     int nbX = X_inp.n_rows;
     int nbY = Y_inp.n_rows;
-
-    // int dX = X_inp.n_cols;
-    // int dY = Y_inp.n_cols;
-
-    arma::mat eX = arma::ones(nbX,1);
-    arma::mat eY = arma::ones(nbY,1);
-    //
-    arma::mat model_data = arma::abs(arma::kron(eY,X_inp) - arma::kron(Y_inp,eX));
+    
+    arma::mat model_data = arma::abs(arma::kron(arma::ones(nbY,1),X_inp) - arma::kron(Y_inp,arma::ones(nbX,1)));
 
     return model_data;
 }
@@ -164,6 +162,7 @@ model_build_int(const mfe<mmfs::geo>& market_obj, const arma::mat& X_inp, const 
     return model_data;
 }
 
+//
 // model |-> market
 
 template<typename Tg, typename Th>
@@ -225,6 +224,7 @@ model_to_market_int(mfe<mmfs::geo>& market_obj, const arma::mat& model_data, con
     market_obj.build(n,m,phi);
 }
 
+//
 // gradient
 
 template<typename Tg, typename Th, typename Tt>
