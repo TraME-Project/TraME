@@ -58,6 +58,10 @@ else
     TRAME_OPT_FLAGS="-O3"
 fi
 
+if [[ $OSTYPE == *cygwin* ]] ; then
+    TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -DARMA_DONT_PRINT_CXX11_WARNING"
+fi
+
 TRAME_SHLIB_NAME="trame"
 
 # dev build
@@ -67,7 +71,7 @@ if [[ "${TRAME_BUILD}" == "dev" ]]; then
     cd ../..
     TRAME_INCLUDE_PATH=${PWD}/include
     TRAME_INSTALL_PATH=${PWD}
-    cd tests/arums
+    cd ${WDIR}
 else
     TRAME_INSTALL_PATH="/usr/local"
 fi
@@ -75,7 +79,7 @@ fi
 # BLAS and LAPACK settings
 
 if [[ $OSTYPE == darwin* ]] ; then
-        TRAME_BLAS_LAPACK="-framework Accelerate"
+    TRAME_BLAS_LAPACK="-framework Accelerate"
 elif [[ $OSTYPE == *linux* ]] ; then
     TRAME_BLAS_LAPACK="-lblas -llapack"
 elif [[ $OSTYPE == *cygwin* ]] ; then
