@@ -28,7 +28,7 @@
  * 08/17/2016
  *
  * This version:
- * 05/23/2017
+ * 07/24/2017
  */
 
 #ifndef _trame_dse_market_HPP
@@ -54,7 +54,7 @@ class dse_base
 
         // member functions
         void build(const arma::vec& n_inp, const arma::vec& m_inp);
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const bool need_norm_inp);
 };
 
 template<class Tg, class Th, class Tt>
@@ -87,9 +87,9 @@ class dse<Tg,Th,transfers::etu> : public dse_base
         transfers::etu trans_obj;
 
         // member functions
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, bool need_norm_inp);
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
-        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, const int nbDraws, const int seed, const bool need_norm_inp);
 
         void trans(dse<Th,Tg,transfers::etu>& trans_market_obj) const;
         dse<Th,Tg,transfers::etu> trans() const;
@@ -110,9 +110,9 @@ class dse<Tg,Th,transfers::ltu> : public dse_base
         transfers::ltu trans_obj;
 
         // member functions
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda, const arma::mat& phi, bool need_norm_inp);
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
-        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda, const arma::mat& phi, const bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const int nbDraws, const int seed, const bool need_norm_inp);
 
         void trans(dse<Th,Tg,transfers::ltu>& trans_market_obj) const;
         dse<Th,Tg,transfers::ltu> trans() const;
@@ -133,9 +133,9 @@ class dse<Tg,Th,transfers::ntu> : public dse_base
         transfers::ntu trans_obj;
 
         // member functions
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha, const arma::mat& gamma, bool need_norm_inp);
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
-        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha, const arma::mat& gamma, const bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, const int nbDraws, const int seed, const bool need_norm_inp);
 
         void trans(dse<Th,Tg,transfers::ntu>& trans_market_obj) const;
         dse<Th,Tg,transfers::ntu> trans() const;
@@ -156,9 +156,9 @@ class dse<Tg,Th,transfers::tu> : public dse_base
         transfers::tu trans_obj;
 
         // member functions
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, bool need_norm_inp);
-        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, bool need_norm_inp);
-        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, int nbDraws, int seed, bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const bool need_norm_inp);
+        void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp);
+        template<typename Ta, typename Tb> void build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const int nbDraws, const int seed, const bool need_norm_inp);
 
         void trans(dse<Th,Tg,transfers::tu>& trans_market_obj) const;
         dse<Th,Tg,transfers::tu> trans() const;

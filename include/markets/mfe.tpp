@@ -38,13 +38,13 @@ mfe<Tt>::mfe(const arma::vec& n_inp, const arma::vec& m_inp)
 }
 
 template<typename Tt>
-mfe<Tt>::mfe(double sigma_inp, bool need_norm_inp)
+mfe<Tt>::mfe(const double sigma_inp, const bool need_norm_inp)
 {   
     this->build(sigma_inp,need_norm_inp);
 }
 
 template<typename Tt>
-mfe<Tt>::mfe(const arma::vec& n_inp, const arma::vec& m_inp, double sigma_inp, bool need_norm_inp)
+mfe<Tt>::mfe(const arma::vec& n_inp, const arma::vec& m_inp, const double sigma_inp, const bool need_norm_inp)
 {   
     this->build(n_inp,m_inp,sigma_inp,need_norm_inp);
 }
@@ -64,7 +64,7 @@ mfe<Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp)
 
 template<typename Tt>
 void
-mfe<Tt>::build(double sigma_inp, bool need_norm_inp)
+mfe<Tt>::build(const double sigma_inp, const bool need_norm_inp)
 {
     nbX = 0;
     nbY = 0;
@@ -77,7 +77,7 @@ mfe<Tt>::build(double sigma_inp, bool need_norm_inp)
 
 template<typename Tt>
 void
-mfe<Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, double sigma_inp, bool need_norm_inp)
+mfe<Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const double sigma_inp, const bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -157,14 +157,10 @@ template<typename Tt>
 void
 mfe<Tt>::trans()
 {
-    int nbX_temp = nbX;
-
-    nbX = nbY;
-    nbY = nbX_temp;
+    std::swap(nbX,nbY); 
     //
-    arma::vec n_temp = n;
-    n = m;
-    m = n_temp;
+    n.swap(m);
+    
     // Keith: fill in normalization later
 
     mmfs_obj.trans();
@@ -189,8 +185,8 @@ arma::vec
 mfe<Tt>::marg_x_inv(const arma::mat& B_ys, const arma::uvec* xs)
 const
 {
-    arma::uvec index_vec = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
-    bool coeff = (need_norm) ? false : true;
+    const arma::uvec index_vec = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
+    const bool coeff = (need_norm) ? false : true;
 
     arma::vec ubs(nbX);
     (need_norm) ? ubs.fill(1E10) : ubs = n;
@@ -339,9 +335,7 @@ template<typename Tt>
 bool
 mfe<Tt>::solve(arma::mat& mu_sol)
 {
-    bool res = ipfp(*this,mu_sol);
-    //
-    return res;
+    return ipfp(*this,mu_sol);
 }
 
 template<typename Tt>
@@ -349,7 +343,7 @@ bool
 mfe<Tt>::solve(arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
+    const char sig = (solver) ? solver[0] : char(0);
     
     if (solver) { // not NULL
         if (sig=='i') {
@@ -370,7 +364,7 @@ bool
 mfe<Tt>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
     bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
+    const char sig = (solver) ? solver[0] : char(0);
     
     if (solver) { // not NULL
         if (sig=='i') {
@@ -392,15 +386,15 @@ mfe<Tt>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char
 template<typename Tt>
 inline
 double
-mfe<Tt>::marg_x_inv_fn(double z, void* opt_data)
+mfe<Tt>::marg_x_inv_fn(const double z, void* opt_data)
 {
     trame_mfe_zeroin_data<Tt> *d = reinterpret_cast<trame_mfe_zeroin_data<Tt>*>(opt_data);
     //
     arma::uvec x_ind_temp(1);
     x_ind_temp(0) = d->x_ind;
-    
-    double term_1 = (d->coeff) ? z : 0;
     //
+    const double term_1 = (d->coeff) ? z : 0;
+    
     double ret = term_1 - d->mfe_obj.n(d->x_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(z,d->B_ys,&x_ind_temp,NULL));
     //
     return ret;
@@ -409,15 +403,15 @@ mfe<Tt>::marg_x_inv_fn(double z, void* opt_data)
 template<typename Tt>
 inline
 double
-mfe<Tt>::marg_y_inv_fn(double z, void* opt_data)
+mfe<Tt>::marg_y_inv_fn(const double z, void* opt_data)
 {
     trame_mfe_zeroin_data<Tt> *d = reinterpret_cast<trame_mfe_zeroin_data<Tt>*>(opt_data);
     //
     arma::uvec y_ind_temp(1);
     y_ind_temp(0) = d->y_ind;
-    
-    double term_1 = (d->coeff) ? z : 0;
     //
+    const double term_1 = (d->coeff) ? z : 0;
+    
     double ret = term_1 - d->mfe_obj.m(d->y_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(d->A_xs,z,NULL,&y_ind_temp));
     //
     return ret;
