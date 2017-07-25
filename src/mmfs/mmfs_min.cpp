@@ -34,7 +34,7 @@
 
 #include "trame.hpp"
 
-void 
+void
 trame::mmfs::min::build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, const bool need_norm_inp)
 {
     need_norm = need_norm_inp;
@@ -50,7 +50,7 @@ trame::mmfs::min::build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, 
     aux_gamma_exp = arma::exp(gamma_inp);
 }
 
-void 
+void
 trame::mmfs::min::trans()
 {
     std::swap(nbX,nbY);
