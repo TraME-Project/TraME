@@ -276,7 +276,8 @@ elif [[ $OSTYPE == *linux* ]] ; then
 elif [[ $OSTYPE == *cygwin* ]] ; then
     TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS}"
     if [[ "${TRAME_BUILD}" == "dev" ]]; then
-        TRAME_SHLIB_FLAGS="-shared -L${WDIR} -Wl,-Bsymbolic-functions -Wl,-z,relro "
+        # TRAME_SHLIB_FLAGS="-shared -L${WDIR} -Wl,-Bsymbolic-functions -Wl,-z,relro "
+        TRAME_SHLIB_FLAGS="-shared -L${WDIR} "
     else
         TRAME_SHLIB_FLAGS="-shared -L/usr/lib -Wl,-Bsymbolic-functions -Wl,-z,relro "
     fi
