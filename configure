@@ -281,7 +281,7 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
     else
         TRAME_SHLIB_FLAGS="-shared -L/usr/lib -Wl,-Bsymbolic-functions -Wl,-z,relro "
     fi
-    TRAME_BLAS_LAPACK="-lblas -llapack"
+    TRAME_BLAS_LAPACK="-lopenblas"
 
     # look for any Gurobi directories, then choose the latest one
     grb_dirs=( /opt/gurobi* )
