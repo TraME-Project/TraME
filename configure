@@ -274,7 +274,9 @@ elif [[ $OSTYPE == *linux* ]] ; then
     echo "TraME: using GLPK. LP_INCLUDE_PATH set to ${LP_INCLUDE_PATH}"
     fi
 elif [[ $OSTYPE == *cygwin* ]] ; then
+    TRAME_SHLIB_NAME="libtrame.dll"
     TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS}"
+
     if [[ "${TRAME_BUILD}" == "dev" ]]; then
         # TRAME_SHLIB_FLAGS="-shared -L${WDIR} -Wl,-Bsymbolic-functions -Wl,-z,relro "
         TRAME_SHLIB_FLAGS="-shared -L${WDIR} "
