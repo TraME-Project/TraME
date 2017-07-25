@@ -168,16 +168,16 @@ if [[ $OSTYPE == darwin* ]] ; then
 
             mkdir ${WDIR}/glpk_tmp
             cd glpk_tmp
-            curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.61.tar.gz
-            tar -xzf glpk-4.61.tar.gz
-            cd glpk-4.61
+            curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.62.tar.gz
+            tar -xzf glpk-4.62.tar.gz
+            cd glpk-4.62
             ./configure --prefix=${WDIR}/glpk_tmp
             make
             make PREFIX=${WDIR}/glpk_tmp install
             cd ${WDIR}
 
-            rm -f ${WDIR}/glpk_tmp/glpk-4.61.tar.gz
-            rm -rf ${WDIR}/glpk_tmp/glpk-4.61
+            rm -f ${WDIR}/glpk_tmp/glpk-4.62.tar.gz
+            rm -rf ${WDIR}/glpk_tmp/glpk-4.62
             echo ""
 
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
@@ -253,16 +253,16 @@ elif [[ $OSTYPE == *linux* ]] ; then
 
             mkdir ${WDIR}/glpk_tmp
             cd glpk_tmp
-            curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.61.tar.gz
-            tar -xzf glpk-4.61.tar.gz
-            cd glpk-4.61
+            curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.62.tar.gz
+            tar -xzf glpk-4.62.tar.gz
+            cd glpk-4.62
             ./configure --prefix=${WDIR}/glpk_tmp
             make
             make PREFIX=${WDIR}/glpk_tmp install
             cd ${WDIR}
 
-            rm -f ${WDIR}/glpk_tmp/glpk-4.61.tar.gz
-            rm -rf ${WDIR}/glpk_tmp/glpk-4.61
+            rm -f ${WDIR}/glpk_tmp/glpk-4.62.tar.gz
+            rm -rf ${WDIR}/glpk_tmp/glpk-4.62
             echo ""
 
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
@@ -341,16 +341,16 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
 
             mkdir ${WDIR}/glpk_tmp
             cd glpk_tmp
-            curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.61.tar.gz
-            tar -xzf glpk-4.61.tar.gz
-            cd glpk-4.61
+            curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.62.tar.gz
+            tar -xzf glpk-4.62.tar.gz
+            cd glpk-4.62
             ./configure --prefix=${WDIR}/glpk_tmp
             make
             make PREFIX=${WDIR}/glpk_tmp install
             cd ${WDIR}
 
-            rm -f ${WDIR}/glpk_tmp/glpk-4.61.tar.gz
-            rm -rf ${WDIR}/glpk_tmp/glpk-4.61
+            rm -f ${WDIR}/glpk_tmp/glpk-4.62.tar.gz
+            rm -rf ${WDIR}/glpk_tmp/glpk-4.62
             echo ""
 
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
