@@ -29,7 +29,7 @@
  * 08/15/2016
  *
  * This version:
- * 04/27/2017
+ * 07/24/2017
  */
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
@@ -63,7 +63,7 @@ class ces
         ~ces(){};
          ces(){};
 
-        void build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, bool need_norm_inp);
+        void build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const bool need_norm_inp);
 
         void trans();
 

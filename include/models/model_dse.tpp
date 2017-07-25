@@ -226,7 +226,7 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     bool success = false;
     //
     double err_tol = 1E-04;
-    int max_iter = 500;
+    int max_iter = 1000;
 
     arma::vec theta_0(dim_theta);
     (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0 = initial_theta();
@@ -252,6 +252,7 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     double obj_val = 0;
 
     success = model_mme_optim(sol_vec,model_mme_opt_objfn,&opt_data,&obj_val,&err_tol,&max_iter);
+    std::cout << "obj_val = " << obj_val << std::endl;
     //
     arma::mat U = arma::reshape(sol_vec.rows(0,nbX*nbY-1),nbX,nbY);
     theta_hat = sol_vec.rows(nbX*nbY,nbX*nbY+dim_theta-1);

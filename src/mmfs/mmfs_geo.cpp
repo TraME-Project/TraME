@@ -29,39 +29,38 @@
  * 08/15/2016
  *
  * This version:
- * 03/27/2017
+ * 07/24/2017
  */
 
 #include "trame.hpp"
 
 void 
-trame::mmfs::geo::build(const arma::mat& phi_TU, bool need_norm_TU)
+trame::mmfs::geo::build(const arma::mat& phi_inp, const bool need_norm_inp)
 {
-    need_norm = need_norm_TU;
+    need_norm = need_norm_inp;
 
-    nbX = phi_TU.n_rows;
-    nbY = phi_TU.n_cols;
+    nbX = phi_inp.n_rows;
+    nbY = phi_inp.n_cols;
     dim_params = nbX*nbY;
 
-    phi = phi_TU;
-    aux_phi_exp = arma::exp(phi_TU / 2.0);
+    phi = phi_inp;
+    aux_phi_exp = arma::exp(phi_inp / 2.0);
 }
 
 void 
 trame::mmfs::geo::trans()
 {
-    int nbX_temp = nbX;
-
-    nbX = nbY;
-    nbY = nbX_temp;
-    
-    phi = phi.t();
-    aux_phi_exp = aux_phi_exp.t();
+    std::swap(nbX,nbY);
+    //
+    arma::inplace_trans(phi);
+    arma::inplace_trans(aux_phi_exp);
 }
 
 //
 // MFE-related functions
+//
 
+//
 // matching function
 
 arma::mat 
@@ -75,45 +74,39 @@ arma::mat
 trame::mmfs::geo::M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
-    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1); 
-    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
+    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1); 
+    const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat term_1 = aux_phi_exp(x_ind,y_ind);
-    arma::mat term_2 = arma::sqrt(a_xs * b_ys.t());
-
-    arma::mat ret = term_1 % term_2;
+    const arma::mat term_1 = aux_phi_exp(x_ind,y_ind);
+    const arma::mat term_2 = arma::sqrt(a_xs * b_ys.t());
     //
-    return ret;
+    return term_1 % term_2;
 }
 
 arma::mat 
 trame::mmfs::geo::M(const double& a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
-    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1); 
-    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
+    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat term_1 = aux_phi_exp(x_ind,y_ind);
-    arma::mat term_2 = arma::sqrt(a_xs * b_ys.t());
-
-    arma::mat ret = term_1 % term_2;
+    const arma::mat term_1 = aux_phi_exp(x_ind,y_ind);
+    const arma::mat term_2 = arma::sqrt(a_xs * b_ys.t());
     //
-    return ret;
+    return term_1 % term_2;
 }
 
 arma::mat 
 trame::mmfs::geo::M(const arma::mat& a_xs, const double& b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
-    arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1); 
-    arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
+    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat term_1 = aux_phi_exp(x_ind,y_ind);
-    arma::mat term_2 = arma::sqrt(a_xs * b_ys);
-
-    arma::mat ret = term_1 % term_2;
+    const arma::mat term_1 = aux_phi_exp(x_ind,y_ind);
+    const arma::mat term_2 = arma::sqrt(a_xs * b_ys);
     //
-    return ret;
+    return term_1 % term_2;
 }
 
 //
@@ -122,24 +115,20 @@ arma::mat
 trame::mmfs::geo::dmu_x0(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
-    arma::mat term_1 = aux_phi_exp / 2.0;
-    arma::mat term_2 = arma::sqrt( (1/a_xs) * b_ys.t());
-
-    arma::mat ret = term_1 % term_2;
+    const arma::mat term_1 = aux_phi_exp / 2.0;
+    const arma::mat term_2 = arma::sqrt( (1/a_xs) * b_ys.t());
     //
-    return ret;
+    return term_1 % term_2;
 }
 
 arma::mat 
 trame::mmfs::geo::dmu_0y(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
-    arma::mat term_1 = aux_phi_exp / 2.0;
-    arma::mat term_2 = arma::sqrt( a_xs * (1/b_ys.t()) );
-
-    arma::mat ret = term_1 % term_2;
+    const arma::mat term_1 = aux_phi_exp / 2.0;
+    const arma::mat term_2 = arma::sqrt( a_xs * (1/b_ys.t()) );
     //
-    return ret;
+    return term_1 % term_2;
 }
 
 arma::mat 
@@ -153,12 +142,12 @@ arma::mat
 trame::mmfs::geo::dparams_M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::mat* delta_params_M)
 const
 {
-    arma::mat der_1 = arma::sqrt( a_xs * b_ys.t() );
+    const arma::mat der_1 = arma::sqrt( a_xs * b_ys.t() );
 
     arma::mat ret;
 
     if (delta_params_M) {
-        arma::mat delta_params_1 = arma::reshape((*delta_params_M),nbX,nbY);
+        const arma::mat delta_params_1 = arma::reshape((*delta_params_M),nbX,nbY);
 
         ret = arma::vectorise(delta_params_1 % der_1);
     } else {

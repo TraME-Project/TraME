@@ -29,7 +29,7 @@
  * 08/15/2016
  *
  * This version:
- * 07/17/2017
+ * 07/24/2017
  */
 
 #include "trame.hpp"
@@ -53,23 +53,21 @@ trame::mmfs::cd::build(const arma::mat& lambda_inp, const arma::mat& phi_inp, co
 void
 trame::mmfs::cd::trans()
 {
-    const int nbX_temp = nbX;
-
-    nbX = nbY;
-    nbY = nbX_temp;
+    std::swap(nbX,nbY);
     //
-    arma::mat lambda_temp;
+    arma::inplace_trans(lambda);
+    arma::inplace_trans(aux_zeta);
+    lambda.swap(aux_zeta);
 
-    lambda = aux_zeta.t();
-    aux_zeta = lambda_temp.t();
-
-    phi = phi.t();
-    aux_phi_exp = aux_phi_exp.t();
+    arma::inplace_trans(phi);
+    arma::inplace_trans(aux_phi_exp);
 }
 
 //
 // MFE-related functions
+//
 
+//
 // matching function
 
 arma::mat

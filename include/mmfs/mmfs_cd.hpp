@@ -29,10 +29,10 @@
  * 08/15/2016
  *
  * This version:
- * 07/17/2017
+ * 07/24/2017
  */
 
-// some functions are const restricted because of calls to const market pointers in equilibrium solvers
+// some functions are const restricted because of calls to const market pointers in the equilibrium solvers
 
 #ifndef _trame_mmfs_cd_HPP
 #define _trame_mmfs_cd_HPP
