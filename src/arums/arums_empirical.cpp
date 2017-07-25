@@ -179,13 +179,13 @@ const
         q = arma::vectorise(mu_x_inp);
     }
     //
-    arma::vec obj_grbi = arma::vectorise(Phi);
+    arma::vec obj_lp = arma::vectorise(Phi);
 
-    arma::vec rhs_grbi = arma::join_cols(p,q);
+    arma::vec rhs_lp = arma::join_cols(p,q);
 
-    char* sense_grbi = new char[k_Gstar];
-    for (int jj=0; jj<k_Gstar; jj++) {
-        sense_grbi[jj] = '=';
+    char* sense_lp = new char[k_Gstar];
+    for (int jj=0; jj < k_Gstar; jj++) {
+        sense_lp[jj] = '=';
     }
 
     bool LP_optimal;
@@ -195,16 +195,16 @@ const
     arma::mat sol_mat(n_Gstar, 2);
     arma::mat dual_mat(k_Gstar, 2);
     try {
-        LP_optimal = generic_LP(k_Gstar, n_Gstar, obj_grbi.memptr(), numnz_Gstar, vbeg_Gstar, vind_Gstar, vval_Gstar, modelSense, rhs_grbi.memptr(), sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        LP_optimal = generic_LP(k_Gstar, n_Gstar, obj_lp.memptr(), numnz_Gstar, vbeg_Gstar, vind_Gstar, vval_Gstar, modelSense, rhs_lp.memptr(), sense_lp, NULL, NULL, NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
         if (LP_optimal) {
             arma::mat u = dual_mat.col(0).rows(0,aux_nbDraws-1);
 
             if (outside_option) {
-                arma::mat U_x_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY);
+                const arma::mat U_x_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY);
                 U_x_out = - U_x_temp.rows(0,nbY-1) + arma::as_scalar(U_x_temp.row(nbY));
             } else {
-                arma::mat U_x_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY-1);
+                const arma::mat U_x_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY-1);
                 U_x_out = - U_x_temp - arma::accu(p % u);
             }
             //
@@ -216,7 +216,7 @@ const
         std::cout << "Exception during optimization" << std::endl;
     }
     //
-    delete[] sense_grbi;
+    delete[] sense_lp;
     //
     return val_x;
 }
@@ -270,17 +270,17 @@ const
         Phi = atoms.slice(x);
     }
     //
-    arma::vec obj_grbi_1 = mubar_x;
-    arma::vec obj_grbi_2 = - arma::ones(aux_nbDraws,1)/aux_nbDraws;
-    arma::vec obj_grbi   = arma::join_cols(obj_grbi_1,obj_grbi_2);
+    arma::vec obj_lp_1 = mubar_x;
+    arma::vec obj_lp_2 = - arma::ones(aux_nbDraws,1)/aux_nbDraws;
+    arma::vec obj_lp   = arma::join_cols(obj_lp_1,obj_lp_2);
 
-    arma::vec rhs_grbi_1 = Ubar_x;
-    arma::vec rhs_grbi_2 = arma::vectorise(-Phi);
-    arma::vec rhs_grbi = arma::join_cols(rhs_grbi_1,rhs_grbi_2);
+    arma::vec rhs_lp_1 = Ubar_x;
+    arma::vec rhs_lp_2 = arma::vectorise(-Phi);
+    arma::vec rhs_lp = arma::join_cols(rhs_lp_1,rhs_lp_2);
 
-    char* sense_grbi = new char[k_Gbar];
+    char* sense_lp = new char[k_Gbar];
     for (int jj=0; jj<k_Gbar; jj++) {
-        sense_grbi[jj] = '<';
+        sense_lp[jj] = '<';
     }
 
     bool LP_optimal;
@@ -293,7 +293,7 @@ const
     double val_x = 0.0;
 
     try {
-        LP_optimal = generic_LP(k_Gbar, n_Gbar, obj_grbi.memptr(), numnz_Gbar, vbeg_Gbar, vind_Gbar, vval_Gbar, modelSense, rhs_grbi.memptr(), sense_grbi, NULL, NULL, NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        LP_optimal = generic_LP(k_Gbar, n_Gbar, obj_lp.memptr(), numnz_Gbar, vbeg_Gbar, vind_Gbar, vval_Gbar, modelSense, rhs_lp.memptr(), sense_lp, NULL, NULL, NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
         if (LP_optimal) {
             U_x_out = sol_mat.col(0).rows(0,nbY-1);
@@ -308,7 +308,7 @@ const
         std::cout << "Exception during optimization" << std::endl;
     }
     //
-    delete[] sense_grbi;
+    delete[] sense_lp;
     //
     return val_x;
 }

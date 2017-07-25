@@ -30,7 +30,9 @@ WDIR=${PWD}
 
 if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
     echo "TraME: ARMA_INCLUDE_PATH not set"
-    if [ -f /usr/include/armadillo ]; then
+    if [ -f ${WDIR}/../../include/armadillo ]; then 
+        ARMA_INCLUDE_PATH="-I./../../include"
+    elif [ -f /usr/include/armadillo ]; then
         ARMA_INCLUDE_PATH="-I/usr/include"
     elif [ -f /usr/local/include/armadillo ]; then
         ARMA_INCLUDE_PATH="-I/usr/local/include"
@@ -67,11 +69,7 @@ if [[ "${TRAME_BUILD}" == "dev" ]]; then
     TRAME_INSTALL_PATH=${PWD}
     cd tests/arums
 else
-    if [[ $OSTYPE == *linux* ]] ; then
-        TRAME_INSTALL_PATH="/usr"
-    else 
-        TRAME_INSTALL_PATH="/usr/local"
-    fi
+    TRAME_INSTALL_PATH="/usr/local"
 fi
 
 # BLAS and LAPACK settings
@@ -80,6 +78,8 @@ if [[ $OSTYPE == darwin* ]] ; then
         TRAME_BLAS_LAPACK="-framework Accelerate"
 elif [[ $OSTYPE == *linux* ]] ; then
     TRAME_BLAS_LAPACK="-lblas -llapack"
+elif [[ $OSTYPE == *cygwin* ]] ; then
+    TRAME_BLAS_LAPACK="-lopenblas"
 else
     TRAME_BLAS_LAPACK="-lblas -llapack"
 fi
