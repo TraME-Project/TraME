@@ -28,39 +28,46 @@
  * 01/17/2016
  *
  * This version:
- * 02/15/2017
+ * 07/26/2017
  */
 
 // internal nodal_newton
 
 template<typename Tt>
 bool
-nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* tol_inp, const int* max_iter_inp)
+nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* err_tol_inp, const int* max_iter_inp)
 {
     bool success = false;
     //
-    int nbX = market.nbX;
-    int nbY = market.nbY;
+    const double err_tol = (err_tol_inp) ? *err_tol_inp : 1E-06;
+    const int max_iter = (max_iter_inp) ? *max_iter_inp : 2000;
 
-    double sigma = market.sigma; // we don't check for arums_G.sigma == arums_H.sigma
+    const int nbX = market.nbX;
+    const int nbY = market.nbY;
+
+    const double sigma = market.sigma; // we don't check for arums_G.sigma == arums_H.sigma
 
     trame_mfe_opt_data<Tt> opt_data;
     opt_data.market = market;
 
     arma::vec sol_vec = -sigma*arma::join_cols(arma::log(market.n/2.0),arma::log(market.m/2.0)); // initial guess
     
-    success = nodal_newton_optim(sol_vec,nodal_newton_opt_objfn<Tt>,&opt_data,nodal_newton_jacobian<Tt>,&opt_data);
+    success = nodal_newton_optim(sol_vec,nodal_newton_opt_objfn<Tt>,&opt_data,nodal_newton_jacobian<Tt>,&opt_data,NULL,&err_tol,&max_iter);
+
     //
     // construct equilibrium objects
-    arma::vec us = sol_vec.rows(0,nbX-1);
-    arma::vec vs = sol_vec.rows(nbX,nbX+nbY-1);
 
-    arma::vec mu_x0_s = arma::exp(-us/sigma);
-    arma::vec mu_0y_s = arma::exp(-vs/sigma);
+    const arma::vec us = sol_vec.rows(0,nbX-1);
+    const arma::vec vs = sol_vec.rows(nbX,nbX+nbY-1);
 
-    arma::mat mu = market.mmfs_obj.M(mu_x0_s,mu_0y_s);
+    const arma::vec mu_x0_s = arma::exp(-us/sigma);
+    const arma::vec mu_0y_s = arma::exp(-vs/sigma);
+
+    const arma::mat mu = market.mmfs_obj.M(mu_x0_s,mu_0y_s);
+
     //
     // return equilibrium objects
+
     if (mu_out) {
         *mu_out = mu;
     }
@@ -94,57 +101,81 @@ template<typename Tt>
 bool
 nodal_newton(const mfe<Tt>& market, arma::mat& mu_out)
 {
-    bool res = nodal_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-    
-    return res;
+    return nodal_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 }
 
 template<typename Tt>
 bool
-nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp)
+nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double err_tol_inp)
 {
-    bool res = nodal_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL);
-    
-    return res;
+    return nodal_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&err_tol_inp,NULL);
 }
 
 template<typename Tt>
 bool
-nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const int& max_iter_inp)
+nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const int max_iter_inp)
 {
-    bool res = nodal_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
-    
-    return res;
+    return nodal_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
 }
 
 template<typename Tt>
 bool
-nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
+nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp)
 {
-    bool res = nodal_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
-    
-    return res;
+    return nodal_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&err_tol_inp,&max_iter_inp);
 }
 
 template<typename Tt>
 bool
 nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    bool res = nodal_newton_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL,NULL);
-    
-    return res;
+    return nodal_newton_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL,NULL);
 }
 
 template<typename Tt>
 bool
-nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* tol_inp, const int* max_iter_inp)
+nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* err_tol_inp, const int* max_iter_inp)
 {
-    bool res = nodal_newton_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,&val_out,tol_inp,max_iter_inp);
-    
-    return res;
+    return nodal_newton_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,&val_out,err_tol_inp,max_iter_inp);
 }
 
-// optimization function
+//
+// optimization functions
+
+inline
+bool
+nodal_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, arma::vec* value_out, const double* err_tol_inp, const int* max_iter_inp)
+{
+    optim::optim_opt_settings opt_params;
+
+    if (err_tol_inp) {
+        opt_params.err_tol = *err_tol_inp;
+    }
+
+    if (max_iter_inp) {
+        opt_params.iter_max = *max_iter_inp;
+    }
+
+    return optim::broyden_int(init_out_vals,opt_objfn,opt_data,value_out,&opt_params);
+}
+
+inline
+bool 
+nodal_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
+                   std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data, arma::vec* value_out, const double* err_tol_inp, const int* max_iter_inp)
+{
+    optim::optim_opt_settings opt_params;
+
+    if (err_tol_inp) {
+        opt_params.err_tol = *err_tol_inp;
+    }
+
+    if (max_iter_inp) {
+        opt_params.iter_max = *max_iter_inp;
+    }
+
+    return optim::broyden_df_int(init_out_vals,opt_objfn,opt_data,jacob_objfn,jacob_data,value_out,&opt_params);
+}
 
 template<typename Tt>
 arma::vec
@@ -152,17 +183,17 @@ nodal_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
 {
     trame_mfe_opt_data<Tt> *d = reinterpret_cast<trame_mfe_opt_data<Tt>*>(opt_data);
     //
-    int nbX = d->market.nbX;
-    int nbY = d->market.nbY;
-    double sigma = d->market.sigma;
+    const int nbX = d->market.nbX;
+    const int nbY = d->market.nbY;
+    const double sigma = d->market.sigma;
 
-    arma::vec us = vals_inp.rows(0,nbX-1);
-    arma::vec vs = vals_inp.rows(nbX,nbX+nbY-1);
+    const arma::vec us = vals_inp.rows(0,nbX-1);
+    const arma::vec vs = vals_inp.rows(nbX,nbX+nbY-1);
 
-    arma::vec mu_x0_s = arma::exp(-us/sigma);
-    arma::vec mu_0y_s = arma::exp(-vs/sigma);
+    const arma::vec mu_x0_s = arma::exp(-us/sigma);
+    const arma::vec mu_0y_s = arma::exp(-vs/sigma);
 
-    arma::mat mu = d->market.mmfs_obj.M(mu_x0_s,mu_0y_s);
+    const arma::mat mu = d->market.mmfs_obj.M(mu_x0_s,mu_0y_s);
     //
     arma::vec ret = arma::join_cols(mu_x0_s + arma::sum(mu,1) - d->market.n, mu_0y_s + arma::trans(arma::sum(mu,0)) - d->market.m);
     //
@@ -175,28 +206,27 @@ nodal_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
 {
     trame_mfe_opt_data<Tt> *d = reinterpret_cast<trame_mfe_opt_data<Tt>*>(jacob_data);
     //
-    int nbX = d->market.nbX;
-    int nbY = d->market.nbY;
-    double sigma = d->market.sigma;
+    const int nbX = d->market.nbX;
+    const int nbY = d->market.nbY;
+    const double sigma = d->market.sigma;
 
-    arma::vec us = vals_inp.rows(0,nbX-1);
-    arma::vec vs = vals_inp.rows(nbX,nbX+nbY-1);
+    const arma::vec us = vals_inp.rows(0,nbX-1);
+    const arma::vec vs = vals_inp.rows(nbX,nbX+nbY-1);
 
-    arma::vec mu_x0_s = arma::exp(-us/sigma);
-    arma::vec mu_0y_s = arma::exp(-vs/sigma);
+    const arma::vec mu_x0_s = arma::exp(-us/sigma);
+    const arma::vec mu_0y_s = arma::exp(-vs/sigma);
 
-    arma::mat mu = d->market.mmfs_obj.M(mu_x0_s,mu_0y_s);
+    const arma::mat mu = d->market.mmfs_obj.M(mu_x0_s,mu_0y_s);
     //
     // arma::mat du_s = d->market.mmfs_obj.du_Psi(us,vs);
-    arma::mat du_s = d->market.mmfs_obj.dmu_x0(mu_x0_s,mu_0y_s);
-    arma::mat dv_s = d->market.mmfs_obj.dmu_0y(mu_x0_s,mu_0y_s);
+    const arma::mat du_s = d->market.mmfs_obj.dmu_x0(mu_x0_s,mu_0y_s);
+    const arma::mat dv_s = d->market.mmfs_obj.dmu_0y(mu_x0_s,mu_0y_s);
 
-    arma::mat Delta_11 = - arma::diagmat(mu_x0_s % (1.0 + arma::sum(du_s,1)));
-    arma::mat Delta_22 = - arma::diagmat(mu_0y_s % (1.0 + arma::trans(arma::sum(dv_s,0))));
+    const arma::mat Delta_11 = - arma::diagmat(mu_x0_s % (1.0 + arma::sum(du_s,1)));
+    const arma::mat Delta_22 = - arma::diagmat(mu_0y_s % (1.0 + arma::trans(arma::sum(dv_s,0))));
 
-
-    arma::mat Delta_12 = - arma::trans(elem_prod(mu_0y_s,dv_s.t()));
-    arma::mat Delta_21 = - arma::trans(elem_prod(mu_x0_s,du_s));
+    const arma::mat Delta_12 = - arma::trans(elem_prod(mu_0y_s,dv_s.t()));
+    const arma::mat Delta_21 = - arma::trans(elem_prod(mu_x0_s,du_s));
 
     arma::mat ret = arma::join_cols( arma::join_rows(Delta_11,Delta_12), arma::join_rows(Delta_21,Delta_22) );
     //

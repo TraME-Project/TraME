@@ -17,8 +17,8 @@ int main()
     start = std::chrono::system_clock::now();
     //
     // inputs:
-    int nbX = 150;
-    int nbY = 200;
+    int nbX = 10;
+    int nbY = 8;
     double sigma = 1;
 
     arma::vec n = arma::ones(nbX,1);
@@ -45,11 +45,10 @@ int main()
     arma::mat mu_TU_1, mu_TU_2;
     trame::ipfp(mfe_obj_TU,mu_TU_1);
 
-    std::cout << "begin nodal_newton" << std::endl;
     trame::nodal_newton(mfe_obj_TU,mu_TU_2);
 
-    arma::cout << "Solution of TU-logit problem using ipfp:\n" << mu_TU_1 << arma::endl;
-    arma::cout << "Solution of TU-logit problem using nodal_newton:\n" << mu_TU_2 << arma::endl;
+    arma::cout << "Solution of mfe::geo (TU-logit) problem using ipfp:\n" << mu_TU_1 << arma::endl;
+    arma::cout << "Solution of mfe::geo (TU-logit) problem using nodal_newton:\n" << mu_TU_2 << arma::endl;
     //
     printf("\n*===================    End of nodal_newton Test    ===================*\n");
     printf("\n");

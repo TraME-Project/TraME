@@ -60,7 +60,7 @@ OBJECTS_TRAME_MDLS= $(SOURCES_TRAME_MDLS:.cpp=.o)
 SOURCES_TRAME_OPTIM= $(TRAME_SRC_DIR)/optim/unconstrained/bfgs.cpp $(TRAME_SRC_DIR)/optim/zeros/broyden.cpp $(TRAME_SRC_DIR)/optim/line_search/more_thuente.cpp $(TRAME_SRC_DIR)/optim/misc/logit_transform.cpp $(TRAME_SRC_DIR)/optim/constrained/sumt.cpp $(TRAME_SRC_DIR)/optim/generic/generic_optim.cpp $(TRAME_SRC_DIR)/optim/generic/generic_constr_optim.cpp
 OBJECTS_TRAME_OPTIM= $(SOURCES_TRAME_OPTIM:.cpp=.o)
 
-SOURCES_TRAME_SLVRS= $(TRAME_SRC_DIR)/solvers/aux_solvers.cpp $(TRAME_SRC_DIR)/solvers/nodal_newton.cpp
+SOURCES_TRAME_SLVRS= $(TRAME_SRC_DIR)/solvers/aux_solvers.cpp
 OBJECTS_TRAME_SLVRS= $(SOURCES_TRAME_SLVRS:.cpp=.o)
 
 SOURCES_TRAME_TRANS= $(TRAME_SRC_DIR)/transfers/transfers_etu.cpp $(TRAME_SRC_DIR)/transfers/transfers_ltu.cpp $(TRAME_SRC_DIR)/transfers/transfers_ntu.cpp $(TRAME_SRC_DIR)/transfers/transfers_tu.cpp
