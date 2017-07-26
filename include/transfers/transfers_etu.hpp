@@ -105,10 +105,10 @@ class etu
         arma::mat dw_VW(const arma::mat& Ws) const;
         arma::mat dw_VW(const arma::mat& Ws, const arma::uvec* xs, const arma::uvec* ys) const;
 
-        arma::mat WU(const arma::mat& Us);
-        arma::mat WU(const arma::mat& Us, const arma::uvec* xs, const arma::uvec* ys);
-        arma::mat WV(const arma::mat& Vs);
-        arma::mat WV(const arma::mat& Vs, const arma::uvec* xs, const arma::uvec* ys);
+        arma::mat WU(const arma::mat& Us) const;
+        arma::mat WU(const arma::mat& Us, const arma::uvec* xs, const arma::uvec* ys) const;
+        arma::mat WV(const arma::mat& Vs) const;
+        arma::mat WV(const arma::mat& Vs, const arma::uvec* xs, const arma::uvec* ys) const;
 };
 
 #endif

@@ -322,12 +322,14 @@ const
 
 arma::mat 
 trame::transfers::tu::WU(const arma::mat& Us)
+const
 {
     return this->WU(Us,NULL,NULL);
 }
 
 arma::mat 
 trame::transfers::tu::WU(const arma::mat& Us, const arma::uvec* xs, const arma::uvec* ys)
+const
 {
     const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
@@ -337,12 +339,14 @@ trame::transfers::tu::WU(const arma::mat& Us, const arma::uvec* xs, const arma::
 
 arma::mat 
 trame::transfers::tu::WV(const arma::mat& Vs)
+const
 {
     return this->WV(Vs,NULL,NULL);
 }
 
 arma::mat 
 trame::transfers::tu::WV(const arma::mat& Vs, const arma::uvec* xs, const arma::uvec* ys)
+const
 {
     const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
