@@ -30,74 +30,64 @@
 
 /*
  * w upper bound
- * used in 'jacobi' solver and arc_newton
+ * used in jacobi and arc_newton solvers
  *
  * Keith O'Hara
  * 03/22/2017
+ *
+ * This version:
+ * 07/26/2017
  */
 
 template<typename Tg, typename Th, typename Tt>
 arma::mat
 w_upper_bound(const dse<Tg,Th,Tt>& market)
 {
-    int nbX = market.nbX;
-    int nbY = market.nbY;
+    const int nbX = market.nbX;
+    const int nbY = market.nbY;
 
-    arma::vec n = market.n;
-    arma::vec m = market.m;
-
-    Tg arums_G = market.arums_G;
-    Th arums_H = market.arums_H;
-
-    Tt trans_obj = market.trans_obj;
-    int transfers_type = trans_obj.transfers_type;
+    int transfers_type = market.trans_obj.transfers_type;
     //
-    //bool success = false;
     int iter = 0;
-    int max_iter = 1000;
-    double Z_min_val = -10.0;
+    const int max_iter = 1000;
     
-    int x;
-    double k = 1.0;
-    double mu_fill;
+    double k = 1.0, Z_min_val = -10.0;
     arma::uvec x_ind(1);
     arma::vec mu_cond_x(nbY,1);
 
-    arma::mat U_star_x, Z, w(nbX,nbY), U(nbX,nbY), V(nbX,nbY);
+    arma::mat U_star_x, w(nbX,nbY), U(nbX,nbY), V(nbX,nbY);
 
     while (Z_min_val < 0 && iter < max_iter) {
         iter ++;
 
-        for (x=0; x < nbX; x++) {
+        for (int x=0; x < nbX; x++) {
             x_ind(0) = x;
 
-            if (transfers_type==1) {
-                mu_fill = 1.0 / (std::pow(2.0,-k) + (double) nbY);
+            if (transfers_type == 1) {
+                double mu_fill = 1.0 / (std::pow(2.0,-k) + (double) nbY);
                 mu_cond_x.fill(mu_fill);
 
-                arums_G.Gstarx(mu_cond_x,U_star_x,x);
-                U.row(x) = arma::trans(U_star_x);
+                market.arums_G.Gstarx(mu_cond_x,U_star_x,x);
+                U.row(x) = U_star_x.t();
 
-                w.row(x) = trans_obj.WU(U_star_x.t(),&x_ind,NULL);
-                V.row(x) = trans_obj.VW(w.row(x),&x_ind,NULL);
-            } else if (transfers_type==2) {
+                w.row(x) = market.trans_obj.WU(U_star_x.t(),&x_ind,NULL);
+                V.row(x) = market.trans_obj.VW(w.row(x),&x_ind,NULL);
+            } else if (transfers_type == 2) {
                 w.row(x).fill(std::pow(2,k));
 
-                U.row(x) = trans_obj.UW(w.row(x),&x_ind,NULL);
-                V.row(x) = trans_obj.VW(w.row(x),&x_ind,NULL);
+                U.row(x) = market.trans_obj.UW(w.row(x),&x_ind,NULL);
+                V.row(x) = market.trans_obj.VW(w.row(x),&x_ind,NULL);
             } else {
                 printf("w_upper_bound error: unrecognized transfers_type");
                 return w;
             }
         }
         //
-        arums_G.U = U;
-        arums_H.U = V.t();
+        arma::mat mu_G, mu_H;
+        market.arums_G.G(market.n,U,mu_G);
+        market.arums_H.G(market.m,V.t(),mu_H);
 
-        arums_G.G(n);
-        arums_H.G(m);
-
-        Z = arums_G.mu_sol - arma::trans(arums_H.mu_sol);
+        arma::mat Z = mu_G - mu_H.t();
         Z_min_val = elem_min(Z);
         //
         k *= 2;
@@ -105,61 +95,3 @@ w_upper_bound(const dse<Tg,Th,Tt>& market)
     //
     return w;
 }
-
-/*
-template<typename Ta>
-bool max_welfare_nlopt(int n_pars, std::vector<double>& io_val, double& opt_val, double* lb, double* ub,
-                       double (*opt_objfn)(const std::vector<double> &x_inp, std::vector<double> &grad, void *opt_data),
-                       trame_market_opt_data<Ta> opt_data)
-{
-    bool success = false;
-
-    nlopt::opt opt_trame(nlopt::LD_LBFGS, n_pars);
-    nlopt::result result;
-
-    if (lb) {
-        opt_trame.set_lower_bounds(*lb);
-    }
-    if (ub) {
-        opt_trame.set_upper_bounds(*ub);
-    }
-
-    opt_trame.set_min_objective(*opt_objfn, &opt_data);
-    
-    opt_trame.set_xtol_rel(1e-8);
-    opt_trame.set_ftol_rel(1e-15);
-    opt_trame.set_maxeval(5000);
-
-    double minf;
-    try {
-        result = opt_trame.optimize(io_val, minf);
-    } catch(...) {
-        printf("error in max_welfare optimization (using LBFGS);\n");
-        printf("retrying with MMA\n");
-
-        nlopt::opt opt_trame_2(nlopt::LD_MMA, n_pars);
-
-        if (lb) {
-            opt_trame_2.set_lower_bounds(*lb);
-        }
-        if (ub) {
-            opt_trame_2.set_upper_bounds(*ub);
-        }
-
-        opt_trame_2.set_min_objective(*opt_objfn, &opt_data);
-        
-        opt_trame_2.set_xtol_rel(1e-8);
-        opt_trame_2.set_ftol_rel(1e-15);
-        opt_trame_2.set_maxeval(5000);
-
-        result = opt_trame_2.optimize(io_val, minf);
-    }
-
-    if (result > 0) {
-        opt_val = minf;
-        success = true;
-    }
-
-    return success;
-}
-*/

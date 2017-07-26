@@ -28,7 +28,7 @@
  * 01/17/2016
  *
  * This version:
- * 06/16/2017
+ * 07/25/2017
  */
 
 //
@@ -46,18 +46,20 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
     arma::vec sol_vec = arma::vectorise(w_upper_bound(market)); // get initial values
     
     success = arc_newton_optim(sol_vec,arc_newton_opt_objfn<Tg,Th,Tt>,&opt_data,arc_newton_jacobian<Tg,Th,Tt>,&opt_data);
+
     //
     // construct equilibrium objects
+
     arma::mat sol_mat = arma::reshape(sol_vec,market.nbX,market.nbY);
     arma::mat U = market.trans_obj.UW(sol_mat);
 
-    // Tg* arums_G = const_cast<Tg*>(&market.arums_G); // Keith: this recast is unsafe, change later
-    const Tg* arums_G = &market.arums_G;
-    
+    // Tg* arums_G = const_cast<Tg*>(&market.arums_G);
     arma::mat mu_G;
-    arums_G->G(market.n,U,mu_G);
+    market.arums_G.G(market.n,U,mu_G);
+
     //
     // return equilibrium objects
+
     if (mu_out) {
         *mu_out = mu_G;
     }
@@ -90,58 +92,61 @@ template<typename Tg, typename Th, typename Tt>
 bool
 arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    bool res = arc_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-    
-    return res;
+    return arc_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp)
+arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp)
 {
-    bool res = arc_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL);
-    
-    return res;
+    return arc_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp)
+arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp)
 {
-    bool res = arc_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
-    
-    return res;
+    return arc_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
+arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp, const int max_iter_inp)
 {
-    bool res = arc_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
-    
-    return res;
+    return arc_newton_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    bool res = arc_newton_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL,NULL);
-    
-    return res;
+    return arc_newton_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* tol_inp, const int* max_iter_inp)
 {
-    bool res = arc_newton_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,&val_out,tol_inp,max_iter_inp);
-    
-    return res;
+    return arc_newton_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,&val_out,tol_inp,max_iter_inp);
 }
 
 //
 // optimization functions
+
+inline
+bool 
+arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
+{
+    return optim::broyden_df(init_out_vals,opt_objfn,opt_data);
+}
+
+inline
+bool 
+arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
+                             std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data)
+{
+    return optim::broyden_df(init_out_vals,opt_objfn,opt_data,jacob_objfn,jacob_data);
+}
 
 template<typename Tg, typename Th, typename Tt>
 arma::vec
@@ -149,8 +154,8 @@ arc_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
 {
     trame_market_opt_data<Tg,Th,Tt> *d = reinterpret_cast<trame_market_opt_data<Tg,Th,Tt>*>(opt_data);
     //
-    int nbX = d->market.nbX;
-    int nbY = d->market.nbY;
+    const int nbX = d->market.nbX;
+    const int nbY = d->market.nbY;
 
     arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
 
@@ -172,8 +177,8 @@ arc_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
 {
     trame_market_opt_data<Tg,Th,Tt> *d = reinterpret_cast<trame_market_opt_data<Tg,Th,Tt>*>(jacob_data);
     //
-    int nbX = d->market.nbX;
-    int nbY = d->market.nbY;
+    const int nbX = d->market.nbX;
+    const int nbY = d->market.nbY;
 
     arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
 

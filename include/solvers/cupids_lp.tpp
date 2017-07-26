@@ -22,13 +22,13 @@
   ################################################################################*/
 
 /*
- * Cupids LP solver
+ * Cupids LP solver for TU-type markets
  *
  * Keith O'Hara
  * 08/25/2016
  *
  * This version:
- * 03/22/2017
+ * 07/26/2017
  */
 
 // internal cupids_lp
@@ -44,24 +44,16 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
         return false;
     }
     //
-    int nbX = market.nbX;
-    int nbY = market.nbY;
+    const int nbX = market.nbX;
+    const int nbY = market.nbY;
 
-    arma::vec n = market.n;
-    arma::vec m = market.m;
-
-    Tg arums_G = market.arums_G;
-    Th arums_H = market.arums_H;
-
-    Tt trans_obj = market.trans_obj;
-
-    arma::mat phi = trans_obj.phi;
+    arma::mat phi = market.trans_obj.phi;
     //
     arma::mat epsilon_iy, epsilon_0i, I_ix;
     arma::mat eta_xj, eta_0j, I_yj;
 
-    int nbDraws_1 = build_disaggregate_epsilon(n,arums_G,epsilon_iy,epsilon_0i,I_ix);
-    int nbDraws_2 = build_disaggregate_epsilon(m,arums_H,eta_xj,eta_0j,I_yj);
+    const int nbDraws_1 = build_disaggregate_epsilon(market.n,market.arums_G,epsilon_iy,epsilon_0i,I_ix);
+    const int nbDraws_2 = build_disaggregate_epsilon(market.m,market.arums_H,eta_xj,eta_0j,I_yj);
 
     eta_xj = eta_xj.t();
 
@@ -70,15 +62,15 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
     I_yj = I_yj.t();
     //
-    arma::vec n_i = arma::vectorise(I_ix * n) / (double) nbDraws_1;
-    arma::vec m_j = arma::vectorise(m.t() * I_yj) / (double) nbDraws_2;
+    const arma::vec n_i = arma::vectorise(I_ix * market.n) / (double) nbDraws_1;
+    const arma::vec m_j = arma::vectorise(market.m.t() * I_yj) / (double) nbDraws_2;
 
-    int nbI = n_i.n_elem;
-    int nbJ = m_j.n_elem;
+    const int nbI = n_i.n_elem;
+    const int nbJ = m_j.n_elem;
     //
     // use batch allocation to construct the sparse constraint matrix (A)
     int jj, kk, ll, count_val = 0;
-    int num_non_zero = nbI*nbY + nbJ*nbX + nbDraws_1*(nbX*nbY) + nbX*nbDraws_2*nbY;
+    const int num_non_zero = nbI*nbY + nbJ*nbX + nbDraws_1*(nbX*nbY) + nbX*nbDraws_2*nbY;
 
     arma::umat location_mat(2,num_non_zero);
     arma::rowvec vals_mat(num_non_zero);
@@ -131,12 +123,14 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
             }
         }
     }
+
     //
     // now proceed to solve the LP problem
+
     arma::sp_mat A_sp_t(location_mat,vals_mat); // transpose of A
     
-    int k_lp = A_sp_t.n_cols; // cols as we're working with the transpose
-    int n_lp = A_sp_t.n_rows; // rows as we're working with the transpose
+    const int k_lp = A_sp_t.n_cols; // n_cols as we're working with the transpose of A
+    const int n_lp = A_sp_t.n_rows; // n_rows as we're working with the transpose of A
 
     const arma::uword* row_vals = &(*A_sp_t.row_indices);
     const arma::uword* col_vals = &(*A_sp_t.col_ptrs);
@@ -185,8 +179,8 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
         lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_non_zero, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         
         if (lp_optimal) {
-            arma::mat mu_iy = arma::reshape(dual_mat(arma::span(0,nbI*nbY-1),0),nbI,nbY);
-            arma::mat mu = I_ix.t() * mu_iy;
+            const arma::mat mu_iy = arma::reshape(dual_mat(arma::span(0,nbI*nbY-1),0),nbI,nbY);
+            const arma::mat mu = I_ix.t() * mu_iy;
             //
             // package up solution
             if (mu_out) {
@@ -203,10 +197,10 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
             }
 
             if (mu_x0_out) {
-                *mu_x0_out = n - arma::sum(mu,1);
+                *mu_x0_out = market.n - arma::sum(mu,1);
             }
             if (mu_0y_out) {
-                *mu_0y_out = m - arma::trans(arma::sum(mu,0));
+                *mu_0y_out = market.m - arma::trans(arma::sum(mu,0));
             }
             //
             success = true;
@@ -226,25 +220,19 @@ template<typename Tg, typename Th, typename Tt>
 bool
 cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    bool res = cupids_lp_int(market,&mu_out,NULL,NULL,NULL,NULL);
-
-    return res;
+    return cupids_lp_int(market,&mu_out,NULL,NULL,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    bool res = cupids_lp_int(market,&mu_out,NULL,NULL,&U_out,&V_out);
-    
-    return res;
+    return cupids_lp_int(market,&mu_out,NULL,NULL,&U_out,&V_out);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out)
 {
-    bool res = cupids_lp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out);
-
-    return res;
+    return cupids_lp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out);
 }

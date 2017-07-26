@@ -28,7 +28,7 @@
  * 08/23/2016
  *
  * This version:
- * 11/02/2016
+ * 07/26/2016
  */
 
 #include "trame.hpp"
@@ -41,11 +41,11 @@
 int 
 trame::build_disaggregate_epsilon(arma::vec n, const trame::arums::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix)
 {
-    int nbX = arums_emp_inp.nbX;
-    int nbY = arums_emp_inp.nbY;
+    const int nbX = arums_emp_inp.nbX;
+    const int nbY = arums_emp_inp.nbY;
 
-    int nbDraws = arums_emp_inp.aux_nbDraws;
-    int nbI = nbX * nbDraws;
+    const int nbDraws = arums_emp_inp.aux_nbDraws;
+    const int nbI = nbX * nbDraws;
 
     arma::vec I_01(nbX);
     arma::mat epsilon;
