@@ -57,7 +57,7 @@ class ltu
         ~ltu(){};
          ltu(){};
 
-        void build(const arma::mat& lambda_inp, const arma::mat& phi_inp, bool need_norm_inp);
+        void build(const arma::mat& lambda_inp, const arma::mat& phi_inp, const bool need_norm_inp);
 
         void trans();
 
@@ -68,31 +68,31 @@ class ltu
         // DSE-related functions
         arma::mat Psi(const arma::mat& U, const arma::mat& V) const;
         arma::mat Psi(const arma::mat& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;
-        arma::mat Psi(const double& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;
-        arma::mat Psi(const arma::mat& U, const double& V, const arma::uvec* xs, const arma::uvec* ys) const;
-        double Psi(const double& U, const double& V, int x_ind, int y_ind) const;
+        arma::mat Psi(const double U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;
+        arma::mat Psi(const arma::mat& U, const double V, const arma::uvec* xs, const arma::uvec* ys) const;
+        double Psi(const double U, const double V, const int x_ind, const int y_ind) const;
 
         arma::mat du_Psi(const arma::mat& U, const arma::mat& V) const;
         arma::mat du_Psi(const arma::mat& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;
-        arma::mat du_Psi(const double& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;
-        arma::mat du_Psi(const arma::mat& U, const double& V, const arma::uvec* xs, const arma::uvec* ys) const;
+        arma::mat du_Psi(const double U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;
+        arma::mat du_Psi(const arma::mat& U, const double V, const arma::uvec* xs, const arma::uvec* ys) const;
 
         arma::mat dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dparams) const;
         arma::mat dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dparams) const;
 
         arma::mat Ucal(const arma::mat& vs) const;
         arma::mat Ucal(const arma::mat& vs, const arma::uvec* xs, const arma::uvec* ys) const;
-        double Ucal(const double& vs, int xs, int ys) const;
+        double Ucal(const double vs, const int xs, const int ys) const;
         arma::mat Vcal(const arma::mat& us) const;
         arma::mat Vcal(const arma::mat& us, const arma::uvec* xs, const arma::uvec* ys) const;
-        double Vcal(const double& us, int xs, int ys) const;
+        double Vcal(const double us, const int xs, const int ys) const;
 
         arma::mat UW(const arma::mat& Ws) const;
         arma::mat UW(const arma::mat& Ws, const arma::uvec* xs, const arma::uvec* ys) const;
-        double UW(const double& Ws, int x_ind, int y_ind) const;
+        double UW(const double Ws, const int x_ind, const int y_ind) const;
         arma::mat VW(const arma::mat& Ws) const;
         arma::mat VW(const arma::mat& Ws, const arma::uvec* xs, const arma::uvec* ys) const;
-        double VW(const double& Ws, int x_ind, int y_ind) const;
+        double VW(const double Ws, const int x_ind, const int y_ind) const;
 
         arma::mat dw_UW(const arma::mat& Ws) const;
         arma::mat dw_UW(const arma::mat& Ws, const arma::uvec* xs, const arma::uvec* ys) const;
