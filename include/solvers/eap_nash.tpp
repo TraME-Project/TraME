@@ -28,7 +28,7 @@
  * 08/16/2016
  *
  * This version:
- * 03/22/2017
+ * 07/26/2017
  */
 
 // internal eap_nash
@@ -39,22 +39,17 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
 {
     bool success = false;
     //
-    Tt trans_obj = market.trans_obj;
+    const int nbX = market.nbX;
+    const int nbY = market.nbY;
 
-    int nbX = market.nbX;
-    int nbY = market.nbY;
-
-    arma::vec n = market.n;
-    arma::vec m = market.m;
-
-    bool x_first = (x_first_inp) ? *x_first_inp : true;
-    double tol = (tol_inp) ? *tol_inp : 1E-12;
-    int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
+    const bool x_first = (x_first_inp) ? *x_first_inp : true;
+    const double tol = (tol_inp) ? *tol_inp : 1E-12;
+    const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
     //
-    arma::mat v_curr, v_next, v_err;
+    arma::mat v_curr, v_next;
 
     if (x_first) {
-        v_curr = v_from_us(trans_obj,arma::zeros(nbX,1),NULL,NULL);
+        v_curr = v_from_us(market.trans_obj,arma::zeros(nbX,1),NULL,NULL);
     } else {
         v_curr = arma::zeros(nbY,1);
     }
@@ -65,15 +60,14 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
     while (err > tol && iter < max_iter) {
         iter++;
 
-        v_next = update_v(trans_obj,v_curr,n,m,x_first);
-        v_err = arma::abs(v_next - v_curr);
-        err = elem_max(v_err);
+        v_next = update_v(market.trans_obj,v_curr,market.n,market.m,x_first);
+        err = elem_max(arma::abs(v_next - v_curr));
 
         v_curr = v_next;
     }
     //
     arma::mat subdiff;
-    arma::mat u = u_from_vs(trans_obj,v_curr,NULL,&subdiff);
+    arma::mat u = u_from_vs(market.trans_obj,v_curr,NULL,&subdiff);
 
     arma::vec uv_vec = arma::join_cols(arma::vectorise(u),arma::vectorise(v_curr));
 
@@ -90,10 +84,10 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
     arma::mat A_2_lp = arma::kron(arma::eye(nbY,nbY), arma::ones(1,nbX));
     arma::mat A_lp = arma::join_cols(A_1_lp, A_2_lp);
 
-    arma::vec rhs_lp = arma::join_cols(n,m);
+    arma::vec rhs_lp = arma::join_cols(market.n,market.m);
 
-    int k_lp = A_lp.n_rows;
-    int n_lp = A_lp.n_cols;
+    const int k_lp = A_lp.n_rows;
+    const int n_lp = A_lp.n_cols;
 
     char* sense_lp = new char[k_lp];
     for (int jj=0; jj<k_lp; jj++) {
@@ -123,10 +117,10 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
             }
             
             if (mu_x0_out) {
-                *mu_x0_out = n - arma::sum(mu,1);
+                *mu_x0_out = market.n - arma::sum(mu,1);
             }
             if (mu_0y_out) {
-                *mu_0y_out = m - arma::trans(arma::sum(mu,0));
+                *mu_0y_out = market.m - arma::trans(arma::sum(mu,0));
             }
             //
             success = true;
@@ -146,103 +140,83 @@ template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-    
-    return res;
+    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool& x_first_inp)
+eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,NULL,NULL);
-    
-    return res;
+    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp)
+eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL);
-    
-    return res;
+    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp)
+eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
-    
-    return res;
+    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool& x_first_inp, const double& tol_inp)
+eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, const double tol_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,&tol_inp,NULL);
-    
-    return res;
+    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,&tol_inp,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool& x_first_inp, const int& max_iter_inp)
+eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, const int max_iter_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
-    
-    return res;
+    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
+eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp, const int max_iter_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
-    
-    return res;
+    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool& x_first_inp, const double& tol_inp, const int& max_iter_inp)
+eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, const double tol_inp, const int max_iter_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,&tol_inp,&max_iter_inp);
-    
-    return res;
+    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,&tol_inp,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& u_out, arma::mat& v_out)
 {
-    bool res = eap_nash_int(market,&mu_out,NULL,NULL,&u_out,&v_out,NULL,NULL,NULL);
-    
-    return res;
+    return eap_nash_int(market,&mu_out,NULL,NULL,&u_out,&v_out,NULL,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool* x_first_inp, const double* tol_inp, const int* max_iter_inp)
 {
-    bool res = eap_nash_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&u_out,&v_out,x_first_inp,tol_inp,max_iter_inp);
-    
-    return res;
+    return eap_nash_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&u_out,&v_out,x_first_inp,tol_inp,max_iter_inp);
 }
 
-// aux functions
+// internal functions
 
 template<typename Tt>
 arma::mat
-u_from_vs(const Tt& trans_obj, const arma::mat& v, double* tol_inp, arma::mat* subdiff)
+u_from_vs(const Tt& trans_obj, const arma::mat& v, const double* tol_inp, arma::mat* subdiff)
 {
-    arma::mat us = trans_obj.Ucal(v,NULL,NULL);
+    const arma::mat us = trans_obj.Ucal(v,NULL,NULL);
     arma::mat u  = elem_max(arma::max(us,1),0.0);
     //
     if (subdiff) {
-        double tol = (tol_inp) ? *tol_inp : 0.0;
+        const double tol = (tol_inp) ? *tol_inp : 0.0;
 
         *subdiff = arma::zeros(trans_obj.nbX,trans_obj.nbY);
         subdiff->elem( arma::find(arma::abs(elem_sub(u,us)) <= tol) ).ones();
@@ -253,13 +227,13 @@ u_from_vs(const Tt& trans_obj, const arma::mat& v, double* tol_inp, arma::mat* s
 
 template<typename Tt>
 arma::mat
-v_from_us(const Tt& trans_obj, const arma::mat& u, double* tol_inp, arma::mat* subdiff)
+v_from_us(const Tt& trans_obj, const arma::mat& u, const double* tol_inp, arma::mat* subdiff)
 {
-    arma::mat vs = trans_obj.Vcal(u,NULL,NULL);
+    const arma::mat vs = trans_obj.Vcal(u,NULL,NULL);
     arma::mat v  = arma::trans(elem_max(arma::max(vs,0),0.0));
     //
     if (subdiff) {
-        double tol = (tol_inp) ? *tol_inp : 0.0;
+        const double tol = (tol_inp) ? *tol_inp : 0.0;
 
         *subdiff = arma::zeros(trans_obj.nbY,trans_obj.nbX);
         subdiff->elem( arma::find(arma::abs(elem_sub(v,vs.t())) <= tol) ).ones();
@@ -271,10 +245,10 @@ v_from_us(const Tt& trans_obj, const arma::mat& u, double* tol_inp, arma::mat* s
 
 template<typename Tt>
 arma::mat
-update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, bool x_first)
+update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, const bool x_first)
 {
-    int nbX = trans_obj.nbX;
-    int nbY = trans_obj.nbY;
+    const int nbX = trans_obj.nbX;
+    const int nbY = trans_obj.nbY;
     
     arma::mat the_mat = arma::zeros(nbX,nbY);
     arma::mat v_updated = arma::zeros(nbY,1);
@@ -290,8 +264,8 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
     arma::mat A_lp = arma::join_rows(arma::eye(nbX,nbX),arma::ones(nbX,1));
     arma::mat lb_lp = arma::zeros(nbX+1,1);
 
-    int k_lp = A_lp.n_rows;
-    int n_lp = A_lp.n_cols;
+    const int k_lp = A_lp.n_rows;
+    const int n_lp = A_lp.n_cols;
 
     char* sense_lp = new char[k_lp];
     for (jj=0; jj<k_lp; jj++) {
@@ -319,8 +293,8 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
 
     arma::mat lb_bis = arma::zeros(nbX+1,1);
 
-    int k_bis = A_bis.n_rows;
-    int n_bis = A_bis.n_cols;
+    const int k_bis = A_bis.n_rows;
+    const int n_bis = A_bis.n_cols;
 
     char* sense_bis = new char[k_bis];
     for (jj=0; jj<k_bis-1; jj++) {
@@ -328,10 +302,7 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
     }
     sense_bis[k_bis-1] = '=';
 
-    int modelSense_bis = 0; // minimize
-    if (!x_first) {
-        modelSense_bis = 1; // maximize
-    }
+    int modelSense_bis = (x_first) ? 0 : 1;
 
     arma::mat sol_mat_bis(n_bis, 2);
     arma::mat dual_mat_bis(k_bis, 2);
@@ -353,6 +324,7 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
             } // end of yp loop
         } // end of x loop
         //
+
         lb_lp.rows(0,nbX-1) = - arma::min(the_mat,1);
         obj_lp(nbX,0) = m(y);
 
@@ -370,9 +342,11 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
         } catch(...) {
             std::cout << "Exception during optimization" << std::endl;
         }
-        /*
-         * second LP
-         */
+
+        //
+        // second LP
+        //
+
         A_bis(nbX,nbX) = m(y);
         rhs_bis(nbX) = val_lp;
 

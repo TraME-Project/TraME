@@ -43,25 +43,25 @@ template<typename Tt>
 bool ipfp(const mfe<Tt>& market, arma::mat& mu_out);
 
 template<typename Tt>
-bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp);
+bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double tol_inp);
 
 template<typename Tt>
-bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const int& max_iter_inp);
+bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const int max_iter_inp);
 
 template<typename Tt>
 bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const arma::vec& by_start);
 
 template<typename Tt>
-bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double tol_inp, const int max_iter_inp);
 
 template<typename Tt>
-bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp, const arma::vec& by_start);
+bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double tol_inp, const arma::vec& by_start);
 
 template<typename Tt>
-bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const int& max_iter_inp, const arma::vec& by_start);
+bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const int max_iter_inp, const arma::vec& by_start);
 
 template<typename Tt>
-bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp, const arma::vec& by_start);
+bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double tol_inp, const int max_iter_inp, const arma::vec& by_start);
 
 template<typename Tt>
 bool ipfp(const mfe<Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);

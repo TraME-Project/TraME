@@ -35,9 +35,7 @@ template<typename Tg, typename Th, typename Tt>
 bool
 equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol)
 {
-    bool res = equil_solve(market_obj,mu_sol,NULL);
-    //
-    return res;
+    return equil_solve(market_obj,mu_sol,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -238,8 +236,5 @@ inline
 bool
 equil_solve(const dse<arums::empirical,arums::empirical,transfers::tu>& market_obj, arma::mat& mu_sol, const char* solver)
 {
-    bool res = false;
-    res = cupids_lp(market_obj,mu_sol);
-    //
-    return res;
+    return cupids_lp(market_obj,mu_sol);
 }

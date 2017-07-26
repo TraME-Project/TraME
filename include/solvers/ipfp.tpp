@@ -39,21 +39,20 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
 {
     bool success = false;
     //
-    //bool noSingles = market.need_norm;
+    const int nbX = market.nbX;
+    const int nbY = market.nbY;
 
-    int nbX = market.nbX;
-    int nbY = market.nbY;
+    const double tol = (tol_inp) ? *tol_inp : 1E-12;
+    const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
 
-    double tol = (tol_inp) ? *tol_inp : 1E-12;
-    int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
     //
     // begin loop
+
     arma::vec ax(nbX);
     arma::vec by = (by_start) ? *by_start : market.m;
 
     arma::vec val_old(nbX+nbY);
     arma::vec val_new(nbX+nbY);
-    arma::vec val_err(nbX+nbY);
 
     int iter = 0;
     double err = 2*tol;
@@ -67,16 +66,9 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
         ax = market.marg_x_inv(by);
         by = market.marg_y_inv(ax);
 
-        // Keith: need to add this later
-        // if (noSingles) {
-            
-        // }
-        
-
         val_new = arma::join_cols(ax,by);
-        val_err = arma::abs(val_new - val_old);
 
-        err = arma::as_scalar(arma::max(val_err));
+        err = elem_max(arma::abs(val_new - val_old));
     }
 
     if (err <= tol && iter < max_iter) {
@@ -133,88 +125,68 @@ template<typename Tt>
 bool
 ipfp(const mfe<Tt>& market, arma::mat& mu_out)
 {
-    bool res = ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-    
-    return res;
+    return ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 }
 
 template<typename Tt>
 bool
-ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp)
+ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double tol_inp)
 {
-    bool res = ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL,NULL);
-    
-    return res;
+    return ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL,NULL);
 }
 
 template<typename Tt>
 bool
-ipfp(const mfe<Tt>& market, arma::mat& mu_out, const int& max_iter_inp)
+ipfp(const mfe<Tt>& market, arma::mat& mu_out, const int max_iter_inp)
 {
-    bool res = ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp,NULL);
-    
-    return res;
+    return ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp,NULL);
 }
 
 template<typename Tt>
 bool
 ipfp(const mfe<Tt>& market, arma::mat& mu_out, const arma::vec& by_start)
 {
-    bool res = ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,&by_start);
-    
-    return res;
+    return ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,&by_start);
 }
 
 template<typename Tt>
 bool
-ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
+ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double tol_inp, const int max_iter_inp)
 {
-    bool res = ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp,NULL);
-    
-    return res;
+    return ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp,NULL);
 }
 
 template<typename Tt>
 bool
-ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp, const arma::vec& by_start)
+ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double tol_inp, const arma::vec& by_start)
 {
-    bool res = ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL,&by_start);
-    
-    return res;
+    return ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL,&by_start);
 }
 
 template<typename Tt>
 bool
-ipfp(const mfe<Tt>& market, arma::mat& mu_out, const int& max_iter_inp, const arma::vec& by_start)
+ipfp(const mfe<Tt>& market, arma::mat& mu_out, const int max_iter_inp, const arma::vec& by_start)
 {
-    bool res = ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp,&by_start);
-    
-    return res;
+    return ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp,&by_start);
 }
 
 template<typename Tt>
 bool
-ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp, const arma::vec& by_start)
+ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double tol_inp, const int max_iter_inp, const arma::vec& by_start)
 {
-    bool res = ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp,&by_start);
-    
-    return res;
+    return ipfp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp,&by_start);
 }
 
 template<typename Tt>
 bool
 ipfp(const mfe<Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    bool res = ipfp_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL,NULL,NULL,NULL);
-    
-    return res;
+    return ipfp_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL,NULL,NULL,NULL);
 }
 
 template<typename Tt>
 bool
 ipfp(const mfe<Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, arma::vec& u_out, arma::vec& v_out, const double* tol_inp, const int* max_iter_inp, const arma::vec* by_start)
 {
-    bool res = ipfp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,&u_out,&v_out,tol_inp,max_iter_inp,by_start);
-    
-    return res;
+    return ipfp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,&u_out,&v_out,tol_inp,max_iter_inp,by_start);
 }

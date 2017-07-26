@@ -45,24 +45,16 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
         return false;
     }
     //
-    int nbX = market.nbX;
-    int nbY = market.nbY;
-
-    arma::vec n = market.n;
-    arma::vec m = market.m;
+    const int nbX = market.nbX;
+    const int nbY = market.nbY;
 
     arma::mat alpha = market.trans_obj.alpha;
     arma::mat gamma = market.trans_obj.gamma;
 
-    // Tg* arums_G = const_cast<Tg*>(&market.arums_G); // Keith: this recast is unsafe, change later
-    // Th* arums_H = const_cast<Th*>(&market.arums_H);
-    const Tg* arums_G = &market.arums_G;
-    const Th* arums_H = &market.arums_H;
-
-    arma::mat mu_NR = arma::max(n * arma::ones(1,nbY), arma::ones(nbX,1) * m.t());
+    arma::mat mu_NR = arma::max(market.n * arma::ones(1,nbY), arma::ones(nbX,1) * market.m.t());
     //
-    double tol = (tol_inp) ? *tol_inp : 1E-12;
-    int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
+    const double tol = (tol_inp) ? *tol_inp : 1E-12;
+    const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
     //
     int iter = 0;
     double err = 2*tol;
@@ -72,8 +64,8 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
     while (err > tol && iter < max_iter) {
         iter++;
         //
-        arums_G->Gbar(alpha,mu_NR,n,U_P,mu_P);
-        arums_H->Gbar(gamma.t(),mu_P.t(),m,U_D,mu_D);
+        market.arums_G.Gbar(alpha,mu_NR,market.n,U_P,mu_P);
+        market.arums_H.Gbar(gamma.t(),mu_P.t(),market.m,U_D,mu_D);
 
         mu_diff = mu_P - mu_D.t();
         mu_NR -= mu_diff;
@@ -91,10 +83,10 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
     }
 
     if (mu_x0_out) {
-        *mu_x0_out = n - arma::sum(mu_D.t(),1);
+        *mu_x0_out = market.n - arma::sum(mu_D.t(),1);
     }
     if (mu_0y_out) {
-        *mu_0y_out = m - arma::trans(arma::sum(mu_D.t(),0));
+        *mu_0y_out = market.m - arma::trans(arma::sum(mu_D.t(),0));
     }
 
     if (U_out) {
@@ -113,52 +105,40 @@ template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL);
-    
-    return res;
+    return darum_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp)
 {
-    bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,NULL);
-    
-    return res;
+    return darum_int(market,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp)
 {
-    bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
-    
-    return res;
+    return darum_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
 {
-    bool res = darum_int(market,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
-    
-    return res;
+    return darum_int(market,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    bool res = darum_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL);
-    
-    return res;
+    return darum_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp)
 {
-    bool res = darum_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,tol_inp,max_iter_inp);
-    
-    return res;
+    return darum_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,tol_inp,max_iter_inp);
 }
