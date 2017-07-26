@@ -28,7 +28,7 @@
  * 02/24/2017
  *
  * This version:
- * 02/26/2017
+ * 07/25/2017
  */
 
 #include "lp/trame_glpk.h"
@@ -43,8 +43,8 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
 {
     int success = 0;
     //
-    int has_lb = (lb) ? 1 : 0;
-    int has_ub = (ub) ? 1 : 0;
+    const int has_lb = (lb) ? 1 : 0;
+    const int has_ub = (ub) ? 1 : 0;
 
     int i,j;
     //
@@ -123,6 +123,7 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
     glp_init_smcp(&lp_control);
     
     lp_control.presolve = GLP_ON;
+
     if (n_constr < n_vars) {
         lp_control.meth = GLP_PRIMAL;
         lp_control.r_test = GLP_RT_HAR;
@@ -187,8 +188,8 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbe
 
     int success = 0;
     //
-    int has_lb = (lb) ? 1 : 0;
-    int has_ub = (ub) ? 1 : 0;
+    const int has_lb = (lb) ? 1 : 0;
+    const int has_ub = (ub) ? 1 : 0;
 
     int i,j;
     //
@@ -276,6 +277,7 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbe
     glp_init_smcp(&lp_control);
 
     lp_control.presolve = GLP_ON;
+
     if (n_constr < n_vars) {
         lp_control.meth = GLP_PRIMAL;
         lp_control.r_test = GLP_RT_HAR;
