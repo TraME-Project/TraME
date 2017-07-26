@@ -28,7 +28,7 @@
  * 08/17/2016
  *
  * This version:
- * 07/24/2017
+ * 07/26/2017
  */
 
 //
@@ -376,14 +376,12 @@ trans_market(const dse<Tg,Th,Tt>& market_obj, dse<Th,Tg,Tt>& trans_market_obj)
 
     trans_market_obj.n = market_obj.m;
     trans_market_obj.m = market_obj.n;
-    // Keith: fill in normalization later
 
     trans_market_obj.trans_obj = market_obj.trans_obj;
     trans_market_obj.trans_obj.trans();
 
     trans_market_obj.arums_G = market_obj.arums_H;
     trans_market_obj.arums_H = market_obj.arums_G;
-    //
 }
 
 template<typename Tg, typename Th, typename Tt>

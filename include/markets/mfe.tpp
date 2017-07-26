@@ -28,7 +28,7 @@
  * 08/16/2016
  *
  * This version:
- * 05/16/2017
+ * 07/26/2017
  */
 
 template<typename Tt>
@@ -160,11 +160,8 @@ mfe<Tt>::trans()
     std::swap(nbX,nbY); 
     //
     n.swap(m);
-    
-    // Keith: fill in normalization later
 
     mmfs_obj.trans();
-    //
 }
 
 //
@@ -185,7 +182,7 @@ arma::vec
 mfe<Tt>::marg_x_inv(const arma::mat& B_ys, const arma::uvec* xs)
 const
 {
-    const arma::uvec index_vec = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
+    const arma::uvec index_vec = (xs) ? *xs : uvec_linspace(0, (int) nbX - 1);
     const bool coeff = (need_norm) ? false : true;
 
     arma::vec ubs(nbX);
@@ -224,10 +221,10 @@ arma::vec
 mfe<Tt>::marg_y_inv(const arma::mat& A_xs, const arma::uvec* ys)
 const
 {
-    arma::uvec index_vec = (ys) ? *ys : uvec_linspace(0, nbY-1);
-    bool coeff = (need_norm) ? false : true;
-    arma::vec ubs(nbY);
+    const arma::uvec index_vec = (ys) ? *ys : uvec_linspace(0, nbY-1);
+    const bool coeff = (need_norm) ? false : true;
 
+    arma::vec ubs(nbY);
     (need_norm) ? ubs.fill(1E10) : ubs = m;
     //
     trame_mfe_zeroin_data<Tt> root_data;
@@ -254,13 +251,13 @@ arma::vec
 mfe<mmfs::min>::marg_x_inv(const arma::mat& B_ys, const arma::uvec* xs)
 const
 {
-    arma::uvec index_vec = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    const arma::uvec index_vec = (xs) ? *xs : uvec_linspace(0, nbX-1);
     //
-    arma::vec a_NTU = n.elem(index_vec);
-    arma::mat B_NTU = arma::trans( elem_prod(arma::trans(mmfs_obj.aux_gamma_exp.rows(index_vec)/mmfs_obj.aux_alpha_exp.rows(index_vec)), B_ys) );
-    arma::mat C_NTU = mmfs_obj.aux_alpha_exp.rows(index_vec);
+    const arma::vec a_NTU = n.elem(index_vec);
+    const arma::mat B_NTU = arma::trans( elem_prod(arma::trans(mmfs_obj.aux_gamma_exp.rows(index_vec)/mmfs_obj.aux_alpha_exp.rows(index_vec)), B_ys) );
+    const arma::mat C_NTU = mmfs_obj.aux_alpha_exp.rows(index_vec);
 
-    arma::vec the_a_xs = inv_pwa(a_NTU, B_NTU, C_NTU, 1.0);
+    const arma::vec the_a_xs = inv_pwa(a_NTU, B_NTU, C_NTU, 1.0);
     //
     return the_a_xs;
 }
@@ -271,21 +268,19 @@ arma::vec
 mfe<mmfs::geo>::marg_x_inv(const arma::mat& B_ys, const arma::uvec* xs)
 const
 {
-    arma::uvec index_vec = (xs) ? *xs : uvec_linspace(0, nbX-1);
+    const arma::uvec index_vec = (xs) ? *xs : uvec_linspace(0, nbX-1);
     //
     arma::mat sqrt_A_xs;
-    arma::mat sqrt_B_ys = arma::sqrt(B_ys);
+    const arma::mat sqrt_B_ys = arma::sqrt(B_ys);
 
     if (!need_norm) {
-        arma::mat b = (mmfs_obj.aux_phi_exp.rows(index_vec) * sqrt_B_ys) / 2;
+        const arma::mat b = (mmfs_obj.aux_phi_exp.rows(index_vec) * sqrt_B_ys) / 2;
         sqrt_A_xs = arma::sqrt(n.rows(index_vec) + b%b) - b;
     } else{
         sqrt_A_xs = n.elem(index_vec) / arma::vectorise(mmfs_obj.aux_phi_exp.rows(index_vec) * sqrt_B_ys);
     }
         
-    arma::vec the_a_xs = arma::vectorise(sqrt_A_xs % sqrt_A_xs);
-    //
-    return the_a_xs;
+    return arma::vectorise(sqrt_A_xs % sqrt_A_xs);
 }
 
 template<>
@@ -294,13 +289,13 @@ arma::vec
 mfe<mmfs::min>::marg_y_inv(const arma::mat& A_xs, const arma::uvec* ys)
 const
 {
-    arma::uvec index_vec = (ys) ? *ys : uvec_linspace(0, nbY-1);
+    const arma::uvec index_vec = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::vec a_NTU = m.elem(index_vec);
-    arma::mat B_NTU = arma::trans( elem_prod(mmfs_obj.aux_alpha_exp.cols(index_vec)/mmfs_obj.aux_gamma_exp.cols(index_vec), A_xs) );
-    arma::mat C_NTU = arma::trans(mmfs_obj.aux_gamma_exp.cols(index_vec));
+    const arma::vec a_NTU = m.elem(index_vec);
+    const arma::mat B_NTU = arma::trans( elem_prod(mmfs_obj.aux_alpha_exp.cols(index_vec)/mmfs_obj.aux_gamma_exp.cols(index_vec), A_xs) );
+    const arma::mat C_NTU = arma::trans(mmfs_obj.aux_gamma_exp.cols(index_vec));
 
-    arma::vec the_b_ys = inv_pwa(a_NTU, B_NTU, C_NTU, 1.0);
+    const arma::vec the_b_ys = inv_pwa(a_NTU, B_NTU, C_NTU, 1.0);
     //
     return the_b_ys;
 }
@@ -311,21 +306,19 @@ arma::vec
 mfe<mmfs::geo>::marg_y_inv(const arma::mat& A_xs, const arma::uvec* ys)
 const
 {
-    arma::uvec index_vec = (ys) ? *ys : uvec_linspace(0, nbY-1);
+    const arma::uvec index_vec = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
     arma::mat sqrt_B_ys;
-    arma::mat sqrt_A_xs = arma::sqrt(A_xs);
+    const arma::mat sqrt_A_xs = arma::sqrt(A_xs);
 
     if (!need_norm) {
-        arma::mat b = arma::trans(sqrt_A_xs.t() * mmfs_obj.aux_phi_exp.cols(index_vec)) / 2; // not sure about this
+        const arma::mat b = arma::trans(sqrt_A_xs.t() * mmfs_obj.aux_phi_exp.cols(index_vec)) / 2; // not sure about this
         sqrt_B_ys = arma::sqrt(m.rows(index_vec) + b%b) - b;
     } else {
         sqrt_B_ys = m.elem(index_vec) / arma::vectorise(arma::trans(sqrt_A_xs.t() * mmfs_obj.aux_phi_exp.cols(index_vec))); // not sure about this
     }
         
-    arma::vec the_b_ys = arma::vectorise(sqrt_B_ys % sqrt_B_ys);
-    //
-    return the_b_ys;
+    return arma::vectorise(sqrt_B_ys % sqrt_B_ys);
 }
 
 //
@@ -395,7 +388,7 @@ mfe<Tt>::marg_x_inv_fn(const double z, void* opt_data)
     //
     const double term_1 = (d->coeff) ? z : 0;
     
-    double ret = term_1 - d->mfe_obj.n(d->x_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(z,d->B_ys,&x_ind_temp,NULL));
+    const double ret = term_1 - d->mfe_obj.n(d->x_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(z,d->B_ys,&x_ind_temp,NULL));
     //
     return ret;
 }
@@ -412,7 +405,7 @@ mfe<Tt>::marg_y_inv_fn(const double z, void* opt_data)
     //
     const double term_1 = (d->coeff) ? z : 0;
     
-    double ret = term_1 - d->mfe_obj.m(d->y_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(d->A_xs,z,NULL,&y_ind_temp));
+    const double ret = term_1 - d->mfe_obj.m(d->y_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(d->A_xs,z,NULL,&y_ind_temp));
     //
     return ret;
 }

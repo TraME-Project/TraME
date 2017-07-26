@@ -26,7 +26,9 @@
 #ifdef TRAME_RCPP_ARMADILLO
     #include <RcppArmadillo.h>
 #else
-    #define ARMA_DONT_USE_WRAPPER
+    #ifndef ARMA_DONT_USE_WRAPPER
+        #define ARMA_DONT_USE_WRAPPER
+    #endif
     #include "armadillo"
 #endif
 
