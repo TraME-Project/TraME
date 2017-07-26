@@ -194,6 +194,7 @@ const
 
     arma::mat sol_mat(n_Gstar, 2);
     arma::mat dual_mat(k_Gstar, 2);
+    
     try {
         LP_optimal = generic_LP(k_Gstar, n_Gstar, obj_lp.memptr(), numnz_Gstar, vbeg_Gstar, vind_Gstar, vval_Gstar, modelSense, rhs_lp.memptr(), sense_lp, NULL, NULL, NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
@@ -285,12 +286,10 @@ const
 
     bool LP_optimal;
     int modelSense = 1; // maximize
-    double objval;
+    double objval, val_x = 0.0;;
 
     arma::mat sol_mat(n_Gbar,2);
     arma::mat dual_mat(k_Gbar,2);
-
-    double val_x = 0.0;
 
     try {
         LP_optimal = generic_LP(k_Gbar, n_Gbar, obj_lp.memptr(), numnz_Gbar, vbeg_Gbar, vind_Gbar, vval_Gbar, modelSense, rhs_lp.memptr(), sense_lp, NULL, NULL, NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
