@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/03/2017
+ * 07/25/2017
  */
 
 #ifndef _trame_arums_rusc_HPP
@@ -79,7 +79,7 @@ class rusc
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x) const;
         
         empirical simul() const;
-        empirical simul(int nbDraws, const int seed) const;
+        empirical simul(const int nbDraws, const int seed) const;
         void simul(empirical& obj_out) const;
         void simul(empirical& obj_out, const int nbDraws, const int seed) const;
 

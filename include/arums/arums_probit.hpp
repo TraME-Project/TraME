@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/03/2017
+ * 07/25/2017
  */
 
 #ifndef _trame_arums_probit_HPP

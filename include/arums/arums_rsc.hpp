@@ -28,7 +28,7 @@
  * 08/08/2016
  * 
  * This version:
- * 07/03/2017
+ * 07/25/2017
  */
 
 #ifndef _trame_arums_rsc_HPP
@@ -132,7 +132,7 @@ class rsc
                              const arma::mat& aux_Influence_lhs, const arma::mat& aux_Influence_rhs,
                              arma::vec (*pot_eps_vec)(arma::vec pot_inp, double* dist_pars),
                              arma::vec (*quantile_eps_vec)(arma::vec quant_inp, double* dist_pars),
-                             double* dist_pars, int nbY, int x);
+                             double* dist_pars, int nbY, int x); // Keith: this is really ugly, fix it
 };
 
 struct trame_rsc_gbar_opt_data {

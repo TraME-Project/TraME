@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/03/2017
+ * 07/25/2017
  */
 
 #include "trame.hpp"
@@ -296,14 +296,7 @@ const
 #endif
     }
     //
-    obj_out.build(nbX,nbY,arma::zeros(n_draws,nbY+1,nbX),false,false); // is the 'outside_option = false' 
-    
-    // obj_out.nbX = nbX;
-    // obj_out.nbY = nbY;
-    // obj_out.dim_params = atoms.n_elem;
-    // obj_out.atoms = atoms;
-    // obj_out.aux_nbDraws = n_draws;
-    // obj_out.x_homogeneous = false;
+    obj_out.build(nbX,nbY,arma::zeros(n_draws,nbY+1,nbX),false,false); // Keith: is the 'outside_option = false' ?
     //
     if (seed_val) {
         arma::arma_rng::set_seed_random(); // need to reset the seed

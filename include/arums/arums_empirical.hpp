@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/03/2017
+ * 07/25/2017
  */
 
 #ifndef _trame_arums_empirical_HPP
@@ -73,7 +73,7 @@ class empirical
 
         double Gstar(const arma::vec& n);
         double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out) const;
-        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x) const;
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const int x) const;
 
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out) const;
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x) const;
@@ -85,7 +85,7 @@ class empirical
         void presolve_LP_Gstar();
         void presolve_LP_Gbar();
 
-        bool TRAME_PRESOLVED_GSTAR = false; // initialization requires C++11
+        bool TRAME_PRESOLVED_GSTAR = false;
         bool TRAME_PRESOLVED_GBAR  = false;
 
         int k_Gstar;

@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/03/2017
+ * 07/25/2017
  */
 
 #ifndef _trame_arums_logit_HPP
@@ -57,11 +57,11 @@ class logit
         // member functions
         ~logit(){};
          logit(){};
-        explicit logit(int nbX_inp, int nbY_inp);
-        explicit logit(int nbX_inp, int nbY_inp, double sigma_inp, bool outside_option_inp);
+        explicit logit(const int nbX_inp, const int nbY_inp);
+        explicit logit(const int nbX_inp, const int nbY_inp, const double sigma_inp, const bool outside_option_inp);
 
-        void build(int nbX_inp, int nbY_inp);
-        void build(int nbX_inp, int nbY_inp, double sigma_inp, bool outside_option_inp);
+        void build(const int nbX_inp, const int nbY_inp);
+        void build(const int nbX_inp, const int nbY_inp, const double sigma_inp, const bool outside_option_inp);
         
         double G(const arma::vec& n);
         double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out) const;
@@ -70,36 +70,36 @@ class logit
         double Gstar(const arma::vec& n);
         double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out) const;
         double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out) const;
-        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, int x) const;
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const int x) const;
         
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out) const;
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out) const;
-        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x) const;
+        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x) const;
         
-        arma::mat D2G(const arma::vec& n, bool x_first) const;
-        void D2G(arma::mat &H, const arma::vec& n, bool x_first) const;
-        arma::mat D2G(const arma::vec& n, const arma::mat& U_inp, bool x_first) const;
-        void D2G(arma::mat &H, const arma::vec& n, const arma::mat& U_inp, bool x_first) const;
+        arma::mat D2G(const arma::vec& n, const bool x_first) const;
+        void D2G(arma::mat &H, const arma::vec& n, const bool x_first) const;
+        arma::mat D2G(const arma::vec& n, const arma::mat& U_inp, const bool x_first) const;
+        void D2G(arma::mat &H, const arma::vec& n, const arma::mat& U_inp, const bool x_first) const;
 
-        arma::mat D2Gstar(const arma::vec& n, bool x_first) const;
-        void D2Gstar(arma::mat &H, const arma::vec& n, bool x_first) const;
-        arma::mat D2Gstar(const arma::vec& n, const arma::mat& mu_inp, bool x_first) const;
-        void D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, bool x_first) const;
+        arma::mat D2Gstar(const arma::vec& n, const bool x_first) const;
+        void D2Gstar(arma::mat &H, const arma::vec& n, const bool x_first) const;
+        arma::mat D2Gstar(const arma::vec& n, const arma::mat& mu_inp, const bool x_first) const;
+        void D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, const bool x_first) const;
 
-        arma::mat dparams_NablaGstar(const arma::vec& n, arma::mat* dparams_inp, bool x_first) const;
-        void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, arma::mat* dparams_inp, bool x_first) const;
-        arma::mat dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first) const;
-        void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, arma::mat* dparams_inp, bool x_first) const;
+        arma::mat dparams_NablaGstar(const arma::vec& n, const arma::mat* dparams_inp, const bool x_first) const;
+        void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat* dparams_inp, const bool x_first) const;
+        arma::mat dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first) const;
+        void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first) const;
         
         empirical simul() const;
-        empirical simul(int nbDraws, int seed) const;
+        empirical simul(const int nbDraws, const int seed) const;
         void simul(empirical& obj_out) const;
-        void simul(empirical& obj_out, int nbDraws, int seed) const;
+        void simul(empirical& obj_out, const int nbDraws, const int seed) const;
 
     private:
         static double differMargX(double z, void* opt_data);
 
-        void simul_int(empirical& obj_out, int* nbDraws, int* seed) const;
+        void simul_int(empirical& obj_out, const int* nbDraws, const int* seed) const;
 };
 
 struct trame_logit_zeroin_data {

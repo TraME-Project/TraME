@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/03/2017
+ * 07/25/2017
  */
 
 #include "trame.hpp"
@@ -75,29 +75,26 @@ trame::arums::rusc::build(const arma::mat& zeta_inp, const bool outside_option_i
     aux_b = arma::zeros(nbX,nbY);
     aux_c = arma::zeros(nbY,1);
     //
-    double z_0;
-    arma::mat A_x, z_0_mat(nbY,1), max_z, max_z0_mat;
-    arma::vec z_x, max_z0;
-    arma::uvec ordx_temp;
+    arma::mat z_0_mat(nbY,1);
 
-    for (int i=0; i<nbX; i++) {
-        z_x = zeta_inp.row(i).t();
+    for (int i=0; i < nbX; i++) {
+        arma::vec z_x = zeta_inp.row(i).t();
         z_x.shed_rows(nbY,zeta_inp.n_cols-1);
 
-        z_0 = zeta(i,nbY);
+        double z_0 = zeta(i,nbY);
         z_0_mat.fill(z_0);
 
-        max_z  = arma::max(z_x * arma::ones(1,nbY), arma::ones(nbY,1) * z_x.t());
-        max_z0 = arma::max(z_x,z_0_mat);
-        max_z0_mat = max_z0 * arma::ones(1,nbY);
+        arma::mat max_z  = arma::max(z_x * arma::ones(1,nbY), arma::ones(nbY,1) * z_x.t());
+        arma::vec max_z0 = arma::max(z_x,z_0_mat);
+        arma::mat max_z0_mat = max_z0 * arma::ones(1,nbY);
 
-        A_x = max_z0_mat + max_z0_mat.t() - max_z - z_0;
+        arma::mat A_x = max_z0_mat + max_z0_mat.t() - max_z - z_0;
         //
         aux_A.slice(i) = A_x;
         aux_b.row(i) = z_0 - max_z0.t();
         aux_c(i) = -z_0/2;
         
-        ordx_temp = arma::sort_index(zeta_inp.row(i));
+        arma::uvec ordx_temp = arma::sort_index(zeta_inp.row(i));
         aux_ord.row(i) = arma::conv_to< arma::rowvec >::from(ordx_temp);
     }
 }
@@ -373,20 +370,6 @@ const
     }
     //
     obj_out.build(nbX,nbY,atoms,false,outside_option);
-
-    // obj_out.nbX = nbX;
-    // obj_out.nbY = nbY;
-    // obj_out.dim_params = atoms.n_elem;
-    // obj_out.atoms = atoms;
-    // obj_out.aux_nbDraws = n_draws;
-    // obj_out.x_homogeneous = false;
-    // obj_out.outside_option = outside_option;
-    
-    // if (outside_option) {
-    //     obj_out.nb_options = nbY + 1;
-    // } else {
-    //     obj_out.nb_options = nbY;
-    // }
     //
     if (seed_val) {
         arma::arma_rng::set_seed_random(); // need to reset the seed
