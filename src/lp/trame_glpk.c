@@ -111,7 +111,8 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
                 glp_set_col_bnds(lp, i+1, GLP_UP, 0.0, ub[i]);
             }
         } else if (!has_lb && !has_ub) {
-            glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
+            // glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
+            glp_set_col_bnds(lp, i+1, GLP_LO, 0.0, 0.0); // default: 0 <= x < infty
         }
         
         // input constraint matrix elements
@@ -144,6 +145,7 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
         }
 
         lp_control.presolve = GLP_OFF;
+        lp_control.meth = GLP_DUALP;
         glp_simplex(lp, &lp_control);
     }
 
@@ -258,7 +260,8 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbe
                 glp_set_col_bnds(lp, i+1, GLP_UP, 0.0, ub[i]);
             }
         } else if (!has_lb && !has_ub) {
-            glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
+            // glp_set_col_bnds(lp, i+1, GLP_FR, 0.0, 0.0);
+            glp_set_col_bnds(lp, i+1, GLP_LO, 0.0, 0.0); // default: 0 <= x < infty
         }
     }
     //
@@ -288,6 +291,7 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbe
         }
 
         lp_control.presolve = GLP_OFF;
+        lp_control.meth = GLP_DUALP;
         glp_simplex(lp, &lp_control);
     }
 

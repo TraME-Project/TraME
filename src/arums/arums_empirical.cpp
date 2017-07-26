@@ -167,7 +167,7 @@ const
     //
     const arma::mat Phi = (x_homogeneous) ? atoms.slice(0) : atoms.slice(x);
     //
-    arma::vec p = arma::ones(aux_nbDraws,1)/aux_nbDraws;
+    arma::vec p = arma::ones(aux_nbDraws,1)/ (double) aux_nbDraws;
     arma::mat q;
 
     if (outside_option) {
