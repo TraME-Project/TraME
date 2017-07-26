@@ -125,10 +125,11 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
     lp_control.presolve = GLP_ON;
     if (n_constr < n_vars) {
         lp_control.meth = GLP_PRIMAL;
+        lp_control.r_test = GLP_RT_HAR;
     } else {
         lp_control.meth = GLP_DUAL;
+        lp_control.r_test = GLP_RT_FLIP;
     }
-    lp_control.r_test = GLP_RT_FLIP; // experimental
 
     glp_simplex(lp, &lp_control);
 
@@ -277,10 +278,11 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbe
     lp_control.presolve = GLP_ON;
     if (n_constr < n_vars) {
         lp_control.meth = GLP_PRIMAL;
+        lp_control.r_test = GLP_RT_HAR;
     } else {
         lp_control.meth = GLP_DUAL;
+        lp_control.r_test = GLP_RT_FLIP;
     }
-    lp_control.r_test = GLP_RT_FLIP; // experimental
 
     glp_simplex(lp, &lp_control);
 
