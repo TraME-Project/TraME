@@ -23,6 +23,10 @@
 
 #pragma once
 
+#ifdef TRAME_OMP
+    #include "omp.h" //  OpenMP
+#endif
+
 #ifdef TRAME_RCPP_ARMADILLO
     #include <RcppArmadillo.h>
 #else

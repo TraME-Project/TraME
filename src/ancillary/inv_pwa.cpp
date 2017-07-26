@@ -29,6 +29,7 @@
  *
  * Modified: 
  *   09/15/16, Alfred Galichon
+ *   07/26/17, Keith O'Hara
  */
 
 #include "trame.hpp"
@@ -36,35 +37,34 @@
 arma::vec 
 trame::inv_pwa(const arma::vec& a, const arma::mat& B, const arma::mat& C, const double k)
 {
-    int nb_X = a.n_elem;
-    int nb_Y = B.n_cols;
+    const int nb_X = a.n_elem;
+    const int nb_Y = B.n_cols;
     //
-    arma::vec vals(nb_X), Bx(nb_Y), b, small_C, b_mid(nb_Y), b_low(nb_Y), b_up(nb_Y), temp_vec;
-    vals.zeros();
-    arma::uvec Bx_sort_ind;
+    arma::vec vals = arma::zeros(nb_X,1);
     
-    int x, y_low, y_up, y_mid, y_incl;
-    double small_C_sum, lhs, term_1, term_2;
-    //
-    for (x=0; x < nb_X; x++) {
-        Bx = B.row(x).t();  // transpose to ensure that Bx is a column-vector
-        Bx_sort_ind = arma::sort_index(Bx);
-        b = Bx.elem(Bx_sort_ind);
+    #pragma omp parallel for
+    for (int x=0; x < nb_X; x++) {
+        const arma::vec Bx = B.row(x).t();  // transpose to ensure that Bx is a column-vector
+        const arma::uvec Bx_sort_ind = arma::sort_index(Bx);
+        const arma::vec b = Bx.elem(Bx_sort_ind);
         //
-        small_C = C.row(x).t();
+        arma::vec small_C = C.row(x).t();
         small_C = small_C.elem(Bx_sort_ind);
-        small_C_sum = arma::accu(small_C);
+
+        const double small_C_sum = arma::accu(small_C);
         //
-        y_low = 1;
-        y_up  = nb_Y;
+        int y_low = 1;
+        int y_up  = nb_Y;
+
+        arma::vec b_low(nb_Y), b_mid(nb_Y);
         
         while (y_up > y_low + 1) {
-            y_mid = y_low + std::floor((y_up - y_low)/2.0);
+            int y_mid = y_low + std::floor((y_up - y_low)/2.0);
             
             b_low.fill(b(y_low-1));
             b_mid.fill(b(y_mid-1));
             
-            lhs = k * b(y_mid-1) + arma::accu(small_C % arma::min(b_mid,b));
+            const double lhs = k * b(y_mid-1) + arma::accu(small_C % arma::min(b_mid,b));
             //
             if (lhs == a(x)) {
                 y_low = y_mid;
@@ -79,16 +79,17 @@ trame::inv_pwa(const arma::vec& a, const arma::mat& B, const arma::mat& C, const
         if ((y_low==1) && ( k * b(y_low-1) + arma::accu(small_C % arma::min(b_low,b)) >= a(x) )) {
             vals(x) = a(x) / (k + small_C_sum);
         } else {
+            arma::vec b_up(nb_Y);
             b_up.fill(b(y_up-1));
 
             if ((y_up==nb_Y) && ( k * b(y_up-1) + arma::accu(small_C % arma::min(b_up,b)) <= a(x) )) {
                 vals(x) = (a(x) - arma::accu(small_C % b)) / k ;            
             } else {
-                y_incl = y_low - 1;
+                int y_incl = y_low - 1;
 
-                temp_vec = (small_C % b);
-                term_1 = a(x) - arma::accu(temp_vec.rows(0,y_incl));
-                term_2 = k + small_C_sum - arma::accu(small_C.rows(0,y_incl));
+                const arma::vec temp_vec = small_C % b;
+                const double term_1 = a(x) - arma::accu(temp_vec.rows(0,y_incl));
+                const double term_2 = k + small_C_sum - arma::accu(small_C.rows(0,y_incl));
                 
                 vals(x) = term_1 / term_2;
             }

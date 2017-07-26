@@ -49,16 +49,16 @@ int main()
     mfe_obj_NTU.build(n,m,alpha,gamma);
     //
     //
-    double tol = 1E-06;
-    int max_iter = 5000;
+    // double tol = 1E-06;
+    // int max_iter = 5000;
 
     arma::mat mu_TU;
     trame::ipfp(mfe_obj_TU,mu_TU);
-    trame::ipfp(mfe_obj_TU,mu_TU,tol);
-    trame::ipfp(mfe_obj_TU,mu_TU,max_iter);
-    trame::ipfp(mfe_obj_TU,mu_TU,tol,max_iter);
+    // trame::ipfp(mfe_obj_TU,mu_TU,tol);
+    // trame::ipfp(mfe_obj_TU,mu_TU,max_iter);
+    // trame::ipfp(mfe_obj_TU,mu_TU,tol,max_iter);
 
-    mfe_obj_TU.solve(mu_TU);
+    // mfe_obj_TU.solve(mu_TU);
 
     arma::cout << "Solution of mfe::geo (TU-logit) problem using ipfp:\n" << mu_TU << arma::endl;
 

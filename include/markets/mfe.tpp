@@ -196,6 +196,7 @@ const
     //
     arma::vec the_a_xs(index_vec.n_elem);
 
+    #pragma omp parallel for firstprivate(root_data)
     for (int j=0; j < (int) index_vec.n_elem; j++) {
         int x = index_vec(j);
         root_data.x_ind = x;
@@ -234,7 +235,8 @@ const
     root_data.A_xs  = A_xs;
     //
     arma::vec the_b_ys(index_vec.n_elem);
-        
+    
+    #pragma omp parallel for firstprivate(root_data)
     for (int j=0; j < (int) index_vec.n_elem; j++) {
         int y = index_vec(j);
         root_data.y_ind = y;
