@@ -45,7 +45,7 @@ LIBS= -lgfortran @TRAME_BLAS_LAPACK@
 # core TraME files
 OBJECTS_TRAME_F90= $(TRAME_SRC_DIR)/prob/prob.o $(TRAME_SRC_DIR)/math/quadpack_double.o $(TRAME_SRC_DIR)/prob/trame_F90_aux.o
 
-SOURCES_TRAME_ANC= $(TRAME_SRC_DIR)/ancillary/inv_pwa.cpp $(TRAME_SRC_DIR)/ancillary/logit_transform.cpp $(TRAME_SRC_DIR)/ancillary/trame_stats.cpp $(TRAME_SRC_DIR)/ancillary/zeroin.cpp
+SOURCES_TRAME_ANC= $(TRAME_SRC_DIR)/ancillary/inv_pwa.cpp $(TRAME_SRC_DIR)/ancillary/trame_stats.cpp $(TRAME_SRC_DIR)/ancillary/zeroin.cpp
 OBJECTS_TRAME_ANC= $(SOURCES_TRAME_ANC:.cpp=.o)
 
 SOURCES_TRAME_ARUMS= $(TRAME_SRC_DIR)/arums/arums_empirical.cpp $(TRAME_SRC_DIR)/arums/arums_logit.cpp $(TRAME_SRC_DIR)/arums/arums_none.cpp $(TRAME_SRC_DIR)/arums/arums_probit.cpp $(TRAME_SRC_DIR)/arums/arums_rsc.cpp $(TRAME_SRC_DIR)/arums/arums_rusc.cpp

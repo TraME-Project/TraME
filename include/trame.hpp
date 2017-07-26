@@ -34,7 +34,6 @@ namespace trame
 {
     #include "ancillary/trame_aux.hpp"
     #include "ancillary/trame_stats.hpp"
-    #include "ancillary/logit_transform.hpp"
 
     #include "ancillary/inv_pwa.hpp"
     #include "ancillary/zeroin.hpp"
