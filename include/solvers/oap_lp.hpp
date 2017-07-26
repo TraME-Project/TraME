@@ -28,7 +28,7 @@
  * 08/16/2016
  * 
  * This version:
- * 03/22/2017
+ * 07/26/2017
  */
 
 #ifndef _trame_oap_lp_HPP
@@ -46,13 +46,13 @@ template<typename Tg, typename Th, typename Tt>
 bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& residuals_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool& x_first_inp, arma::mat& residuals_out);
+bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, arma::mat& residuals_out);
 
 template<typename Tg, typename Th, typename Tt>
 bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& u_out, arma::mat& v_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool& x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out);
+bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out);
 
 #include "oap_lp.tpp"
 

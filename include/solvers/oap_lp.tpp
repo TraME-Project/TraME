@@ -28,7 +28,7 @@
  * 08/16/2016
  *
  * This version:
- * 03/22/2017
+ * 07/26/2017
  */
 
 // internal oap_lp
@@ -45,60 +45,52 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool
         return false;
     }
     //
-    arma::mat phi = market.trans_obj.phi;
-
-    int nbX = market.nbX;
-    int nbY = market.nbY;
-
-    arma::vec n = market.n;
-    arma::vec m = market.m;
+    const int nbX = market.nbX;
+    const int nbY = market.nbY;
     //
-    arma::vec obj_lp = arma::vectorise(phi);
+    arma::vec obj_lp = arma::vectorise(market.trans_obj.phi);
 
     arma::mat A_1_lp = arma::kron(arma::ones(1,nbY),arma::eye(nbX,nbX));
     arma::mat A_2_lp = arma::kron(arma::eye(nbY,nbY),arma::ones(1,nbX));
     arma::mat A_lp = arma::join_cols(A_1_lp,A_2_lp);
 
-    arma::vec rhs_lp = arma::join_cols(n,m);
+    arma::vec rhs_lp = arma::join_cols(market.n,market.m);
 
-    int k_lp = A_lp.n_rows;
-    int n_lp = A_lp.n_cols;
+    const int k_lp = A_lp.n_rows;
+    const int n_lp = A_lp.n_cols;
 
     int jj;
     char* sense_lp = new char[k_lp];
     for (jj=0; jj<k_lp; jj++) {
         sense_lp[jj] = '<';
     }
-    
+    //
     bool LP_optimal = false;
     int modelSense = 1; // maximize
-    double objval; 
+    double objval, val_lp = 0.0; 
     
     arma::mat sol_mat(n_lp, 2);
     arma::mat dual_mat(k_lp, 2);
-    //
-    double val_lp = 0.0;
-    arma::mat mu, u_0, v_0;
 
     try {
         LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, NULL, NULL, NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
         if (LP_optimal) {
-            mu = arma::reshape(sol_mat.col(0),nbX,nbY);
+            const arma::mat mu = arma::reshape(sol_mat.col(0),nbX,nbY);
 
             if (mu_out) {
                 *mu_out = mu;
             }
 
             if (mu_x0_out) {
-                *mu_x0_out = n - arma::sum(mu,1);
+                *mu_x0_out = market.n - arma::sum(mu,1);
             }
             if (mu_0y_out) {
-                *mu_0y_out = m - arma::trans(arma::sum(mu,0));
+                *mu_0y_out = market.m - arma::trans(arma::sum(mu,0));
             }
 
-            u_0 = dual_mat.col(0).rows(0,nbX-1);
-            v_0 = dual_mat.col(0).rows(nbX,nbX+nbY-1);
+            // u_0 = dual_mat.col(0).rows(0,nbX-1);
+            // v_0 = dual_mat.col(0).rows(nbX,nbX+nbY-1);
 
             val_lp = objval;
 
@@ -115,9 +107,9 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool
      * step 2
      */
     if ( LP_optimal && (u_out || v_out || residuals_out) ) {
-        arma::vec obj_bis = arma::join_cols(n,-m);
+        arma::vec obj_bis = arma::join_cols(market.n,-market.m);
         
-        bool x_first = (x_first_inp) ? *x_first_inp : true;
+        const bool x_first = (x_first_inp) ? *x_first_inp : true;
 
         if (!x_first) {
             obj_bis *= -1.0;
@@ -129,8 +121,8 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool
         rhs_bis.rows(0,rhs_bis.n_rows-2) = obj_lp;
         rhs_bis(rhs_bis.n_rows-1) = val_lp;
 
-        int k_bis = A_bis.n_rows;
-        int n_bis = A_bis.n_cols;
+        const int k_bis = A_bis.n_rows;
+        const int n_bis = A_bis.n_cols;
 
         char* sense_bis = new char[k_bis];
         for (jj=0; jj<k_bis-1; jj++) {
@@ -148,8 +140,8 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool
             LP_optimal = generic_LP(k_bis, n_bis, obj_bis.memptr(), A_bis.memptr(), modelSense_bis, rhs_bis.memptr(), sense_bis, NULL, NULL, NULL, NULL, objval_bis, sol_mat_bis.colptr(0), sol_mat_bis.colptr(1), dual_mat_bis.colptr(0), dual_mat_bis.colptr(1));
 
             if (LP_optimal) {
-                arma::mat u = sol_mat_bis.col(0).rows(0,nbX-1);
-                arma::mat v = sol_mat_bis.col(0).rows(nbX,nbX+nbY-1);
+                const arma::mat u = sol_mat_bis.col(0).rows(0,nbX-1);
+                const arma::mat v = sol_mat_bis.col(0).rows(nbX,nbX+nbY-1);
 
                 if (u_out) {
                     *u_out = u;
@@ -159,8 +151,8 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool
                 }
 
                 if (residuals_out) {
-                    arma::mat u_Psi = arma::repmat(u,1,nbY);
-                    arma::mat v_Psi = arma::repmat(v.t(),nbX,1);
+                    const arma::mat u_Psi = arma::repmat(u,1,nbY);
+                    const arma::mat v_Psi = arma::repmat(v.t(),nbX,1);
 
                     *residuals_out = market.trans_obj.Psi(u_Psi,v_Psi);
                 }
@@ -184,43 +176,33 @@ template<typename Tg, typename Th, typename Tt>
 bool
 oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-    
-    return res;
+    return oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& residuals_out)
 {
-    bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&residuals_out);
-    
-    return res;
+    return oap_lp_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&residuals_out);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool& x_first_inp, arma::mat& residuals_out)
+oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, arma::mat& residuals_out)
 {
-    bool res = oap_lp_int(market,&mu_out,&x_first_inp,NULL,NULL,NULL,NULL,NULL,&residuals_out);
-    
-    return res;
+    return oap_lp_int(market,&mu_out,&x_first_inp,NULL,NULL,NULL,NULL,NULL,&residuals_out);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& u_out, arma::vec& v_out)
 {
-    bool res = oap_lp_int(market,&mu_out,NULL,NULL,NULL,&u_out,&v_out,NULL,NULL);
-    
-    return res;
+    return oap_lp_int(market,&mu_out,NULL,NULL,NULL,&u_out,&v_out,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool& x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out)
+oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, double& val_out, arma::mat& residuals_out)
 {
-    bool res = oap_lp_int(market,&mu_out,&x_first_inp,&mu_x0_out,&mu_0y_out,&u_out,&v_out,&val_out,&residuals_out);
-    
-    return res;
+    return oap_lp_int(market,&mu_out,&x_first_inp,&mu_x0_out,&mu_0y_out,&u_out,&v_out,&val_out,&residuals_out);
 }
