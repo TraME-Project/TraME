@@ -28,56 +28,50 @@
  * 08/25/2016
  *
  * This version:
- * 03/22/2017
+ * 07/26/2017
  */
 
 #ifndef _trame_jacobi_HPP
 #define _trame_jacobi_HPP
 
-template<typename Tg, typename Th, typename Tt>
-struct trame_jacobi_zeroin_data {
-    int x_ind;
-    int y_ind;
-
-    arma::vec n;
-    arma::vec m;
-
-    arma::mat U;
-    arma::mat V;
-
-    Tg arums_G;
-    Th arums_H;
-
-    Tt trans_obj;
-};
-
 // internal
 template<typename Tg, typename Th, typename Tt>
-bool jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::mat* w_up_inp, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp);
+bool jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::mat* w_up_inp, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* err_tol_inp, const int* max_iter_inp);
 
 // wrappers
 template<typename Tg, typename Th, typename Tt>
 bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp);
+bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp);
 
 template<typename Tg, typename Th, typename Tt>
-bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp);
+bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp);
 
 template<typename Tg, typename Th, typename Tt>
-bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp);
 
 template<typename Tg, typename Th, typename Tt>
 bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool jacobi(const dse<Tg,Th,Tt>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp);
+bool jacobi(const dse<Tg,Th,Tt>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* err_tol_inp, const int* max_iter_inp);
 
 // zeroin function
 
 template<typename Tg, typename Th, typename Tt>
 double jacobi_zeroin_fn(double z, void* opt_data);
+
+template<typename Tg, typename Th, typename Tt>
+struct trame_jacobi_zeroin_data {
+    int x_ind;
+    int y_ind;
+
+    arma::mat U;
+    arma::mat V;
+
+    dse<Tg,Th,Tt> market_obj;
+};
 
 #include "jacobi.tpp"
 

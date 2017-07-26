@@ -28,12 +28,12 @@
  * 08/25/2016
  *
  * This version:
- * 03/22/2017
+ * 07/26/2017
  */
 
 template<typename Tg, typename Th, typename Tt>
 bool
-jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::mat* w_up_inp, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp)
+jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::mat* w_up_inp, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* err_tol_inp, const int* max_iter_inp)
 {
     bool success = false;
     //
@@ -42,34 +42,29 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
         return false;
     }
     //
-    int nbX = market.nbX;
-    int nbY = market.nbY;
+    const int nbX = market.nbX;
+    const int nbY = market.nbY;
 
-    arma::vec n = market.n;
-    arma::vec m = market.m;
-
-    Tg arums_G = market.arums_G;
-    Th arums_H = market.arums_H;
-
-    Tt trans_obj = market.trans_obj;
-
-    double tol = (tol_inp) ? *tol_inp : 1E-04;
-    int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
+    const double err_tol = (err_tol_inp) ? *err_tol_inp : 1E-04;
+    const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
 
     arma::mat mu_G, mu_H;
+
     //
     // w_up setup
+
     arma::mat w;
+
     if (!w_up_inp) {
         w = w_upper_bound(market);
     } else {
         w = *w_up_inp;
 
-        arma::mat temp_UW = trans_obj.UW(w);
-        arma::mat temp_VW = trans_obj.VW(w);
+        arma::mat temp_UW = market.trans_obj.UW(w);
+        arma::mat temp_VW = market.trans_obj.VW(w);
 
-        arums_G.G(n,temp_UW,mu_G);
-        arums_H.G(m,temp_VW.t(),mu_H);
+        market.arums_G.G(market.n,temp_UW,mu_G);
+        market.arums_H.G(market.m,temp_VW.t(),mu_H);
 
         arma::mat Z = mu_G - mu_H.t();
 
@@ -78,8 +73,10 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
             return false;
         }
     }
+
     //
     // w_low setup
+
     arma::mat w_low;
     if (!w_low_inp) {
         dse<Th,Tg,Tt> market_trans = market.trans();
@@ -88,11 +85,11 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
     } else {
         w_low = *w_low_inp;
 
-        arma::mat temp_UW = trans_obj.UW(w_low);
-        arma::mat temp_VW = trans_obj.VW(w_low);
+        arma::mat temp_UW = market.trans_obj.UW(w_low);
+        arma::mat temp_VW = market.trans_obj.VW(w_low);
 
-        arums_G.G(n,temp_UW,mu_G);
-        arums_H.G(m,temp_VW.t(),mu_H);
+        market.arums_G.G(market.n,temp_UW,mu_G);
+        market.arums_H.G(market.m,temp_VW.t(),mu_H);
 
         arma::mat Z = mu_G - mu_H.t();
 
@@ -102,16 +99,16 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
         }
     }
     //
-    arma::mat U = trans_obj.UW(w);
-    arma::mat V = trans_obj.VW(w);
+    arma::mat U = market.trans_obj.UW(w);
+    arma::mat V = market.trans_obj.VW(w);
 
-    arums_G.G(n,U,mu_G);
-    arums_H.G(m,V.t(),mu_H);
+    market.arums_G.G(market.n,U,mu_G);
+    market.arums_H.G(market.m,V.t(),mu_H);
 
     arma::mat Z = mu_G - mu_H.t();
     //
     int iter = 0;
-    double err = 2*tol;
+    double err = 2*err_tol;
 
     int x = 0, y = 0;
 
@@ -120,19 +117,14 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
     root_data.x_ind = x;
     root_data.y_ind = y;
 
-    root_data.n = n;
-    root_data.m = m;
-
     root_data.U = U;
     root_data.V = V;
 
-    root_data.arums_G = arums_G;
-    root_data.arums_H = arums_H;
-    root_data.trans_obj = trans_obj;
+    root_data.market_obj = market;
 
-    arma::mat norm_mat = n * m.t();
+    const arma::mat norm_mat = market.n * market.m.t();
 
-    while (err > tol && iter < max_iter) {
+    while (err > err_tol && iter < max_iter) {
         iter++;
         
         for (x=0; x < nbX; x++) {
@@ -142,37 +134,37 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
                 root_data.y_ind = y;
         
                 w(x,y) = zeroin(w_low(x,y), w(x,y), jacobi_zeroin_fn<Tg,Th,Tt>, &root_data, NULL, NULL);
-                U(x,y) = trans_obj.UW(w(x,y),x,y);
-                V(x,y) = trans_obj.VW(w(x,y),x,y);
+                U(x,y) = market.trans_obj.UW(w(x,y),x,y);
+                V(x,y) = market.trans_obj.VW(w(x,y),x,y);
 
                 root_data.U = U;
                 root_data.V = V;
             }
         }
         //
-        arums_G.G(n,U,mu_G);
-        arums_H.G(m,V.t(),mu_H);
+        market.arums_G.G(market.n,U,mu_G);
+        market.arums_H.G(market.m,V.t(),mu_H);
 
         Z = mu_G - mu_H.t();
         //
         err = elem_max(arma::abs(elem_div(Z,norm_mat)));
     }
 
-    if (err <= tol && iter < max_iter) {
+    if (err <= err_tol && iter < max_iter) {
         success = true;
     }
     //
-    arums_G.G(n,U,mu_G);
+    market.arums_G.G(market.n,U,mu_G);
 
     if (mu_out) {
         *mu_out = mu_G;
     }
 
     if (mu_x0_out) {
-        *mu_x0_out = n - arma::sum(mu_G,1);
+        *mu_x0_out = market.n - arma::sum(mu_G,1);
     }
     if (mu_0y_out) {
-        *mu_0y_out = m - arma::trans(arma::sum(mu_G,0));
+        *mu_0y_out = market.m - arma::trans(arma::sum(mu_G,0));
     }
 
     if (U_out) {
@@ -192,54 +184,42 @@ template<typename Tg, typename Th, typename Tt>
 bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL);
-    
-    return res;
+    return jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp)
+jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp)
 {
-    bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,NULL);
-    
-    return res;
+    return jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,&err_tol_inp,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp)
+jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp)
 {
-    bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
-    
-    return res;
+    return jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
+jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp)
 {
-    bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
-    
-    return res;
+    return jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,&err_tol_inp,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    bool res = jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL);
-    
-    return res;
+    return jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-jacobi(const dse<Tg,Th,Tt>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp)
+jacobi(const dse<Tg,Th,Tt>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* err_tol_inp, const int* max_iter_inp)
 {
-    bool res = jacobi_int(market,&w_low_inp,&w_up_inp,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,tol_inp,max_iter_inp);
-    
-    return res;
+    return jacobi_int(market,&w_low_inp,&w_up_inp,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,err_tol_inp,max_iter_inp);
 }
 
 //
@@ -251,23 +231,17 @@ jacobi_zeroin_fn(double z, void* opt_data)
 {
     trame_jacobi_zeroin_data<Tg,Th,Tt> *d = reinterpret_cast<trame_jacobi_zeroin_data<Tg,Th,Tt>*>(opt_data);
     //
-    double ret = 1.0;
-
-    int x_ind = d->x_ind;
-    int y_ind = d->y_ind;
-
     arma::mat U = d->U;
     arma::mat V = d->V;
     //
-    U(x_ind,y_ind) = d->trans_obj.UW(z,x_ind,y_ind);
-    V(x_ind,y_ind) = d->trans_obj.VW(z,x_ind,y_ind);
+    U(d->x_ind,d->y_ind) = d->market_obj.trans_obj.UW(z,d->x_ind,d->y_ind);
+    V(d->x_ind,d->y_ind) = d->market_obj.trans_obj.VW(z,d->x_ind,d->y_ind);
     
     arma::mat mu_G, mu_H;
-    d->arums_G.G(d->n,U,mu_G);
-    d->arums_H.G(d->m,V.t(),mu_H);
+    d->market_obj.arums_G.G(d->market_obj.n,U,mu_G);
+    d->market_obj.arums_H.G(d->market_obj.m,V.t(),mu_H);
 
     arma::mat Z = mu_G - mu_H.t();
-    ret = Z(x_ind,y_ind);
     //
-    return ret;
+    return Z(d->x_ind,d->y_ind);
 }
