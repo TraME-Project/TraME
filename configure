@@ -380,6 +380,10 @@ if [[ "${TRAME_COVERAGE}" == "y" ]]; then
     TRAME_SHLIB_FLAGS="--coverage ${TRAME_SHLIB_FLAGS}"
 fi
 
+if [[ "${TRAME_PARALLEL}" == "y" ]]; then 
+    TRAME_SHLIB_FLAGS="-fopenmp ${TRAME_SHLIB_FLAGS}"
+fi
+
 sed -e "s|@CC@|${CC}|" \
     -e "s|@CXX@|${CXX}|" \
     -e "s|@FC@|${FC}|" \
