@@ -284,7 +284,7 @@ const
     arma::mat dual_mat(1,2);
     
     try {
-        LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, Q_grbi.memptr(), lb_grbi.memptr(), ub_grbi.memptr(), NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, Q_grbi.memptr(), lb_grbi.memptr(), ub_grbi.memptr(), nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
         if (LP_optimal) {
             mu_x_out = sol_mat(arma::span(0,nbAlt-2),0);
@@ -313,7 +313,7 @@ const
 {
     empirical emp_obj;
     
-    this->simul_int(emp_obj,NULL,NULL);
+    this->simul_int(emp_obj,nullptr,nullptr);
     //
     return emp_obj;
 }
@@ -333,7 +333,7 @@ void
 trame::arums::rusc::simul(empirical& obj_out)
 const
 {
-    this->simul_int(obj_out,NULL,NULL);
+    this->simul_int(obj_out,nullptr,nullptr);
 }
 
 void

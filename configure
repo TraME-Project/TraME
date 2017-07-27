@@ -79,7 +79,8 @@ if [[ "${TRAME_COVERAGE}" == "y" ]]; then
 else
     if [[ "${TRAME_OPT}" == "fast" ]]; then
         echo "TraME: experimental optimization"
-        TRAME_OPT_FLAGS="-Ofast -Wall -march=native"
+        # TRAME_OPT_FLAGS="-Ofast -Wall -march=native"
+        TRAME_OPT_FLAGS="-Ofast -Wall"
     else
         TRAME_OPT_FLAGS="-O3 -Wall"
     fi
@@ -378,6 +379,8 @@ fi
 
 if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
     TRAME_SHLIB_FLAGS="--coverage ${TRAME_SHLIB_FLAGS}"
+else
+    TRAME_SHLIB_FLAGS="-O3 ${TRAME_SHLIB_FLAGS}"
 fi
 
 if [[ "${TRAME_PARALLEL}" == "y" ]]; then 

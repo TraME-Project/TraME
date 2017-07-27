@@ -70,13 +70,13 @@ w_upper_bound(const dse<Tg,Th,Tt>& market)
                 market.arums_G.Gstarx(mu_cond_x,U_star_x,x);
                 U.row(x) = U_star_x.t();
 
-                w.row(x) = market.trans_obj.WU(U_star_x.t(),&x_ind,NULL);
-                V.row(x) = market.trans_obj.VW(w.row(x),&x_ind,NULL);
+                w.row(x) = market.trans_obj.WU(U_star_x.t(),&x_ind,nullptr);
+                V.row(x) = market.trans_obj.VW(w.row(x),&x_ind,nullptr);
             } else if (transfers_type == 2) {
                 w.row(x).fill(std::pow(2,k));
 
-                U.row(x) = market.trans_obj.UW(w.row(x),&x_ind,NULL);
-                V.row(x) = market.trans_obj.VW(w.row(x),&x_ind,NULL);
+                U.row(x) = market.trans_obj.UW(w.row(x),&x_ind,nullptr);
+                V.row(x) = market.trans_obj.VW(w.row(x),&x_ind,nullptr);
             } else {
                 printf("w_upper_bound error: unrecognized transfers_type");
                 return w;

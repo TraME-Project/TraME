@@ -133,7 +133,7 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
             for (y=0; y < nbY; y++) {
                 root_data.y_ind = y;
         
-                w(x,y) = zeroin(w_low(x,y), w(x,y), jacobi_zeroin_fn<Tg,Th,Tt>, &root_data, NULL, NULL);
+                w(x,y) = zeroin(w_low(x,y), w(x,y), jacobi_zeroin_fn<Tg,Th,Tt>, &root_data, nullptr, nullptr);
                 U(x,y) = market.trans_obj.UW(w(x,y),x,y);
                 V(x,y) = market.trans_obj.VW(w(x,y),x,y);
 
@@ -184,35 +184,35 @@ template<typename Tg, typename Th, typename Tt>
 bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    return jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL);
+    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp)
 {
-    return jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,&err_tol_inp,NULL);
+    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp)
 {
-    return jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
+    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp)
 {
-    return jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,NULL,NULL,&err_tol_inp,&max_iter_inp);
+    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    return jacobi_int(market,NULL,NULL,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL);
+    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,&U_out,&V_out,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>

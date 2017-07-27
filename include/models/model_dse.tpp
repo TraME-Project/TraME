@@ -41,7 +41,7 @@ inline
 void
 model<dse<Tg,Th,Tt>>::build(const arma::cube& phi_xyk_inp)
 {
-    this->build_int(phi_xyk_inp,NULL,NULL);
+    this->build_int(phi_xyk_inp,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -77,7 +77,7 @@ inline
 void
 model<dse<Tg,Th,Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp)
 {
-    this->build_int(X_inp,Y_inp,NULL,NULL);
+    this->build_int(X_inp,Y_inp,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -142,7 +142,7 @@ template<typename Tg, typename Th, typename Tt>
 void
 model<dse<Tg,Th,Tt>>::dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_Psi_out)
 {
-    this->dtheta(delta_theta_inp,dtheta_Psi_out,NULL,NULL);
+    this->dtheta(delta_theta_inp,dtheta_Psi_out,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -168,7 +168,7 @@ model<dse<Tg,Th,Tt>>::dtheta_mu(const arma::mat& theta, const arma::mat* delta_t
     model_to_market(theta); // need to replace this later with general 'parametric_market'
     //
     arma::mat dtheta_Psi;
-    dtheta(delta_theta,dtheta_Psi,NULL,NULL);
+    dtheta(delta_theta,dtheta_Psi,nullptr,nullptr);
     //
     model_dmu(market_obj,dtheta_Psi,mu_out,mu_x0_out,mu_0y_out,dmu_out);
 }
@@ -232,7 +232,7 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0 = initial_theta();
 
     arma::mat dtheta_Psi;
-    dtheta(NULL,dtheta_Psi);
+    dtheta(nullptr,dtheta_Psi);
 
     model_to_market(theta_0);
 
@@ -268,7 +268,7 @@ template<typename Tg, typename Th, typename Tt>
 bool
 model<dse<Tg,Th,Tt>>::solve(arma::mat& mu_sol)
 {
-    return market_obj.solve(mu_sol,NULL);
+    return market_obj.solve(mu_sol,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -348,7 +348,7 @@ model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_
     arma::vec mu_x0, mu_0y;
     arma::mat mu, dmu;
 
-    d->model_obj.dtheta_mu(vals_inp,NULL,mu,mu_x0,mu_0y,dmu);
+    d->model_obj.dtheta_mu(vals_inp,nullptr,mu,mu_x0,mu_0y,dmu);
     //
     double ret_val = 0.0;
 
@@ -602,7 +602,7 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     double val_lp = 0.0;
     //
     try {
-        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_nonzero_elem, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_nonzero_elem, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         
         if (lp_optimal) {
 
@@ -686,7 +686,7 @@ model<dse<arums::none,arums::none,transfers::tu>>::mme(const arma::mat& mu_hat, 
     double val_lp = 0.0;
     //
     try {
-        LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
         if (LP_optimal) {
             theta_hat = sol_mat(arma::span(nbX+nbY,nbX+nbY+dim_theta-1),0);

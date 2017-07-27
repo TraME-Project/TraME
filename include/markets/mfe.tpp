@@ -173,7 +173,7 @@ arma::vec
 mfe<Tt>::marg_x_inv(const arma::mat& B_ys)
 const
 {
-    return this->marg_x_inv(B_ys,NULL);
+    return this->marg_x_inv(B_ys,nullptr);
 }
 
 template<typename Tt>
@@ -196,12 +196,14 @@ const
     //
     arma::vec the_a_xs(index_vec.n_elem);
 
+#ifdef TRAME_OMP
     #pragma omp parallel for firstprivate(root_data)
+#endif
     for (int j=0; j < (int) index_vec.n_elem; j++) {
         int x = index_vec(j);
         root_data.x_ind = x;
 
-        the_a_xs(j) = zeroin(0.0, ubs(x), marg_x_inv_fn, &root_data, NULL, NULL);
+        the_a_xs(j) = zeroin(0.0, ubs(x), marg_x_inv_fn, &root_data, nullptr, nullptr);
     }
     //
     return the_a_xs;
@@ -213,7 +215,7 @@ arma::vec
 mfe<Tt>::marg_y_inv(const arma::mat& A_xs)
 const
 {
-    return this->marg_y_inv(A_xs,NULL);
+    return this->marg_y_inv(A_xs,nullptr);
 }
 
 template<typename Tt>
@@ -236,12 +238,14 @@ const
     //
     arma::vec the_b_ys(index_vec.n_elem);
     
+#ifdef TRAME_OMP
     #pragma omp parallel for firstprivate(root_data)
+#endif
     for (int j=0; j < (int) index_vec.n_elem; j++) {
         int y = index_vec(j);
         root_data.y_ind = y;
 
-        the_b_ys(j) = zeroin(0.0, ubs(y), marg_y_inv_fn, &root_data, NULL, NULL);
+        the_b_ys(j) = zeroin(0.0, ubs(y), marg_y_inv_fn, &root_data, nullptr, nullptr);
     }
     //
     return the_b_ys;
@@ -340,7 +344,7 @@ mfe<Tt>::solve(arma::mat& mu_sol, const char* solver)
     bool res = false;
     const char sig = (solver) ? solver[0] : char(0);
     
-    if (solver) { // not NULL
+    if (solver) { // not nullptr
         if (sig=='i') {
             res = ipfp(*this,mu_sol);
         }
@@ -361,7 +365,7 @@ mfe<Tt>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char
     bool res = false;
     const char sig = (solver) ? solver[0] : char(0);
     
-    if (solver) { // not NULL
+    if (solver) { // not nullptr
         if (sig=='i') {
             res = ipfp(*this,mu_sol,U_out,V_out);
         }
@@ -390,7 +394,7 @@ mfe<Tt>::marg_x_inv_fn(const double z, void* opt_data)
     //
     const double term_1 = (d->coeff) ? z : 0;
     
-    const double ret = term_1 - d->mfe_obj.n(d->x_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(z,d->B_ys,&x_ind_temp,NULL));
+    const double ret = term_1 - d->mfe_obj.n(d->x_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(z,d->B_ys,&x_ind_temp,nullptr));
     //
     return ret;
 }
@@ -407,7 +411,7 @@ mfe<Tt>::marg_y_inv_fn(const double z, void* opt_data)
     //
     const double term_1 = (d->coeff) ? z : 0;
     
-    const double ret = term_1 - d->mfe_obj.m(d->y_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(d->A_xs,z,NULL,&y_ind_temp));
+    const double ret = term_1 - d->mfe_obj.m(d->y_ind) + arma::accu(d->mfe_obj.mmfs_obj.M(d->A_xs,z,nullptr,&y_ind_temp));
     //
     return ret;
 }

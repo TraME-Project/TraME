@@ -49,7 +49,7 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
     arma::mat v_curr, v_next;
 
     if (x_first) {
-        v_curr = v_from_us(market.trans_obj,arma::zeros(nbX,1),NULL,NULL);
+        v_curr = v_from_us(market.trans_obj,arma::zeros(nbX,1),nullptr,nullptr);
     } else {
         v_curr = arma::zeros(nbY,1);
     }
@@ -67,7 +67,7 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
     }
     //
     arma::mat subdiff;
-    arma::mat u = u_from_vs(market.trans_obj,v_curr,NULL,&subdiff);
+    arma::mat u = u_from_vs(market.trans_obj,v_curr,nullptr,&subdiff);
 
     arma::vec uv_vec = arma::join_cols(arma::vectorise(u),arma::vectorise(v_curr));
 
@@ -107,7 +107,7 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
     double val_lp = 0.0;
     //
     try {
-        LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, NULL, NULL, NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, nullptr, nullptr, nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
         if (LP_optimal) {
             arma::mat mu = arma::reshape(sol_mat.col(0),nbX,nbY);
@@ -140,63 +140,63 @@ template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp)
 {
-    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,NULL,NULL);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&x_first_inp,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp)
 {
-    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,NULL);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&tol_inp,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp)
 {
-    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, const double tol_inp)
 {
-    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,&tol_inp,NULL);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&x_first_inp,&tol_inp,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, const int max_iter_inp)
 {
-    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp, const int max_iter_inp)
 {
-    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&tol_inp,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, const double tol_inp, const int max_iter_inp)
 {
-    return eap_nash_int(market,&mu_out,NULL,NULL,NULL,NULL,&x_first_inp,&tol_inp,&max_iter_inp);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&x_first_inp,&tol_inp,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& u_out, arma::mat& v_out)
 {
-    return eap_nash_int(market,&mu_out,NULL,NULL,&u_out,&v_out,NULL,NULL,NULL);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,&u_out,&v_out,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -212,7 +212,7 @@ template<typename Tt>
 arma::mat
 u_from_vs(const Tt& trans_obj, const arma::mat& v, const double* tol_inp, arma::mat* subdiff)
 {
-    const arma::mat us = trans_obj.Ucal(v,NULL,NULL);
+    const arma::mat us = trans_obj.Ucal(v,nullptr,nullptr);
     arma::mat u  = elem_max(arma::max(us,1),0.0);
     //
     if (subdiff) {
@@ -229,7 +229,7 @@ template<typename Tt>
 arma::mat
 v_from_us(const Tt& trans_obj, const arma::mat& u, const double* tol_inp, arma::mat* subdiff)
 {
-    const arma::mat vs = trans_obj.Vcal(u,NULL,NULL);
+    const arma::mat vs = trans_obj.Vcal(u,nullptr,nullptr);
     arma::mat v  = arma::trans(elem_max(arma::max(vs,0),0.0));
     //
     if (subdiff) {
@@ -329,7 +329,7 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
         obj_lp(nbX,0) = m(y);
 
         try {
-            LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+            LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
             if (LP_optimal) {
                 //u0  = sol_mat.col(0).rows(0,nbX-1);
@@ -351,7 +351,7 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
         rhs_bis(nbX) = val_lp;
 
         try {
-            LP_optimal = generic_LP(k_bis, n_bis, obj_bis.memptr(), A_bis.memptr(), modelSense_bis, rhs_bis.memptr(), sense_bis, NULL, lb_lp.memptr(), NULL, NULL, val_bis, sol_mat_bis.colptr(0), sol_mat_bis.colptr(1), dual_mat_bis.colptr(0), dual_mat_bis.colptr(1));
+            LP_optimal = generic_LP(k_bis, n_bis, obj_bis.memptr(), A_bis.memptr(), modelSense_bis, rhs_bis.memptr(), sense_bis, nullptr, lb_lp.memptr(), nullptr, nullptr, val_bis, sol_mat_bis.colptr(0), sol_mat_bis.colptr(1), dual_mat_bis.colptr(0), dual_mat_bis.colptr(1));
 
             if (LP_optimal) {
                 u = sol_mat.col(0).rows(0,nbX-1);

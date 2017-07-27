@@ -101,7 +101,7 @@ arma::mat
 trame::transfers::etu::Psi(const arma::mat& U, const arma::mat& V)
 const
 {
-    return this->Psi(U,V,NULL,NULL);
+    return this->Psi(U,V,nullptr,nullptr);
 }
 
 arma::mat 
@@ -160,7 +160,7 @@ arma::mat
 trame::transfers::etu::du_Psi(const arma::mat& U, const arma::mat& V)
 const
 {
-    return this->du_Psi(U,V,NULL,NULL);
+    return this->du_Psi(U,V,nullptr,nullptr);
 }
 
 arma::mat
@@ -212,14 +212,14 @@ const
 {
     arma::mat ret(nbX,nbY);
     //
-    const arma::mat du_psi_mat = du_Psi(U,V,NULL,NULL);
+    const arma::mat du_psi_mat = du_Psi(U,V,nullptr,nullptr);
     const arma::vec du_psi = arma::vectorise(du_psi_mat);
 
     if (!dparams) {
         const arma::mat term_1 = (U - alpha) % du_psi_mat;
         const arma::mat term_2 = (V - gamma) % (1 - du_psi_mat);
 
-        const arma::mat dsigma_psi_mat = (Psi(U,V,NULL,NULL) - term_1 - term_2)/tau;
+        const arma::mat dsigma_psi_mat = (Psi(U,V,nullptr,nullptr) - term_1 - term_2)/tau;
         const arma::vec dsigma_psi = arma::vectorise(dsigma_psi_mat);
         //
         ret = arma::join_rows(arma::diagmat(-du_psi),arma::join_rows(arma::diagmat(du_psi-1),arma::diagmat(dsigma_psi)));
@@ -235,7 +235,7 @@ const
             const arma::mat term_1 = (U - alpha) % du_psi_mat;
             const arma::mat term_2 = (V - gamma) % (1 - du_psi_mat);
 
-            const arma::mat dsigma_psi_mat = (Psi(U,V,NULL,NULL) - term_1 - term_2)/tau;
+            const arma::mat dsigma_psi_mat = (Psi(U,V,nullptr,nullptr) - term_1 - term_2)/tau;
 
             dsigma_psi_dparams = dparams_3 % arma::vectorise(dsigma_psi_mat);
         }
@@ -253,7 +253,7 @@ arma::mat
 trame::transfers::etu::Ucal(const arma::mat& vs)
 const
 {
-    return this->Ucal(vs,NULL,NULL);
+    return this->Ucal(vs,nullptr,nullptr);
 }
 
 arma::mat 
@@ -285,7 +285,7 @@ arma::mat
 trame::transfers::etu::Vcal(const arma::mat& us)
 const
 {
-    return this->Vcal(us,NULL,NULL);
+    return this->Vcal(us,nullptr,nullptr);
 }
 
 arma::mat 
@@ -317,7 +317,7 @@ arma::mat
 trame::transfers::etu::UW(const arma::mat& Ws)
 const
 {
-    return this->UW(Ws,NULL,NULL);
+    return this->UW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -341,7 +341,7 @@ arma::mat
 trame::transfers::etu::VW(const arma::mat& Ws)
 const
 {
-    return this->VW(Ws,NULL,NULL);
+    return this->VW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -365,7 +365,7 @@ arma::mat
 trame::transfers::etu::dw_UW(const arma::mat& Ws)
 const
 {
-    return this->dw_UW(Ws,NULL,NULL);
+    return this->dw_UW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -382,7 +382,7 @@ arma::mat
 trame::transfers::etu::dw_VW(const arma::mat& Ws)
 const
 {
-    return this->dw_VW(Ws,NULL,NULL);
+    return this->dw_VW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -399,7 +399,7 @@ arma::mat
 trame::transfers::etu::WU(const arma::mat& Us)
 const
 {
-    return this->WU(Us,NULL,NULL);
+    return this->WU(Us,nullptr,nullptr);
 }
 
 arma::mat 
@@ -419,7 +419,7 @@ arma::mat
 trame::transfers::etu::WV(const arma::mat& Vs)
 const
 {
-    return this->WV(Vs,NULL,NULL);
+    return this->WV(Vs,nullptr,nullptr);
 }
 
 arma::mat 

@@ -35,7 +35,7 @@ template<typename Tg, typename Th, typename Tt>
 bool
 equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol)
 {
-    return equil_solve(market_obj,mu_sol,NULL);
+    return equil_solve(market_obj,mu_sol,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -43,9 +43,9 @@ bool
 equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
+    const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not NULL
+    if (solver) { // not nullptr
         if (sig=='a') {
             res = arc_newton(market_obj,mu_sol);
         }
@@ -85,9 +85,9 @@ bool
 equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
     bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
+    const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not NULL
+    if (solver) { // not nullptr
         if (sig=='a') {
             res = arc_newton(market_obj,mu_sol,U_out,V_out);
         }
@@ -130,9 +130,9 @@ bool
 equil_solve(const dse<Tg,Th,transfers::etu>& market_obj, arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
+    const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not NULL
+    if (solver) { // not nullptr
         if (sig=='j') {
             res = jacobi(market_obj,mu_sol);
         }
@@ -148,9 +148,9 @@ bool
 equil_solve(const dse<Tg,Th,transfers::ltu>& market_obj, arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
+    const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not NULL
+    if (solver) { // not nullptr
         if (sig=='j') {
             res = jacobi(market_obj,mu_sol);
         }
@@ -166,9 +166,9 @@ bool
 equil_solve(const dse<Tg,Th,transfers::ntu>& market_obj, arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
+    const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not NULL
+    if (solver) { // not nullptr
         if (sig=='d') {
             res = darum(market_obj,mu_sol);
         }
@@ -187,9 +187,9 @@ bool
 equil_solve(const dse<Tg,Th,transfers::tu>& market_obj, arma::mat& mu_sol, const char* solver)
 {
     bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
+    const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not NULL
+    if (solver) { // not nullptr
         if (sig=='a') {
             res = arc_newton(market_obj,mu_sol);
         }
@@ -211,9 +211,9 @@ bool
 equil_solve(const dse<Tg,Th,transfers::tu>& market_obj, arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
 {
     bool res = false;
-    const char sig = (solver != NULL) ? solver[0] : char(0);
+    const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not NULL
+    if (solver) { // not nullptr
         if (sig=='a') {
             res = arc_newton(market_obj,mu_sol,U_out,V_out);
         }

@@ -74,7 +74,7 @@ arma::mat
 trame::mmfs::cd::M(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
-    return this->M(a_xs,b_ys,NULL,NULL);
+    return this->M(a_xs,b_ys,nullptr,nullptr);
 }
 
 arma::mat
@@ -147,7 +147,7 @@ arma::mat
 trame::mmfs::cd::dparams_M(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
-    return this->dparams_M(a_xs,b_ys,NULL);
+    return this->dparams_M(a_xs,b_ys,nullptr);
 }
 
 arma::mat

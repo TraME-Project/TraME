@@ -250,7 +250,7 @@ const
 {
     empirical emp_obj;
     
-    this->simul_int(emp_obj,NULL,NULL);
+    this->simul_int(emp_obj,nullptr,nullptr);
     //
     return emp_obj;
 }
@@ -270,7 +270,7 @@ void
 trame::arums::none::simul(empirical& obj_out)
 const
 {
-    this->simul_int(obj_out,NULL,NULL);
+    this->simul_int(obj_out,nullptr,nullptr);
 }
 
 void

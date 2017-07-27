@@ -43,7 +43,7 @@ trame::arums::probit::probit(const int nbX_inp, const int nbY_inp)
 
 trame::arums::probit::probit(const int nbX_inp, const int nbY_inp, const bool outside_option_inp)
 {   
-    this->build_int(nbX_inp, nbY_inp, NULL, outside_option_inp);
+    this->build_int(nbX_inp, nbY_inp, nullptr, outside_option_inp);
 }
 
 trame::arums::probit::probit(const int nbX_inp, const int nbY_inp, const double rho_inp, const bool outside_option_inp)
@@ -61,7 +61,7 @@ trame::arums::probit::build(const int nbX_inp, const int nbY_inp)
 void
 trame::arums::probit::build(const int nbX_inp, const int nbY_inp, const bool outside_option_inp)
 {   
-    this->build_int(nbX_inp, nbY_inp, NULL, outside_option_inp);
+    this->build_int(nbX_inp, nbY_inp, nullptr, outside_option_inp);
 }
 
 void
@@ -118,7 +118,7 @@ const
 {
     empirical emp_obj;
     
-    this->simul_int(emp_obj,NULL,NULL);
+    this->simul_int(emp_obj,nullptr,nullptr);
     //
     return emp_obj;
 }
@@ -138,7 +138,7 @@ void
 trame::arums::probit::simul(empirical& obj_out)
 const
 {
-    this->simul_int(obj_out,NULL,NULL);
+    this->simul_int(obj_out,nullptr,nullptr);
 }
 
 void

@@ -41,7 +41,7 @@ inline
 void
 model<mfe<Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp)
 {
-    this->build_int(X_inp,Y_inp,NULL,NULL,NULL);
+    this->build_int(X_inp,Y_inp,nullptr,nullptr,nullptr);
 }
 
 template<typename Tt>
@@ -49,7 +49,7 @@ inline
 void
 model<mfe<Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp)
 {
-    this->build_int(X_inp,Y_inp,&n_inp,&m_inp,NULL);
+    this->build_int(X_inp,Y_inp,&n_inp,&m_inp,nullptr);
 }
 
 template<typename Tt>
@@ -138,7 +138,7 @@ model<mfe<Tt>>::dtheta(const arma::mat* delta_theta_inp)
 //     (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0 = initial_theta();
 
 //     arma::mat dtheta_Psi;
-//     dtheta(NULL,dtheta_Psi);
+//     dtheta(nullptr,dtheta_Psi);
 
 //     model_to_market(theta_0);
 
@@ -237,7 +237,7 @@ model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doubl
     //
     if (success) {
         theta_hat = opt_vec;
-        val_ret = model_mfe_mme_opt_objfn(opt_vec,NULL,&opt_data);
+        val_ret = model_mfe_mme_opt_objfn(opt_vec,nullptr,&opt_data);
     }
     //
     return success;
@@ -360,7 +360,7 @@ template<typename Tt>
 bool
 model<mfe<Tt>>::solve(arma::mat& mu_sol)
 {
-    bool res = market_obj.solve(mu_sol,NULL);
+    bool res = market_obj.solve(mu_sol,nullptr);
     //
     return res;
 }

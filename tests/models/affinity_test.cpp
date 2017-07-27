@@ -35,9 +35,9 @@ int main()
     double val_hat;
     arma::mat mu_hat = arma::ones(nbX,nbY)/(nbX), theta_hat;
 
-    aff_model.mme_regul(mu_hat,lambda,theta_hat,val_hat,NULL,NULL,NULL,NULL);
+    aff_model.mme_regul(mu_hat,lambda,theta_hat,val_hat,nullptr,nullptr,nullptr,nullptr);
     std::cout << "the_val with regularization: " << val_hat << std::endl;
-    aff_model.mme_woregul(mu_hat,theta_hat,val_hat,NULL,NULL,NULL,NULL);
+    aff_model.mme_woregul(mu_hat,theta_hat,val_hat,nullptr,nullptr,nullptr,nullptr);
     std::cout << "the_val without regularization: " << val_hat << std::endl;
     arma::cout << "theta_hat: \n" << theta_hat << arma::endl;
     //

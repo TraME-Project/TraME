@@ -105,35 +105,35 @@ template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    return darum_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL);
+    return darum_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp)
 {
-    return darum_int(market,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,NULL);
+    return darum_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&tol_inp,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp)
 {
-    return darum_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
+    return darum_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp)
 {
-    return darum_int(market,&mu_out,NULL,NULL,NULL,NULL,&tol_inp,&max_iter_inp);
+    return darum_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&tol_inp,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    return darum_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL);
+    return darum_int(market,&mu_out,nullptr,nullptr,&U_out,&V_out,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>

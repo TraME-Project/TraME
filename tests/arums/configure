@@ -1,12 +1,13 @@
 #!/bin/bash
 ## TraME tests config script
 
-while getopts b:c option
-do
-    case "${option}"
-    in
-    b) TRAME_BUILD=${OPTARG};;
-    c) TRAME_COVERAGE="y";;
+while getopts :b:cl:op option; do
+    case "${option}" in
+        b) TRAME_BUILD=${OPTARG};;
+        c) TRAME_COVERAGE="y";;
+        l) TRAME_LP=${OPTARG};;
+        o) TRAME_OPT=${OPTARG};;
+        p) TRAME_PARALLEL="y";;
     esac
 done
 
@@ -49,13 +50,22 @@ fi
 
 echo "TraME tests: ARMA_INCLUDE_PATH set to ${ARMA_INCLUDE_PATH}"
 
-# coverage build? used for codecov
+# set build and optimization flags
 
 if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
-    echo "TraME tests: coverage build"
-    TRAME_OPT_FLAGS="-g -O0 -Wall --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
+    TRAME_OPT_FLAGS="-O0 -Wall -g --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
 else
-    TRAME_OPT_FLAGS="-O3"
+    if [[ "${TRAME_OPT}" == "fast" ]]; then
+        echo "TraME: experimental optimization"
+        TRAME_OPT_FLAGS="-Ofast -Wall -march=native"
+    else
+        TRAME_OPT_FLAGS="-O3 -Wall"
+    fi
+
+    if [[ "${TRAME_PARALLEL}" == "y" ]]; then 
+        echo "TraME: using OpenMP"
+        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp -DTRAME_OMP"
+    fi
 fi
 
 if [[ $OSTYPE == *cygwin* ]] ; then

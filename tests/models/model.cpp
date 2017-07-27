@@ -55,11 +55,11 @@ int main()
 
     //double val_hat;
     arma::mat theta_hat_mme, theta_hat_mle;
-    TU_logit_model.mme(mu_hat,theta_hat_mme,NULL);
+    TU_logit_model.mme(mu_hat,theta_hat_mme,nullptr);
 
     arma::cout << "theta_hat mme: \n" << theta_hat_mme << arma::endl;
 
-    TU_logit_model.mle(mu_hat,theta_hat_mle,NULL);
+    TU_logit_model.mle(mu_hat,theta_hat_mle,nullptr);
 
     arma::cout << "theta_hat mle: \n" << theta_hat_mle << arma::endl;
 
@@ -68,11 +68,11 @@ int main()
     TU_none_model.build(X_vals,Y_vals,n,m);
 
     // arma::mat theta_0 = arma::zeros(dX*dY,1);
-    TU_none_model.mme(mu_hat,theta_hat_mme,NULL);
+    TU_none_model.mme(mu_hat,theta_hat_mme,nullptr);
 
     arma::cout << "theta_hat mme for arums_none: \n" << theta_hat_mme << arma::endl;
 
-    // aff_model.mme_regul(mu_hat,lambda,theta_hat,val_hat,NULL,NULL,NULL,NULL);
+    // aff_model.mme_regul(mu_hat,lambda,theta_hat,val_hat,nullptr,nullptr,nullptr,nullptr);
 
     //
     // Affinity model
@@ -91,9 +91,9 @@ int main()
     mu_hat = arma::ones(nbX,nbY)/(nbX);
     arma::mat theta_hat_aff;
 
-    aff_model.mme_regul(mu_hat,lambda,theta_hat_aff,val_hat_1,NULL,NULL,NULL,NULL);
+    aff_model.mme_regul(mu_hat,lambda,theta_hat_aff,val_hat_1,nullptr,nullptr,nullptr,nullptr);
     std::cout << "the_val with regularization: " << val_hat_1 << std::endl;
-    aff_model.mme_woregul(mu_hat,theta_hat_aff,val_hat_2,NULL,NULL,NULL,NULL);
+    aff_model.mme_woregul(mu_hat,theta_hat_aff,val_hat_2,nullptr,nullptr,nullptr,nullptr);
     std::cout << "the_val without regularization: " << val_hat_2 << std::endl;
     // arma::cout << "theta_hat: \n" << theta_hat << arma::endl;
 

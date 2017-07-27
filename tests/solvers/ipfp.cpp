@@ -17,8 +17,8 @@ int main()
     start = std::chrono::system_clock::now();
     //
     // inputs:
-    int nbX = 18;
-    int nbY = 5;
+    int nbX = 600;
+    int nbY = 500;
     double sigma = 1;
 
     arma::vec n = arma::ones(nbX,1);
@@ -60,17 +60,17 @@ int main()
 
     // mfe_obj_TU.solve(mu_TU);
 
-    arma::cout << "Solution of mfe::geo (TU-logit) problem using ipfp:\n" << mu_TU << arma::endl;
+    // arma::cout << "Solution of mfe::geo (TU-logit) problem using ipfp:\n" << mu_TU << arma::endl;
 
     arma::mat mu_NTU;
     trame::ipfp(mfe_obj_NTU,mu_NTU);
 
-    arma::cout << "Solution of mfe::min (NTU-logit) problem using ipfp:\n" << mu_NTU << arma::endl;
+    // arma::cout << "Solution of mfe::min (NTU-logit) problem using ipfp:\n" << mu_NTU << arma::endl;
 
     arma::mat mu_LTU;
     trame::ipfp(mfe_obj_LTU,mu_LTU);
 
-    arma::cout << "Solution of mfe::cd (LTU-logit) problem using ipfp:\n" << mu_LTU << arma::endl;
+    // arma::cout << "Solution of mfe::cd (LTU-logit) problem using ipfp:\n" << mu_LTU << arma::endl;
     //
     printf("\n*===================    End of ipfp Test    ===================*\n");
     printf("\n");

@@ -191,7 +191,7 @@ const
         root_data.exp_Ubar_X = exp_Ubar_X;
         root_data.mubar_X = mubar_x;
         
-        double mu_x0 = zeroin(0.0, 1.0, differMargX, &root_data, NULL, NULL);
+        double mu_x0 = zeroin(0.0, 1.0, differMargX, &root_data, nullptr, nullptr);
         //
         mu_x_out = arma::min(mu_x0 * exp_Ubar_X, mubar_x);
         U_x_out  = sigma * arma::log(mu_x_out/mu_x0);
@@ -439,7 +439,7 @@ const
 {
     empirical emp_obj;
     
-    this->simul_int(emp_obj,NULL,NULL);
+    this->simul_int(emp_obj,nullptr,nullptr);
     //
     return emp_obj;
 }
@@ -459,7 +459,7 @@ void
 trame::arums::logit::simul(empirical& obj_out)
 const
 {
-    this->simul_int(obj_out,NULL,NULL);
+    this->simul_int(obj_out,nullptr,nullptr);
 }
 
 void

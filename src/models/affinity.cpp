@@ -36,13 +36,13 @@
 void 
 trame::affinity::build(const arma::mat& X_inp, const arma::mat& Y_inp)
 {
-    this->build_int(X_inp,Y_inp,NULL,NULL,NULL);
+    this->build_int(X_inp,Y_inp,nullptr,nullptr,nullptr);
 }
 
 void 
 trame::affinity::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp)
 {
-    this->build_int(X_inp,Y_inp,&n_inp,&m_inp,NULL);
+    this->build_int(X_inp,Y_inp,&n_inp,&m_inp,nullptr);
 }
 
 void 
@@ -174,7 +174,7 @@ trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doub
     //
     if (success) {
         theta_hat = opt_vec;
-        val_ret = trame::affinity::mme_woregul_opt_objfn(opt_vec,NULL,&opt_data);
+        val_ret = trame::affinity::mme_woregul_opt_objfn(opt_vec,nullptr,&opt_data);
     }
     //
     return success;

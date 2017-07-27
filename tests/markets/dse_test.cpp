@@ -73,7 +73,7 @@ int main()
     dse_obj_NTU.build(n_d,m_d,alpha_d,gamma_d,logit_d_1,logit_d_2,false);
     //
     arma::mat mu_NTU, U, V;
-    // trame::darum(dse_obj_NTU, true, NULL, mu_NTU, mux0, mu0y, U, V);
+    // trame::darum(dse_obj_NTU, true, nullptr, mu_NTU, mux0, mu0y, U, V);
     // trame::darum(dse_obj_NTU, mu_NTU);
     dse_obj_NTU.solve(mu_NTU);
     // dse_obj_NTU.solve(mu_NTU,(char*) "darum");

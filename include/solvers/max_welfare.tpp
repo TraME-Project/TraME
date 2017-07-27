@@ -100,35 +100,35 @@ template<typename Tg, typename Th, typename Tt>
 bool
 max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    return max_welfare_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+    return max_welfare_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp)
 {
-    return max_welfare_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&err_tol_inp,NULL);
+    return max_welfare_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp)
 {
-    return max_welfare_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,NULL,&max_iter_inp);
+    return max_welfare_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp)
 {
-    return max_welfare_int(market,&mu_out,NULL,NULL,NULL,NULL,NULL,&err_tol_inp,&max_iter_inp);
+    return max_welfare_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,&max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    return max_welfare_int(market,&mu_out,NULL,NULL,&U_out,&V_out,NULL,NULL,NULL);
+    return max_welfare_int(market,&mu_out,nullptr,nullptr,&U_out,&V_out,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>

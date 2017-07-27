@@ -50,7 +50,7 @@ int main()
     //
     arma::vec mux0, mu0y;
     arma::mat mu_TU, U, V;
-    //trame::jacobi(dse_obj_TU, true, NULL, NULL, NULL, mu_TU, mux0, mu0y, U, V);
+    //trame::jacobi(dse_obj_TU, true, nullptr, nullptr, nullptr, mu_TU, mux0, mu0y, U, V);
     trame::jacobi(dse_obj_TU, mu_TU);
 
     arma::cout << "Solution of TU-logit problem using jacobi:\n" << mu_TU << arma::endl;
@@ -61,7 +61,7 @@ int main()
     dse_obj_NTU.build(n,m,alpha,gamma,logit_1,logit_2,false);
     //
     arma::mat mu_NTU;
-    //trame::jacobi(dse_obj_NTU, true, NULL, NULL, NULL, mu_NTU, mux0, mu0y, U, V);
+    //trame::jacobi(dse_obj_NTU, true, nullptr, nullptr, nullptr, mu_NTU, mux0, mu0y, U, V);
     trame::jacobi(dse_obj_NTU, mu_NTU);
 
     arma::cout << "Solution of NTU-logit problem using jacobi:\n" << mu_NTU << arma::endl;

@@ -196,7 +196,7 @@ const
     arma::mat dual_mat(k_Gstar, 2);
     
     try {
-        LP_optimal = generic_LP(k_Gstar, n_Gstar, obj_lp.memptr(), numnz_Gstar, vbeg_Gstar, vind_Gstar, vval_Gstar, modelSense, rhs_lp.memptr(), sense_lp, NULL, NULL, NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        LP_optimal = generic_LP(k_Gstar, n_Gstar, obj_lp.memptr(), numnz_Gstar, vbeg_Gstar, vind_Gstar, vval_Gstar, modelSense, rhs_lp.memptr(), sense_lp, nullptr, nullptr, nullptr, nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
         if (LP_optimal) {
             arma::mat u = dual_mat.col(0).rows(0,aux_nbDraws-1);
@@ -292,7 +292,7 @@ const
     arma::mat dual_mat(k_Gbar,2);
 
     try {
-        LP_optimal = generic_LP(k_Gbar, n_Gbar, obj_lp.memptr(), numnz_Gbar, vbeg_Gbar, vind_Gbar, vval_Gbar, modelSense, rhs_lp.memptr(), sense_lp, NULL, NULL, NULL, NULL, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        LP_optimal = generic_LP(k_Gbar, n_Gbar, obj_lp.memptr(), numnz_Gbar, vbeg_Gbar, vind_Gbar, vval_Gbar, modelSense, rhs_lp.memptr(), sense_lp, nullptr, nullptr, nullptr, nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
         if (LP_optimal) {
             U_x_out = sol_mat.col(0).rows(0,nbY-1);

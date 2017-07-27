@@ -79,7 +79,7 @@ arma::mat
 trame::transfers::tu::Psi(const arma::mat& U, const arma::mat& V)
 const
 {
-    return this->Psi(U,V,NULL,NULL);
+    return this->Psi(U,V,nullptr,nullptr);
 }
 
 // Implicit Parameterization
@@ -125,7 +125,7 @@ arma::mat
 trame::transfers::tu::du_Psi(const arma::mat& U, const arma::mat& V)
 const
 {
-    return this->du_Psi(U,V,NULL,NULL);
+    return this->du_Psi(U,V,nullptr,nullptr);
 }
 
 arma::mat 
@@ -194,7 +194,7 @@ arma::mat
 trame::transfers::tu::Ucal(const arma::mat& vs)
 const
 {
-    return this->Ucal(vs,NULL,NULL);
+    return this->Ucal(vs,nullptr,nullptr);
 }
 
 arma::mat 
@@ -218,7 +218,7 @@ arma::mat
 trame::transfers::tu::Vcal(const arma::mat& us)
 const
 {
-    return this->Vcal(us,NULL,NULL);
+    return this->Vcal(us,nullptr,nullptr);
 }
 
 arma::mat 
@@ -242,7 +242,7 @@ arma::mat
 trame::transfers::tu::UW(const arma::mat& Ws)
 const
 {
-    return this->UW(Ws,NULL,NULL);
+    return this->UW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -266,7 +266,7 @@ arma::mat
 trame::transfers::tu::VW(const arma::mat& Ws)
 const
 {
-    return this->VW(Ws,NULL,NULL);
+    return this->VW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -290,7 +290,7 @@ arma::mat
 trame::transfers::tu::dw_UW(const arma::mat& Ws)
 const
 {
-    return this->dw_UW(Ws,NULL,NULL);
+    return this->dw_UW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -307,7 +307,7 @@ arma::mat
 trame::transfers::tu::dw_VW(const arma::mat& Ws)
 const
 {
-    return this->dw_VW(Ws,NULL,NULL);
+    return this->dw_VW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -324,7 +324,7 @@ arma::mat
 trame::transfers::tu::WU(const arma::mat& Us)
 const
 {
-    return this->WU(Us,NULL,NULL);
+    return this->WU(Us,nullptr,nullptr);
 }
 
 arma::mat 
@@ -341,7 +341,7 @@ arma::mat
 trame::transfers::tu::WV(const arma::mat& Vs)
 const
 {
-    return this->WV(Vs,NULL,NULL);
+    return this->WV(Vs,nullptr,nullptr);
 }
 
 arma::mat 

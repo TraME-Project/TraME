@@ -87,7 +87,7 @@ arma::mat
 trame::transfers::ntu::Psi(const arma::mat& U, const arma::mat& V)
 const
 {
-    return this->Psi(U,V,NULL,NULL);
+    return this->Psi(U,V,nullptr,nullptr);
 }
 
 // Implicit Parameterization
@@ -133,7 +133,7 @@ arma::mat
 trame::transfers::ntu::du_Psi(const arma::mat& U, const arma::mat& V)
 const
 {
-    return this->du_Psi(U,V,NULL,NULL);
+    return this->du_Psi(U,V,nullptr,nullptr);
 }
 
 arma::mat 
@@ -188,7 +188,7 @@ const
 {
     arma::mat ret(nbX,nbY);
     //
-    arma::vec du_psi = arma::vectorise(du_Psi(U,V,NULL,NULL));
+    arma::vec du_psi = arma::vectorise(du_Psi(U,V,nullptr,nullptr));
 
     if (!dparams) {
         ret = - arma::join_rows(arma::diagmat(du_psi),arma::diagmat(1 - du_psi));
@@ -207,7 +207,7 @@ arma::mat
 trame::transfers::ntu::Ucal(const arma::mat& vs)
 const
 {
-    return this->Ucal(vs,NULL,NULL);
+    return this->Ucal(vs,nullptr,nullptr);
 }
 
 arma::mat 
@@ -239,7 +239,7 @@ arma::mat
 trame::transfers::ntu::Vcal(const arma::mat& us)
 const
 {
-    return this->Vcal(us,NULL,NULL);
+    return this->Vcal(us,nullptr,nullptr);
 }
 
 arma::mat 
@@ -271,7 +271,7 @@ arma::mat
 trame::transfers::ntu::UW(const arma::mat& Ws)
 const
 {
-    return this->UW(Ws,NULL,NULL);
+    return this->UW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -295,7 +295,7 @@ arma::mat
 trame::transfers::ntu::VW(const arma::mat& Ws)
 const
 {
-    return this->VW(Ws,NULL,NULL);
+    return this->VW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -319,7 +319,7 @@ arma::mat
 trame::transfers::ntu::dw_UW(const arma::mat& Ws)
 const
 {
-    return this->dw_UW(Ws,NULL,NULL);
+    return this->dw_UW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -336,7 +336,7 @@ arma::mat
 trame::transfers::ntu::dw_VW(const arma::mat& Ws)
 const
 {
-    return this->dw_VW(Ws,NULL,NULL);
+    return this->dw_VW(Ws,nullptr,nullptr);
 }
 
 arma::mat 
@@ -353,7 +353,7 @@ arma::mat
 trame::transfers::ntu::WU(const arma::mat& Us)
 const
 {
-    return this->WU(Us,NULL,NULL);
+    return this->WU(Us,nullptr,nullptr);
 }
 
 arma::mat 
@@ -370,7 +370,7 @@ arma::mat
 trame::transfers::ntu::WV(const arma::mat& Vs)
 const
 {
-    return this->WV(Vs,NULL,NULL);
+    return this->WV(Vs,nullptr,nullptr);
 }
 
 arma::mat 

@@ -40,13 +40,13 @@ namespace trame
 template<>
 void model<arums::logit,arums::logit,mmfs::geo>::build_market_TU(const arma::mat& theta)
 {
-    mfe_obj.build(n,m,Phi_xy_theta(theta),NULL,need_norm);
+    mfe_obj.build(n,m,Phi_xy_theta(theta),nullptr,need_norm);
 }
 
 template<>
 bool model<arums::logit,arums::logit,mmfs::geo>::solve(arma::mat& mu_sol)
 {
-    bool res = mfe_obj.solve(mu_sol,NULL);
+    bool res = mfe_obj.solve(mu_sol,nullptr);
     //
     return res;
 }
@@ -76,13 +76,13 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
     int range_params = theta.n_cols;
     
     arma::mat mu, U, V;
-    solve(mu,U,V,NULL);
+    solve(mu,U,V,nullptr);
     
     arma::vec mu_x0 = mfe_obj.n - arma::sum(mu,1);
     arma::vec mu_0y = mfe_obj.m - arma::trans(arma::sum(mu,0));
 
     arma::mat dparams_Psi, dparams_G, dparams_H;
-    dparam(dtheta,dparams_Psi,NULL,NULL);
+    dparam(dtheta,dparams_Psi,nullptr,nullptr);
 
     arma::mat du_Psi = mfe_obj.mmfs_obj.du_Psi(U,V);
     arma::mat dv_Psi = 1.0 - du_Psi;
@@ -270,7 +270,7 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
 //     double val_lp = 0.0;
 //     //
 //     try {
-//         lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_nonzero_elem, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+//         lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_nonzero_elem, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         
 //         if (lp_optimal) {
 //             arma::mat mu_iy = arma::reshape(dual_mat(arma::span(0,nbI*nbY-1),0),nbI,nbY);
@@ -353,7 +353,7 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
 //     double val_lp = 0.0;
 //     //
 //     try {
-//         LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+//         LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
 //         if (LP_optimal) {
 //             theta_hat = sol_mat(arma::span(nbX+nbY,nbX+nbY+dim_theta-1),0);

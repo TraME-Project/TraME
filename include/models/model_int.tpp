@@ -232,7 +232,7 @@ void
 model_dmu(dse<Tg,Th,Tt>& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
 {
     arma::mat mu, U, V;
-    market_obj.solve(mu,U,V,NULL);
+    market_obj.solve(mu,U,V,nullptr);
 
     arma::vec mu_x0 = market_obj.n - arma::sum(mu,1);
     arma::vec mu_0y = market_obj.m - arma::trans(arma::sum(mu,0));

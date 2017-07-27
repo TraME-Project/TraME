@@ -176,7 +176,7 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     double val_lp = 0.0;
     //
     try {
-        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_non_zero, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, NULL, lb_lp.memptr(), NULL, NULL, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_non_zero, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         
         if (lp_optimal) {
             const arma::mat mu_iy = arma::reshape(dual_mat(arma::span(0,nbI*nbY-1),0),nbI,nbY);
@@ -220,14 +220,14 @@ template<typename Tg, typename Th, typename Tt>
 bool
 cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    return cupids_lp_int(market,&mu_out,NULL,NULL,NULL,NULL);
+    return cupids_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    return cupids_lp_int(market,&mu_out,NULL,NULL,&U_out,&V_out);
+    return cupids_lp_int(market,&mu_out,nullptr,nullptr,&U_out,&V_out);
 }
 
 template<typename Tg, typename Th, typename Tt>
