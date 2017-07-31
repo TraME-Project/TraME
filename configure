@@ -2,11 +2,12 @@
 ## TraME config script
 
 # inputs
-while getopts :b:cl:op option; do
+while getopts :b:cl:m:op option; do
     case "${option}" in
         b) TRAME_BUILD=${OPTARG};;
         c) TRAME_COVERAGE="y";;
         l) TRAME_LP=${OPTARG};;
+        m) TRAME_MATRIX_OPS=${OPTARG};;
         o) TRAME_OPT=${OPTARG};;
         p) TRAME_PARALLEL="y";;
     esac
@@ -272,7 +273,7 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
     else
         TRAME_SHLIB_FLAGS="-shared -L/usr/lib -Wl,-Bsymbolic-functions -Wl,-z,relro "
     fi
-    TRAME_BLAS_LAPACK="-lopenblas"
+    TRAME_BLAS_LAPACK="-lblas -llapack"
 
     # look for any Gurobi directories, then choose the latest one
     grb_dirs=( /opt/gurobi* )
@@ -351,6 +352,12 @@ else
     LP_LIB_PATH=
     LP_LIBS=
     LP_LIB_RPATH=
+fi
+
+if [[ !(-z ${TRAME_MATRIX_OPS+x}) ]]; then
+    TRAME_BLAS_LAPACK="${TRAME_MATRIX_OPS}"
+    echo ""
+    echo "TraME: BLAS and Lapack libraries set to ${TRAME_BLAS_LAPACK}"
 fi
 
 # some final flags for the shared library
