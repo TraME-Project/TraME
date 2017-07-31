@@ -2,7 +2,6 @@
 ## TraME config script
 
 # inputs
-# while getopts :b:c:l:o: option; do
 while getopts :b:cl:op option; do
     case "${option}" in
         b) TRAME_BUILD=${OPTARG};;
@@ -64,7 +63,6 @@ if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
         mkdir ${WDIR}/arma_tmp
         git clone -b unstable --single-branch https://github.com/conradsnicta/armadillo-code ${WDIR}/arma_tmp
         mv ${WDIR}/arma_tmp/include/* ${WDIR}/include
-        # cp -a ${WDIR}/arma_tmp/include/. ${WDIR}/include
         rm -rf ${WDIR}/arma_tmp
         ARMA_INCLUDE_PATH="-I./include"
 
@@ -85,7 +83,7 @@ else
         TRAME_OPT_FLAGS="-O3 -Wall"
     fi
 
-    if [[ "${TRAME_PARALLEL}" == "y" ]]; then 
+    if [[ "${TRAME_PARALLEL}" == "y" ]]; then
         echo "TraME: using OpenMP"
         TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp -DTRAME_OMP"
     fi
@@ -146,28 +144,18 @@ if [[ $OSTYPE == darwin* ]] ; then
         if [ -f ${WDIR}/glpk_tmp/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
             LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /usr/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/usr/include"
             LP_LIB_PATH="-L/usr/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /usr/local/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/usr/local/include"
             LP_LIB_PATH="-L/usr/local/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /opt/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/opt/include"
             LP_LIB_PATH="-L/opt/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /opt/local/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/opt/local/include"
             LP_LIB_PATH="-L/opt/local/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         else
             echo ""
             echo "TraME: cannot find a LP solver files. Downloading GLPK"
@@ -189,9 +177,11 @@ if [[ $OSTYPE == darwin* ]] ; then
 
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
             LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         fi
+    
+    LP_LIBS="-lglpk"
+    LP_LIB_RPATH=
+
     echo ""
     echo "TraME: using GLPK. LP_INCLUDE_PATH set to ${LP_INCLUDE_PATH}"
     fi
@@ -231,28 +221,18 @@ elif [[ $OSTYPE == *linux* ]] ; then
         if [ -f ${WDIR}/glpk_tmp/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
             LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /usr/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/usr/include"
             LP_LIB_PATH="-L/usr/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /usr/local/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/usr/local/include"
             LP_LIB_PATH="-L/usr/local/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /opt/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/opt/include"
             LP_LIB_PATH="-L/opt/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /opt/local/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/opt/local/include"
             LP_LIB_PATH="-L/opt/local/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         else
             echo ""
             echo "TraME: cannot find a LP solver files. Downloading GLPK"
@@ -274,9 +254,11 @@ elif [[ $OSTYPE == *linux* ]] ; then
 
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
             LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         fi
+    
+    LP_LIBS="-lglpk"
+    LP_LIB_RPATH=
+
     echo ""
     echo "TraME: using GLPK. LP_INCLUDE_PATH set to ${LP_INCLUDE_PATH}"
     fi
@@ -319,28 +301,18 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
         if [ -f ${WDIR}/glpk_tmp/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
             LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /usr/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/usr/include"
             LP_LIB_PATH="-L/usr/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /usr/local/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/usr/local/include"
             LP_LIB_PATH="-L/usr/local/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /opt/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/opt/include"
             LP_LIB_PATH="-L/opt/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         elif [ -f /opt/local/include/glpk.h ]; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/opt/local/include"
             LP_LIB_PATH="-L/opt/local/lib"
-            LP_LIBS="-lglpk"
-            LP_LIB_RPATH=
         else
             echo ""
             echo "TraME: cannot find a LP solver files. Downloading GLPK"
@@ -365,6 +337,10 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
             LP_LIBS="-lglpk"
             LP_LIB_RPATH=
         fi
+    
+    LP_LIBS="-lglpk"
+    LP_LIB_RPATH=
+
     echo ""
     echo "TraME: using GLPK. LP_INCLUDE_PATH set to ${LP_INCLUDE_PATH}"
     fi
@@ -377,6 +353,8 @@ else
     LP_LIB_RPATH=
 fi
 
+# some final flags for the shared library
+
 if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
     TRAME_SHLIB_FLAGS="--coverage ${TRAME_SHLIB_FLAGS}"
 else
@@ -386,6 +364,8 @@ fi
 if [[ "${TRAME_PARALLEL}" == "y" ]]; then 
     TRAME_SHLIB_FLAGS="-fopenmp ${TRAME_SHLIB_FLAGS}"
 fi
+
+# create Makefile
 
 sed -e "s|@CC@|${CC}|" \
     -e "s|@CXX@|${CXX}|" \

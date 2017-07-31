@@ -134,21 +134,21 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
         printf("elem_sub: need matrices to agree on at least one dimension\n");
         return ret;
     }
+
     //
     // instead of loops we could also use arma::repmat, not sure which is quicker...
-    int i;
 
     if (same_rows && same_cols) {
         ret = mat_1 + mat_2;
     } else if (same_rows && !same_cols) {
         if (cols_1==1) {
             ret.set_size(rows_1,cols_2);
-            for (i=0; i<cols_2; i++) {
+            for (int i=0; i < cols_2; i++) {
                 ret.col(i) = mat_1 + mat_2.col(i);
             }
         } else if (cols_2==1) {
             ret.set_size(rows_1,cols_1);
-            for (i=0; i<cols_1; i++) {
+            for (int i=0; i < cols_1; i++) {
                 ret.col(i) = mat_1.col(i) + mat_2;
             }
         } else {
@@ -158,12 +158,12 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
     } else if (!same_rows && same_cols) {
         if (rows_1==1) {
             ret.set_size(rows_2,cols_1);
-            for (i=0; i<rows_2; i++) {
+            for (int i=0; i < rows_2; i++) {
                 ret.row(i) = mat_1 + mat_2.row(i);
             }
         } else if (rows_2==1) {
             ret.set_size(rows_1,cols_1);
-            for (i=0; i<rows_1; i++) {
+            for (int i=0; i < rows_1; i++) {
                 ret.row(i) = mat_1.row(i) + mat_2;
             }
         } else {
@@ -201,21 +201,21 @@ elem_sub(const arma::mat& mat_1, const arma::mat& mat_2)
         printf("elem_sub: need matrices to agree on at least one dimension\n");
         return ret;
     }
+
     //
     // instead of loops we could also use arma::repmat, not sure which is quicker...
-    int i;
 
     if (same_rows && same_cols) {
         ret = mat_1 - mat_2;
     } else if (same_rows && !same_cols) {
         if (cols_1==1) {
             ret.set_size(rows_1,cols_2);
-            for (i=0; i<cols_2; i++) {
+            for (int i=0; i < cols_2; i++) {
                 ret.col(i) = mat_1 - mat_2.col(i);
             }
         } else if (cols_2==1) {
             ret.set_size(rows_1,cols_1);
-            for (i=0; i<cols_1; i++) {
+            for (int i=0; i < cols_1; i++) {
                 ret.col(i) = mat_1.col(i) - mat_2;
             }
         } else {
@@ -225,12 +225,12 @@ elem_sub(const arma::mat& mat_1, const arma::mat& mat_2)
     } else if (!same_rows && same_cols) {
         if (rows_1==1) {
             ret.set_size(rows_2,cols_1);
-            for (i=0; i<rows_2; i++) {
+            for (int i=0; i < rows_2; i++) {
                 ret.row(i) = mat_1 - mat_2.row(i);
             }
         } else if (rows_2==1) {
             ret.set_size(rows_1,cols_1);
-            for (i=0; i<rows_1; i++) {
+            for (int i=0; i < rows_1; i++) {
                 ret.row(i) = mat_1.row(i) - mat_2;
             }
         } else {
@@ -268,21 +268,21 @@ elem_prod(const arma::mat& mat_1, const arma::mat& mat_2)
         printf("elem_prod: need matrices to agree on at least one dimension\n");
         return ret;
     }
+
     //
     // instead of loops we could also use arma::repmat, not sure which is quicker...
-    int i;
 
     if (same_rows && same_cols) {
         ret = mat_1 % mat_2;
     } else if (same_rows && !same_cols) {
         if (cols_1==1) {
             ret.set_size(rows_1,cols_2);
-            for (i=0; i<cols_2; i++) {
+            for (int i=0; i < cols_2; i++) {
                 ret.col(i) = mat_1 % mat_2.col(i);
             }
         } else if (cols_2==1) {
             ret.set_size(rows_1,cols_1);
-            for (i=0; i<cols_1; i++) {
+            for (int i=0; i < cols_1; i++) {
                 ret.col(i) = mat_1.col(i) % mat_2;
             }
         } else {
@@ -292,12 +292,12 @@ elem_prod(const arma::mat& mat_1, const arma::mat& mat_2)
     } else if (!same_rows && same_cols) {
         if (rows_1==1) {
             ret.set_size(rows_2,cols_1);
-            for (i=0; i<rows_2; i++) {
+            for (int i=0; i < rows_2; i++) {
                 ret.row(i) = mat_1 % mat_2.row(i);
             }
         } else if (rows_2==1) {
             ret.set_size(rows_1,cols_1);
-            for (i=0; i<rows_1; i++) {
+            for (int i=0; i < rows_1; i++) {
                 ret.row(i) = mat_1.row(i) % mat_2;
             }
         } else {
@@ -335,21 +335,21 @@ elem_div(const arma::mat& mat_1, const arma::mat& mat_2)
         printf("elem_div: need matrices to agree on at least one dimension\n");
         return ret;
     }
+    
     //
     // instead of loops we could also use arma::repmat, not sure which is quicker...
-    int i;
 
     if (same_rows && same_cols) {
         ret = mat_1 / mat_2;
     } else if (same_rows && !same_cols) {
         if (cols_1==1) {
             ret.set_size(rows_1,cols_2);
-            for (i=0; i<cols_2; i++) {
+            for (int i=0; i < cols_2; i++) {
                 ret.col(i) = mat_1 / mat_2.col(i);
             }
         } else if (cols_2==1) {
             ret.set_size(rows_1,cols_1);
-            for (i=0; i<cols_1; i++) {
+            for (int i=0; i < cols_1; i++) {
                 ret.col(i) = mat_1.col(i) / mat_2;
             }
         } else {
@@ -359,12 +359,12 @@ elem_div(const arma::mat& mat_1, const arma::mat& mat_2)
     } else if (!same_rows && same_cols) {
         if (rows_1==1) {
             ret.set_size(rows_2,cols_1);
-            for (i=0; i<rows_2; i++) {
+            for (int i=0; i < rows_2; i++) {
                 ret.row(i) = mat_1 / mat_2.row(i);
             }
         } else if (rows_2==1) {
             ret.set_size(rows_1,cols_1);
-            for (i=0; i<rows_1; i++) {
+            for (int i=0; i < rows_1; i++) {
                 ret.row(i) = mat_1.row(i) / mat_2;
             }
         } else {
