@@ -647,16 +647,17 @@ trame::arums::rsc::Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, vo
     return ret;
 }
 
-double
-trame::arums::rsc::Gbar_opt_constr(const arma::vec& vals_inp, arma::vec* grad, void* constr_data)
+arma::vec
+trame::arums::rsc::Gbar_opt_constr(const arma::vec& vals_inp, arma::mat* jacob_out, void* constr_data)
 {
     //
-    double ret = arma::accu(vals_inp) - 1;
+    arma::vec ret(1);
+    ret(0) = arma::accu(vals_inp) - 1;
     //
-    if (grad) {
+    if (jacob_out) {
         trame_rsc_gbar_opt_data *d = reinterpret_cast<trame_rsc_gbar_opt_data*>(constr_data);
 
-        *grad = arma::ones(d->nbY,1);
+        *jacob_out = arma::ones(d->nbY,1);
     }
     //
     return ret;

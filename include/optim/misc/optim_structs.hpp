@@ -26,21 +26,23 @@ struct optim_opt_settings {
     double err_tol = OPTIM_DEFAULT_ERR_TOL;
 
     // SUMT parameter
-    double eta = OPTIM_DEFAULT_PENALTY_GROWTH;
+    double sumt_par_eta = OPTIM_DEFAULT_SUMT_PENALTY_GROWTH;
 
     // Nelder-Mead
-    double alpha_nm = OPTIM_DEFAULT_NM_ALPHA;
-    double beta_nm  = OPTIM_DEFAULT_NM_BETA;
-    double gamma_nm = OPTIM_DEFAULT_NM_GAMMA;
-    double delta_nm = OPTIM_DEFAULT_NM_DELTA;
+    double nm_par_alpha = OPTIM_DEFAULT_NM_PAR_ALPHA;
+    double nm_par_beta  = OPTIM_DEFAULT_NM_PAR_BETA;
+    double nm_par_gamma = OPTIM_DEFAULT_NM_PAR_GAMMA;
+    double nm_par_delta = OPTIM_DEFAULT_NM_PAR_DELTA;
 
     // CG
-    int method_cg = OPTIM_DEFAULT_CG_METHOD;
+    int cg_method = OPTIM_DEFAULT_CG_METHOD;
+    double cg_restart_threshold = OPTIM_DEFAULT_CG_RESTART_THRESHOLD;
 
     // DE
     int de_n_gen = OPTIM_DEFAULT_DE_NGEN;
-    double de_F = OPTIM_DEFAULT_DE_F;
-    double de_CR = OPTIM_DEFAULT_DE_CR;
+    int de_check_freq = OPTIM_DEFAULT_DE_CHECK_FREQ;
+    double de_par_F = OPTIM_DEFAULT_DE_PAR_F;
+    double de_par_CR = OPTIM_DEFAULT_DE_PAR_CR;
 };
 
 #endif

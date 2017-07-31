@@ -30,7 +30,7 @@
 
 #include "optim.hpp"
 
-double optim::line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::vec& direc, const double* wolfe_cons_1_inp, const double* wolfe_cons_2_inp, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data)
+double optim::line_search_mt(double step, arma::vec& x, arma::vec& grad, const arma::vec& direc, const double* wolfe_cons_1_inp, const double* wolfe_cons_2_inp, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data)
 {
     const int iter_max = 100;
 
@@ -50,10 +50,11 @@ double optim::line_search_mt(double step, arma::vec& x, arma::vec& grad, const a
     double f_step = opt_objfn(x,&grad,opt_data); // q(0)
 
     double dgrad_init = arma::dot(grad,direc);
+    
     if (dgrad_init >= 0.0) {
-        printf("line search: grad' * direc > 0.\n");
         return step;
     }
+
     double dgrad = dgrad_init;
     //
     bool bracket = false, stage_1 = true;

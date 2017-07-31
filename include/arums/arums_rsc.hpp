@@ -125,7 +125,7 @@ class rsc
         arma::vec pot (arma::vec x) const;
 
         static double Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
-        static double Gbar_opt_constr(const arma::vec& vals_inp, arma::vec* grad, void* constr_data);
+        static arma::vec Gbar_opt_constr(const arma::vec& vals_inp, arma::mat* jacob_out, void* constr_data);
 
         static double Gstarx(arma::vec& U_x, const arma::vec& mu_x_inp, const arma::mat& zeta,
                              const arma::mat& aux_DinvPsigma, const arma::mat& aux_Psigma,
