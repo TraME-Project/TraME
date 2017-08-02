@@ -222,8 +222,8 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
 //     // now proceed to solve the LP problem
 //     arma::sp_mat A_sp_t(location_mat_1,vals_mat_1); // transpose of A
 
-//     int k_lp = A_sp_t.n_cols; // cols as we're working with the transpose
-//     int n_lp = A_sp_t.n_rows; // rows as we're working with the transpose
+//     int k_lp = A_sp_t.n_cols; // n_cols as we are working with the transpose of A
+//     int n_lp = A_sp_t.n_rows; // n_rows as we are working with the transpose of A
 
 //     const arma::uword* row_vals = &(*A_sp_t.row_indices);
 //     const arma::uword* col_vals = &(*A_sp_t.col_ptrs);

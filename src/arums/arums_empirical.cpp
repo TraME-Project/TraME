@@ -351,8 +351,8 @@ trame::arums::empirical::presolve_LP_Gstar()
 
     arma::sp_mat A_sp_Gstar_t(location_mat,vals_mat); // this is the transpose of A_sp_Gstar
 
-    k_Gstar = A_sp_Gstar_t.n_cols; // cols as we're working with the transpose
-    n_Gstar = A_sp_Gstar_t.n_rows; // rows as we're working with the transpose
+    k_Gstar = A_sp_Gstar_t.n_cols; // n_cols as we are working with the transpose of A
+    n_Gstar = A_sp_Gstar_t.n_rows; // n_rows as we are working with the transpose of A
 
     numnz_Gstar = aux_nbDraws*nb_options*2;
 
@@ -427,8 +427,8 @@ trame::arums::empirical::presolve_LP_Gbar()
 
     arma::sp_mat A_sp_Gbar_t(location_mat_2,vals_mat_2);
 
-    k_Gbar = A_sp_Gbar_t.n_cols; // cols as we're working with the transpose
-    n_Gbar = A_sp_Gbar_t.n_rows; // rows as we're working with the transpose
+    k_Gbar = A_sp_Gbar_t.n_cols; // n_cols as we are working with the transpose of A
+    n_Gbar = A_sp_Gbar_t.n_rows; // n_rows as we are working with the transpose of A
 
     numnz_Gbar = vals_mat_2.n_elem;
 

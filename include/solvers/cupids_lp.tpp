@@ -129,8 +129,8 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
     arma::sp_mat A_sp_t(location_mat,vals_mat); // transpose of A
     
-    const int k_lp = A_sp_t.n_cols; // n_cols as we're working with the transpose of A
-    const int n_lp = A_sp_t.n_rows; // n_rows as we're working with the transpose of A
+    const int k_lp = A_sp_t.n_cols; // n_cols as we are working with the transpose of A
+    const int n_lp = A_sp_t.n_rows; // n_rows as we are working with the transpose of A
 
     const arma::uword* row_vals = &(*A_sp_t.row_indices);
     const arma::uword* col_vals = &(*A_sp_t.col_ptrs);
