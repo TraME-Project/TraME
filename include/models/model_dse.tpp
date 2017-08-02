@@ -313,7 +313,7 @@ model<dse<Tg,Th,Tt>>::initial_theta()
 
 template<typename Tg, typename Th, typename Tt>
 bool
-model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
+model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp)
 {
     optim::optim_opt_settings opt_params;
 
@@ -388,7 +388,7 @@ model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_
 
 template<typename Tg, typename Th, typename Tt>
 bool
-model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
+model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp)
 {
     optim::optim_opt_settings opt_params;
 
@@ -444,27 +444,29 @@ model<dse<Tg,Th,Tt>>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* 
 template<>
 inline
 bool
-model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out)
+// model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out)
+model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
 {
     bool success = false;
     //
     const arma::mat kron_mat = model_data;
     const arma::mat kron_mat_2 = arma::reshape(kron_mat.t(),dim_theta*nbX,nbY);
 
-    const arma::vec C_hat = arma::vectorise(arma::vectorise(mu_hat)*kron_mat);
+    // const arma::vec C_hat = arma::vectorise(arma::vectorise(mu_hat)*kron_mat);
+    const arma::mat C_hat = arma::vectorise(arma::trans(arma::vectorise(mu_hat)) * kron_mat);
     //
-    arma::mat epsilon_iy, epsilon0_i, I_ix;
+    arma::mat epsilon_iy, epsilon_0i, I_ix;
     arma::mat eta_xj, eta_0j, I_yj;
 
-    const int nbDraws_1 = build_disaggregate_epsilon(n,market_obj.arums_G,epsilon_iy,epsilon0_i,I_ix);
+    const int nbDraws_1 = build_disaggregate_epsilon(n,market_obj.arums_G,epsilon_iy,epsilon_0i,I_ix);
     const int nbDraws_2 = build_disaggregate_epsilon(m,market_obj.arums_H,eta_xj,eta_0j,I_yj);
 
-    epsilon0_i = arma::vectorise(epsilon0_i);
+    epsilon_0i = arma::vectorise(epsilon_0i);
 
     eta_xj = eta_xj.t();
     eta_0j = arma::vectorise(eta_0j);
     I_yj = I_yj.t();
-    
+
     const arma::vec n_i = arma::vectorise(I_ix * n) / (double) nbDraws_1;
     const arma::vec m_j = arma::vectorise(m.t() * I_yj) / (double) nbDraws_2;
 
@@ -477,17 +479,18 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
      *
      * A_sp_t size: (nbI + nbJ + nbX*nbY + dim_theta) x (nbI*nbY + nbJ*nbX)
      *
-     * first block involves nbY blocks of nbI diagonal matrices, so nbI x (nbY*nbI) 
+     * first block involves nbY blocks of nbI diagonal matrices, so nbI x (nbY*nbI)
      *
-     * second block begins on row nbI+1 and ends on row nbI+nbJ (inclusive); from column 
-     * 1 to nbI*nbY nothing but zeros; then nbJ blocks of nbX-length row vectors of ones 
+     * second block begins on row nbI+1 and ends on row nbI+nbJ (inclusive); from column
+     * 1 to nbI*nbY nothing but zeros; then nbJ blocks of nbX-length row vectors of ones
      *
-     * third block begins on row nbI+nbJ+1 and ends on nbI+nbJ+nbX*nbY; 
+     * third block begins on row nbI+nbJ+1 and ends on nbI+nbJ+nbX*nbY;
      * there are nbX*nbY blocks of length nbDraws_1 from columns (1,nbI*nbY);
      * for columns (nbI+1)
      *
      * fourth block is filled from (nbI*nbY+1,nbI*nbY + nbJ*nbX) with kron_data_mat
      */
+
     int jj, kk, ll, count_val = 0;
     int num_nonzero_elem = nbI*nbY + nbJ*nbX + nbX*nbY*nbDraws_1 + nbY*nbDraws_2*nbX + dim_theta*nbJ*nbX;
 
@@ -550,12 +553,14 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
             ++count_val;
         }
     }
+
     //
     // now proceed to solve the LP problem
+
     arma::sp_mat A_sp_t(location_mat_1,vals_mat_1); // transpose of A
 
-    const int k_lp = A_sp_t.n_cols; // cols as we're working with the transpose
-    const int n_lp = A_sp_t.n_rows; // rows as we're working with the transpose
+    const int k_lp = A_sp_t.n_cols; // n_cols as we are working with the transpose of A
+    const int n_lp = A_sp_t.n_rows; // n_rows as we are working with the transpose of A
 
     const arma::uword* row_vals = &(*A_sp_t.row_indices);
     const arma::uword* col_vals = &(*A_sp_t.col_ptrs);
@@ -578,10 +583,10 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
         sense_lp[jj] = '>';
     }
 
-    arma::vec lb_lp(epsilon0_i.n_elem + eta_0j.n_elem + nbX*nbY + dim_theta);
-    lb_lp.rows(0,epsilon0_i.n_elem-1) = arma::vectorise(epsilon0_i);
-    lb_lp.rows(epsilon0_i.n_elem,epsilon0_i.n_elem + eta_0j.n_elem - 1) = eta_0j;
-    lb_lp.rows(epsilon0_i.n_elem + eta_0j.n_elem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
+    arma::vec lb_lp(epsilon_0i.n_elem + eta_0j.n_elem + nbX*nbY + dim_theta);
+    lb_lp.rows(0,epsilon_0i.n_elem-1) = arma::vectorise(epsilon_0i);
+    lb_lp.rows(epsilon_0i.n_elem,epsilon_0i.n_elem + eta_0j.n_elem - 1) = eta_0j;
+    lb_lp.rows(epsilon_0i.n_elem + eta_0j.n_elem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
 
     arma::vec rhs_lp(epsilon_iy.n_elem + eta_xj.n_elem);
     rhs_lp.rows(0,epsilon_iy.n_elem-1) = arma::vectorise(epsilon_iy);
@@ -594,7 +599,7 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     obj_lp.rows(nbI + nbJ + nbX*nbY, obj_lp.n_elem-1) = - C_hat;
 
     int modelSense = 0; // minimize
-    
+
     arma::mat sol_mat(n_lp, 2);
     arma::mat dual_mat(k_lp, 2);
 
@@ -603,7 +608,7 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     //
     try {
         lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_nonzero_elem, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
-        
+
         if (lp_optimal) {
 
             theta_hat = sol_mat(arma::span(nbI+nbJ+nbX*nbY,nbI+nbJ+nbX*nbY+dim_theta-1),0);
@@ -611,23 +616,23 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
             //
             // package up solution
 
-            if (mu_out) {
-                const arma::mat mu_iy = arma::reshape(dual_mat(arma::span(0,nbI*nbY-1),0),nbI,nbY);
-                *mu_out = I_ix.t() * mu_iy;
-            }
+            // if (mu_out) {
+            //     const arma::mat mu_iy = arma::reshape(dual_mat(arma::span(0,nbI*nbY-1),0),nbI,nbY);
+            //     *mu_out = I_ix.t() * mu_iy;
+            // }
 
-            if (U_out && V_out) {
-                *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
-                *V_out = arma::reshape(kron_mat*theta_hat,nbX,nbY) - *U_out;
-            } else if (U_out) {
-                *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
-            } else if (V_out) {
-                *V_out = arma::reshape(kron_mat*theta_hat,nbX,nbY) - arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
-            }
+            // if (U_out && V_out) {
+            //     *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
+            //     *V_out = arma::reshape(kron_mat*theta_hat,nbX,nbY) - *U_out;
+            // } else if (U_out) {
+            //     *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
+            // } else if (V_out) {
+            //     *V_out = arma::reshape(kron_mat*theta_hat,nbX,nbY) - arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
+            // }
 
-            if (val_out) {
-                *val_out = val_lp;
-            }
+            // if (val_out) {
+            //     *val_out = val_lp;
+            // }
             //
             success = true;
         } else {

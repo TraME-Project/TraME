@@ -124,7 +124,7 @@ model<mfe<Tt>>::dtheta(const arma::mat* delta_theta_inp)
 // MME
 
 // template<typename Tt>
-// bool 
+// bool
 // model<mfe<Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
 // {
 //     bool success = false;
@@ -147,7 +147,7 @@ model<mfe<Tt>>::dtheta(const arma::mat* delta_theta_inp)
 //     //
 //     // add optimization data
 //     trame_model_mme_opt_data<mfe<Tt>> opt_data;
-    
+
 //     opt_data.market = market_obj;
 //     opt_data.dim_theta = dim_theta;
 //     opt_data.C_hat = C_hat;
@@ -288,7 +288,7 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double& lambda, arma::m
     double err_ipfp = 2*tol_ipfp, err_val = 1.0;
     double t_k = 0.3; // step size for the prox grad algorithm (or grad descent when lambda=0)
     double alpha = 1.0; // for optimality check
-    
+
     double the_val = 1.0, the_val_old = 1E04;
     arma::vec d, d_opt;
     arma::mat v_next = v, u, Pi, the_grad, A_mat, U, V, D, svd_mat, D_opt, opt_mat;
@@ -417,7 +417,7 @@ model<mfe<Tt>>::Phi_k(const arma::mat& mu_hat)
 
 template<typename Tt>
 bool
-model<mfe<Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, double* err_tol_inp, int* max_iter_inp)
+model<mfe<Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp)
 {
     optim::optim_opt_settings opt_params;
 
@@ -445,7 +445,7 @@ model<mfe<Tt>>::model_mfe_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* gr
 
     //int dX = d->dX;
     //int dY = d->dY;
-    
+
     int max_iter_ipfp = d->max_iter_ipfp;
     double tol_ipfp = d->tol_ipfp;
 
