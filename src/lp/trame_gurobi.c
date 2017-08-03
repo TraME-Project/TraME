@@ -49,14 +49,14 @@ int trame_gurobi(int rows, int cols, double* obj, double* A, int model_opt_sense
     
     /* Create an empty model */
     
-    GRBenv* env = nullptr;
+    GRBenv* env = NULL;
     
-    error = GRBloadenv(&env, nullptr);
+    error = GRBloadenv(&env, NULL);
     if (error) goto QUIT;
     
-    GRBmodel *model = nullptr;
+    GRBmodel *model = NULL;
     
-    error = GRBnewmodel(env, &model, "trame_LP", cols, obj, lb, ub, nullptr, nullptr);
+    error = GRBnewmodel(env, &model, "trame_LP", cols, obj, lb, ub, NULL, NULL);
     if (error) goto QUIT;
     
     error = GRBsetintparam(GRBgetenv(model), GRB_INT_PAR_OUTPUTFLAG, 0);
@@ -72,7 +72,7 @@ int trame_gurobi(int rows, int cols, double* obj, double* A, int model_opt_sense
     }
     if (error) goto QUIT;
 
-    error = GRBaddconstrs(model, rows, 0, nullptr, nullptr, nullptr, constr_sense, rhs, nullptr);
+    error = GRBaddconstrs(model, rows, 0, NULL, NULL, NULL, constr_sense, rhs, NULL);
     if (error) goto QUIT;
     
     /* Integrate new rows and columns */
@@ -172,14 +172,14 @@ int trame_gurobi_switch(int rows, int cols, double* obj, double* A, int model_op
 
     /* Create an empty model */
     
-    GRBenv* env = nullptr;
+    GRBenv* env = NULL;
     
-    error = GRBloadenv(&env, nullptr);
+    error = GRBloadenv(&env, NULL);
     if (error) goto QUIT;
     
-    GRBmodel *model = nullptr;
+    GRBmodel *model = NULL;
     
-    error = GRBnewmodel(env, &model, "trame_LP", cols, obj, lb, ub, nullptr, nullptr);
+    error = GRBnewmodel(env, &model, "trame_LP", cols, obj, lb, ub, NULL, NULL);
     if (error) goto QUIT;
     
     error = GRBsetintparam(GRBgetenv(model), GRB_INT_PAR_OUTPUTFLAG, 0);
@@ -195,7 +195,7 @@ int trame_gurobi_switch(int rows, int cols, double* obj, double* A, int model_op
     }
     if (error) goto QUIT;
 
-    error = GRBaddconstrs(model, rows, 0, nullptr, nullptr, nullptr, constr_sense, rhs, nullptr);
+    error = GRBaddconstrs(model, rows, 0, NULL, NULL, NULL, constr_sense, rhs, NULL);
     if (error) goto QUIT;
     
     /* Integrate new rows and columns */
@@ -288,8 +288,8 @@ int trame_gurobi_switch(int rows, int cols, double* obj, double* A, int model_op
     if (optimstatus==3) { // infeasible model; reduce constraints
         int iis, numconstrs;
         char*  cname;
-        int*   cind = nullptr;
-        char** removed = nullptr;
+        int*   cind = NULL;
+        char** removed = NULL;
         
         cind = malloc(sizeof(int) * rows * cols);
         if (!cind) goto QUIT;
@@ -418,15 +418,15 @@ int trame_gurobi_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
 
     /* Create an empty model */
     
-    GRBenv* env = nullptr;
+    GRBenv* env = NULL;
     
-    error = GRBloadenv(&env, nullptr);
+    error = GRBloadenv(&env, NULL);
     if (error) goto QUIT;
     
-    GRBmodel *model = nullptr;
+    GRBmodel *model = NULL;
     
-    error = GRBnewmodel(env, &model, "trame_LP", cols, obj, lb, ub, nullptr, nullptr);
-    //error = GRBnewmodel(env, &model, "trame_LP", 0, nullptr, nullptr, nullptr, nullptr, nullptr);
+    error = GRBnewmodel(env, &model, "trame_LP", cols, obj, lb, ub, NULL, NULL);
+    //error = GRBnewmodel(env, &model, "trame_LP", 0, NULL, NULL, NULL, NULL, NULL);
     if (error) goto QUIT;
     
     error = GRBsetintparam(GRBgetenv(model), GRB_INT_PAR_OUTPUTFLAG, 0);
@@ -445,11 +445,11 @@ int trame_gurobi_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
     error = GRBupdatemodel(model);
     if (error) goto QUIT;
 
-    //error = GRBaddconstrs(model, rows, 0, nullptr, nullptr, nullptr, constr_sense, rhs, nullptr);
-    error = GRBaddconstrs(model, rows, numnz, vbeg, vind, vval, constr_sense, rhs, nullptr);
+    //error = GRBaddconstrs(model, rows, 0, NULL, NULL, NULL, constr_sense, rhs, NULL);
+    error = GRBaddconstrs(model, rows, numnz, vbeg, vind, vval, constr_sense, rhs, NULL);
     if (error) goto QUIT;
     
-    //error = GRBaddvars(model, cols, numnz, vbeg, vind, vval, obj, lb, ub, nullptr, nullptr);
+    //error = GRBaddvars(model, cols, numnz, vbeg, vind, vval, obj, lb, ub, NULL, NULL);
     //if (error) goto QUIT;
     
     /* Integrate new rows and columns */
@@ -520,8 +520,8 @@ int trame_gurobi_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
     if (optimstatus==3) { // infeasible model; reduce constraints
         int iis, numconstrs;
         char*  cname;
-        int*   cind = nullptr;
-        char** removed = nullptr;
+        int*   cind = NULL;
+        char** removed = NULL;
         
         cind = malloc(sizeof(int) * rows * cols);
         if (!cind) goto QUIT;
