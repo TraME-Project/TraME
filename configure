@@ -276,7 +276,7 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
     TRAME_BLAS_LAPACK="-lblas -llapack"
 
     # look for any Gurobi directories, then choose the latest one
-    grb_dirs=( /opt/gurobi* )
+    grb_dirs=( /cygdrive/c/gurobi* )
     nmb_dirs=${#grb_dirs[@]}
     grb_latest=${grb_dirs[$nmb_dirs-1]}
 
@@ -284,16 +284,16 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
     # grb_dirs will contain just '/Library/gurobi*', which is not an actual directory, so we need 
     # the following sanity check
     if [[ !("${TRAME_LP}" == "glpk") && -d $grb_latest ]] ; then
-        grb_lib_path=( "$grb_latest/linux64/lib/libgurobi*.so" )
+        grb_lib_path=( "$grb_latest/win64/bin/libgurobi*.dll" )
 
         grb_lib_latest=${grb_lib_path[0]}
         grb_lib_name=$(basename ${grb_lib_latest})
         grb_lib_num=${grb_lib_name//[^0-9]/}
 
-        LP_INCLUDE_PATH="-DTRAME_USE_GUROBI -I$grb_latest/linux64/include"
-        LP_LIB_PATH="-L$grb_latest/linux64/lib"
+        LP_INCLUDE_PATH="-DTRAME_USE_GUROBI -I$grb_latest/win64/include"
+        LP_LIB_PATH="-L$grb_latest/win64/bin"
         LP_LIBS="-lgurobi${grb_lib_num}"
-        LP_LIB_RPATH="-Wl,-rpath,$grb_latest/linux64/lib"
+        LP_LIB_RPATH="-Wl,-rpath,$grb_latest/win64/bin"
 
         echo ""
         echo "TraME: using Gurobi. LP_INCLUDE_PATH set to ${LP_INCLUDE_PATH}"
