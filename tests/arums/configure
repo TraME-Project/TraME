@@ -83,7 +83,8 @@ if [[ "${TRAME_BUILD}" == "dev" ]]; then
     TRAME_INSTALL_PATH=${PWD}
     cd ${WDIR}
 else
-    TRAME_INSTALL_PATH="/usr/local"
+    TRAME_INCLUDE_PATH="/usr/local/include/trame"
+    TRAME_INSTALL_PATH="/usr/local/lib"
 fi
 
 # BLAS and LAPACK settings
