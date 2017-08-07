@@ -38,7 +38,7 @@ OBJECTS_LPXX= $(TRAME_SRC_DIR)/lp/generic_lp.o
 
 # general flags
 CFLAGS = $(OPT_FLAGS) $(LP_CFLAGS) -I$(TRAME_HEADER_DIR)
-CXXFLAGS = $(CXX_STD) $(OPT_FLAGS) $(ARMA_INCLUDE_PATH) $(LP_CXXFLAGS) -I$(TRAME_HEADER_DIR)
+CXXFLAGS = $(CXX_STD) $(OPT_FLAGS) -I$(ARMA_INCLUDE_PATH) $(LP_CXXFLAGS) -I$(TRAME_HEADER_DIR)
 FFLAGS = $(OPT_FLAGS)
 LIBS= -lgfortran @TRAME_BLAS_LAPACK@
 
@@ -134,7 +134,7 @@ $(TRAME_SRC_DIR)/transfers/%.o: $(TRAME_SRC_DIR)/transfers/%.cpp
 
 # shared library
 $(TRAME_DIR)/$(SHLIB): $(OBJECTS_TRAME)
-	$(CXX) $(SHLIB_FLAGS) -o $@ $^ $(LP_LIBS) $(LIBS)
+	$(CXX) $(SHLIB_FLAGS) -o $@ $^ $(LIBS) $(LP_LIBS)
 #    ar -rvs ../../inst/libs/libtrame.a $^
 
 # cleanup and install
