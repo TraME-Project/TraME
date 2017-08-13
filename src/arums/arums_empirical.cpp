@@ -313,6 +313,123 @@ const
 }
 
 //
+// D2G
+
+arma::mat
+trame::arums::empirical::D2G(const arma::vec& n, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2G not yet defined for the empirical case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::empirical::D2G(arma::mat &H, const arma::vec& n, const bool x_first)
+const
+{   
+    printf("D2G not yet defined for the empirical case.\n");
+}
+
+arma::mat
+trame::arums::empirical::D2G(const arma::vec& n, const arma::mat& U_inp, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2G not yet defined for the empirical case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::empirical::D2G(arma::mat &H, const arma::vec& n, const arma::mat& U_inp, const bool x_first)
+const
+{   
+    printf("D2G not yet defined for the empirical case.\n");
+}
+
+//
+// D2Gstar
+
+arma::mat
+trame::arums::empirical::D2Gstar(const arma::vec& n, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2Gstar not yet defined for the empirical case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::empirical::D2Gstar(arma::mat &H, const arma::vec& n, const bool x_first)
+const
+{   
+    printf("D2Gstar not yet defined for the empirical case.\n");
+}
+
+arma::mat
+trame::arums::empirical::D2Gstar(const arma::vec& n, const arma::mat& mu_inp, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2Gstar not yet defined for the empirical case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::empirical::D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, const bool x_first)
+const
+{   
+    printf("D2Gstar not yet defined for the empirical case.\n");
+}
+
+//
+// dparams gradient
+
+arma::mat
+trame::arums::empirical::dparams_NablaGstar(const arma::vec& n, const arma::mat* dparams_inp, const bool x_first)
+const
+{
+    arma::mat ret;
+    
+    printf("dparams_NablaGstar not yet defined for the empirical case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::empirical::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat* dparams_inp, const bool x_first)
+const
+{
+    printf("dparams_NablaGstar not yet defined for the empirical case.\n");
+}
+
+arma::mat
+trame::arums::empirical::dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first)
+const
+{
+    arma::mat ret;
+    
+    printf("dparams_NablaGstar not yet defined for the empirical case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::empirical::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first)
+const
+{
+    printf("dparams_NablaGstar not yet defined for the empirical case.\n");
+}
+
+//
 // presolve functions for Gstar and Gbar
 
 void

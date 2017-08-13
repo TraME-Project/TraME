@@ -388,6 +388,45 @@ const
 }
 
 //
+// D2G
+
+arma::mat
+trame::arums::rsc::D2G(const arma::vec& n, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2G not yet defined for the rsc case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::rsc::D2G(arma::mat &H, const arma::vec& n, const bool x_first)
+const
+{   
+    printf("D2G not yet defined for the rsc case.\n");
+}
+
+arma::mat
+trame::arums::rsc::D2G(const arma::vec& n, const arma::mat& U_inp, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2G not yet defined for the rsc case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::rsc::D2G(arma::mat &H, const arma::vec& n, const arma::mat& U_inp, const bool x_first)
+const
+{   
+    printf("D2G not yet defined for the rsc case.\n");
+}
+
+//
 // Hessian
 
 arma::mat

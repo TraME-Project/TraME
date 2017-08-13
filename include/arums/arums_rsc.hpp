@@ -96,6 +96,11 @@ class rsc
 
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out) const;
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, int x) const;
+
+        arma::mat D2G(const arma::vec& n, const bool x_first) const;
+        void D2G(arma::mat &H, const arma::vec& n, const bool x_first) const;
+        arma::mat D2G(const arma::vec& n, const arma::mat& U_inp, const bool x_first) const;
+        void D2G(arma::mat &H, const arma::vec& n, const arma::mat& U_inp, const bool x_first) const;
         
         arma::mat D2Gstar(const arma::vec& n, const bool x_first) const;
         void D2Gstar(arma::mat &ret, const arma::vec& n, const bool x_first) const;

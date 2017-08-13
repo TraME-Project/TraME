@@ -78,6 +78,21 @@ class empirical
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out) const;
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x) const;
 
+        arma::mat D2G(const arma::vec& n, const bool x_first) const;
+        void D2G(arma::mat &H, const arma::vec& n, const bool x_first) const;
+        arma::mat D2G(const arma::vec& n, const arma::mat& U_inp, const bool x_first) const;
+        void D2G(arma::mat &H, const arma::vec& n, const arma::mat& U_inp, const bool x_first) const;
+
+        arma::mat D2Gstar(const arma::vec& n, const bool x_first) const;
+        void D2Gstar(arma::mat &H, const arma::vec& n, const bool x_first) const;
+        arma::mat D2Gstar(const arma::vec& n, const arma::mat& mu_inp, const bool x_first) const;
+        void D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, const bool x_first) const;
+
+        arma::mat dparams_NablaGstar(const arma::vec& n, const arma::mat* dparams_inp, const bool x_first) const;
+        void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat* dparams_inp, const bool x_first) const;
+        arma::mat dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first) const;
+        void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first) const;
+
     private:
         /*
          * these private member objects are used by the LP solvers

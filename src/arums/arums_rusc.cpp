@@ -305,6 +305,123 @@ const
 }
 
 //
+// D2G
+
+arma::mat
+trame::arums::rusc::D2G(const arma::vec& n, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2G not yet defined for the rusc case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::rusc::D2G(arma::mat &H, const arma::vec& n, const bool x_first)
+const
+{   
+    printf("D2G not yet defined for the rusc case.\n");
+}
+
+arma::mat
+trame::arums::rusc::D2G(const arma::vec& n, const arma::mat& U_inp, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2G not yet defined for the rusc case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::rusc::D2G(arma::mat &H, const arma::vec& n, const arma::mat& U_inp, const bool x_first)
+const
+{   
+    printf("D2G not yet defined for the rusc case.\n");
+}
+
+//
+// D2Gstar
+
+arma::mat
+trame::arums::rusc::D2Gstar(const arma::vec& n, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2Gstar not yet defined for the rusc case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::rusc::D2Gstar(arma::mat &H, const arma::vec& n, const bool x_first)
+const
+{   
+    printf("D2Gstar not yet defined for the rusc case.\n");
+}
+
+arma::mat
+trame::arums::rusc::D2Gstar(const arma::vec& n, const arma::mat& mu_inp, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2Gstar not yet defined for the rusc case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::rusc::D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, const bool x_first)
+const
+{   
+    printf("D2Gstar not yet defined for the rusc case.\n");
+}
+
+//
+// dparams gradient
+
+arma::mat
+trame::arums::rusc::dparams_NablaGstar(const arma::vec& n, const arma::mat* dparams_inp, const bool x_first)
+const
+{
+    arma::mat ret;
+    
+    printf("dparams_NablaGstar not yet defined for the rusc case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::rusc::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat* dparams_inp, const bool x_first)
+const
+{
+    printf("dparams_NablaGstar not yet defined for the rusc case.\n");
+}
+
+arma::mat
+trame::arums::rusc::dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first)
+const
+{
+    arma::mat ret;
+    
+    printf("dparams_NablaGstar not yet defined for the rusc case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::rusc::dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first)
+const
+{
+    printf("dparams_NablaGstar not yet defined for the rusc case.\n");
+}
+
+//
 // simulation
 
 trame::arums::empirical

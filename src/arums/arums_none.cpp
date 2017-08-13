@@ -117,7 +117,7 @@ const
 double
 trame::arums::none::Gstar(const arma::vec& n)
 {   
-    printf("Gstar not yet defined for no arums case.\n");
+    printf("Gstar not yet defined for the no arums case.\n");
 
     return 0.0;
 }
@@ -126,7 +126,7 @@ double
 trame::arums::none::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out)
 const
 {   
-    printf("Gstar not yet defined for no arums case.\n");
+    printf("Gstar not yet defined for the no arums case.\n");
 
     return 0.0;
 }
@@ -135,7 +135,7 @@ double
 trame::arums::none::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const int x)
 const
 {   
-    printf("Gstarx not yet defined for no arums case.\n");
+    printf("Gstarx not yet defined for the no arums case.\n");
 
     return 0.0;
 }
@@ -202,6 +202,84 @@ trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arm
 const
 {
     return this->Gbarx(Ubar_x, mubar_x, U_x_out, mu_x_out);
+}
+
+//
+// D2G
+
+arma::mat
+trame::arums::none::D2G(const arma::vec& n, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2G not yet defined for the no arums case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::none::D2G(arma::mat &H, const arma::vec& n, const bool x_first)
+const
+{   
+    printf("D2G not yet defined for the no arums case.\n");
+}
+
+arma::mat
+trame::arums::none::D2G(const arma::vec& n, const arma::mat& U_inp, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2G not yet defined for the no arums case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::none::D2G(arma::mat &H, const arma::vec& n, const arma::mat& U_inp, const bool x_first)
+const
+{   
+    printf("D2G not yet defined for the no arums case.\n");
+}
+
+//
+// D2Gstar
+
+arma::mat
+trame::arums::none::D2Gstar(const arma::vec& n, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2Gstar not yet defined for the no arums case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::none::D2Gstar(arma::mat &H, const arma::vec& n, const bool x_first)
+const
+{   
+    printf("D2Gstar not yet defined for the no arums case.\n");
+}
+
+arma::mat
+trame::arums::none::D2Gstar(const arma::vec& n, const arma::mat& mu_inp, const bool x_first)
+const
+{   
+    arma::mat ret;
+
+    printf("D2Gstar not yet defined for the no arums case.\n");
+
+    return ret;
+}
+
+void
+trame::arums::none::D2Gstar(arma::mat &H, const arma::vec& n, const arma::mat& mu_inp, const bool x_first)
+const
+{   
+    printf("D2Gstar not yet defined for the no arums case.\n");
 }
 
 //
