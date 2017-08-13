@@ -146,7 +146,7 @@ inline
 bool
 nodal_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, arma::vec* value_out, const double* err_tol_inp, const int* max_iter_inp)
 {
-    optim::optim_opt_settings opt_params;
+    optim::opt_settings opt_params;
 
     if (err_tol_inp) {
         opt_params.err_tol = *err_tol_inp;
@@ -164,7 +164,7 @@ bool
 nodal_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
                    std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data, arma::vec* value_out, const double* err_tol_inp, const int* max_iter_inp)
 {
-    optim::optim_opt_settings opt_params;
+    optim::opt_settings opt_params;
 
     if (err_tol_inp) {
         opt_params.err_tol = *err_tol_inp;

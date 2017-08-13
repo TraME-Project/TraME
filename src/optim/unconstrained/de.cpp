@@ -23,105 +23,162 @@
  * 12/19/2016
  *
  * This version:
- * 07/19/2017
+ * 08/05/2017
  */
 
 #include "optim.hpp"
 
 bool
-optim::de_int(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, double* value_out, optim_opt_settings* opt_params)
+optim::de_int(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, double* value_out, opt_settings* settings_inp)
 {
     bool success = false;
 
-    const double BIG_POS_VAL = OPTIM_BIG_POS_NUM;
-
-    const int conv_failure_switch = (opt_params) ? opt_params->conv_failure_switch : OPTIM_CONV_FAILURE_POLICY;
-    const double err_tol = (opt_params) ? opt_params->err_tol : OPTIM_DEFAULT_ERR_TOL;
-
-    const int n_gen = (opt_params) ? opt_params->de_n_gen : OPTIM_DEFAULT_DE_NGEN;
-    const int check_freq = (opt_params) ? opt_params->de_check_freq : 20;
-    const double par_F  = (opt_params) ? opt_params->de_par_F  : OPTIM_DEFAULT_DE_PAR_F; // tuning parameters
-    const double par_CR = (opt_params) ? opt_params->de_par_CR : OPTIM_DEFAULT_DE_PAR_CR;
-    //
+    const double BIG_POS_VAL = OPTIM_BIG_POS_VAL;
     const int n_vals = init_out_vals.n_elem;
-    const int N = n_vals*10;
 
-    int c_1, c_2, c_3, j, k;
     //
-    double prop_objfn_val = 0.0;
-    arma::vec X_prop = init_out_vals, past_objfn_vals(N), rand_unif(n_vals);
-    arma::mat X(N,n_vals), X_next(N,n_vals);
+    // DE settings
 
-    for (int i=0; i < N; i++) {
-        X_next.row(i) = init_out_vals.t() + arma::randu(1,n_vals) - 0.5; // initial values + U[-0.5,0.5]
+    opt_settings settings;
+
+    if (settings_inp) {
+        settings = *settings_inp;
+    }
+
+    const int conv_failure_switch = settings.conv_failure_switch;
+    const double err_tol = settings.err_tol;
+
+    const int n_pop = settings.de_n_pop;
+    const int n_gen = settings.de_n_gen;
+    const int check_freq = (settings.de_check_freq > 0) ? settings.de_check_freq : n_gen ;
+
+    const int mutation_method = settings.de_mutation_method;
+
+    const double par_F = settings.de_par_F;
+    const double par_CR = settings.de_par_CR;
+
+    const arma::vec par_initial_lb = ((int) settings.de_lb.n_elem == n_vals) ? settings.de_lb : arma::zeros(n_vals,1) - 0.5;
+    const arma::vec par_initial_ub = ((int) settings.de_ub.n_elem == n_vals) ? settings.de_ub : arma::zeros(n_vals,1) + 0.5;
+
+    //
+    // setup
+
+    double prop_objfn_val = 0.0;
+    arma::vec X_prop = init_out_vals, objfn_vals(n_pop);
+    arma::mat X(n_pop,n_vals), X_next(n_pop,n_vals);
+
+#ifdef OPTIM_OMP
+    #pragma omp parallel for firstprivate(prop_objfn_val) 
+#endif
+    for (int i=0; i < n_pop; i++) {
+        X_next.row(i) = init_out_vals.t() + par_initial_lb.t() + (par_initial_ub.t() - par_initial_lb.t())%arma::randu(1,n_vals);
 
         prop_objfn_val = opt_objfn(X_next.row(i).t(),nullptr,opt_data);
 
-        if (std::isnan(prop_objfn_val)) {
+        if (!std::isfinite(prop_objfn_val)) {
             prop_objfn_val = BIG_POS_VAL;
         }
         
-        past_objfn_vals(i) = prop_objfn_val;
+        objfn_vals(i) = prop_objfn_val;
     }
 
-    double best_objfn_val = past_objfn_vals.min();
+    double best_val = objfn_vals.min();
+    double best_objfn_val_running = best_val;
+    double best_objfn_val_check   = best_val;
+
+    arma::rowvec best_vec = X_next.row( objfn_vals.index_min() );
+    arma::rowvec best_sol_running = best_vec;
+
     //
+    // begin loop
+
     int iter = 0;
     double err = 2*err_tol;
 
-    while (err > err_tol && iter < n_gen) {
+    while (err > err_tol && iter < n_gen + 1) {
         iter++;
-        //
+
         X = X_next;
 
-        for (int i=0; i < N; i++) {
+        //
+        // loop over population
+
+#ifdef OPTIM_OMP
+        #pragma omp parallel for firstprivate(prop_objfn_val,X_prop) 
+#endif
+        for (int i=0; i < n_pop; i++) {
+
+            int c_1, c_2, c_3;
+
             do { // 'r_2' in paper's notation
-                c_1 = arma::as_scalar(arma::randi(1, arma::distr_param(0, N-1)));
+                c_1 = arma::as_scalar(arma::randi(1, arma::distr_param(0, n_pop-1)));
             } while(c_1==i);
 
             do { // 'r_3' in paper's notation
-                c_2 = arma::as_scalar(arma::randi(1, arma::distr_param(0, N-1)));
+                c_2 = arma::as_scalar(arma::randi(1, arma::distr_param(0, n_pop-1)));
             } while(c_2==i || c_2==c_1);
 
             do { // 'r_1' in paper's notation
-                c_3 = arma::as_scalar(arma::randi(1, arma::distr_param(0, N-1)));
+                c_3 = arma::as_scalar(arma::randi(1, arma::distr_param(0, n_pop-1)));
             } while(c_3==i || c_3==c_1 || c_3==c_2);
 
             //
 
-            j = arma::as_scalar(arma::randi(1, arma::distr_param(0, n_vals-1)));
+            int j = arma::as_scalar(arma::randi(1, arma::distr_param(0, n_vals-1)));
 
-            rand_unif = arma::randu(n_vals);
-            k = 0;
-            do {
-                X_prop(j) = X(c_3,j) + par_F*(X(c_1,j) - X(c_2,j));
+            arma::vec rand_unif = arma::randu(n_vals);
 
-                j = (j+1)%n_vals;
-                k++;
-            } while((k < n_vals) && (rand_unif(k) < par_CR));
+            for (int k=0; k < n_vals; k++) {
+                if ( rand_unif(k) < par_CR || k == j ) {
+
+                    if ( mutation_method == 1 ) {
+                        X_prop(k) = X(c_3,k) + par_F*(X(c_1,k) - X(c_2,k));
+                    } else {
+                        X_prop(k) = best_vec(k) + par_F*(X(c_1,k) - X(c_2,k));
+                    }
+                } else {
+                    X_prop(k) = X(i,k);
+                }
+            }
 
             //
 
             prop_objfn_val = opt_objfn(X_prop,nullptr,opt_data);
+
+            if (!std::isfinite(prop_objfn_val)) {
+                prop_objfn_val = BIG_POS_VAL;
+            }
             
-            if (prop_objfn_val <= past_objfn_vals(i)) {
+            if (prop_objfn_val <= objfn_vals(i)) {
                 X_next.row(i) = X_prop.t();
-                past_objfn_vals(i) = prop_objfn_val;
+                objfn_vals(i) = prop_objfn_val;
             } else {
-                X_prop = X.row(i).t();
+                X_next.row(i) = X.row(i);
             }
         }
+
+        best_val = objfn_vals.min();
+        best_vec = X_next.row( objfn_vals.index_min() );
+
         //
+        // assign running global minimum
+
+        if (best_val < best_objfn_val_running) {
+            best_objfn_val_running = objfn_vals.min();
+            best_sol_running = X_next.row( objfn_vals.index_min() );
+        }
+
         if (iter%check_freq == 0) {
-            err = std::abs(past_objfn_vals.min() - best_objfn_val) / (std::abs(best_objfn_val) + 1E-08);
-            best_objfn_val = past_objfn_vals.min();
+            
+            err = std::abs(best_objfn_val_running - best_objfn_val_check);
+            
+            if (best_objfn_val_running < best_objfn_val_check) {
+                best_objfn_val_check = best_objfn_val_running;
+            }
         }
     }
     //
-    arma::uword min_i = past_objfn_vals.index_min();
-    X_prop = X_next.row(min_i).t();
-
-    error_reporting(init_out_vals,X_prop,opt_objfn,opt_data,success,value_out,err,err_tol,iter,n_gen,conv_failure_switch);
+    error_reporting(init_out_vals,best_sol_running.t(),opt_objfn,opt_data,success,value_out,err,err_tol,iter,n_gen,conv_failure_switch);
     //
     return success;
 }
@@ -133,9 +190,9 @@ optim::de(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_
 }
 
 bool
-optim::de(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, optim_opt_settings& opt_params)
+optim::de(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, opt_settings& settings)
 {
-    return de_int(init_out_vals,opt_objfn,opt_data,nullptr,&opt_params);
+    return de_int(init_out_vals,opt_objfn,opt_data,nullptr,&settings);
 }
 
 bool
@@ -145,7 +202,7 @@ optim::de(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_
 }
 
 bool
-optim::de(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, double& value_out, optim_opt_settings& opt_params)
+optim::de(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, double& value_out, opt_settings& settings)
 {
-    return de_int(init_out_vals,opt_objfn,opt_data,&value_out,&opt_params);
+    return de_int(init_out_vals,opt_objfn,opt_data,&value_out,&settings);
 }

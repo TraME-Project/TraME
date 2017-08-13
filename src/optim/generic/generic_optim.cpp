@@ -29,9 +29,9 @@
 #include "optim.hpp"
 
 bool optim::generic_optim_int(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data,
-                              double* value_out, optim_opt_settings* opt_params)
+                              double* value_out, opt_settings* settings_inp)
 {
-    return bfgs_int(init_out_vals,opt_objfn,opt_data,value_out,opt_params);
+    return bfgs_int(init_out_vals,opt_objfn,opt_data,value_out,settings_inp);
 }
 
 bool optim::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data)
@@ -40,9 +40,9 @@ bool optim::generic_optim(arma::vec& init_out_vals, std::function<double (const 
 }
 
 bool optim::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, 
-                          optim_opt_settings& opt_params)
+                          opt_settings& settings)
 {
-    return generic_optim_int(init_out_vals,opt_objfn,opt_data,nullptr,&opt_params);
+    return generic_optim_int(init_out_vals,opt_objfn,opt_data,nullptr,&settings);
 }
 
 bool optim::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, 
@@ -52,9 +52,9 @@ bool optim::generic_optim(arma::vec& init_out_vals, std::function<double (const 
 }
 
 bool optim::generic_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, 
-                          double& value_out, optim_opt_settings& opt_params)
+                          double& value_out, opt_settings& settings)
 {
-    return generic_optim_int(init_out_vals,opt_objfn,opt_data,&value_out,&opt_params);
+    return generic_optim_int(init_out_vals,opt_objfn,opt_data,&value_out,&settings);
 }
 
 //
@@ -62,10 +62,19 @@ bool optim::generic_optim(arma::vec& init_out_vals, std::function<double (const 
 
 bool optim::generic_optim_int(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
                               std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data,
-                              double* value_out, optim_opt_settings* opt_params)
+                              double* value_out, opt_settings* settings_inp)
 {
-    const int conv_failure_switch = (opt_params) ? opt_params->conv_failure_switch : OPTIM_CONV_FAILURE_POLICY;
-    //
+    
+    opt_settings settings;
+
+    if (settings_inp) {
+        settings = *settings_inp;
+    }
+
+    const int conv_failure_switch = settings.conv_failure_switch;
+
+    // lambda function
+
     std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* box_data)> box_objfn = [opt_objfn, lower_bounds, upper_bounds] (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data) -> double {
         //
         arma::vec vals_inv_trans = logit_inv_trans(vals_inp,lower_bounds,upper_bounds);
@@ -85,11 +94,15 @@ bool optim::generic_optim_int(arma::vec& init_out_vals, const arma::vec& lower_b
         //
         return ret;
     };
+
     //
+
     arma::vec initial_vals = logit_trans(init_out_vals,lower_bounds,upper_bounds);
     
-    bool success = bfgs_int(initial_vals,box_objfn,opt_data,nullptr,opt_params);
+    bool success = bfgs_int(initial_vals,box_objfn,opt_data,nullptr,settings_inp);
+
     //
+
     initial_vals = logit_inv_trans(initial_vals,lower_bounds,upper_bounds);
 
     error_reporting(init_out_vals,initial_vals,opt_objfn,opt_data,success,value_out,conv_failure_switch);
@@ -105,9 +118,9 @@ bool optim::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bound
 
 bool optim::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
                           std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data,
-                          optim_opt_settings& opt_params)
+                          opt_settings& settings)
 {
-    return generic_optim_int(init_out_vals,lower_bounds,upper_bounds,opt_objfn,opt_data,nullptr,&opt_params);
+    return generic_optim_int(init_out_vals,lower_bounds,upper_bounds,opt_objfn,opt_data,nullptr,&settings);
 }
 
 bool optim::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
@@ -119,9 +132,9 @@ bool optim::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bound
 
 bool optim::generic_optim(arma::vec& init_out_vals, const arma::vec& lower_bounds, const arma::vec& upper_bounds, 
                           std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data,
-                          double& value_out, optim_opt_settings& opt_params)
+                          double& value_out, opt_settings& settings)
 {
-    return generic_optim_int(init_out_vals,lower_bounds,upper_bounds,opt_objfn,opt_data,&value_out,&opt_params);
+    return generic_optim_int(init_out_vals,lower_bounds,upper_bounds,opt_objfn,opt_data,&value_out,&settings);
 }
 
 //

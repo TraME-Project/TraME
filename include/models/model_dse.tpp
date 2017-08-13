@@ -315,7 +315,7 @@ template<typename Tg, typename Th, typename Tt>
 bool
 model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp)
 {
-    optim::optim_opt_settings opt_params;
+    optim::opt_settings opt_params;
 
     if (err_tol_inp) {
         opt_params.err_tol = *err_tol_inp;
@@ -390,7 +390,7 @@ template<typename Tg, typename Th, typename Tt>
 bool
 model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp)
 {
-    optim::optim_opt_settings opt_params;
+    optim::opt_settings opt_params;
 
     if (err_tol_inp) {
         opt_params.err_tol = *err_tol_inp;

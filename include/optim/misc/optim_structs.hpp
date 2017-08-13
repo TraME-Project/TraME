@@ -19,30 +19,79 @@
 #ifndef optim_structs_HPP
 #define optim_structs_HPP
 
-struct optim_opt_settings {
+struct opt_settings {
     // general
-    int conv_failure_switch = OPTIM_CONV_FAILURE_POLICY;
-    int iter_max = OPTIM_DEFAULT_ITER_MAX;
-    double err_tol = OPTIM_DEFAULT_ERR_TOL;
+    int conv_failure_switch = 0;
+    int iter_max = 2000;
+    double err_tol = 1E-08;
 
     // SUMT parameter
-    double sumt_par_eta = OPTIM_DEFAULT_SUMT_PENALTY_GROWTH;
-
-    // Nelder-Mead
-    double nm_par_alpha = OPTIM_DEFAULT_NM_PAR_ALPHA;
-    double nm_par_beta  = OPTIM_DEFAULT_NM_PAR_BETA;
-    double nm_par_gamma = OPTIM_DEFAULT_NM_PAR_GAMMA;
-    double nm_par_delta = OPTIM_DEFAULT_NM_PAR_DELTA;
+    double sumt_par_eta = 10.0;
 
     // CG
-    int cg_method = OPTIM_DEFAULT_CG_METHOD;
-    double cg_restart_threshold = OPTIM_DEFAULT_CG_RESTART_THRESHOLD;
+    int cg_method = 2;
+    double cg_restart_threshold = 0.1;
 
     // DE
-    int de_n_gen = OPTIM_DEFAULT_DE_NGEN;
-    int de_check_freq = OPTIM_DEFAULT_DE_CHECK_FREQ;
-    double de_par_F = OPTIM_DEFAULT_DE_PAR_F;
-    double de_par_CR = OPTIM_DEFAULT_DE_PAR_CR;
+    int de_n_pop = 200;
+    int de_n_pop_best = 6;
+    int de_n_gen = 1000;
+    
+    int de_pmax = 4;
+    int de_max_fn_eval = 100000;
+
+    int de_mutation_method = 1; // 1 = rand; 2 = best
+
+    int de_check_freq = -1;
+
+    double de_par_F = 0.8;
+    double de_par_CR = 0.9;
+
+    double de_par_F_l = 0.1;
+    double de_par_F_u = 1.0;
+
+    double de_par_tau_F  = 0.1;
+    double de_par_tau_CR = 0.1;
+
+    arma::vec de_lb; // this will default to -0.5
+    arma::vec de_ub; // this will default to  0.5
+
+    // Nelder-Mead
+    bool nm_adaptive= true;
+
+    double nm_par_alpha = 1.0; // reflection parameter
+    double nm_par_beta  = 0.5; // contraction parameter
+    double nm_par_gamma = 2.0; // expansion parameter
+    double nm_par_delta = 0.5; // shrinkage parameter
+
+    // PSO
+    bool pso_center_particle = true;
+
+    int pso_n_pop = 100;
+    int pso_n_gen = 1000;
+
+    int pso_inertia_method = 1; // 1 for linear decreasing between w_min and w_max; 2 for dampening
+
+    double pso_par_initial_w = 1.0;
+    double pso_par_w_damp = 0.99;
+
+    double pso_par_w_min = 0.10;
+    double pso_par_w_max = 0.99;
+
+    int pso_velocity_method = 1; // 1 for fixed; 2 for linear
+
+    double pso_par_c_cog = 2.0;
+    double pso_par_c_soc = 2.0;
+
+    double pso_par_initial_c_cog = 2.5;
+    double pso_par_final_c_cog   = 0.5;
+    double pso_par_initial_c_soc = 0.5;
+    double pso_par_final_c_soc   = 2.5;
+
+    arma::vec pso_lb; // this will default to -0.5
+    arma::vec pso_ub; // this will default to  0.5
+
+    bool pso_par_bounds = false;
 };
 
 #endif
