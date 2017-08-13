@@ -2,7 +2,7 @@
 ## TraME config script
 
 # inputs
-while getopts :b:cl:m:op option; do
+while getopts :b:cl:m:o:p option; do
     case "${option}" in
         b) TRAME_BUILD=${OPTARG};;
         c) TRAME_COVERAGE="y";;
@@ -79,7 +79,7 @@ else
     if [[ "${TRAME_OPT}" == "fast" ]]; then
         echo "TraME: experimental optimization"
         # TRAME_OPT_FLAGS="-Ofast -Wall -march=native"
-        TRAME_OPT_FLAGS="-Ofast -Wall"
+        TRAME_OPT_FLAGS="-Ofast -DARMA_NO_DEBUG"
     else
         TRAME_OPT_FLAGS="-O3 -Wall"
     fi

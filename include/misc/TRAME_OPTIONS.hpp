@@ -27,7 +27,7 @@
     #include "omp.h" //  OpenMP
 #endif
 
-#ifdef TRAME_RCPP_ARMADILLO
+#ifdef USE_RCPP_ARMADILLO
     #include <RcppArmadillo.h>
 #else
     #ifndef ARMA_DONT_USE_WRAPPER

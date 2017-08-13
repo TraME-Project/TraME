@@ -27,7 +27,7 @@
 #include <cmath> // for abs value
 #include <limits>
 
-#include "misc/TRAME_OPTIONS.hpp"
+#include "misc/trame_options.hpp"
 #include "optim/optim.hpp"
 
 namespace trame
