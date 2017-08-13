@@ -96,10 +96,11 @@ class logit
         void simul(empirical& obj_out) const;
         void simul(empirical& obj_out, const int nb_draws, const int seed) const;
 
+    protected:
+        void simul_int(empirical& obj_out, const int* nb_draws, const int* seed) const;
+
     private:
         static double differMargX(double z, void* opt_data);
-
-        void simul_int(empirical& obj_out, const int* nb_draws, const int* seed) const;
 };
 
 struct trame_logit_zeroin_data {

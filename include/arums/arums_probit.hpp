@@ -68,7 +68,7 @@ class probit
         void simul(empirical& obj_out) const;
         void simul(empirical& obj_out, const int nb_draws, const int seed) const;
     
-    private:
+    protected:
          void build_int(const int nbX_inp, const int nbY_inp, const double* rho_inp, const bool outside_option_inp);
 
          void simul_int(empirical& obj_out, const int* nb_draws, const int* seed) const;

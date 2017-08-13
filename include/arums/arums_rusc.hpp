@@ -83,7 +83,7 @@ class rusc
         void simul(empirical& obj_out) const;
         void simul(empirical& obj_out, const int nb_draws, const int seed) const;
 
-    private:
+    protected:
         void simul_int(empirical& obj_out, const int* nb_draws, const int* seed) const;
 };
 
