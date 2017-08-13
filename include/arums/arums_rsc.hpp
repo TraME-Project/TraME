@@ -108,12 +108,12 @@ class rsc
         void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first) const;
         
         empirical simul() const;
-        empirical simul(const int nbDraws, const int seed) const;
+        empirical simul(const int nb_draws, const int seed) const;
         void simul(empirical& obj_out) const;
-        void simul(empirical& obj_out, const int nbDraws, const int seed) const;
+        void simul(empirical& obj_out, const int nb_draws, const int seed) const;
         
     private:
-        void simul_int(empirical& obj_out, const int* nbDraws, const int* seed) const;
+        void simul_int(empirical& obj_out, const int* nb_draws, const int* seed) const;
 
         double cdf (double x) const;
         arma::vec cdf (arma::vec x) const;

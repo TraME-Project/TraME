@@ -79,12 +79,12 @@ class rusc
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x) const;
         
         empirical simul() const;
-        empirical simul(const int nbDraws, const int seed) const;
+        empirical simul(const int nb_draws, const int seed) const;
         void simul(empirical& obj_out) const;
-        void simul(empirical& obj_out, const int nbDraws, const int seed) const;
+        void simul(empirical& obj_out, const int nb_draws, const int seed) const;
 
     private:
-        void simul_int(empirical& obj_out, const int* nbDraws, const int* seed) const;
+        void simul_int(empirical& obj_out, const int* nb_draws, const int* seed) const;
 };
 
 #endif

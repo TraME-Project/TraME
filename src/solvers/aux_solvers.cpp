@@ -44,8 +44,8 @@ trame::build_disaggregate_epsilon(arma::vec n, const trame::arums::empirical& ar
     const int nbX = arums_emp_inp.nbX;
     const int nbY = arums_emp_inp.nbY;
 
-    const int nbDraws = arums_emp_inp.aux_nbDraws;
-    const int nbI = nbX * nbDraws;
+    const int nb_draws = arums_emp_inp.aux_nb_draws;
+    const int nbI = nbX * nb_draws;
 
     arma::vec I_01(nbX);
     arma::mat epsilon;
@@ -59,16 +59,16 @@ trame::build_disaggregate_epsilon(arma::vec n, const trame::arums::empirical& ar
             epsilon = arums_emp_inp.atoms.slice(x);
         }
         //
-        epsilons.rows(x*nbDraws,(x+1)*nbDraws-1) = epsilon;
+        epsilons.rows(x*nb_draws,(x+1)*nb_draws-1) = epsilon;
         //
         I_01.zeros();
         I_01(x) = 1;
         
-        I_ix.rows(x*nbDraws,(x+1)*nbDraws-1) = arma::repmat(I_01.t(),nbDraws,1);
+        I_ix.rows(x*nb_draws,(x+1)*nb_draws-1) = arma::repmat(I_01.t(),nb_draws,1);
     }
     //
     epsilon_iy = epsilons.cols(0,nbY-1);
     epsilon0_i = epsilons.col(nbY);
     //
-    return nbDraws;
+    return nb_draws;
 }

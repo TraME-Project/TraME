@@ -62,7 +62,7 @@ trame::arums::empirical::build(const int nbX_inp, const int nbY_inp, const arma:
     atoms = atoms_inp;
 
     dim_params = atoms_inp.n_elem;
-    aux_nbDraws = atoms.n_rows;
+    aux_nb_draws = atoms.n_rows;
 
     x_homogeneous = x_homogeneous_inp;
     outside_option = outside_option_inp;
@@ -108,18 +108,18 @@ const
     mu_x_out.set_size(nbY,1);
     //
     arma::mat U_xs = (outside_option) ? arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1)) : U_x_inp;
-    const arma::mat Utilde = (x_homogeneous) ? arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(0) : arma::ones(aux_nbDraws,1) * U_xs.t() + atoms.slice(x);
+    const arma::mat Utilde = (x_homogeneous) ? arma::ones(aux_nb_draws,1) * U_xs.t() + atoms.slice(0) : arma::ones(aux_nb_draws,1) * U_xs.t() + atoms.slice(x);
     //
     const arma::vec argmaxs = arma::max(Utilde,1);       // take max over dim = 1
     const arma::uvec argmax_inds = which_max(Utilde,1);
 
-    double val_x = arma::accu(argmaxs) / (double)(aux_nbDraws);
+    double val_x = arma::accu(argmaxs) / (double)(aux_nb_draws);
     //
     arma::uvec temp_find;
 
     for (int tt=0; tt < nbY; tt++) {
         temp_find = arma::find(argmax_inds==tt);
-        mu_x_out(tt,0) = (double)(temp_find.n_elem)/(double)(aux_nbDraws);
+        mu_x_out(tt,0) = (double)(temp_find.n_elem)/(double)(aux_nb_draws);
     }
     //
     return val_x;
@@ -167,7 +167,7 @@ const
     //
     const arma::mat Phi = (x_homogeneous) ? atoms.slice(0) : atoms.slice(x);
     //
-    arma::vec p = arma::ones(aux_nbDraws,1)/ (double) aux_nbDraws;
+    arma::vec p = arma::ones(aux_nb_draws,1)/ (double) aux_nb_draws;
     arma::mat q;
 
     if (outside_option) {
@@ -199,13 +199,13 @@ const
         LP_optimal = generic_LP(k_Gstar, n_Gstar, obj_lp.memptr(), numnz_Gstar, vbeg_Gstar, vind_Gstar, vval_Gstar, modelSense, rhs_lp.memptr(), sense_lp, nullptr, nullptr, nullptr, nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
         if (LP_optimal) {
-            arma::mat u = dual_mat.col(0).rows(0,aux_nbDraws-1);
+            arma::mat u = dual_mat.col(0).rows(0,aux_nb_draws-1);
 
             if (outside_option) {
-                const arma::mat U_x_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY);
+                const arma::mat U_x_temp = dual_mat.col(0).rows(aux_nb_draws,aux_nb_draws+nbY);
                 U_x_out = - U_x_temp.rows(0,nbY-1) + arma::as_scalar(U_x_temp.row(nbY));
             } else {
-                const arma::mat U_x_temp = dual_mat.col(0).rows(aux_nbDraws,aux_nbDraws+nbY-1);
+                const arma::mat U_x_temp = dual_mat.col(0).rows(aux_nb_draws,aux_nb_draws+nbY-1);
                 U_x_out = - U_x_temp - arma::accu(p % u);
             }
             //
@@ -272,7 +272,7 @@ const
     }
     //
     arma::vec obj_lp_1 = mubar_x;
-    arma::vec obj_lp_2 = - arma::ones(aux_nbDraws,1)/aux_nbDraws;
+    arma::vec obj_lp_2 = - arma::ones(aux_nb_draws,1)/aux_nb_draws;
     arma::vec obj_lp   = arma::join_cols(obj_lp_1,obj_lp_2);
 
     arma::vec rhs_lp_1 = Ubar_x;
@@ -331,18 +331,18 @@ trame::arums::empirical::presolve_LP_Gstar()
 
     int jj = 0, count_val=0;
 
-    arma::umat location_mat(2,aux_nbDraws*nb_options*2);
-    arma::rowvec vals_mat(aux_nbDraws*nb_options*2);
+    arma::umat location_mat(2,aux_nb_draws*nb_options*2);
+    arma::rowvec vals_mat(aux_nb_draws*nb_options*2);
 
     for (int kk=0; kk < nb_options; kk++) {
-        for (jj=0; jj < aux_nbDraws; jj++) {
-            location_mat(0,count_val) = jj + kk*aux_nbDraws;
+        for (jj=0; jj < aux_nb_draws; jj++) {
+            location_mat(0,count_val) = jj + kk*aux_nb_draws;
             location_mat(1,count_val) = jj;
             ++count_val;
         }
-        for (jj=0; jj < aux_nbDraws; jj++) {
-            location_mat(0,count_val) = jj + kk*aux_nbDraws;
-            location_mat(1,count_val) = kk + aux_nbDraws;
+        for (jj=0; jj < aux_nb_draws; jj++) {
+            location_mat(0,count_val) = jj + kk*aux_nb_draws;
+            location_mat(1,count_val) = kk + aux_nb_draws;
             ++count_val;
         }
     }
@@ -354,7 +354,7 @@ trame::arums::empirical::presolve_LP_Gstar()
     k_Gstar = A_sp_Gstar_t.n_cols; // n_cols as we are working with the transpose of A
     n_Gstar = A_sp_Gstar_t.n_rows; // n_rows as we are working with the transpose of A
 
-    numnz_Gstar = aux_nbDraws*nb_options*2;
+    numnz_Gstar = aux_nb_draws*nb_options*2;
 
     const arma::uword* row_vals = &(*A_sp_Gstar_t.row_indices);
     const arma::uword* col_vals = &(*A_sp_Gstar_t.col_ptrs);
@@ -391,8 +391,8 @@ trame::arums::empirical::presolve_LP_Gbar()
 
     int jj = 0, count_val=0;
 
-    arma::umat location_mat_2(2,nbY + aux_nbDraws*nbY + aux_nbDraws*(nbY+1));
-    arma::rowvec vals_mat_2(nbY + aux_nbDraws*nbY + aux_nbDraws*(nbY+1));
+    arma::umat location_mat_2(2,nbY + aux_nb_draws*nbY + aux_nb_draws*(nbY+1));
+    arma::rowvec vals_mat_2(nbY + aux_nb_draws*nbY + aux_nb_draws*(nbY+1));
 
     for (jj=0; jj < nbY; jj++) { // top-left diagonal block
         location_mat_2(0,count_val) = jj;
@@ -405,9 +405,9 @@ trame::arums::empirical::presolve_LP_Gbar()
 
     for (int kk=0; kk < (nbY+1); kk++) {
         if (kk < nbY) { // top section 
-            for (jj=0; jj<aux_nbDraws; jj++) {
+            for (jj=0; jj<aux_nb_draws; jj++) {
                 location_mat_2(0,count_val) = kk;
-                location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
+                location_mat_2(1,count_val) = nbY + jj + kk*aux_nb_draws;
 
                 vals_mat_2(count_val) = 1;
 
@@ -415,9 +415,9 @@ trame::arums::empirical::presolve_LP_Gbar()
             }
         }
 
-        for (jj=0; jj<aux_nbDraws; jj++) { // diagonal terms (nbY+1 number of blocks)
+        for (jj=0; jj<aux_nb_draws; jj++) { // diagonal terms (nbY+1 number of blocks)
             location_mat_2(0,count_val) = nbY + jj;
-            location_mat_2(1,count_val) = nbY + jj + kk*aux_nbDraws;
+            location_mat_2(1,count_val) = nbY + jj + kk*aux_nb_draws;
 
             vals_mat_2(count_val) = -1;
 

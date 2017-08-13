@@ -64,14 +64,14 @@ class probit
         void unifCorrelCovMatrices(const double rho_inp);
 
         empirical simul() const;
-        empirical simul(const int nbDraws, const int seed) const;
+        empirical simul(const int nb_draws, const int seed) const;
         void simul(empirical& obj_out) const;
-        void simul(empirical& obj_out, const int nbDraws, const int seed) const;
+        void simul(empirical& obj_out, const int nb_draws, const int seed) const;
     
     private:
          void build_int(const int nbX_inp, const int nbY_inp, const double* rho_inp, const bool outside_option_inp);
 
-         void simul_int(empirical& obj_out, const int* nbDraws, const int* seed) const;
+         void simul_int(empirical& obj_out, const int* nb_draws, const int* seed) const;
 };
 
 #endif

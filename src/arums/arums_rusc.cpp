@@ -319,12 +319,12 @@ const
 }
 
 trame::arums::empirical
-trame::arums::rusc::simul(const int nbDraws, const int seed)
+trame::arums::rusc::simul(const int nb_draws, const int seed)
 const
 {
     empirical emp_obj;
     
-    this->simul_int(emp_obj,&nbDraws,&seed);
+    this->simul_int(emp_obj,&nb_draws,&seed);
     //
     return emp_obj;
 }
@@ -337,20 +337,20 @@ const
 }
 
 void
-trame::arums::rusc::simul(empirical& obj_out, const int nbDraws, const int seed)
+trame::arums::rusc::simul(empirical& obj_out, const int nb_draws, const int seed)
 const
 {
-    this->simul_int(obj_out,&nbDraws,&seed);
+    this->simul_int(obj_out,&nb_draws,&seed);
 }
 
 void
-trame::arums::rusc::simul_int(empirical& obj_out, const int* nbDraws, const int* seed_val)
+trame::arums::rusc::simul_int(empirical& obj_out, const int* nb_draws, const int* seed_val)
 const
 {
     int n_draws = 0;
 
-    if (nbDraws) {
-        n_draws = *nbDraws;
+    if (nb_draws) {
+        n_draws = *nb_draws;
     } else {
 #ifdef TRAME_DEFAULT_SIM_DRAWS
         n_draws = TRAME_DEFAULT_SIM_DRAWS;

@@ -52,8 +52,8 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     arma::mat epsilon_iy, epsilon_0i, I_ix;
     arma::mat eta_xj, eta_0j, I_yj;
 
-    const int nbDraws_1 = build_disaggregate_epsilon(market.n,market.arums_G,epsilon_iy,epsilon_0i,I_ix);
-    const int nbDraws_2 = build_disaggregate_epsilon(market.m,market.arums_H,eta_xj,eta_0j,I_yj);
+    const int nb_draws_1 = build_disaggregate_epsilon(market.n,market.arums_G,epsilon_iy,epsilon_0i,I_ix);
+    const int nb_draws_2 = build_disaggregate_epsilon(market.m,market.arums_H,eta_xj,eta_0j,I_yj);
 
     eta_xj = eta_xj.t();
 
@@ -62,15 +62,15 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
     I_yj = I_yj.t();
     //
-    const arma::vec n_i = arma::vectorise(I_ix * market.n) / (double) nbDraws_1;
-    const arma::vec m_j = arma::vectorise(market.m.t() * I_yj) / (double) nbDraws_2;
+    const arma::vec n_i = arma::vectorise(I_ix * market.n) / (double) nb_draws_1;
+    const arma::vec m_j = arma::vectorise(market.m.t() * I_yj) / (double) nb_draws_2;
 
     const int nbI = n_i.n_elem;
     const int nbJ = m_j.n_elem;
     //
     // use batch allocation to construct the sparse constraint matrix (A)
     int jj, kk, ll, count_val = 0;
-    const int num_non_zero = nbI*nbY + nbJ*nbX + nbDraws_1*(nbX*nbY) + nbX*nbDraws_2*nbY;
+    const int num_non_zero = nbI*nbY + nbJ*nbX + nb_draws_1*(nbX*nbY) + nbX*nb_draws_2*nbY;
 
     arma::umat location_mat(2,num_non_zero);
     arma::rowvec vals_mat(num_non_zero);
@@ -101,9 +101,9 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
     // lower blocks
     for (jj=0; jj<(nbX*nbY); jj++) {
-        for (kk=0; kk<nbDraws_1; kk++) {
+        for (kk=0; kk<nb_draws_1; kk++) {
             location_mat(0,count_val) = nbI + nbJ + jj; // rows
-            location_mat(1,count_val) = jj*nbDraws_1 + kk; // columns
+            location_mat(1,count_val) = jj*nb_draws_1 + kk; // columns
 
             vals_mat(count_val) = -1;
 
@@ -112,10 +112,10 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     }
 
     for (jj=0; jj<nbY; jj++) {
-        for (kk=0; kk<nbDraws_2; kk++) {
+        for (kk=0; kk<nb_draws_2; kk++) {
             for (ll=0; ll<nbX; ll++) {
                 location_mat(0,count_val) = nbI + nbJ + jj*nbX + ll; // rows
-                location_mat(1,count_val) = nbI*nbY + kk*nbX + jj*nbX*nbDraws_2 + ll; // columns
+                location_mat(1,count_val) = nbI*nbY + kk*nbX + jj*nbX*nb_draws_2 + ll; // columns
 
                 vals_mat(count_val) = 1;
 

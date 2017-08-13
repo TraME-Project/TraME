@@ -92,14 +92,14 @@ class logit
         void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first) const;
         
         empirical simul() const;
-        empirical simul(const int nbDraws, const int seed) const;
+        empirical simul(const int nb_draws, const int seed) const;
         void simul(empirical& obj_out) const;
-        void simul(empirical& obj_out, const int nbDraws, const int seed) const;
+        void simul(empirical& obj_out, const int nb_draws, const int seed) const;
 
     private:
         static double differMargX(double z, void* opt_data);
 
-        void simul_int(empirical& obj_out, const int* nbDraws, const int* seed) const;
+        void simul_int(empirical& obj_out, const int* nb_draws, const int* seed) const;
 };
 
 struct trame_logit_zeroin_data {

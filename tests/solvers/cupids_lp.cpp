@@ -20,8 +20,8 @@ int main()
     int nbX = 5;
     int nbY = 3;
 
-    int nbDraws_1 = 1000;
-    int nbDraws_2 = 1000;
+    int nb_draws_1 = 1000;
+    int nb_draws_2 = 1000;
 
     arma::vec n = arma::ones(nbX,1);
     arma::vec m = arma::ones(nbY,1);
@@ -42,8 +42,8 @@ int main()
     logit_1.build(nbX,nbY,1.0,true);
     logit_2.build(nbY,nbX,1.0,true);
 
-    trame::arums::empirical logit_sim_1 = logit_1.simul(nbDraws_1,123);
-    trame::arums::empirical logit_sim_2 = logit_2.simul(nbDraws_2,321);
+    trame::arums::empirical logit_sim_1 = logit_1.simul(nb_draws_1,123);
+    trame::arums::empirical logit_sim_2 = logit_2.simul(nb_draws_2,321);
 
     dse_obj_TU.build(n,m,phi,logit_sim_1,logit_sim_2,false);
     //
@@ -67,8 +67,8 @@ int main()
     probit_1.unifCorrelCovMatrices();
     probit_2.unifCorrelCovMatrices();
 
-    trame::arums::empirical probit_sim_1 = probit_1.simul(nbDraws_1,456);
-    trame::arums::empirical probit_sim_2 = probit_2.simul(nbDraws_2,654);
+    trame::arums::empirical probit_sim_1 = probit_1.simul(nb_draws_1,456);
+    trame::arums::empirical probit_sim_2 = probit_2.simul(nb_draws_2,654);
 
     dse_obj_TU_2.build(n,m,phi,probit_sim_1,probit_sim_2,false);
     //

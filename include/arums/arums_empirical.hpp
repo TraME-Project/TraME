@@ -42,7 +42,7 @@ class empirical
         int nbY;
 
         int dim_params;
-        int aux_nbDraws;
+        int aux_nb_draws;
         int nb_options;
 
         bool x_homogeneous;

@@ -124,8 +124,8 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
 //     arma::mat epsilon_iy, epsilon0_i, I_ix;
 //     arma::mat eta_xj, eta_0j, I_yj;
 
-//     int nbDraws_1 = build_disaggregate_epsilon(n,market_obj.arums_G,epsilon_iy,epsilon0_i,I_ix);
-//     int nbDraws_2 = build_disaggregate_epsilon(m,market_obj.arums_H,eta_xj,eta_0j,I_yj);
+//     int nb_draws_1 = build_disaggregate_epsilon(n,market_obj.arums_G,epsilon_iy,epsilon0_i,I_ix);
+//     int nb_draws_2 = build_disaggregate_epsilon(m,market_obj.arums_H,eta_xj,eta_0j,I_yj);
 
 //     epsilon0_i = arma::vectorise(epsilon0_i);
 
@@ -133,8 +133,8 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
 //     eta_0j = arma::vectorise(eta_0j);
 //     I_yj = I_yj.t();
     
-//     arma::vec n_i = arma::vectorise(I_ix * n) / (double) nbDraws_1;
-//     arma::vec m_j = arma::vectorise(m.t() * I_yj) / (double) nbDraws_2;
+//     arma::vec n_i = arma::vectorise(I_ix * n) / (double) nb_draws_1;
+//     arma::vec m_j = arma::vectorise(m.t() * I_yj) / (double) nb_draws_2;
 
 //     int nbI = n_i.n_elem;
 //     int nbJ = m_j.n_elem;
@@ -151,13 +151,13 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
 //      * 1 to nbI*nbY nothing but zeros; then nbJ blocks of nbX-length row vectors of ones 
 //      *
 //      * third block begins on row nbI+nbJ+1 and ends on nbI+nbJ+nbX*nbY; 
-//      * there are nbX*nbY blocks of length nbDraws_1 from columns (1,nbI*nbY);
+//      * there are nbX*nbY blocks of length nb_draws_1 from columns (1,nbI*nbY);
 //      * for columns (nbI+1)
 //      *
 //      * fourth block is filled from (nbI*nbY+1,nbI*nbY + nbJ*nbX) with kron_data_mat
 //      */
 //     int jj, kk, ll, count_val = 0;
-//     int num_nonzero_elem = nbI*nbY + nbJ*nbX + nbX*nbY*nbDraws_1 + nbY*nbDraws_2*nbX + dim_theta*nbJ*nbX;
+//     int num_nonzero_elem = nbI*nbY + nbJ*nbX + nbX*nbY*nb_draws_1 + nbY*nb_draws_2*nbX + dim_theta*nbJ*nbX;
 
 //     arma::umat location_mat_1(2,num_nonzero_elem);
 //     arma::rowvec vals_mat_1(num_nonzero_elem);
@@ -185,9 +185,9 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
 //     }
 
 //     for (jj=0; jj < nbX*nbY; jj++) { // third block, part 1
-//         for (kk=0; kk < nbDraws_1; kk++) {
+//         for (kk=0; kk < nb_draws_1; kk++) {
 //             location_mat_1(0,count_val) = nbI + nbJ + jj;
-//             location_mat_1(1,count_val) = kk + jj*nbDraws_1;
+//             location_mat_1(1,count_val) = kk + jj*nb_draws_1;
 
 //             vals_mat_1(count_val) = -1.0;
 
@@ -196,10 +196,10 @@ void model<arums::logit,transfers::tu>::dtheta_mu(const arma::mat& theta, const 
 //     }
 
 //     for (jj=0; jj < nbY; jj++) { // third block, part 2
-//         for (kk=0; kk < nbDraws_2; kk++) {
+//         for (kk=0; kk < nb_draws_2; kk++) {
 //             for (ll=0; ll < nbX; ll++) {
 //                 location_mat_1(0,count_val) = nbI + nbJ + jj*nbX + ll;
-//                 location_mat_1(1,count_val) = nbI*nbY + jj*(nbDraws_2*nbX) + kk*nbX + ll;
+//                 location_mat_1(1,count_val) = nbI*nbY + jj*(nb_draws_2*nbX) + kk*nbX + ll;
 
 //                 vals_mat_1(count_val) = 1.0;
 
