@@ -168,7 +168,6 @@ mfe<Tt>::trans()
 // ipfp
 
 template<typename Tt>
-inline
 arma::vec
 mfe<Tt>::marg_x_inv(const arma::mat& B_ys)
 const
@@ -177,7 +176,6 @@ const
 }
 
 template<typename Tt>
-inline
 arma::vec
 mfe<Tt>::marg_x_inv(const arma::mat& B_ys, const arma::uvec* xs)
 const
@@ -210,7 +208,6 @@ const
 }
 
 template<typename Tt>
-inline
 arma::vec
 mfe<Tt>::marg_y_inv(const arma::mat& A_xs)
 const
@@ -219,7 +216,6 @@ const
 }
 
 template<typename Tt>
-inline
 arma::vec
 mfe<Tt>::marg_y_inv(const arma::mat& A_xs, const arma::uvec* ys)
 const
@@ -383,7 +379,6 @@ mfe<Tt>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char
 // root finding functions
 
 template<typename Tt>
-inline
 double
 mfe<Tt>::marg_x_inv_fn(const double z, void* opt_data)
 {
@@ -400,7 +395,6 @@ mfe<Tt>::marg_x_inv_fn(const double z, void* opt_data)
 }
 
 template<typename Tt>
-inline
 double
 mfe<Tt>::marg_y_inv_fn(const double z, void* opt_data)
 {

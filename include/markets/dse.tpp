@@ -72,7 +72,6 @@ dse_base::build(const arma::vec& n_inp, const arma::vec& m_inp, const bool need_
 // etu case
 
 template<typename Tg, typename Th>
-inline
 void
 dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const bool need_norm_inp)
 {
@@ -95,7 +94,6 @@ dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 }
 
 template<typename Tg, typename Th>
-inline
 void
 dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
 {
@@ -119,7 +117,6 @@ dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
 template<typename Tg, typename Th> 
 template<typename Ta, typename Tb>
-inline
 void
 dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, const int nb_draws, const int seed, const bool need_norm_inp)
 {
@@ -145,7 +142,6 @@ dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 // ltu case
 
 template<typename Tg, typename Th>
-inline
 void
 dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const bool need_norm_inp)
 {
@@ -168,7 +164,6 @@ dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 }
 
 template<typename Tg, typename Th>
-inline
 void
 dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
 {
@@ -192,7 +187,6 @@ dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
 template<typename Tg, typename Th> 
 template<typename Ta, typename Tb>
-inline
 void
 dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const int nb_draws, const int seed, const bool need_norm_inp)
 {
@@ -218,7 +212,6 @@ dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 // ntu case
 
 template<typename Tg, typename Th>
-inline
 void
 dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const bool need_norm_inp)
 {
@@ -241,7 +234,6 @@ dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 }
 
 template<typename Tg, typename Th>
-inline
 void
 dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
 {
@@ -265,7 +257,6 @@ dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
 template<typename Tg, typename Th> 
 template<typename Ta, typename Tb>
-inline
 void
 dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, const int nb_draws, const int seed, const bool need_norm_inp)
 {
@@ -291,7 +282,6 @@ dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 // tu case
 
 template<typename Tg, typename Th>
-inline
 void
 dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const bool need_norm_inp)
 {
@@ -314,7 +304,6 @@ dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, 
 }
 
 template<typename Tg, typename Th>
-inline
 void
 dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
 {
@@ -338,7 +327,6 @@ dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, 
 
 template<typename Tg, typename Th> 
 template<typename Ta, typename Tb>
-inline
 void
 dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const int nb_draws, const int seed, const bool need_norm_inp)
 {

@@ -365,11 +365,7 @@ fi
 if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
     TRAME_SHLIB_FLAGS="--coverage ${TRAME_SHLIB_FLAGS}"
 else
-    TRAME_SHLIB_FLAGS="-O3 ${TRAME_SHLIB_FLAGS}"
-fi
-
-if [[ "${TRAME_PARALLEL}" == "y" ]]; then 
-    TRAME_SHLIB_FLAGS="-fopenmp ${TRAME_SHLIB_FLAGS}"
+    TRAME_SHLIB_FLAGS="${TRAME_OPT_FLAGS} ${TRAME_SHLIB_FLAGS}"
 fi
 
 # create Makefile
