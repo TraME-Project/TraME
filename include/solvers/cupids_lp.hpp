@@ -22,7 +22,7 @@
   ################################################################################*/
 
 /*
- * Cupids LP solver
+ * Cupids LP solver for TU-type markets
  *
  * Keith O'Hara
  * 08/25/2016

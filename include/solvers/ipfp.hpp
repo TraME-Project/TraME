@@ -22,7 +22,7 @@
   ################################################################################*/
 
 /*
- * Iterated Proportional Fitting Procedure (IPFP) for MFE-type markets
+ * Iterated Proportional Fitting Procedure (IPFP) for MFE markets
  *
  * Keith O'Hara
  * 08/16/2016

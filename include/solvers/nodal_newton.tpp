@@ -22,7 +22,7 @@
   ################################################################################*/
 
 /*
- * nodal_newton for logit MFE case
+ * nodal_newton for MFE case
  *
  * Keith O'Hara
  * 01/17/2016
