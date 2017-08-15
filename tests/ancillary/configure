@@ -1,11 +1,12 @@
 #!/bin/bash
 ## TraME tests config script
 
-while getopts :b:cl:op option; do
+while getopts :b:cl:m:o:p option; do
     case "${option}" in
         b) TRAME_BUILD=${OPTARG};;
         c) TRAME_COVERAGE="y";;
         l) TRAME_LP=${OPTARG};;
+        m) TRAME_MATRIX_OPS=${OPTARG};;
         o) TRAME_OPT=${OPTARG};;
         p) TRAME_PARALLEL="y";;
     esac
@@ -30,7 +31,7 @@ fi
 WDIR=${PWD}
 
 if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
-    echo "TraME: ARMA_INCLUDE_PATH not set"
+    echo "TraME tests: ARMA_INCLUDE_PATH not set"
     if [ -f ${WDIR}/../../include/armadillo ]; then 
         ARMA_INCLUDE_PATH="./../../include"
     elif [ -f /usr/include/armadillo ]; then
@@ -56,14 +57,14 @@ if [[ "${TRAME_COVERAGE}" == "y" ]]; then
     TRAME_OPT_FLAGS="-O0 -Wall -g --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
 else
     if [[ "${TRAME_OPT}" == "fast" ]]; then
-        echo "TraME: experimental optimization"
-        TRAME_OPT_FLAGS="-Ofast -Wall -march=native"
+        echo "TraME tests: experimental optimization"
+        TRAME_OPT_FLAGS="-Ofast -DARMA_NO_DEBUG"
     else
         TRAME_OPT_FLAGS="-O3 -Wall"
     fi
 
     if [[ "${TRAME_PARALLEL}" == "y" ]]; then 
-        echo "TraME: using OpenMP"
+        echo "TraME tests: using OpenMP"
         TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp -DTRAME_OMP"
     fi
 fi
@@ -77,25 +78,32 @@ TRAME_SHLIB_NAME="trame"
 # dev build
 
 if [[ "${TRAME_BUILD}" == "dev" ]]; then
-    echo "TraME: dev version"
+    echo "TraME tests: dev version"
     cd ../..
     TRAME_INCLUDE_PATH=${PWD}/include
     TRAME_INSTALL_PATH=${PWD}
     cd ${WDIR}
 else
-    TRAME_INSTALL_PATH="/usr/local"
+    TRAME_INCLUDE_PATH="/usr/local/include/trame"
+    TRAME_INSTALL_PATH="/usr/local/lib"
 fi
 
 # BLAS and LAPACK settings
 
-if [[ $OSTYPE == darwin* ]] ; then
-    TRAME_BLAS_LAPACK="-framework Accelerate"
-elif [[ $OSTYPE == *linux* ]] ; then
-    TRAME_BLAS_LAPACK="-lblas -llapack"
-elif [[ $OSTYPE == *cygwin* ]] ; then
-    TRAME_BLAS_LAPACK="-lopenblas"
+if [[ !(-z ${TRAME_MATRIX_OPS+x}) ]]; then
+    TRAME_BLAS_LAPACK="${TRAME_MATRIX_OPS}"
+    echo ""
+    echo "TraME tests: BLAS and Lapack libraries set to ${TRAME_BLAS_LAPACK}"
 else
-    TRAME_BLAS_LAPACK="-lblas -llapack"
+    if [[ $OSTYPE == darwin* ]] ; then
+        TRAME_BLAS_LAPACK="-framework Accelerate"
+    elif [[ $OSTYPE == *linux* ]] ; then
+        TRAME_BLAS_LAPACK="-lblas -llapack"
+    elif [[ $OSTYPE == *cygwin* ]] ; then
+        TRAME_BLAS_LAPACK="-lopenblas"
+    else
+        TRAME_BLAS_LAPACK="-lblas -llapack"
+    fi
 fi
 
 sed -e "s|@CC@|${CC}|" \
