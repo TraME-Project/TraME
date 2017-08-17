@@ -22,7 +22,7 @@
   ################################################################################*/
 
 /*
- * mmfs::geo class unit test
+ * mmfs::cd class unit test
  *
  * Keith O'Hara
  * 02/07/2017
@@ -42,20 +42,21 @@ int main()
 
     int nbX = 10;
     int nbY = 8;
-    
+
     arma::vec n = arma::ones(nbX,1);
     arma::vec m = arma::ones(nbY,1);
 
+    arma::mat lambda = arma::randu(nbX,nbY);
     arma::mat phi = arma::randu(nbX,nbY);
     //
     // results
-    printf("\n*===================   Start of mmfs::geo Test   ===================*\n");
+    printf("\n*===================   Start of mmfs::cd Test   ===================*\n");
     printf("\n");
     //
 
-    trame::mmfs::geo mmf_obj;
-    
-    mmf_obj.build(phi,false);
+    trame::mmfs::cd mmf_obj;
+
+    mmf_obj.build(lambda,phi,false);
 
     arma::uvec xs(1); xs(0) = 1;
     arma::uvec ys(1); ys(0) = 2;
@@ -83,14 +84,14 @@ int main()
     mmf_obj.trans();
 
     //
-    printf("\n*===================    End of mmfs::geo Test    ===================*\n");
+    printf("\n*===================    End of mmfs::cd Test    ===================*\n");
     printf("\n");
     //
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
-        
+
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-        
+
     std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
     //
