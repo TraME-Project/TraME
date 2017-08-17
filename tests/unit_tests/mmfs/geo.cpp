@@ -65,10 +65,10 @@ int main()
     mmf_obj.M(n,m);
 
     mmf_obj.M(n,m,nullptr,nullptr);
-    mmf_obj.M(n,m,&xs,&ys);
+    mmf_obj.M(n(xs),m(ys),&xs,&ys);
 
-    mmf_obj.M(n(1),m,&xs,nullptr);
-    mmf_obj.M(n,m(2),nullptr,&ys);
+    mmf_obj.M(n(xs),m,&xs,nullptr);
+    mmf_obj.M(n,m(ys),nullptr,&ys);
 
     mmf_obj.dmu_x0(n,m);
     mmf_obj.dmu_0y(n,m);
