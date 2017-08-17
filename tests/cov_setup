@@ -1,4 +1,6 @@
 
+export TESTS_WDIR="$PWD"
+
 cd ..
 export ARMA_INCLUDE_PATH="$PWD/include"
 export CXXCOV=gcov
@@ -25,6 +27,14 @@ cd ../solvers
 make
 ./cov_check
 
-cd ../..
+# unit tests
+cd $TESTS_WDIR/unit_tests
+
+cd mmfs
+./configure -b dev -c
+make
+./cov_check
+
+cd $TESTS_WDIR/..
 rm -rf ./include/armadillo*
-cd tests
+cd $TESTS_WDIR

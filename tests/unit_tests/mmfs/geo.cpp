@@ -22,26 +22,27 @@
   ################################################################################*/
 
 /*
- * mmfs::geo class test
+ * mmfs::geo class unit test
  *
  * Keith O'Hara
  * 02/07/2017
  *
  * This version:
- * 07/03/2017
+ * 08/17/2017
  */
 
 #include "trame.hpp"
 
 int main()
 {
-    std::chrono::time_point<std::chrono::system_clock> start, end;
-    start = std::chrono::system_clock::now();
+    std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
+
     //
-    // inputs:
+    // setip:
+
     int nbX = 10;
     int nbY = 8;
-    // double sigma = 1;
+    
 
     arma::vec n = arma::ones(nbX,1);
     arma::vec m = arma::ones(nbY,1);
@@ -57,13 +58,32 @@ int main()
     trame::mmfs::geo mmf_obj;
     
     mmf_obj.build(phi,false);
+
+    arma::uvec xs(1); xs(0) = 1;
+    arma::uvec ys(1); ys(0) = 2;
+
     mmf_obj.M(n,m);
+
+    mmf_obj.M(n,m,nullptr,nullptr);
+    mmf_obj.M(n,m,&xs,&ys);
+
+    mmf_obj.M(n(1),m,&xs,nullptr);
+    mmf_obj.M(n,m(2),nullptr,&ys);
+
+    mmf_obj.dmu_x0(n,m);
+    mmf_obj.dmu_0y(n,m);
+
+    mmf_obj.dparams_M(n,m);
+    mmf_obj.dparams_M(n,m,nullptr);
+
+    mmf_obj.Mx0(n);
+    mmf_obj.M0y(m);
 
     //
     printf("\n*===================    End of mmfs::geo Test    ===================*\n");
     printf("\n");
     //
-    end = std::chrono::system_clock::now();
+    std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
         
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);

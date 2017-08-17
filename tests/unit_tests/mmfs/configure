@@ -1,11 +1,10 @@
 #!/bin/bash
 ## TraME tests config script
 
-while getopts :b:cl:m:o:p option; do
+while getopts :b:cm:o:p option; do
     case "${option}" in
         b) TRAME_BUILD=${OPTARG};;
         c) TRAME_COVERAGE="y";;
-        l) TRAME_LP=${OPTARG};;
         m) TRAME_MATRIX_OPS=${OPTARG};;
         o) TRAME_OPT=${OPTARG};;
         p) TRAME_PARALLEL="y";;
@@ -32,8 +31,8 @@ WDIR=${PWD}
 
 if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
     echo "TraME tests: ARMA_INCLUDE_PATH not set"
-    if [ -f ${WDIR}/../../include/armadillo ]; then 
-        ARMA_INCLUDE_PATH="./../../include"
+    if [ -f ${WDIR}/../../../include/armadillo ]; then 
+        ARMA_INCLUDE_PATH="./../../../include"
     elif [ -f /usr/include/armadillo ]; then
         ARMA_INCLUDE_PATH="/usr/include"
     elif [ -f /usr/local/include/armadillo ]; then
@@ -79,7 +78,7 @@ TRAME_SHLIB_NAME="trame"
 
 if [[ "${TRAME_BUILD}" == "dev" ]]; then
     echo "TraME tests: dev version"
-    cd ../..
+    cd ../../..
     TRAME_INCLUDE_PATH=${PWD}/include
     TRAME_INSTALL_PATH=${PWD}
     cd ${WDIR}
