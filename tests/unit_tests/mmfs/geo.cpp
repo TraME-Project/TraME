@@ -67,14 +67,17 @@ int main()
     mmf_obj.M(n,m,nullptr,nullptr);
     mmf_obj.M(n(xs),m(ys),&xs,&ys);
 
-    mmf_obj.M(n(xs),m,&xs,nullptr);
-    mmf_obj.M(n,m(ys),nullptr,&ys);
+    double n_x = n(1);
+    double m_y = m(2);
+    mmf_obj.M(n_x,m,&xs,nullptr);
+    mmf_obj.M(n,m_y,nullptr,&ys);
 
     mmf_obj.dmu_x0(n,m);
     mmf_obj.dmu_0y(n,m);
 
     mmf_obj.dparams_M(n,m);
-    mmf_obj.dparams_M(n,m,nullptr);
+    arma::mat delta_params_M = phi;
+    mmf_obj.dparams_M(n,m,&delta_params_M);
 
     mmf_obj.Mx0(n);
     mmf_obj.M0y(m);
