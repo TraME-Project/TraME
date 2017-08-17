@@ -181,7 +181,7 @@ trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doub
 }
 
 bool 
-trame::affinity::mme_regul(const arma::mat& mu_hat, const double& lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
+trame::affinity::mme_regul(const arma::mat& mu_hat, const double lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
 {
     bool success = false;
     //

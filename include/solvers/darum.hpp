@@ -43,13 +43,13 @@ template<typename Tg, typename Th, typename Tt>
 bool darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp);
+bool darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp);
 
 template<typename Tg, typename Th, typename Tt>
-bool darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int& max_iter_inp);
+bool darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp);
 
 template<typename Tg, typename Th, typename Tt>
-bool darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double& tol_inp, const int& max_iter_inp);
+bool darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp, const int max_iter_inp);
 
 template<typename Tg, typename Th, typename Tt>
 bool darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);

@@ -55,7 +55,7 @@ model<mfe<Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma
 template<typename Tt>
 inline
 void
-model<mfe<Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp, const double& sigma_inp)
+model<mfe<Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp, const double sigma_inp)
 {
     this->build_int(X_inp,Y_inp,&n_inp,&m_inp,&sigma_inp);
 }
@@ -245,7 +245,7 @@ model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doubl
 
 template<typename Tt>
 bool
-model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double& lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
+model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
 {
     bool success = false;
     //

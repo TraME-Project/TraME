@@ -118,14 +118,14 @@ class model<mfe<Tt>> : public model_base
         // member functions
         void build(const arma::mat& X_inp, const arma::mat& Y_inp);
         void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp);
-        void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp, const double& sigma_inp);
+        void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp, const double sigma_inp);
 
         void model_to_market(const arma::mat& theta);
 
         void dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_M_out);
         arma::mat dtheta(const arma::mat* delta_theta_inp);
 
-        bool mme_regul(const arma::mat& mu_hat, const double& lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp);
+        bool mme_regul(const arma::mat& mu_hat, const double lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp);
         bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp);
 
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
