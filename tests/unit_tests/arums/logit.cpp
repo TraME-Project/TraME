@@ -70,6 +70,7 @@ int main()
 
     arma::mat mu_sol;
     logits.U = U;
+    logits.mu = mu;
 
     logits.G(n);
     logits.G(n,U,mu_sol);
@@ -99,7 +100,26 @@ int main()
     logits.D2G(n,U,true);
     logits.D2G(H,n,U,true);
 
+    // D2Gstar
+
+    logits.D2Gstar(n,true);
+    logits.D2Gstar(H,n,true);
+    logits.D2Gstar(n,U,true);
+    logits.D2Gstar(H,n,U,true);
+
+    // dparams
+
+    arma::mat nab_mat;
+
+    logits.dparams_NablaGstar(n,nullptr,true);
+    logits.dparams_NablaGstar(nab_mat,n,nullptr,true);
+    logits.dparams_NablaGstar(n,mu,nullptr,true);
+    logits.dparams_NablaGstar(nab_mat,n,mu,nullptr,true);
+
+    logits.dparams_NablaGstar(nab_mat,n,mu,&nab_mat,true);
+
     // simul
+    
     trame::arums::empirical logit_sim(nbX,nbY);
     const int sim_seed = 1777, n_draws = 1000;
     logits.simul(logit_sim, n_draws, sim_seed);

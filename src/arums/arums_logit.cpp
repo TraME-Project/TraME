@@ -418,7 +418,7 @@ const
                 logmu_temp = arma::vectorise(arma::trans(arma::log(mu_inp/mu_x0)));
             }
             //
-            ret = arma::vectorise(dparams) % logmu_temp;
+            ret = elem_prod(arma::vectorise(dparams), logmu_temp);
         } else {
             if (x_first) {
                 logmu_temp = arma::vectorise(log(mu_inp));
@@ -426,7 +426,7 @@ const
                 logmu_temp = arma::vectorise(arma::trans(arma::log(mu_inp)));
             }
             //
-            ret = arma::vectorise(dparams) % logmu_temp;
+            ret = elem_prod(arma::vectorise(dparams), logmu_temp);
         }
     }
 }
