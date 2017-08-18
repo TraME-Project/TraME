@@ -75,7 +75,7 @@ int main()
     mmf_obj.dmu_0y(n,m);
 
     mmf_obj.dparams_M(n,m);
-    arma::mat delta_params_M = alpha;
+    arma::mat delta_params_M = arma::vectorise(arma::join_cols(alpha,gamma));
     mmf_obj.dparams_M(n,m,&delta_params_M);
 
     mmf_obj.Mx0(n);

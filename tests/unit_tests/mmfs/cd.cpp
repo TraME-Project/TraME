@@ -63,27 +63,21 @@ int main()
 
     mmf_obj.M(n,m);
 
-    std::cout << "cd check 1" << std::endl;
     mmf_obj.M(n,m,nullptr,nullptr);
     mmf_obj.M(n(xs),m(ys),&xs,&ys);
 
     double n_x = n(1);
     double m_y = m(2);
-    std::cout << "cd check 2" << std::endl;
     mmf_obj.M(n_x,m,&xs,nullptr);
     mmf_obj.M(n,m_y,nullptr,&ys);
 
-    std::cout << "cd check 3" << std::endl;
     mmf_obj.dmu_x0(n,m);
     mmf_obj.dmu_0y(n,m);
 
-    std::cout << "cd check 4" << std::endl;
     mmf_obj.dparams_M(n,m);
     arma::mat delta_params_M = arma::vectorise(arma::join_cols(lambda,phi));
-    std::cout << "cd check 5" << std::endl;
     mmf_obj.dparams_M(n,m,&delta_params_M);
 
-    std::cout << "cd check 6" << std::endl;
     mmf_obj.Mx0(n);
     mmf_obj.M0y(m);
 
