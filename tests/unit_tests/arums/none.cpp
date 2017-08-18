@@ -53,36 +53,39 @@ int main()
     arma::vec n = arma::sum(mu,1);
     //
     // results
-    printf("\n*===================   Start of arums::empirical test   ===================*\n");
+    printf("\n*===================   Start of arums::none test   ===================*\n");
     printf("\n");
     arma::cout << "\nU: \n" << U << arma::endl;
     arma::cout << "mu: \n" << mu << arma::endl;
 
     // builds
-    trame::arums::logit logits(nbX,nbY);
 
-    trame::arums::empirical logit_sim(nbX,nbY);
-    const int sim_seed = 1777, n_draws = 1000;
+    trame::arums::none arum_obj(nbX,nbY);
 
-    logits.simul(logit_sim, n_draws, sim_seed);
+    arum_obj.build(nbX,nbY);
 
     // G
 
     arma::mat mu_sol;
-    logit_sim.U = U;
-    logit_sim.mu = mu;
+    arum_obj.U = U;
+    arum_obj.mu = mu;
 
-    logit_sim.G(n);
-    logit_sim.G(n,U,mu_sol);
+    arum_obj.G(n);
+    arum_obj.G(n,U,mu_sol);
 
     // Gstar
 
     arma::mat U_sol;
 
-    logit_sim.Gstar(n);
-    logit_sim.Gstar(n,mu,U_sol);
+    arum_obj.Gstar(n);
+    arum_obj.Gstar(n,mu,U_sol);
 
-    // logit_sim2.Gstar(n,mu,U_sol); // no outside option case
+
+    arma::mat mu_test = mu;
+
+    arum_obj.Gstarx(mu_test,U_sol,1);
+    mu_test = mu.row(0);
+    arum_obj.Gstarx(mu_test,U_sol,1);
 
     // Gbar
 
@@ -91,48 +94,56 @@ int main()
     
     arma::mat U_bar_out, mu_bar_out;
     
-    logit_sim.Gbar(U,mu_bar,n,U_bar_out,mu_bar_out);
+    arum_obj.Gbar(U,mu_bar,n,U_bar_out,mu_bar_out);
+
+    arum_obj.Gbarx(U.col(0),mu_bar.col(0),U_bar_out,mu_bar_out,1);
 
     // D2G
 
     arma::mat H;
 
-    logit_sim.D2G(n,true);
-    logit_sim.D2G(H,n,true);
-    logit_sim.D2G(n,U,true);
-    logit_sim.D2G(H,n,U,true);
+    arum_obj.D2G(n,true);
+    arum_obj.D2G(H,n,true);
+    arum_obj.D2G(n,U,true);
+    arum_obj.D2G(H,n,U,true);
 
-    logit_sim.D2G(H,n,false);
+    arum_obj.D2G(H,n,false);
 
     // D2Gstar
 
-    logit_sim.D2Gstar(n,true);
-    logit_sim.D2Gstar(H,n,true);
-    logit_sim.D2Gstar(n,U,true);
-    logit_sim.D2Gstar(H,n,U,true);
+    arum_obj.D2Gstar(n,true);
+    arum_obj.D2Gstar(H,n,true);
+    arum_obj.D2Gstar(n,U,true);
+    arum_obj.D2Gstar(H,n,U,true);
 
-    logit_sim.D2Gstar(H,n,false);
+    arum_obj.D2Gstar(H,n,false);
 
     // dparams
 
     arma::mat nab_mat;
 
-    logit_sim.dparams_NablaGstar(n,nullptr,true);
-    logit_sim.dparams_NablaGstar(nab_mat,n,nullptr,true);
-    logit_sim.dparams_NablaGstar(n,mu,nullptr,true);
-    logit_sim.dparams_NablaGstar(nab_mat,n,mu,nullptr,true);
+    arum_obj.dparams_NablaGstar(n,nullptr,true);
+    arum_obj.dparams_NablaGstar(nab_mat,n,nullptr,true);
+    arum_obj.dparams_NablaGstar(n,mu,nullptr,true);
+    arum_obj.dparams_NablaGstar(nab_mat,n,mu,nullptr,true);
 
-    logit_sim.dparams_NablaGstar(nab_mat,n,mu,&nab_mat,true);
-    logit_sim.dparams_NablaGstar(nab_mat,n,mu,nullptr,false);
-
-    // logit_sim2.dparams_NablaGstar(nab_mat,n,mu,nullptr,true);
-    // logit_sim2.dparams_NablaGstar(nab_mat,n,mu,nullptr,false);
+    arum_obj.dparams_NablaGstar(nab_mat,n,mu,&nab_mat,true);
+    arum_obj.dparams_NablaGstar(nab_mat,n,mu,nullptr,false);
 
     arma::mat nab_mat_2; // mat(0,0)
-    logit_sim.dparams_NablaGstar(nab_mat,n,mu,&nab_mat_2,true);
+    arum_obj.dparams_NablaGstar(nab_mat,n,mu,&nab_mat_2,true);
+
+    // simul
+    
+    trame::arums::empirical logit_sim(nbX,nbY);
+    const int sim_seed = 1777, n_draws = 1000;
+
+    logit_sim = arum_obj.simul();
+    arum_obj.simul(logit_sim);
+    arum_obj.simul(logit_sim, n_draws, sim_seed);
 
     //
-    printf("\n*===================   End of arums::empirical test   ===================*\n");
+    printf("\n*===================   End of arums::none test   ===================*\n");
     printf("\n");
     //
     end = std::chrono::system_clock::now();

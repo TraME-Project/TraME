@@ -53,86 +53,37 @@ int main()
     arma::vec n = arma::sum(mu,1);
     //
     // results
-    printf("\n*===================   Start of arums::empirical test   ===================*\n");
+    printf("\n*===================   Start of arums::probit test   ===================*\n");
     printf("\n");
     arma::cout << "\nU: \n" << U << arma::endl;
     arma::cout << "mu: \n" << mu << arma::endl;
 
     // builds
-    trame::arums::logit logits(nbX,nbY);
 
+    trame::arums::probit arum_obj(nbX,nbY);
+    trame::arums::probit arum_obj2(nbX,nbY,false);
+    trame::arums::probit arum_obj3(nbX,nbY,0.5,true);
+
+    arum_obj.build(nbX,nbY);
+    arum_obj2.build(nbX,nbY,false);
+    arum_obj3.build(nbX,nbY,0.5,false);
+
+    //
+
+    arum_obj.unifCorrelCovMatrices(0.5);
+    arum_obj3.unifCorrelCovMatrices();
+
+    // simul
+    
     trame::arums::empirical logit_sim(nbX,nbY);
     const int sim_seed = 1777, n_draws = 1000;
 
-    logits.simul(logit_sim, n_draws, sim_seed);
-
-    // G
-
-    arma::mat mu_sol;
-    logit_sim.U = U;
-    logit_sim.mu = mu;
-
-    logit_sim.G(n);
-    logit_sim.G(n,U,mu_sol);
-
-    // Gstar
-
-    arma::mat U_sol;
-
-    logit_sim.Gstar(n);
-    logit_sim.Gstar(n,mu,U_sol);
-
-    // logit_sim2.Gstar(n,mu,U_sol); // no outside option case
-
-    // Gbar
-
-    arma::mat mu_bar(2,3);
-    mu_bar.fill(2);
-    
-    arma::mat U_bar_out, mu_bar_out;
-    
-    logit_sim.Gbar(U,mu_bar,n,U_bar_out,mu_bar_out);
-
-    // D2G
-
-    arma::mat H;
-
-    logit_sim.D2G(n,true);
-    logit_sim.D2G(H,n,true);
-    logit_sim.D2G(n,U,true);
-    logit_sim.D2G(H,n,U,true);
-
-    logit_sim.D2G(H,n,false);
-
-    // D2Gstar
-
-    logit_sim.D2Gstar(n,true);
-    logit_sim.D2Gstar(H,n,true);
-    logit_sim.D2Gstar(n,U,true);
-    logit_sim.D2Gstar(H,n,U,true);
-
-    logit_sim.D2Gstar(H,n,false);
-
-    // dparams
-
-    arma::mat nab_mat;
-
-    logit_sim.dparams_NablaGstar(n,nullptr,true);
-    logit_sim.dparams_NablaGstar(nab_mat,n,nullptr,true);
-    logit_sim.dparams_NablaGstar(n,mu,nullptr,true);
-    logit_sim.dparams_NablaGstar(nab_mat,n,mu,nullptr,true);
-
-    logit_sim.dparams_NablaGstar(nab_mat,n,mu,&nab_mat,true);
-    logit_sim.dparams_NablaGstar(nab_mat,n,mu,nullptr,false);
-
-    // logit_sim2.dparams_NablaGstar(nab_mat,n,mu,nullptr,true);
-    // logit_sim2.dparams_NablaGstar(nab_mat,n,mu,nullptr,false);
-
-    arma::mat nab_mat_2; // mat(0,0)
-    logit_sim.dparams_NablaGstar(nab_mat,n,mu,&nab_mat_2,true);
+    logit_sim = arum_obj.simul();
+    arum_obj.simul(logit_sim);
+    arum_obj.simul(logit_sim, n_draws, sim_seed);
 
     //
-    printf("\n*===================   End of arums::empirical test   ===================*\n");
+    printf("\n*===================   End of arums::probit test   ===================*\n");
     printf("\n");
     //
     end = std::chrono::system_clock::now();
