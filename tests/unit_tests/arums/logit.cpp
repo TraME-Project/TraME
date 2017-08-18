@@ -90,6 +90,8 @@ int main()
     mu_test = mu.row(0);
     logits.Gstarx(mu_test,U_sol,1);
 
+    logits2.Gstarx(mu_test,U_sol,1); // no outside option case
+
     // Gbar
 
     arma::mat mu_bar(2,3);
@@ -132,6 +134,9 @@ int main()
 
     logits.dparams_NablaGstar(nab_mat,n,mu,&nab_mat,true);
     logits.dparams_NablaGstar(nab_mat,n,mu,nullptr,false);
+
+    logits2.dparams_NablaGstar(nab_mat,n,mu,nullptr,true);
+    logits2.dparams_NablaGstar(nab_mat,n,mu,nullptr,false);
 
     arma::mat nab_mat_2; // mat(0,0)
     logits.dparams_NablaGstar(nab_mat,n,mu,&nab_mat_2,true);
