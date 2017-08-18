@@ -34,7 +34,7 @@
 
 #include "trame.hpp"
 
-void 
+void
 trame::mmfs::ces::build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const bool need_norm_inp)
 {
     need_norm = need_norm_inp;
@@ -55,7 +55,7 @@ trame::mmfs::ces::build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, 
     aux_gamma_exp = arma::exp(- elem_div(gamma_inp, tau_inp));
 }
 
-void 
+void
 trame::mmfs::ces::trans()
 {
     std::swap(nbX,nbY);
@@ -83,96 +83,96 @@ trame::mmfs::ces::trans()
 //
 // matching function
 
-arma::mat 
+arma::mat
 trame::mmfs::ces::M(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
     return this->M(a_xs,b_ys,nullptr,nullptr);
 }
 
-arma::mat 
+arma::mat
 trame::mmfs::ces::M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
-    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1); 
+    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
     const arma::mat term_1 = arma::exp(aux_alpha(x_ind,y_ind) + elem_prod(kappa(x_ind,y_ind), arma::log(a_xs)));
     const arma::mat term_2 = arma::exp(aux_gamma(x_ind,y_ind) + arma::trans(elem_prod(arma::trans(kappa(x_ind,y_ind)), arma::log(b_ys))));
-
-    arma::mat ret = arma::exp( - tau(x_ind,y_ind) % arma::log((term_1 + term_2)/2) ); 
-    //
-    return ret;
-}
-
-arma::mat 
-trame::mmfs::ces::M(const double a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys)
-const
-{
-    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1); 
-    const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) nbY-1);
-    //
-    const arma::mat term_1 = arma::exp(aux_alpha(x_ind,y_ind) + kappa(x_ind,y_ind) * std::log(a_xs));
-    const arma::mat term_2 = arma::exp(aux_gamma(x_ind,y_ind) + arma::trans(elem_prod(arma::trans(kappa(x_ind,y_ind)), arma::log(b_ys))));
-
-    arma::mat ret = arma::exp( - tau(x_ind,y_ind) % arma::log((term_1 + term_2)/2) ); 
-    //
-    return ret;
-}
-
-arma::mat 
-trame::mmfs::ces::M(const arma::mat& a_xs, const double b_ys, const arma::uvec* xs, const arma::uvec* ys)
-const
-{
-    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1); 
-    const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) nbY-1);
-    //
-    const arma::mat term_1 = arma::exp(aux_alpha(x_ind,y_ind) + elem_prod(kappa(x_ind,y_ind), arma::log(a_xs)));
-    const arma::mat term_2 = arma::exp(aux_gamma(x_ind,y_ind) + kappa(x_ind,y_ind) * std::log(b_ys));
 
     arma::mat ret = arma::exp( - tau(x_ind,y_ind) % arma::log((term_1 + term_2)/2) );
     //
     return ret;
 }
 
+arma::mat
+trame::mmfs::ces::M(const double a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys)
+const
+{
+    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
+    const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) nbY-1);
+    //
+    const arma::mat term_1 = arma::exp(aux_alpha(x_ind,y_ind) + kappa(x_ind,y_ind) * std::log(a_xs));
+    const arma::mat term_2 = arma::exp(aux_gamma(x_ind,y_ind) + arma::trans(elem_prod(arma::trans(kappa(x_ind,y_ind)), arma::log(b_ys))));
+
+    arma::mat ret = arma::exp( - tau(x_ind,y_ind) % arma::log((term_1 + term_2)/2) );
+    //
+    return ret;
+}
+
+arma::mat
+trame::mmfs::ces::M(const arma::mat& a_xs, const double b_ys, const arma::uvec* xs, const arma::uvec* ys)
+const
+{
+    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
+    const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) nbY-1);
+    //
+    const arma::mat term_1 = arma::exp(aux_alpha(x_ind,y_ind) + elem_prod(kappa(x_ind,y_ind), arma::log(a_xs)));
+    const arma::mat term_2 = arma::exp(aux_gamma(x_ind,y_ind) + kappa(x_ind,y_ind) * std::log(b_ys));
+
+    arma::mat ret = arma::exp( - tau(x_ind,y_ind) % arma::log((term_1 + term_2)/2.0) );
+    //
+    return ret;
+}
+
 //
 
-arma::mat 
+arma::mat
 trame::mmfs::ces::dmu_x0(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
     const arma::mat term_1 = arma::exp(aux_alpha + elem_prod(kappa, arma::log(a_xs)));
     const arma::mat term_2 = arma::exp(aux_gamma + arma::trans(elem_prod(arma::trans(kappa), arma::log(b_ys))));
 
-    const arma::mat mu_s = arma::exp( - tau % arma::log((term_1 + term_2)/2) ); 
+    const arma::mat mu_s = arma::exp( - tau % arma::log((term_1 + term_2)/2) );
 
-    arma::mat ret = aux_alpha_exp % arma::exp( elem_prod(1 - kappa, arma::log(mu_s / a_xs)) ) / 2.0;
+    arma::mat ret = aux_alpha_exp % arma::exp( elem_prod(1 - kappa, arma::log(elem_div(mu_s, a_xs))) ) / 2.0;
     //
     return ret;
 }
 
-arma::mat 
+arma::mat
 trame::mmfs::ces::dmu_0y(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
     const arma::mat term_1 = arma::exp(aux_alpha + elem_prod(kappa, arma::log(a_xs)));
     const arma::mat term_2 = arma::exp(aux_gamma + arma::trans(elem_prod(arma::trans(kappa), arma::log(b_ys))));
 
-    const arma::mat mu_s = arma::exp( - tau % arma::log((term_1 + term_2)/2) ); 
+    const arma::mat mu_s = arma::exp( - tau % arma::log((term_1 + term_2)/2.0) );
 
-    arma::mat ret = aux_gamma_exp % arma::trans(arma::exp( elem_prod(arma::trans(1 - kappa), arma::log(arma::trans(mu_s) / a_xs)) )) / 2.0;
+    arma::mat ret = aux_gamma_exp % arma::trans(arma::exp( elem_prod(arma::trans(1 - kappa), arma::log(elem_div(mu_s.t(), a_xs))) )) / 2.0;
     //
     return ret;
 }
 
-arma::mat 
+arma::mat
 trame::mmfs::ces::dparams_M(const arma::mat& a_xs, const arma::mat& b_ys)
 const
 {
     return this->dparams_M(a_xs,b_ys,nullptr);
 }
 
-arma::mat 
+arma::mat
 trame::mmfs::ces::dparams_M(const arma::mat& a_xs, const arma::mat& b_ys, const arma::mat* delta_params_M)
 const
 {
@@ -182,10 +182,10 @@ const
     const arma::mat term_1 = aux_alpha_exp % a_xs_kappa;
     const arma::mat term_2 = aux_gamma_exp % b_ys_kappa;
 
-    const arma::mat mu_s = arma::exp( - tau % arma::log((term_1 + term_2)/2) );\
+    const arma::mat mu_s = arma::exp( - tau % arma::log((term_1 + term_2)/2) );
     const arma::mat mu_s_kappa = arma::exp(elem_prod(1 - kappa, arma::log(mu_s)));
 
-    const arma::mat numer = (mu_s / kappa) % ( term_1 % arma::log(a_xs) + aux_gamma_exp % arma::trans(arma::log(b_ys)) % b_ys_kappa - arma::log(mu_s) );
+    const arma::mat numer = elem_div(mu_s, kappa) % ( term_1 % arma::log(a_xs) + aux_gamma_exp % arma::trans(arma::log(b_ys)) % b_ys_kappa - arma::log(mu_s) );
     const arma::mat denom = term_1 + term_2;
 
     const arma::mat der_1 = mu_s_kappa % a_xs_kappa / 2.0;
@@ -207,14 +207,14 @@ const
     return ret;
 }
 
-arma::mat 
+arma::mat
 trame::mmfs::ces::Mx0(const arma::mat& a_x)
 const
 {
     return a_x;
 }
 
-arma::mat 
+arma::mat
 trame::mmfs::ces::M0y(const arma::mat& b_y)
 const
 {
