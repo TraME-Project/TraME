@@ -47,5 +47,6 @@ make
 
 cd $TESTS_WDIR/..
 rm -rf ./include/armadillo*
-rm -rf ./include/optim*
+rm -rf ./include/optim
+rm -rf ./src/optim
 cd $TESTS_WDIR
