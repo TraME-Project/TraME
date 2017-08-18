@@ -28,7 +28,7 @@
  * 08/15/2016
  *
  * This version:
- * 07/25/2017
+ * 08/18/2017
  */
 
 #ifndef _trame_transfers_tu_HPP
@@ -63,6 +63,7 @@ class tu
 
         //
         // DSE-related functions
+
         arma::mat Psi(const arma::mat& U, const arma::mat& V) const;
         arma::mat Psi(const arma::mat& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;
         arma::mat Psi(const double U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;
@@ -74,7 +75,7 @@ class tu
         arma::mat du_Psi(const double U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;
         arma::mat du_Psi(const arma::mat& U, const double V, const arma::uvec* xs, const arma::uvec* ys) const;
 
-        arma::mat dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dparams) const;
+        arma::mat dparams_Psi(const arma::mat& U, const arma::mat& V) const;
         arma::mat dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dparams) const;
 
         arma::mat Ucal(const arma::mat& vs) const;

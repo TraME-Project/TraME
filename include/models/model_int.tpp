@@ -244,7 +244,7 @@ model_dmu(dse<Tg,Th,Tt>& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_
     arma::mat HessHstar = market_obj.arums_H.D2Gstar(market_obj.m,mu.t(),false);
     //
     arma::mat denom = elem_prod(du_Psi_vec,HessGstar) + elem_prod(dv_Psi_vec,HessHstar);
-    arma::mat term_1 = market_obj.trans_obj.dparams_Psi(U,V,dtheta_Psi);
+    arma::mat term_1 = market_obj.trans_obj.dparams_Psi(U,V,&dtheta_Psi);
 
     arma::mat dmu = - arma::solve(denom,term_1);
     //

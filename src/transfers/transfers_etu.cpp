@@ -200,10 +200,10 @@ const
 }
 
 arma::mat 
-trame::transfers::etu::dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat& dparams)
+trame::transfers::etu::dparams_Psi(const arma::mat& U, const arma::mat& V)
 const
 {
-    return this->dparams_Psi(U,V,&dparams);
+    return this->dparams_Psi(U,V,nullptr);
 }
 
 arma::mat 

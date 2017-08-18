@@ -38,7 +38,7 @@ int main()
     std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
     //
-    // setip:
+    // setup:
 
     int nbX = 10;
     int nbY = 8;
@@ -52,7 +52,7 @@ int main()
     arma::mat V = arma::randu(nbX,nbY);
     //
     // results
-    printf("\n*===================   Start of mmfs::geo Test   ===================*\n");
+    printf("\n*===================   Start of transfers::tu Test   ===================*\n");
     printf("\n");
     //
 
@@ -62,6 +62,8 @@ int main()
 
     arma::uvec xs(1); xs(0) = 1;
     arma::uvec ys(1); ys(0) = 2;
+
+    // Psi
 
     trans_obj.Psi(U,V);
 
@@ -74,25 +76,64 @@ int main()
     trans_obj.Psi(U(xs,ys),V_xy,&xs,&ys);
     trans_obj.Psi(U_xy,V_xy,xs(0),ys(0));
 
+    // du
+
     trans_obj.du_Psi(U,V);
 
     trans_obj.du_Psi(U,V,nullptr,nullptr);
     trans_obj.du_Psi(U(xs,ys),V(xs,ys),&xs,&ys);
 
-    // trans_obj.dmu_x0(n,m);
-    // trans_obj.dmu_0y(n,m);
+    // dparams_Psi
 
-    // trans_obj.dparams_M(n,m);
-    // arma::mat delta_params_M = phi;
-    // trans_obj.dparams_M(n,m,&delta_params_M);
+    trans_obj.dparams_Psi(U,V);
+    arma::mat dpars = arma::eye(nbX*nbY,nbX*nbY);
+    trans_obj.dparams_Psi(U,V,&dpars);
 
-    // trans_obj.Psix0(n);
-    // trans_obj.Psi0y(m);
+    // Ucal and Vcal
 
-    // trans_obj.trans();
+    trans_obj.Ucal(U);
+    trans_obj.Ucal(U(xs,ys),&xs,&ys);
+    trans_obj.Ucal(U_xy,1,2);
+
+    trans_obj.Vcal(U);
+    trans_obj.Vcal(U(xs,ys),&xs,&ys);
+    trans_obj.Vcal(U_xy,1,2);
+
+    // UW and VW
+
+    trans_obj.UW(U);
+    trans_obj.UW(U(xs,ys),&xs,&ys);
+    trans_obj.UW(U_xy,1,2);
+
+    trans_obj.VW(U);
+    trans_obj.VW(U(xs,ys),&xs,&ys);
+    trans_obj.VW(U_xy,1,2);
+
+    // dw
+
+    trans_obj.dw_UW(U);
+    trans_obj.dw_UW(U(xs,ys),&xs,&ys);
+
+    trans_obj.dw_VW(U);
+    trans_obj.dw_VW(U(xs,ys),&xs,&ys);
+
+    // WU and WV
+
+    trans_obj.WU(U);
+    trans_obj.WU(U(xs,ys),&xs,&ys);
+
+    trans_obj.WV(U);
+    trans_obj.WV(U(xs,ys),&xs,&ys);
+
+    // generate MMF object
+
+    trame::mmfs::geo mmf_obj = trans_obj.gen_mmf();
+    trans_obj.gen_mmf(mmf_obj);
+
+    trans_obj.trans();
 
     //
-    printf("\n*===================    End of mmfs::geo Test    ===================*\n");
+    printf("\n*===================    End of transfers::tu Test    ===================*\n");
     printf("\n");
     //
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
