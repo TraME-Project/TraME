@@ -79,7 +79,7 @@ int main()
 
     std::cout << "cd check 4" << std::endl;
     mmf_obj.dparams_M(n,m);
-    arma::mat delta_params_M = arma::join_cols(lambda,phi);
+    arma::mat delta_params_M = arma::vectorise(arma::join_cols(lambda,phi));
     std::cout << "cd check 5" << std::endl;
     mmf_obj.dparams_M(n,m,&delta_params_M);
 
