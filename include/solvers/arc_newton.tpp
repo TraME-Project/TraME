@@ -44,7 +44,7 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
     opt_data.market = market;
 
     arma::vec sol_vec = arma::vectorise(w_upper_bound(market)); // get initial values
-    
+
     success = arc_newton_optim(sol_vec,arc_newton_opt_objfn<Tg,Th,Tt>,&opt_data,arc_newton_jacobian<Tg,Th,Tt>,&opt_data);
 
     //
@@ -75,7 +75,7 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
         *U_out = U;
     }
     if (V_out) {
-        *V_out = market.trans_obj.VW(sol_vec);
+        *V_out = market.trans_obj.VW(sol_mat);
     }
 
     /*if (val_out) {
@@ -86,7 +86,7 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
 }
 
 //
-// wrappers 
+// wrappers
 
 template<typename Tg, typename Th, typename Tt>
 bool
@@ -134,14 +134,14 @@ arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out,
 // optimization functions
 
 inline
-bool 
+bool
 arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data)
 {
     return optim::broyden_df(init_out_vals,opt_objfn,opt_data);
 }
 
 inline
-bool 
+bool
 arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
                              std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data)
 {
