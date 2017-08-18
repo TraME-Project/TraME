@@ -35,6 +35,11 @@ cd mmfs
 make
 ./cov_check
 
+cd ../transfers
+./configure -b dev -c
+make
+./cov_check
+
 cd $TESTS_WDIR/..
 rm -rf ./include/armadillo*
 cd $TESTS_WDIR
