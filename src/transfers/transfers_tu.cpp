@@ -178,7 +178,7 @@ arma::mat
 trame::transfers::tu::dparams_Psi(const arma::mat& U, const arma::mat& V, const arma::mat* dparams)
 const
 {
-    arma::mat ret(nbX,nbY);
+    arma::mat ret;
     //
     if (!dparams) {
         ret = - 0.5*arma::eye(nbX*nbY,nbX*nbY);
