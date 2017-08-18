@@ -30,7 +30,12 @@ make
 # unit tests
 cd $TESTS_WDIR/unit_tests
 
-cd mmfs
+cd arums
+./configure -b dev -c
+make
+./cov_check
+
+cd ../mmfs
 ./configure -b dev -c
 make
 ./cov_check
