@@ -162,8 +162,8 @@ const
     arma::mat check_mat = arma::zeros(term_1.n_rows,term_1.n_cols);
     check_mat.elem(arma::find(term_1 <= term_2)).ones();
 
-    const arma::mat der_1 = a_xs % check_mat;
-    const arma::mat der_2 = arma::trans(a_xs % arma::trans(1 - check_mat));
+    const arma::mat der_1 = elem_prod(a_xs, check_mat);
+    const arma::mat der_2 = arma::trans(elem_prod(b_ys, arma::trans(1 - check_mat)));
 
     arma::mat ret;
 

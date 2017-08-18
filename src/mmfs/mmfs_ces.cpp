@@ -160,7 +160,7 @@ const
 
     const arma::mat mu_s = arma::exp( - tau % arma::log((term_1 + term_2)/2.0) );
 
-    arma::mat ret = aux_gamma_exp % arma::trans(arma::exp( elem_prod(arma::trans(1 - kappa), arma::log(elem_div(mu_s.t(), a_xs))) )) / 2.0;
+    arma::mat ret = aux_gamma_exp % arma::trans(arma::exp( elem_prod(arma::trans(1 - kappa), arma::log(elem_div(mu_s.t(), b_ys))) )) / 2.0;
     //
     return ret;
 }
@@ -185,7 +185,7 @@ const
     const arma::mat mu_s = arma::exp( - tau % arma::log((term_1 + term_2)/2) );
     const arma::mat mu_s_kappa = arma::exp(elem_prod(1 - kappa, arma::log(mu_s)));
 
-    const arma::mat numer = elem_div(mu_s, kappa) % ( term_1 % arma::log(a_xs) + aux_gamma_exp % arma::trans(arma::log(b_ys)) % b_ys_kappa - arma::log(mu_s) );
+    const arma::mat numer = elem_div(mu_s, kappa) % ( elem_prod(term_1, arma::log(a_xs)) + elem_prod(aux_gamma_exp, arma::trans(arma::log(b_ys))) % b_ys_kappa - arma::log(mu_s) );
     const arma::mat denom = term_1 + term_2;
 
     const arma::mat der_1 = mu_s_kappa % a_xs_kappa / 2.0;
