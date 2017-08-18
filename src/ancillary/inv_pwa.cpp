@@ -32,7 +32,7 @@
  *   07/26/17, Keith O'Hara
  */
 
-#include "trame.hpp"
+#include "ancillary/ancillary.hpp"
 
 arma::vec 
 trame::inv_pwa(const arma::vec& a, const arma::mat& B, const arma::mat& C, const double k)

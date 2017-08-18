@@ -28,7 +28,7 @@
  * 08/08/2016
  */
 
-#include "trame.hpp"
+#include "ancillary/ancillary.hpp"
 
 extern "C" {
     void beta_cdf_(double* x, double* p, double* q, double* result);

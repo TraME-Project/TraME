@@ -21,17 +21,17 @@
   ##
   ################################################################################*/
 
-#ifndef TRAMELIB_INCL
-#define TRAMELIB_INCL
+#ifndef TRAMELIB_TRANS_INCL
+#define TRAMELIB_TRANS_INCL
 
-#include "ancillary/ancillary.hpp"
-
-#include "arums/arums.hpp"
-#include "mmfs/mmfs.hpp"
-#include "transfers/transfers.hpp"
-
-#include "markets/markets.hpp"
-#include "solvers/solvers.hpp"
-#include "models/models.hpp"
+namespace trame
+{
+    namespace transfers {
+        #include "transfers/transfers_etu.hpp"
+        #include "transfers/transfers_ltu.hpp"
+        #include "transfers/transfers_ntu.hpp"
+        #include "transfers/transfers_tu.hpp"
+    }
+}
 
 #endif

@@ -31,7 +31,14 @@
  * 07/26/2016
  */
 
-#include "trame.hpp"
+#include "ancillary/ancillary.hpp"
+
+#include "arums/arums.hpp"
+#include "mmfs/mmfs.hpp"
+#include "transfers/transfers.hpp"
+
+#include "markets/markets.hpp"
+#include "solvers/solvers.hpp"
 
 /*
  * build disaggregate epsilon function; used in cupids_lp

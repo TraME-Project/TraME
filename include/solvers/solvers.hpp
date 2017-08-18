@@ -21,17 +21,24 @@
   ##
   ################################################################################*/
 
-#ifndef TRAMELIB_INCL
-#define TRAMELIB_INCL
+#ifndef TRAMELIB_SLVRS_INCL
+#define TRAMELIB_SLVRS_INCL
 
-#include "ancillary/ancillary.hpp"
+namespace trame
+{
+    #include "solvers/aux_solvers.hpp"
+    
+    #include "solvers/arc_newton.hpp"
+    #include "solvers/cupids_lp.hpp"
+    #include "solvers/darum.hpp"
+    #include "solvers/eap_nash.hpp"
+    #include "solvers/ipfp.hpp"
+    #include "solvers/jacobi.hpp"
+    #include "solvers/max_welfare.hpp"
+    #include "solvers/nodal_newton.hpp"
+    #include "solvers/oap_lp.hpp"
 
-#include "arums/arums.hpp"
-#include "mmfs/mmfs.hpp"
-#include "transfers/transfers.hpp"
-
-#include "markets/markets.hpp"
-#include "solvers/solvers.hpp"
-#include "models/models.hpp"
+    #include "solvers/equil_solve.hpp"
+}
 
 #endif

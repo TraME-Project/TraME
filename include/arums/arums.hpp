@@ -21,17 +21,19 @@
   ##
   ################################################################################*/
 
-#ifndef TRAMELIB_INCL
-#define TRAMELIB_INCL
+#ifndef TRAMELIB_ARUMS_INCL
+#define TRAMELIB_ARUMS_INCL
 
-#include "ancillary/ancillary.hpp"
-
-#include "arums/arums.hpp"
-#include "mmfs/mmfs.hpp"
-#include "transfers/transfers.hpp"
-
-#include "markets/markets.hpp"
-#include "solvers/solvers.hpp"
-#include "models/models.hpp"
+namespace trame
+{
+    namespace arums {
+        #include "arums/arums_empirical.hpp"
+        #include "arums/arums_logit.hpp"
+        #include "arums/arums_none.hpp"
+        #include "arums/arums_probit.hpp"
+        #include "arums/arums_rsc.hpp"
+        #include "arums/arums_rusc.hpp"
+    }
+}
 
 #endif

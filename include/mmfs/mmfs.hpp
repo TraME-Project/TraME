@@ -21,17 +21,17 @@
   ##
   ################################################################################*/
 
-#ifndef TRAMELIB_INCL
-#define TRAMELIB_INCL
+#ifndef TRAMELIB_MMFS_INCL
+#define TRAMELIB_MMFS_INCL
 
-#include "ancillary/ancillary.hpp"
-
-#include "arums/arums.hpp"
-#include "mmfs/mmfs.hpp"
-#include "transfers/transfers.hpp"
-
-#include "markets/markets.hpp"
-#include "solvers/solvers.hpp"
-#include "models/models.hpp"
+namespace trame
+{
+    namespace mmfs {
+        #include "mmfs/mmfs_ces.hpp"
+        #include "mmfs/mmfs_cd.hpp"
+        #include "mmfs/mmfs_min.hpp"
+        #include "mmfs/mmfs_geo.hpp"
+    }
+}
 
 #endif

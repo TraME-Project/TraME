@@ -31,7 +31,9 @@
  * 07/25/2017
  */
 
-#include "trame.hpp"
+#include "ancillary/ancillary.hpp"
+#include "mmfs/mmfs.hpp"
+#include "transfers/transfers.hpp"
 
 void
 trame::transfers::ntu::build(const arma::mat& alpha_inp, const arma::mat& gamma_inp, const bool need_norm_inp)

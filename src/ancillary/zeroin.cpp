@@ -31,7 +31,7 @@
  * 07/17/2017
  */
 
-#include "trame.hpp"
+#include "ancillary/ancillary.hpp"
 
 double 
 trame::zeroin(const double ax, const double bx, std::function<double (const double val_inp, void* opt_data)> zero_objfn, void* opt_data, const double* tol_inp, const int* max_iter_inp)

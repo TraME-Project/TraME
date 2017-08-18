@@ -21,17 +21,21 @@
   ##
   ################################################################################*/
 
-#ifndef TRAMELIB_INCL
-#define TRAMELIB_INCL
+#ifndef TRAMELIB_ANC_INCL
+#define TRAMELIB_ANC_INCL
 
-#include "ancillary/ancillary.hpp"
+#include "misc/trame_options.hpp"
+#include "optim/optim.hpp"
 
-#include "arums/arums.hpp"
-#include "mmfs/mmfs.hpp"
-#include "transfers/transfers.hpp"
+namespace trame
+{
+    #include "ancillary/trame_aux.hpp"
+    #include "ancillary/trame_stats.hpp"
 
-#include "markets/markets.hpp"
-#include "solvers/solvers.hpp"
-#include "models/models.hpp"
+    #include "ancillary/inv_pwa.hpp"
+    #include "ancillary/zeroin.hpp"
+
+    #include "lp/generic_lp.hpp"
+}
 
 #endif
