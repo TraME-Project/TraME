@@ -56,7 +56,7 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
 
     int iter = 0;
     double err = 2*err_tol;
-    
+
     while (err > err_tol && iter < max_iter) {
         iter++;
 
@@ -77,7 +77,7 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
 
     //
     // Construct the equilibrium outcome based on 'ax' and 'by' obtained above
-    
+
     if (mu_out || mu_x0_out || mu_0y_out || U_out || V_out || u_out || v_out) {
 
         arma::mat mu = market.mmfs_obj.M(ax,by);
@@ -96,7 +96,7 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
             if (mu_0y_out) {
                 *mu_0y_out = mu_0y;
             }
-            
+
             if (U_out) {
                 //*U_out = arma::log(mu / arma::repmat(mu_x0,1,mu.n_cols));
                 *U_out = arma::log(elem_div(mu,mu_x0));
@@ -106,7 +106,7 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
                 *V_out = arma::trans(arma::log(elem_div(mu.t(),mu_0y)));
             }
 
-            if (u_out) { 
+            if (u_out) {
                 *u_out = - arma::log(mu_x0);
             }
             if (u_out) {
@@ -154,20 +154,6 @@ bool
 ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp)
 {
     return ipfp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,&max_iter_inp,nullptr);
-}
-
-template<typename Tt>
-bool
-ipfp(const mfe<Tt>& market, arma::mat& mu_out, const double err_tol_inp, const arma::vec& by_start)
-{
-    return ipfp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,nullptr,&by_start);
-}
-
-template<typename Tt>
-bool
-ipfp(const mfe<Tt>& market, arma::mat& mu_out, const int max_iter_inp, const arma::vec& by_start)
-{
-    return ipfp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp,&by_start);
 }
 
 template<typename Tt>

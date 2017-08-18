@@ -29,7 +29,7 @@
  * 08/15/2016
  *
  * This version:
- * 07/24/2017
+ * 08/18/2017
  */
 
 #include "ancillary/ancillary.hpp"

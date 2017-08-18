@@ -22,10 +22,10 @@
   ################################################################################*/
 
 /*
- * logit class test
+ * ipfp test
  *
  * Keith O'Hara
- * 05/17/2016
+ * 10/24/2016
  *
  * This version:
  * 08/18/2017
@@ -37,55 +37,56 @@ int main()
 {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
+
     //
     // inputs:
-    arma::mat U(2,3);
-    U  << 1.6 << 3.2 << 1.1 << arma::endr
-       << 2.9 << 1.0 << 3.1 << arma::endr;
-    
-    arma::mat mu(2,3);
-    mu << 1.0 << 3.0 << 1.0 << arma::endr
-       << 2.0 << 1.0 << 3.0 << arma::endr;
 
-    const int nbX = U.n_rows;
-    const int nbY = U.n_cols;
-    
-    arma::vec n = arma::sum(mu,1);
+    int nbX = 18;
+    int nbY = 5;
+    double sigma = 1;
+
+    arma::vec n = arma::ones(nbX,1);
+    arma::vec m = arma::ones(nbY,1);
+
+    arma::mat phi = arma::randu(nbX,nbY);
+
     //
     // results
-    printf("\n*===================   Start of arums::probit test   ===================*\n");
+
+    printf("\n*===================   Start of ipfp Test   ===================*\n");
     printf("\n");
-    arma::cout << "\nU: \n" << U << arma::endl;
-    arma::cout << "mu: \n" << mu << arma::endl;
-
-    // builds
-
-    trame::arums::probit arum_obj(nbX,nbY);
-    trame::arums::probit arum_obj2(nbX,nbY,false);
-    trame::arums::probit arum_obj3(nbX,nbY,0.5,true);
-
-    arum_obj.build(nbX,nbY);
-    arum_obj2.build(nbX,nbY,false);
-    arum_obj3.build(nbX,nbY,0.5,false);
-
-    //
-
-    arum_obj.unifCorrelCovMatrices(0.5);
-    arum_obj3.unifCorrelCovMatrices();
-
-    // simul
     
-    trame::arums::empirical logit_sim(nbX,nbY);
-    const int sim_seed = 1777, n_draws = 1000;
+    //
+    // build
 
-    logit_sim = arum_obj.simul();
-    arum_obj.simul(logit_sim);
-    arum_obj.simul(logit_sim, n_draws, sim_seed);
+    trame::mfe<trame::mmfs::geo> mfe_obj_TU(sigma,false);
+    mfe_obj_TU.build(n,m,phi);
+
+    // ipfp
+
+    double tol = 1E-06;
+    int max_iter = 5000;
+
+    arma::mat mu_TU;
+    trame::ipfp(mfe_obj_TU,mu_TU);
+
+    trame::ipfp(mfe_obj_TU,mu_TU,tol);
+    trame::ipfp(mfe_obj_TU,mu_TU,max_iter);
+    trame::ipfp(mfe_obj_TU,mu_TU,tol,max_iter);
+
+    trame::ipfp(mfe_obj_TU,mu_TU,tol,max_iter,mfe_obj_TU.m);
+
+    arma::mat U_out, V_out;
+    trame::ipfp(mfe_obj_TU,mu_TU,U_out,V_out);
+
+    arma::vec mu_x0_out, mu_0y_out, u_out, v_out;
+    trame::ipfp(mfe_obj_TU,mu_TU,mu_x0_out,mu_0y_out,U_out,V_out,u_out,v_out,&tol,&max_iter,&mfe_obj_TU.m);
 
     //
-    printf("\n*===================   End of arums::probit test   ===================*\n");
+    printf("\n*===================    End of ipfp Test    ===================*\n");
     printf("\n");
     //
+
     end = std::chrono::system_clock::now();
         
     std::chrono::duration<double> elapsed_seconds = end-start;

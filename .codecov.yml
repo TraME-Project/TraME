@@ -14,8 +14,6 @@ coverage:
   
   ignore:
     - "src/optim/"
-    - "src/lp"
-    - "src/lp/*"
 
 parsers:
   gcov:
