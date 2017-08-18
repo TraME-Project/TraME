@@ -53,7 +53,7 @@ int main()
     arma::vec n = arma::sum(mu,1);
     //
     // results
-    printf("\n*===================   Start of arums::logit Test   ===================*\n");
+    printf("\n*===================   Start of arums::logit test   ===================*\n");
     printf("\n");
     arma::cout << "\nU: \n" << U << arma::endl;
     arma::cout << "mu: \n" << mu << arma::endl;
@@ -61,7 +61,7 @@ int main()
     // builds
 
     trame::arums::logit logits(nbX,nbY);
-    trame::arums::logit logits2(nbX,nbY,1.0,true);
+    trame::arums::logit logits2(nbX,nbY,1.0,false);
 
     logits.build(nbX,nbY);
     logits.build(nbX,nbY,1.0,true);
@@ -82,6 +82,14 @@ int main()
     logits.Gstar(n);
     logits.Gstar(n,mu,U_sol);
 
+    logits2.Gstar(n,mu,U_sol); // no outside option case
+
+    arma::mat mu_test = mu;
+
+    logits.Gstarx(mu_test,U_sol,1);
+    mu_test = mu.row(0);
+    logits.Gstarx(mu_test,U_sol,1);
+
     // Gbar
 
     arma::mat mu_bar(2,3);
@@ -90,6 +98,8 @@ int main()
     arma::mat U_bar_out, mu_bar_out;
     
     logits.Gbar(U,mu_bar,n,U_bar_out,mu_bar_out);
+
+    logits.Gbarx(U.col(0),mu_bar.col(0),U_bar_out,mu_bar_out,1);
 
     // D2G
 
@@ -100,12 +110,16 @@ int main()
     logits.D2G(n,U,true);
     logits.D2G(H,n,U,true);
 
+    logits.D2G(H,n,false);
+
     // D2Gstar
 
     logits.D2Gstar(n,true);
     logits.D2Gstar(H,n,true);
     logits.D2Gstar(n,U,true);
     logits.D2Gstar(H,n,U,true);
+
+    logits.D2Gstar(H,n,false);
 
     // dparams
 
@@ -117,15 +131,24 @@ int main()
     logits.dparams_NablaGstar(nab_mat,n,mu,nullptr,true);
 
     logits.dparams_NablaGstar(nab_mat,n,mu,&nab_mat,true);
+    logits.dparams_NablaGstar(nab_mat,n,mu,nullptr,false);
+
+    arma::mat nab_mat_2; // mat(0,0)
+    logits.dparams_NablaGstar(nab_mat,n,mu,&nab_mat_2,true);
 
     // simul
     
     trame::arums::empirical logit_sim(nbX,nbY);
     const int sim_seed = 1777, n_draws = 1000;
+
+    logit_sim = logits.simul();
+    logits.simul(logit_sim);
     logits.simul(logit_sim, n_draws, sim_seed);
 
+    logits2.simul(logit_sim);
+
     //
-    printf("\n*===================   end of arums::logit test   ===================*\n");
+    printf("\n*===================   End of arums::logit test   ===================*\n");
     printf("\n");
     //
     end = std::chrono::system_clock::now();
