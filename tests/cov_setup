@@ -49,4 +49,6 @@ cd $TESTS_WDIR/..
 rm -rf ./include/armadillo*
 rm -rf ./include/optim
 rm -rf ./src/optim
+rm -rf ./src/math
+rm -rf ./src/prob
 cd $TESTS_WDIR
