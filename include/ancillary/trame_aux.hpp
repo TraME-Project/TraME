@@ -38,6 +38,8 @@ arma::uvec which_max(const arma::mat& X, const int which_dim);
 arma::vec unit_vec(const int j, const int n);
 arma::uvec uvec_linspace(const int a, const int b);
 
+arma::mat byrow(const arma::mat& X, const int n_rows, const int n_cols);
+
 arma::mat elem_add(const arma::mat& mat_1, const arma::mat& mat_2);
 arma::mat elem_sub(const arma::mat& mat_1, const arma::mat& mat_2);
 arma::mat elem_prod(const arma::mat& mat_1, const arma::mat& mat_2);

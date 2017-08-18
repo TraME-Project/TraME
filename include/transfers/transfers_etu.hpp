@@ -28,7 +28,7 @@
  * 08/15/2016
  *
  * This version:
- * 07/25/2017
+ * 08/18/2017
  */
 
 #ifndef _trame_transfers_etu_HPP
@@ -72,6 +72,7 @@ class etu
 
         //
         // DSE-related functions
+
         arma::mat Psi(const arma::mat& U, const arma::mat& V) const;
         arma::mat Psi(const arma::mat& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;
         arma::mat Psi(const double U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys) const;

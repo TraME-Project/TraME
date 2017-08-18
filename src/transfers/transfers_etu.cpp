@@ -95,6 +95,9 @@ const
 
 //
 // DSE-related functions
+//
+
+//
 // Implicit Parameterization
 
 arma::mat 
@@ -153,7 +156,6 @@ const
     return tau(x_ind,y_ind) * std::log(0.5 * (term_1 + term_2));
 }
 
-//
 // Derivative of Psi wrt u
 
 arma::mat
@@ -170,7 +172,7 @@ const
     const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat ret = 1 / (1 + arma::exp((V - U + alpha(x_ind,y_ind) - gamma(x_ind,y_ind))/tau(x_ind,y_ind)));
+    arma::mat ret = 1.0 / (1.0 + arma::exp((V - U + alpha(x_ind,y_ind) - gamma(x_ind,y_ind))/tau(x_ind,y_ind)));
     //
     return ret;
 }
@@ -182,7 +184,7 @@ const
     const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat ret =  1 / (1 + arma::exp((V - U + alpha(x_ind,y_ind) - gamma(x_ind,y_ind))/tau(x_ind,y_ind)));
+    arma::mat ret =  1.0 / (1.0 + arma::exp((V - U + alpha(x_ind,y_ind) - gamma(x_ind,y_ind))/tau(x_ind,y_ind)));
     //
     return ret;
 }
@@ -194,10 +196,12 @@ const
     const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    arma::mat ret =  1 / (1 + arma::exp((V - U + alpha(x_ind,y_ind) - gamma(x_ind,y_ind))/tau(x_ind,y_ind)));
+    arma::mat ret =  1.0 / (1.0 + arma::exp((V - U + alpha(x_ind,y_ind) - gamma(x_ind,y_ind))/tau(x_ind,y_ind)));
     //
     return ret;
 }
+
+// dparams
 
 arma::mat 
 trame::transfers::etu::dparams_Psi(const arma::mat& U, const arma::mat& V)
@@ -233,7 +237,7 @@ const
 
         if (min_check!=0) {
             const arma::mat term_1 = (U - alpha) % du_psi_mat;
-            const arma::mat term_2 = (V - gamma) % (1 - du_psi_mat);
+            const arma::mat term_2 = (V - gamma) % (1.0 - du_psi_mat);
 
             const arma::mat dsigma_psi_mat = (Psi(U,V,nullptr,nullptr) - term_1 - term_2)/tau;
 
@@ -249,6 +253,8 @@ const
 //
 // Explicit Parameterization
 
+// Ucal and Vcal
+
 arma::mat 
 trame::transfers::etu::Ucal(const arma::mat& vs)
 const
@@ -263,8 +269,8 @@ const
     const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, nbX-1);
     const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
-    const arma::mat term_1 = vs - gamma(x_ind,y_ind);
-    const arma::mat term_log = 2 - arma::exp(elem_div(term_1,tau(x_ind,y_ind)));
+    const arma::mat term_1 = byrow(vs,x_ind.n_elem,y_ind.n_elem) - gamma(x_ind,y_ind);
+    const arma::mat term_log = 2.0 - arma::exp(elem_div(term_1,tau(x_ind,y_ind)));
 
     arma::mat ret = alpha(x_ind,y_ind) + elem_prod(tau(x_ind,y_ind), arma::log(term_log));
     //
@@ -276,7 +282,7 @@ trame::transfers::etu::Ucal(const double vs, const int xs, const int ys)
 const
 {
     const double term_1 = vs - gamma(xs,ys);
-    const double term_log = 2 - std::exp(term_1/tau(xs,ys));
+    const double term_log = 2.0 - std::exp(term_1/tau(xs,ys));
 
     return alpha(xs,ys) + tau(xs,ys) * std::log(term_log);
 }
@@ -296,7 +302,7 @@ const
     const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, nbY-1);
     //
     const arma::mat term_1 = us - alpha(x_ind,y_ind);
-    const arma::mat term_log = 2 - arma::exp(elem_div(term_1,tau(x_ind,y_ind)));
+    const arma::mat term_log = 2.0 - arma::exp(elem_div(term_1,tau(x_ind,y_ind)));
 
     arma::mat ret = gamma(x_ind,y_ind) + elem_prod(tau(x_ind,y_ind), arma::log(term_log));
     //
@@ -308,10 +314,12 @@ trame::transfers::etu::Vcal(const double us, const int xs, const int ys)
 const
 {
     const double term_1 = us - alpha(xs,ys);
-    const double term_log = 2 - std::exp(term_1/tau(xs,ys));
+    const double term_log = 2.0 - std::exp(term_1/tau(xs,ys));
 
     return gamma(xs,ys) + tau(xs,ys) * std::log(term_log);
 }
+
+// UW and VW
 
 arma::mat 
 trame::transfers::etu::UW(const arma::mat& Ws)
@@ -361,6 +369,8 @@ const
     return - Psi(Ws,(double) 0.0,x_ind,y_ind);
 }
 
+// dw
+
 arma::mat 
 trame::transfers::etu::dw_UW(const arma::mat& Ws)
 const
@@ -394,6 +404,8 @@ const
     //
     return - du_Psi(Ws,0.0,&x_ind,&y_ind);
 }
+
+// WU and WV
 
 arma::mat 
 trame::transfers::etu::WU(const arma::mat& Us)

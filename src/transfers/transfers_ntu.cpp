@@ -82,6 +82,7 @@ const
 
 //
 // DSE-related functions
+//
 
 arma::mat 
 trame::transfers::ntu::Psi(const arma::mat& U, const arma::mat& V)
@@ -90,7 +91,9 @@ const
     return this->Psi(U,V,nullptr,nullptr);
 }
 
+//
 // Implicit Parameterization
+
 arma::mat 
 trame::transfers::ntu::Psi(const arma::mat& U, const arma::mat& V, const arma::uvec* xs, const arma::uvec* ys)
 const
@@ -129,6 +132,7 @@ const
 }
 
 // Derivative of Psi wrt u
+
 arma::mat 
 trame::transfers::ntu::du_Psi(const arma::mat& U, const arma::mat& V)
 const
@@ -175,6 +179,8 @@ const
     return ret;
 }
 
+// dparams
+
 arma::mat 
 trame::transfers::ntu::dparams_Psi(const arma::mat& U, const arma::mat& V)
 const
@@ -202,7 +208,11 @@ const
     return ret;
 }
 
+//
 // Explicit Parameterization
+
+// Ucal and Vcal
+
 arma::mat 
 trame::transfers::ntu::Ucal(const arma::mat& vs)
 const
@@ -267,6 +277,8 @@ const
     return ret;
 }
 
+// UW and VW
+
 arma::mat 
 trame::transfers::ntu::UW(const arma::mat& Ws)
 const
@@ -315,6 +327,8 @@ const
     return - Psi(Ws,(double) 0.0,x_ind,y_ind);
 }
 
+// dw
+
 arma::mat 
 trame::transfers::ntu::dw_UW(const arma::mat& Ws)
 const
@@ -348,6 +362,8 @@ const
     //
     return - du_Psi(Ws,0.0,&x_ind,&y_ind);
 }
+
+// WU and WV
 
 arma::mat 
 trame::transfers::ntu::WU(const arma::mat& Us)
