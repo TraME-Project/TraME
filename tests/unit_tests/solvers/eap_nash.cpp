@@ -29,25 +29,47 @@ int main()
     arma::mat zeta   = 1 + arma::randu(nbX,nbY);
 
     arma::mat phi = alpha + gamma;
+
     //
     // results
+
     printf("\n*===================   Start of eap_nash Test   ===================*\n");
     printf("\n");
+
     //
-    // TU
+    // build
+
     arma::mat lambda_LTU = lambda/(lambda+zeta);
     arma::mat phi_LTU = (lambda%alpha + zeta%gamma) / (lambda+zeta);
 
     trame::dse<trame::arums::none,trame::arums::none,trame::transfers::ltu> dse_obj_LTU;
     dse_obj_LTU.build(n,m,lambda_LTU,phi_LTU,false);
-    //
+
+    // 
+
+    double tol = 1E-06;
+    int max_iter = 5000;
+    bool x_first = true;
+
     arma::vec mux0, mu0y, u, v;
     arma::mat mu_LTU;
+
     trame::eap_nash(dse_obj_LTU,mu_LTU);
 
-    std::cout << "Solution of TU-none problem using eap_nash:\n" << std::endl;
-    arma::cout << "mu:\n" << mu_LTU << arma::endl;
-    //arma::cout << "u:\n" << u << "\n v:\n" << v << arma::endl;
+    trame::eap_nash(dse_obj_LTU,mu_LTU,true);
+    trame::eap_nash(dse_obj_LTU,mu_LTU,false);
+
+    trame::eap_nash(dse_obj_LTU,mu_LTU,tol);
+    trame::eap_nash(dse_obj_LTU,mu_LTU,max_iter);
+
+    trame::eap_nash(dse_obj_LTU,mu_LTU,tol,max_iter);
+    trame::eap_nash(dse_obj_LTU,mu_LTU,true,tol,max_iter);
+
+    trame::eap_nash(dse_obj_LTU,mu_LTU,u,v);
+
+    trame::eap_nash(dse_obj_LTU,mu_LTU,mux0,mu0y,u,v,&x_first,&tol,&max_iter);
+    
+
     //
     printf("\n*===================    End of oap_nash Test    ===================*\n");
     printf("\n");

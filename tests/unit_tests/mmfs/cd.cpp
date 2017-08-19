@@ -48,10 +48,13 @@ int main()
 
     arma::mat lambda = arma::randu(nbX,nbY);
     arma::mat phi = arma::randu(nbX,nbY);
+
     //
     // results
+    
     printf("\n*===================   Start of mmfs::cd Test   ===================*\n");
     printf("\n");
+
     //
 
     trame::mmfs::cd mmf_obj;

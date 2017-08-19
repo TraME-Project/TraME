@@ -15,8 +15,10 @@ int main()
 {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
+
     //
     // inputs:
+    
     arma::mat alpha(2,3);
     alpha << 1.6 << 3.2 << 1.1 << arma::endr 
           << 2.9 << 1.0 << 3.1 << arma::endr;
@@ -36,39 +38,45 @@ int main()
     int nbY = m.n_elem;
 
     arma::mat phi = alpha + gamma;
+
     //
     // results
+
     printf("\n*===================   Start of Jacobi Test   ===================*\n");
     printf("\n");
+    
     //
-    // TU
+    // build
+
     trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::tu> dse_obj_TU;
 
     trame::arums::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
 
     dse_obj_TU.build(n,m,phi,logit_1,logit_2,false);
+    
     //
+
+    double tol = 1E-06;
+    int max_iter = 5000;
+
     arma::vec mux0, mu0y;
     arma::mat mu_TU, U, V;
-    //trame::jacobi(dse_obj_TU, true, nullptr, nullptr, nullptr, mu_TU, mux0, mu0y, U, V);
-    trame::jacobi(dse_obj_TU, mu_TU);
+    
+    trame::jacobi(dse_obj_TU,mu_TU);
+    trame::jacobi(dse_obj_TU,mu_TU,tol);
+    trame::jacobi(dse_obj_TU,mu_TU,max_iter);
+    trame::jacobi(dse_obj_TU,mu_TU,tol,max_iter);
 
-    arma::cout << "Solution of TU-logit problem using jacobi:\n" << mu_TU << arma::endl;
-    //
-    // NTU
-    trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::ntu> dse_obj_NTU;
+    trame::jacobi(dse_obj_TU,mu_TU,U,V);
 
-    dse_obj_NTU.build(n,m,alpha,gamma,logit_1,logit_2,false);
-    //
-    arma::mat mu_NTU;
-    //trame::jacobi(dse_obj_NTU, true, nullptr, nullptr, nullptr, mu_NTU, mux0, mu0y, U, V);
-    trame::jacobi(dse_obj_NTU, mu_NTU);
+    trame::jacobi(dse_obj_TU,mu_hat,mu_hat,mu_TU,mux0,mu0y,U,V,&tol,&max_iter);
 
-    arma::cout << "Solution of NTU-logit problem using jacobi:\n" << mu_NTU << arma::endl;
+    
     //
     printf("\n*===================    End of Jacobi Test    ===================*\n");
     printf("\n");
     //
+
     end = std::chrono::system_clock::now();
         
     std::chrono::duration<double> elapsed_seconds = end-start;

@@ -15,8 +15,10 @@ int main()
 {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
+
     //
     // inputs:
+
     int nbX = 10;
     int nbY = 8;
     double sigma = 1;
@@ -25,30 +27,37 @@ int main()
     arma::vec m = arma::ones(nbY,1);
 
     arma::mat phi = 1.0 + arma::randu(nbX,nbY);
-    //arma::mat phi = arma::ones(nbX,nbY);
+    
     //
     // results
+
     printf("\n*===================   Start of nodal_newton Test   ===================*\n");
     printf("\n");
+
     //
-    // TU
-    // trame::arums::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
+    // build
     
     trame::mfe<trame::mmfs::geo> mfe_obj_TU(sigma,false);
-
     mfe_obj_TU.build(n,m,phi);
+
     //
-    //
-    //double tol = 1E-06;
-    //int max_iter = 5000;
 
-    arma::mat mu_TU_1, mu_TU_2;
-    trame::ipfp(mfe_obj_TU,mu_TU_1);
+    double tol = 1E-06;
+    int max_iter = 5000;
 
-    trame::nodal_newton(mfe_obj_TU,mu_TU_2);
+    arma::mat mu_TU;
+    trame::nodal_newton(mfe_obj_TU,mu_TU);
 
-    arma::cout << "Solution of mfe::geo (TU-logit) problem using ipfp:\n" << mu_TU_1 << arma::endl;
-    arma::cout << "Solution of mfe::geo (TU-logit) problem using nodal_newton:\n" << mu_TU_2 << arma::endl;
+    trame::nodal_newton(mfe_obj_TU,mu_TU,tol);
+    trame::nodal_newton(mfe_obj_TU,mu_TU,max_iter);
+    trame::nodal_newton(mfe_obj_TU,mu_TU,tol,max_iter);
+
+    arma::mat U_out, V_out;
+    trame::nodal_newton(mfe_obj_TU,mu_TU,U_out,V_out);
+
+    double val_out;
+    arma::vec mu_x0_out, mu_0y_out;
+    trame::nodal_newton(mfe_obj_TU,mu_TU,mu_x0_out,mu_0y_out,U_out,V_out,val_out,&tol,&max_iter);
     //
     printf("\n*===================    End of nodal_newton Test    ===================*\n");
     printf("\n");

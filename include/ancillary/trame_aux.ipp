@@ -117,19 +117,33 @@ inline
 arma::mat
 byrow(const arma::mat& mat_inp, const int n_rows, const int n_cols)
 {
-    arma::mat ret(n_rows,n_cols);
     arma::vec vec_tmp = arma::vectorise(mat_inp);
+    const int n_vals = vec_tmp.n_elem;
 
-    int kr = 0, kc = 0;
+    arma::mat ret(n_rows,n_cols);
 
-    for (int i=0; i < n_rows*n_cols; i++) {
-        ret(kr,kc) = vec_tmp(i);
+    if (n_vals != n_rows*n_cols) { // use repmat in this case
+        if (n_vals == n_rows) {
+            ret = arma::repmat(vec_tmp,1,n_cols);
+        } else if (n_vals == n_cols) {
+            ret = arma::repmat(vec_tmp.t(),n_rows,1);
+        } else {
+            printf("error in byrow\n");
+            return ret;
+        }
+    } else { // otherwise rebuild the input matrix using byrow
 
-        kc++;
+        int kr = 0, kc = 0;
 
-        if (kc >= n_cols) {
-            kc = 0;
-            kr++;
+        for (int i=0; i < n_rows*n_cols; i++) {
+            ret(kr,kc) = vec_tmp(i);
+
+            kc++;
+
+            if (kc >= n_cols) {
+                kc = 0;
+                kr++;
+            }
         }
     }
 

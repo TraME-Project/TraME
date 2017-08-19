@@ -67,8 +67,8 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool
     //
     bool LP_optimal = false;
     int modelSense = 1; // maximize
-    double objval, val_lp = 0.0; 
-    
+    double objval, val_lp = 0.0;
+
     arma::mat sol_mat(n_lp, 2);
     arma::mat dual_mat(k_lp, 2);
 
@@ -108,7 +108,7 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool
      */
     if ( LP_optimal && (u_out || v_out || residuals_out) ) {
         arma::vec obj_bis = arma::join_cols(market.n,-market.m);
-        
+
         const bool x_first = (x_first_inp) ? *x_first_inp : true;
 
         if (!x_first) {
@@ -129,10 +129,10 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool
             sense_bis[jj] = '>';
         }
         sense_bis[k_bis-1] = '=';
-        
+
         int modelSense_bis = 1; // maximize
         double objval_bis;
-        
+
         arma::mat sol_mat_bis(n_bis, 2);
         arma::mat dual_mat_bis(k_bis, 2);
         //
@@ -177,6 +177,13 @@ bool
 oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
     return oap_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+}
+
+template<typename Tg, typename Th, typename Tt>
+bool
+oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp)
+{
+    return oap_lp_int(market,&mu_out,&x_first_inp,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>

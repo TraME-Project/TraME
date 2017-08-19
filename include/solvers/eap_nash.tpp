@@ -51,12 +51,12 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
     if (x_first) {
         v_curr = v_from_us(market.trans_obj,arma::zeros(nbX,1),nullptr,nullptr);
     } else {
-        v_curr = arma::zeros(nbY,1);
+        v_curr = arma::zeros(nbY,1); // Keith: should this be u_from_vs?
     }
 
     int iter = 0;
     double err = 2*tol;
-    
+
     while (err > tol && iter < max_iter) {
         iter++;
 
@@ -115,7 +115,7 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
             if (mu_out) {
                 *mu_out = mu;
             }
-            
+
             if (mu_x0_out) {
                 *mu_x0_out = market.n - arma::sum(mu,1);
             }
@@ -161,20 +161,6 @@ template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp)
 {
-    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
-}
-
-template<typename Tg, typename Th, typename Tt>
-bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, const double tol_inp)
-{
-    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&x_first_inp,&tol_inp,nullptr);
-}
-
-template<typename Tg, typename Th, typename Tt>
-bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, const int max_iter_inp)
-{
     return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
 }
 
@@ -201,7 +187,7 @@ eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& u_out, arma:
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool* x_first_inp, const double* tol_inp, const int* max_iter_inp)
+eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& u_out, arma::mat& v_out, const bool* x_first_inp, const double* tol_inp, const int* max_iter_inp)
 {
     return eap_nash_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&u_out,&v_out,x_first_inp,tol_inp,max_iter_inp);
 }
@@ -249,7 +235,7 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
 {
     const int nbX = trans_obj.nbX;
     const int nbY = trans_obj.nbY;
-    
+
     arma::mat the_mat = arma::zeros(nbX,nbY);
     arma::mat v_updated = arma::zeros(nbY,1);
     //
