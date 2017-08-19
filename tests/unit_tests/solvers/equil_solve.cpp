@@ -41,8 +41,8 @@ int main()
     //
     // inputs:
 
-    int nbX = 18;
-    int nbY = 5;
+    int nbX = 5;
+    int nbY = 4;
 
     arma::vec n = arma::ones(nbX,1);
     arma::vec m = arma::ones(nbY,1);
@@ -89,17 +89,25 @@ int main()
     trame::equil_solve(dse_obj_ETU,mu,nullptr);
     trame::equil_solve(dse_obj_ETU,mu,&slv);
 
+    std:: cout << "\nETU finished" << std::endl; // the cout's are really here to get around the 10 min Travis wait window
+
     trame::equil_solve(dse_obj_LTU,mu);
     trame::equil_solve(dse_obj_LTU,mu,nullptr);
     trame::equil_solve(dse_obj_LTU,mu,&slv);
+
+    std:: cout << "LTU finished" << std::endl;
 
     trame::equil_solve(dse_obj_NTU,mu);
     trame::equil_solve(dse_obj_NTU,mu,nullptr);
     trame::equil_solve(dse_obj_NTU,mu,&slv);
 
+    std:: cout << "NTU finished" << std::endl;
+
     trame::equil_solve(dse_obj_TU,mu);
     trame::equil_solve(dse_obj_TU,mu,nullptr);
     trame::equil_solve(dse_obj_TU,mu,&slv);
+
+    std:: cout << "TU finished\n" << std::endl;
 
     // trame::jacobi(dse_obj_TU,mu_TU,U,V);
 
