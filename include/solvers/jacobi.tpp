@@ -94,7 +94,7 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
         arma::mat Z = mu_G - mu_H.t();
 
         if (elem_max(Z) > 0) {
-            printf("jacobi: w_low provided not an actual upper bound.\n");
+            printf("jacobi: w_low provided not an actual lower bound.\n");
             return false;
         }
     }
@@ -126,13 +126,13 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
 
     while (err > err_tol && iter < max_iter) {
         iter++;
-        
+
         for (x=0; x < nbX; x++) {
             root_data.x_ind = x;
 
             for (y=0; y < nbY; y++) {
                 root_data.y_ind = y;
-        
+
                 w(x,y) = zeroin(w_low(x,y), w(x,y), jacobi_zeroin_fn<Tg,Th,Tt>, &root_data, nullptr, nullptr);
                 U(x,y) = market.trans_obj.UW(w(x,y),x,y);
                 V(x,y) = market.trans_obj.VW(w(x,y),x,y);
@@ -236,7 +236,7 @@ jacobi_zeroin_fn(double z, void* opt_data)
     //
     U(d->x_ind,d->y_ind) = d->market_obj.trans_obj.UW(z,d->x_ind,d->y_ind);
     V(d->x_ind,d->y_ind) = d->market_obj.trans_obj.VW(z,d->x_ind,d->y_ind);
-    
+
     arma::mat mu_G, mu_H;
     d->market_obj.arums_G.G(d->market_obj.n,U,mu_G);
     d->market_obj.arums_H.G(d->market_obj.m,V.t(),mu_H);

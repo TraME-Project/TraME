@@ -70,6 +70,7 @@ int main()
     trame::jacobi(dse_obj_TU,mu_TU,U,V);
 
     trame::jacobi(dse_obj_TU,mu_hat,mu_hat,mu_TU,mux0,mu0y,U,V,&tol,&max_iter);
+    trame::jacobi_int(dse_obj_TU,nullptr,&mu_hat,&mu_TU,&mux0,&mu0y,&U,&V,&tol,&max_iter);
 
     
     //
