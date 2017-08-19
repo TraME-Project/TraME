@@ -22,7 +22,7 @@ CXXFLAGS = $(CXX_STD) -Wall $(OPT_FLAGS) -I$(ARMA_INCLUDE_PATH) -I$(TRAME_HEADER
 LIBS= @TRAME_BLAS_LAPACK@ -L@TRAME_INSTALL_PATH@ -l@TRAME_SHLIB_NAME@
 
 # TraME Test Files
-SOURCES_TRAME_SLVRS= $(TRAME_TEST_DIR)/arc_newton.cpp $(TRAME_TEST_DIR)/cupids_lp.cpp $(TRAME_TEST_DIR)/darum.cpp $(TRAME_TEST_DIR)/eap_nash.cpp $(TRAME_TEST_DIR)/ipfp.cpp $(TRAME_TEST_DIR)/jacobi.cpp $(TRAME_TEST_DIR)/max_welfare.cpp $(TRAME_TEST_DIR)/nodal_newton.cpp $(TRAME_TEST_DIR)/oap_lp.cpp
+SOURCES_TRAME_SLVRS= $(TRAME_TEST_DIR)/arc_newton.cpp $(TRAME_TEST_DIR)/cupids_lp.cpp $(TRAME_TEST_DIR)/darum.cpp $(TRAME_TEST_DIR)/eap_nash.cpp $(TRAME_TEST_DIR)/equil_solve.cpp $(TRAME_TEST_DIR)/ipfp.cpp $(TRAME_TEST_DIR)/jacobi.cpp $(TRAME_TEST_DIR)/max_welfare.cpp $(TRAME_TEST_DIR)/nodal_newton.cpp $(TRAME_TEST_DIR)/oap_lp.cpp
 OBJECTS_TRAME_SLVRS= $(SOURCES_TRAME_SLVRS:.cpp=.test)
 
 all: $(OBJECTS_TRAME_SLVRS)

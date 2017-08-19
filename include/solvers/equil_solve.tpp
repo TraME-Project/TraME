@@ -22,7 +22,7 @@
   ################################################################################*/
 
 /*
- * main solve function for DSE markets
+ * generic solve function for DSE markets
  *
  * Keith O'Hara
  * 08/01/2016
