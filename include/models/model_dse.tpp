@@ -73,7 +73,6 @@ model<dse<Tg,Th,Tt>>::build_int(const arma::cube& phi_xyk_inp, const arma::vec* 
 // second method to build
 
 template<typename Tg, typename Th, typename Tt>
-inline
 void
 model<dse<Tg,Th,Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp)
 {
@@ -81,7 +80,6 @@ model<dse<Tg,Th,Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp)
 }
 
 template<typename Tg, typename Th, typename Tt>
-inline
 void
 model<dse<Tg,Th,Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp)
 {
@@ -89,7 +87,6 @@ model<dse<Tg,Th,Tt>>::build(const arma::mat& X_inp, const arma::mat& Y_inp, cons
 }
 
 template<typename Tg, typename Th, typename Tt>
-inline
 void
 model<dse<Tg,Th,Tt>>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp)
 {
@@ -183,7 +180,7 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     bool success = false;
     //
     const double err_tol = 1E-06;
-    const int max_iter = 5000;
+    const int max_iter = 1000;
 
     arma::vec theta_0;
     (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0 = initial_theta();
@@ -211,6 +208,7 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
     success = model_mle_optim(theta_0,log_likelihood,&opt_data,&obj_val,&err_tol,&max_iter);
     //
+    std::cout << "MLE val = " << obj_val << std::endl;
     theta_hat = theta_0;
 
     return success;
@@ -255,6 +253,8 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     //
     // arma::mat U = arma::reshape(sol_vec.rows(0,nbX*nbY-1),nbX,nbY);
     theta_hat = sol_vec.rows(nbX*nbY,nbX*nbY+dim_theta-1);
+
+    std::cout << "MME val = " << obj_val << std::endl;
 
     //double val_ret = obj_val;
     //
@@ -438,7 +438,6 @@ model<dse<Tg,Th,Tt>>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* 
     return ret;
 }
 
-//
 // MME for empirical class
 
 template<>
@@ -474,6 +473,7 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     const int nbJ = m_j.n_elem;
 
     arma::mat kron_data_mat = - arma::reshape(kron_mat_2*I_yj,dim_theta,nbX*nbJ);
+
     /*
      * use batch allocation to construct the sparse constraint matrix (A)
      *
@@ -645,8 +645,7 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     return success;
 }
 
-//
-// marp proj
+// MME for none class; marp proj
 
 template<>
 inline

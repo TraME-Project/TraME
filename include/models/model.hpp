@@ -91,7 +91,7 @@ class model<dse<Tg,Th,Tt>> : public model_base
         bool solve(arma::mat& mu_sol, const char* solver);
         bool solve(arma::mat& mu_sol, arma::mat& U, arma::mat& V, const char* solver);
 
-    private:
+    // private:
         // internal build functions
         void build_int(const arma::cube& phi_xyk_inp, const arma::vec* n_inp, const arma::vec* m_inp);
         void build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec* n_inp, const arma::vec* m_inp);

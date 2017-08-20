@@ -532,7 +532,7 @@ arma::mat
 cube_sum(const arma::cube& cube_inp, const int which_dim)
 {
     if (which_dim > 1 || which_dim < 0) {
-        printf("unrecognized dim value; should be in (0,1)\n");
+        printf("error: cube_sum: unrecognized dim value; should be in (0,1)\n");
     }
     //
     const int dim_0 = cube_inp.n_rows;
@@ -541,7 +541,7 @@ cube_sum(const arma::cube& cube_inp, const int which_dim)
 
     arma::mat ret;
 
-    if (which_dim == 0) {
+    if (which_dim == 0) { // over rows
         ret.set_size(dim_0,dim_2);
         for (int i=0; i < dim_2; i++) {
             arma::mat mat_s = cube_inp.slice(i);
@@ -549,7 +549,7 @@ cube_sum(const arma::cube& cube_inp, const int which_dim)
         }
     } else { // dim == 1
         ret.set_size(dim_1,dim_2);
-        for (int i=0; i < dim_1; i++) {
+        for (int i=0; i < dim_2; i++) {
             arma::mat mat_s = cube_inp.slice(i);
             ret.col(i) = arma::trans(arma::sum(mat_s,0));
         }

@@ -115,7 +115,7 @@ model_build_int(const dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& X_
 {
     int nbX = X_inp.n_rows;
     int nbY = Y_inp.n_rows;
-    
+
     arma::mat model_data = arma::abs(arma::kron(arma::ones(nbY,1),X_inp) - arma::kron(Y_inp,arma::ones(nbX,1)));
 
     return model_data;
@@ -232,7 +232,9 @@ void
 model_dmu(dse<Tg,Th,Tt>& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
 {
     arma::mat mu, U, V;
-    market_obj.solve(mu,U,V,nullptr);
+    char slv = 'j';
+    // market_obj.solve(mu,U,V,nullptr);
+    market_obj.solve(mu,U,V,&slv);
 
     arma::vec mu_x0 = market_obj.n - arma::sum(mu,1);
     arma::vec mu_0y = market_obj.m - arma::trans(arma::sum(mu,0));
@@ -252,4 +254,77 @@ model_dmu(dse<Tg,Th,Tt>& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_
     mu_x0_out = mu_x0;
     mu_0y_out = mu_0y;
     dmu_out = dmu;
+}
+
+template<>
+inline
+void
+model_dmu(dse<arums::logit,arums::logit,transfers::tu>& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+{ // dtheta_mu_logit of the R version
+
+    const int nbX = market_obj.nbX;
+    const int nbY = market_obj.nbY;
+    const int dim_theta = dtheta_Psi.n_cols;
+
+    const double sigma = market_obj.arums_G.sigma;
+
+    arma::vec mu_x0, mu_0y, u_vec, v_vec;
+    arma::mat mu, U, V;
+
+    mfe<mmfs::geo> mfe_obj(market_obj.n,market_obj.m);
+    mfe_obj.mmfs_obj = market_obj.trans_obj.gen_mmf();
+
+    ipfp(mfe_obj,mu,mu_x0,mu_0y,U,V,u_vec,v_vec,nullptr,nullptr,nullptr);  // should be ipfp
+
+    //
+
+    // arma::mat u_mat = arma::reshape(u_vec,market_obj.nbX,market_obj.nbY); // us
+    arma::mat u_mat = arma::repmat(u_vec,1,market_obj.nbY);        // us
+    arma::mat v_mat = byrow(v_vec,market_obj.nbX,market_obj.nbY);  // vs
+
+    arma::mat du_Psi_mat = market_obj.trans_obj.du_Psi(U,V);
+    arma::mat dv_Psi_mat = 1.0 - du_Psi_mat;
+
+    arma::mat delta_Psi = market_obj.trans_obj.dparams_Psi(u_mat,v_mat,&dtheta_Psi);
+
+    // arma::mat mu_delta_Psi = arma::vectorise(mu) % arma::vectorise(delta_Psi);
+    arma::mat mu_delta_Psi = elem_prod(arma::vectorise(mu), delta_Psi);
+
+    arma::cube mu_delta(mu_delta_Psi.begin(), nbX, nbY, dim_theta, false);
+
+    arma::mat d_1 = cube_sum(mu_delta,0) / sigma; // R: apply(mudeltaPsi, c(1,3), sum) / sigma
+    arma::mat d_2 = cube_sum(mu_delta,1) / sigma;
+
+    arma::mat numer = arma::join_cols(d_1,d_2);
+    //
+    const arma::mat Delta_11 = arma::diagmat(mu_x0 + arma::sum(elem_prod(mu,du_Psi_mat),1));
+    const arma::mat Delta_22 = arma::diagmat(mu_0y + arma::trans(arma::sum(elem_prod(mu,dv_Psi_mat),0)));
+
+    const arma::mat Delta_12 = elem_prod(mu,dv_Psi_mat);
+    const arma::mat Delta_21 = arma::trans(elem_prod(mu,du_Psi_mat));
+
+    const arma::mat Delta = arma::join_cols( arma::join_rows(Delta_11,Delta_12), arma::join_rows(Delta_21,Delta_22) );
+    //
+    arma::mat dlog_mu_sngls = arma::solve(Delta,numer);
+
+    arma::mat dlog_mu_x0 = dlog_mu_sngls.rows(0,nbX-1);
+    arma::mat dlog_mu_0y = dlog_mu_sngls.rows(nbX,nbX+nbY-1);
+
+    // arma::cube dlog_mu_x0_full(nbX,nbY,dim_theta);
+    // arma::cube dlog_mu_0y_full(nbX,nbY,dim_theta);
+
+    arma::mat dlog_mu_x0_full_mat = arma::repmat(dlog_mu_x0,nbY,1); // R: matrix(dlogmux0full, ncol=rangeTheta) 
+
+    arma::mat dlog_mu_0y_full_mat(nbX*nbY,dim_theta);
+
+    for (int y=0; y < nbY; y++) {
+        dlog_mu_0y_full_mat.rows(y*nbX,(y+1)*nbX-1) = arma::repmat(dlog_mu_0y.row(y),nbX,1);
+    }
+
+    arma::mat dlogmu = elem_prod(arma::vectorise(du_Psi_mat),dlog_mu_x0_full_mat) + elem_prod(arma::vectorise(dv_Psi_mat),dlog_mu_0y_full_mat) - delta_Psi/sigma;
+    //
+    mu_out = mu;
+    mu_x0_out = mu_x0;
+    mu_0y_out = mu_0y;
+    dmu_out = elem_prod(arma::vectorise(mu),dlogmu);
 }
