@@ -61,7 +61,11 @@ model<dse<Tg,Th,Tt>>::build_int(const arma::cube& phi_xyk_inp, const arma::vec* 
 
     nbX = phi_xyk_inp.n_rows;
     nbY = phi_xyk_inp.n_cols;
+
     dim_theta = phi_xyk_inp.n_slices;
+
+    dX = std::sqrt(dim_theta);
+    dY = std::sqrt(dim_theta);
     //
     n = (n_inp) ? *n_inp : arma::ones(nbX,1);
     m = (m_inp) ? *m_inp : arma::ones(nbY,1);
@@ -177,8 +181,15 @@ template<typename Tg, typename Th, typename Tt>
 bool
 model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
 {
+    return this->mle(mu_hat,theta_hat,theta_0_inp,nullptr);
+}
+
+template<typename Tg, typename Th, typename Tt>
+bool
+model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp, const int* optim_method_inp)
+{
     bool success = false;
-    
+
     //
 
     arma::vec theta_0;
@@ -194,7 +205,7 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
     //
     // build optimization data
-    
+
     trame_model_mle_opt_data<dse<Tg,Th,Tt>> opt_data;
 
     opt_data.model_obj = *this;
@@ -207,12 +218,14 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
     // optim settings
 
+    const int optim_method = (optim_method_inp) ? *optim_method_inp : 1;
+
     optim::opt_settings settings;
 
     // settings.err_tol  = 1E-06;
     // settings.iter_max = 1000;
 
-    success = model_mle_optim(theta_0,log_likelihood,&opt_data,&settings);
+    success = model_mle_optim(theta_0,log_likelihood,&opt_data,&settings,optim_method);
 
     // output
 
@@ -230,6 +243,13 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 template<typename Tg, typename Th, typename Tt>
 bool
 model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
+{
+    return this->mme(mu_hat,theta_hat,theta_0_inp,nullptr);
+}
+
+template<typename Tg, typename Th, typename Tt>
+bool
+model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp, const int* optim_method_inp)
 {
     bool success = false;
     //
@@ -255,7 +275,9 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     opt_data.kron_term = kron_term;
 
     // optim settings:
-    
+
+    const int optim_method = (optim_method_inp) ? *optim_method_inp : 1;
+
     optim::opt_settings settings;
 
     // settings.err_tol = 1E-04;
@@ -263,7 +285,7 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
     arma::vec sol_vec = arma::join_cols(arma::vectorise(kron_term * theta_0)/2.0,theta_0); // initial values
 
-    success = model_mme_optim(sol_vec,model_mme_opt_objfn,&opt_data,&settings);
+    success = model_mme_optim(sol_vec,model_mme_opt_objfn,&opt_data,&settings,optim_method);
 
     // output
 
@@ -329,9 +351,16 @@ model<dse<Tg,Th,Tt>>::initial_theta()
 
 template<typename Tg, typename Th, typename Tt>
 bool
-model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp)
+model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method)
 {
-    return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
+    if (optim_method == 1) {
+        return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
+    } else if (optim_method == 2) {
+        return optim::bfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
+    } else {
+        printf("error: unrecognized optim_method choice.\n");
+        return false;
+    }
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -386,6 +415,10 @@ model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_
         }
     }
     //
+    if (!std::isfinite(ret_val)) {
+        ret_val = 1E08;
+    }
+
     return ret_val / scale;
 }
 
@@ -394,9 +427,16 @@ model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_
 
 template<typename Tg, typename Th, typename Tt>
 bool
-model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp)
+model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method)
 {
-    return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
+    if (optim_method == 1) {
+        return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
+    } else if (optim_method == 2) {
+        return optim::bfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
+    } else {
+        printf("error: unrecognized optim_method choice.\n");
+        return false;
+    }
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -422,7 +462,7 @@ model<dse<Tg,Th,Tt>>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* 
     const double val_G = d->market.arums_G.G(d->market.n,U,mu_G);
     const double val_H = d->market.arums_H.G(d->market.m,arma::trans(phi_mat - U),mu_H);
     //
-    const double ret = val_G + val_H - arma::accu(theta%C_hat);
+    double ret_val = val_G + val_H - arma::accu(theta%C_hat);
 
     if (grad) {
         const arma::vec grad_U = arma::vectorise(mu_G - mu_H.t());
@@ -430,8 +470,12 @@ model<dse<Tg,Th,Tt>>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* 
 
         *grad = arma::join_cols(grad_U,grad_theta);
     }
+
+    if (!std::isfinite(ret_val)) {
+        ret_val = 1E08;
+    }
     //
-    return ret;
+    return ret_val;
 }
 
 // MME for empirical class

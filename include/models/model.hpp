@@ -82,9 +82,11 @@ class model<dse<Tg,Th,Tt>> : public model_base
         void dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu);
 
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp);
+        bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp, const int* optim_method_inp);
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
 
         bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp);
+        bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp, const int* optim_method_inp);
 
         // solve wrappers
         bool solve(arma::mat& mu_sol);
@@ -100,10 +102,10 @@ class model<dse<Tg,Th,Tt>> : public model_base
         arma::mat initial_theta();
 
         // optimization-related objects
-        bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp);
+        bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method);
         static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 
-        bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp);
+        bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method);
         static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 
