@@ -28,7 +28,7 @@
  * 11/19/2016
  *
  * This version:
- * 07/26/2017
+ * 08/20/2017
  */
 
 // Note: 'theta' refers to model parameters; 'params' refers to structural parameters
@@ -178,9 +178,8 @@ bool
 model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
 {
     bool success = false;
+    
     //
-    const double err_tol = 1E-06;
-    const int max_iter = 1000;
 
     arma::vec theta_0;
     (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0 = initial_theta();
@@ -192,8 +191,10 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
     const arma::vec mu_hat_x0 = n - arma::sum(mu_hat,1);
     const arma::vec mu_hat_0y = m - arma::trans(arma::sum(mu_hat,0));
+
     //
-    // add optimization data
+    // build optimization data
+    
     trame_model_mle_opt_data<dse<Tg,Th,Tt>> opt_data;
 
     opt_data.model_obj = *this;
@@ -203,14 +204,23 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
     opt_data.mu_hat = mu_hat;
     opt_data.mu_hat_x0 = mu_hat_x0;
     opt_data.mu_hat_0y = mu_hat_0y;
-    //
-    double obj_val = 0;
 
-    success = model_mle_optim(theta_0,log_likelihood,&opt_data,&obj_val,&err_tol,&max_iter);
-    //
-    std::cout << "MLE val = " << obj_val << std::endl;
+    // optim settings
+
+    optim::opt_settings settings;
+
+    // settings.err_tol  = 1E-06;
+    // settings.iter_max = 1000;
+
+    success = model_mle_optim(theta_0,log_likelihood,&opt_data,&settings);
+
+    // output
+
+    std::cout << "MLE val = " << settings.opt_value << std::endl;
+
     theta_hat = theta_0;
 
+    //
     return success;
 }
 
@@ -223,9 +233,6 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 {
     bool success = false;
     //
-    const double err_tol = 1E-04;
-    const int max_iter = 1000;
-
     arma::vec theta_0(dim_theta);
     (theta_0_inp) ? theta_0 = *theta_0_inp : theta_0 = initial_theta();
 
@@ -236,27 +243,36 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
     const arma::mat kron_term = dtheta_Psi;
     const arma::mat C_hat = arma::vectorise(arma::trans(arma::vectorise(mu_hat)) * kron_term);
+
     //
-    // add optimization data
+    // build optimization data
+
     trame_model_mme_opt_data<dse<Tg,Th,Tt>> opt_data;
 
     opt_data.market = market_obj;
     opt_data.dim_theta = dim_theta;
     opt_data.C_hat = C_hat;
     opt_data.kron_term = kron_term;
-    //
-    arma::vec sol_vec = arma::join_cols(arma::vectorise(kron_term * theta_0)/2.0,theta_0);
 
-    double obj_val = 0;
+    // optim settings:
+    
+    optim::opt_settings settings;
 
-    success = model_mme_optim(sol_vec,model_mme_opt_objfn,&opt_data,&obj_val,&err_tol,&max_iter);
-    //
+    // settings.err_tol = 1E-04;
+    // settings.iter_max = 1000;
+
+    arma::vec sol_vec = arma::join_cols(arma::vectorise(kron_term * theta_0)/2.0,theta_0); // initial values
+
+    success = model_mme_optim(sol_vec,model_mme_opt_objfn,&opt_data,&settings);
+
+    // output
+
+    std::cout << "MME val = " << settings.opt_value << std::endl;
+
     // arma::mat U = arma::reshape(sol_vec.rows(0,nbX*nbY-1),nbX,nbY);
+
     theta_hat = sol_vec.rows(nbX*nbY,nbX*nbY+dim_theta-1);
 
-    std::cout << "MME val = " << obj_val << std::endl;
-
-    //double val_ret = obj_val;
     //
     return success;
 }
@@ -313,19 +329,9 @@ model<dse<Tg,Th,Tt>>::initial_theta()
 
 template<typename Tg, typename Th, typename Tt>
 bool
-model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp)
+model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp)
 {
-    optim::opt_settings opt_params;
-
-    if (err_tol_inp) {
-        opt_params.err_tol = *err_tol_inp;
-    }
-
-    if (max_iter_inp) {
-        opt_params.iter_max = *max_iter_inp;
-    }
-
-    return optim::bfgs_int(init_out_vals,opt_objfn,opt_data,&opt_params);
+    return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -388,19 +394,9 @@ model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_
 
 template<typename Tg, typename Th, typename Tt>
 bool
-model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp)
+model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp)
 {
-    optim::opt_settings opt_params;
-
-    if (err_tol_inp) {
-        opt_params.err_tol = *err_tol_inp;
-    }
-
-    if (max_iter_inp) {
-        opt_params.iter_max = *max_iter_inp;
-    }
-
-    return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,&opt_params);
+    return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>

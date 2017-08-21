@@ -58,7 +58,7 @@ int main()
     //
     // results
 
-    printf("\n*===================   Start of general model Test   ===================*\n");
+    printf("\n*===================   Start of model MME objfn Test   ===================*\n");
     printf("\n");
 
     // 
@@ -106,7 +106,7 @@ int main()
     arma::cout << "grad:\n" << grad_vec << arma::endl;
 
     //
-    printf("\n*===================    End of general model Test    ===================*\n");
+    printf("\n*===================    End of model MME objfn Test    ===================*\n");
     printf("\n");
     //
 

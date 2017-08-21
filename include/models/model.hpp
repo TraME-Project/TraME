@@ -28,7 +28,7 @@
  * 11/19/2016
  *
  * This version:
- * 06/06/2017
+ * 08/20/2017
  */
 
 #ifndef _trame_model_HPP
@@ -100,10 +100,10 @@ class model<dse<Tg,Th,Tt>> : public model_base
         arma::mat initial_theta();
 
         // optimization-related objects
-        bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp);
+        bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp);
         static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 
-        bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp);
+        bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp);
         static double model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 

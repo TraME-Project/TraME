@@ -1,3 +1,26 @@
+/*################################################################################
+  ##
+  ##   Copyright (C) 2015 - 2017 the TraME Team:
+  ##      Alfred Galichon
+  ##      Keith O'Hara
+  ##
+  ##   This file is part of TraME.
+  ##
+  ##   TraME is free software: you can redistribute it and/or modify
+  ##   it under the terms of the GNU General Public License as published by
+  ##   the Free Software Foundation, either version 2 of the License, or
+  ##   (at your option) any later version.
+  ##
+  ##   TraME is distributed in the hope that it will be useful,
+  ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ##   GNU General Public License for more details.
+  ##
+  ##   You should have received a copy of the GNU General Public License
+  ##   along with TraME. If not, see <http://www.gnu.org/licenses/>.
+  ##
+  ################################################################################*/
+
 /*
  * general model class test
  *
@@ -5,10 +28,7 @@
  * 11/27/2016
  *
  * This version:
- * 06/01/2017
- *
- * g++-mp-7 -O2 -Wall -std=c++11 -I/usr/local/include/trame model_test.cpp -o model.test -L/usr/local/lib -ltrame -framework Accelerate
- * g++-mp-7 -O2 -Wall -std=c++11 -I./../../include model.cpp -o model.test -L./../../ -ltrame -framework Accelerate
+ * 08/20/2017
  */
 
 #include "trame.hpp"
@@ -71,39 +91,40 @@ int main()
 
     arma::cout << "theta_hat mle: \n" << theta_hat_mle << arma::endl;
 
-    //
+    
+    // 
     // sim model
 
-    // const int n_draws = 1000;
-    // const int sim_seed = 777;
+    const int n_draws = 200;
+    const int sim_seed = 777;
 
-    // trame::arums::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
+    trame::arums::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
 
-    // trame::arums::empirical logit_sim_1(nbX,nbY), logit_sim_2(nbY,nbX);
-    // logit_1.simul(logit_sim_1, n_draws, sim_seed);
-    // logit_2.simul(logit_sim_2, n_draws, sim_seed);
+    trame::arums::empirical logit_sim_1(nbX,nbY), logit_sim_2(nbY,nbX);
+    logit_1.simul(logit_sim_1, n_draws, sim_seed);
+    logit_2.simul(logit_sim_2, n_draws, sim_seed);
 
-    // trame::model< trame::dse<trame::arums::empirical, trame::arums::empirical, trame::transfers::tu> > logit_sim_model;
+    trame::model< trame::dse<trame::arums::empirical, trame::arums::empirical, trame::transfers::tu> > logit_sim_model;
 
-    // logit_sim_model.build(X_vals,Y_vals,n,m);
-    // logit_sim_model.market_obj.arums_G = logit_sim_1;
-    // logit_sim_model.market_obj.arums_H = logit_sim_2;
+    logit_sim_model.build(X_vals,Y_vals,n,m);
+    logit_sim_model.market_obj.arums_G = logit_sim_1;
+    logit_sim_model.market_obj.arums_H = logit_sim_2;
 
-    // arma::mat theta_hat_3;
+    arma::mat theta_hat_3;
 
-    // logit_sim_model.mme(mu_hat,theta_hat_3,nullptr);
+    logit_sim_model.mme(mu_hat,theta_hat_3,nullptr);
     
-    // arma::cout << "logit_sim_model theta_hat:\n" << theta_hat_3 << arma::endl;
+    arma::cout << "logit_sim_model theta_hat:\n" << theta_hat_3 << arma::endl;
 
-    // //
-    // // arums_none model
+    //
+    // arums_none model
 
-    // trame::model< trame::dse<trame::arums::none, trame::arums::none, trame::transfers::tu> > TU_none_model;
-    // TU_none_model.build(X_vals,Y_vals,n,m);
+    trame::model< trame::dse<trame::arums::none, trame::arums::none, trame::transfers::tu> > TU_none_model;
+    TU_none_model.build(X_vals,Y_vals,n,m);
 
-    // TU_none_model.mme(mu_hat,theta_hat_mme,nullptr);
+    TU_none_model.mme(mu_hat,theta_hat_mme,nullptr);
 
-    // arma::cout << "theta_hat mme for arums_none: \n" << theta_hat_mme << arma::endl;
+    arma::cout << "theta_hat mme for arums_none: \n" << theta_hat_mme << arma::endl;
 
     //
     printf("\n*===================    End of general model Test    ===================*\n");

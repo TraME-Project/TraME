@@ -40,6 +40,11 @@ cd ../mmfs
 make
 ./cov_check
 
+cd ../models
+./configure -b dev -c
+make
+./cov_check
+
 cd ../solvers
 ./configure -b dev -c
 make

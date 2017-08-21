@@ -20,8 +20,8 @@ int main()
     //
     // inputs:
 
-    const int nbX = 80;
-    const int nbY = 72;
+    const int nbX = 50;
+    const int nbY = 50;
     const int dX = 3;
     const int dY = 3;
 
@@ -47,11 +47,8 @@ int main()
 
     double noise_scale = 0.1; 
 
-    // arma::mat A = arma::ones(dX,dY);
-    arma::mat A = 1.0 + arma::randu(dX,dY);
+    arma::mat A = arma::ones(dX,dY);
     arma::mat phi = X_vals*A*Y_vals.t();
-
-    // arma::cout << "phi:\n" << phi << arma::endl; 
 
     trame::mfe<trame::mmfs::geo> mfe_obj_TU;
     mfe_obj_TU.build(n,m,phi);
@@ -72,8 +69,8 @@ int main()
     double lambda = 0.15;
     double val_hat_1, val_hat_2;
 
-    // mu_hat = arma::ones(nbX,nbY)/ ((double) nbX);
-    mu_hat = mu_hat / ((double) nbX);
+    mu_hat = arma::ones(nbX,nbY)/ ((double) nbX);
+
     arma::mat theta_hat_aff;
 
     aff_model.mme_regul(mu_hat,lambda,theta_hat_aff,val_hat_1,nullptr,nullptr,nullptr,nullptr);
