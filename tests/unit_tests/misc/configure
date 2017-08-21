@@ -1,0 +1,117 @@
+#!/bin/bash
+## TraME tests config script
+
+while getopts :b:cm:o:p option; do
+    case "${option}" in
+        b) TRAME_BUILD=${OPTARG};;
+        c) TRAME_COVERAGE="y";;
+        m) TRAME_MATRIX_OPS=${OPTARG};;
+        o) TRAME_OPT=${OPTARG};;
+        p) TRAME_PARALLEL="y";;
+    esac
+done
+
+if [ -z ${CC+x} ]; then 
+    CC=gcc
+fi
+if [ -z ${CXX+x} ]; then 
+    CXX=g++
+fi
+if [ -z ${FC+x} ]; then 
+    FC=gfortran
+fi
+
+if [[ !(-z ${KEITH_DEV_SETTINGS+x}) ]]; then
+    CC=gcc-mp-7
+    CXX=g++-mp-7
+    FC=gfortran-mp-7
+fi
+
+WDIR=${PWD}
+
+if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
+    echo "TraME tests: ARMA_INCLUDE_PATH not set"
+    if [ -f ${WDIR}/../../../include/armadillo ]; then 
+        ARMA_INCLUDE_PATH="./../../../include"
+    elif [ -f /usr/include/armadillo ]; then
+        ARMA_INCLUDE_PATH="/usr/include"
+    elif [ -f /usr/local/include/armadillo ]; then
+        ARMA_INCLUDE_PATH="/usr/local/include"
+    elif [ -f /opt/include/armadillo ]; then
+        ARMA_INCLUDE_PATH="/opt/include"
+    elif [ -f /opt/local/include/armadillo ]; then
+        ARMA_INCLUDE_PATH="/opt/local/include"
+    else 
+        echo "TraME tests: cannot find the armadillo library."
+        echo ""
+        exit 1
+    fi
+fi
+
+echo "TraME tests: ARMA_INCLUDE_PATH set to ${ARMA_INCLUDE_PATH}"
+
+# set build and optimization flags
+
+if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
+    TRAME_OPT_FLAGS="-O0 -Wall -g --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
+else
+    if [[ "${TRAME_OPT}" == "fast" ]]; then
+        echo "TraME tests: experimental optimization"
+        TRAME_OPT_FLAGS="-Ofast -DARMA_NO_DEBUG"
+    else
+        TRAME_OPT_FLAGS="-O3 -Wall"
+    fi
+
+    if [[ "${TRAME_PARALLEL}" == "y" ]]; then 
+        echo "TraME tests: using OpenMP"
+        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp -DTRAME_OMP"
+    fi
+fi
+
+if [[ $OSTYPE == *cygwin* ]] ; then
+    TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -DARMA_DONT_PRINT_CXX11_WARNING"
+fi
+
+TRAME_SHLIB_NAME="trame"
+
+# dev build
+
+if [[ "${TRAME_BUILD}" == "dev" ]]; then
+    echo "TraME tests: dev version"
+    cd ../../..
+    TRAME_INCLUDE_PATH=${PWD}/include
+    TRAME_INSTALL_PATH=${PWD}
+    cd ${WDIR}
+else
+    TRAME_INCLUDE_PATH="/usr/local/include/trame"
+    TRAME_INSTALL_PATH="/usr/local/lib"
+fi
+
+# BLAS and LAPACK settings
+
+if [[ !(-z ${TRAME_MATRIX_OPS+x}) ]]; then
+    TRAME_BLAS_LAPACK="${TRAME_MATRIX_OPS}"
+    echo ""
+    echo "TraME tests: BLAS and Lapack libraries set to ${TRAME_BLAS_LAPACK}"
+else
+    if [[ $OSTYPE == darwin* ]] ; then
+        TRAME_BLAS_LAPACK="-framework Accelerate"
+    elif [[ $OSTYPE == *linux* ]] ; then
+        TRAME_BLAS_LAPACK="-lblas -llapack"
+    elif [[ $OSTYPE == *cygwin* ]] ; then
+        TRAME_BLAS_LAPACK="-lopenblas"
+    else
+        TRAME_BLAS_LAPACK="-lblas -llapack"
+    fi
+fi
+
+sed -e "s|@CC@|${CC}|" \
+    -e "s|@CXX@|${CXX}|" \
+    -e "s|@FC@|${FC}|" \
+    -e "s|@ARMA_INCLUDE_PATH@|${ARMA_INCLUDE_PATH}|" \
+    -e "s|@TRAME_BLAS_LAPACK@|${TRAME_BLAS_LAPACK}|" \
+    -e "s|@TRAME_OPT_FLAGS@|${TRAME_OPT_FLAGS}|" \
+    -e "s|@TRAME_SHLIB_NAME@|${TRAME_SHLIB_NAME}|" \
+    -e "s|@TRAME_INCLUDE_PATH@|${TRAME_INCLUDE_PATH}|" \
+    -e "s|@TRAME_INSTALL_PATH@|${TRAME_INSTALL_PATH}|" \
+    Makefile.in > Makefile
