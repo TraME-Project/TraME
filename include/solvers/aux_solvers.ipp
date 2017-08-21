@@ -31,22 +31,14 @@
  * 07/26/2016
  */
 
-#include "ancillary/ancillary.hpp"
-
-#include "arums/arums.hpp"
-#include "mmfs/mmfs.hpp"
-#include "transfers/transfers.hpp"
-
-#include "markets/markets.hpp"
-#include "solvers/solvers.hpp"
-
 /*
  * build disaggregate epsilon function; used in cupids_lp
  * takes U_xy and arums as input; returns U_iy as output.
  */
 
+inline
 int 
-trame::build_disaggregate_epsilon(arma::vec n, const trame::arums::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix)
+build_disaggregate_epsilon(arma::vec n, const trame::arums::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix)
 {
     const int nbX = arums_emp_inp.nbX;
     const int nbY = arums_emp_inp.nbY;
