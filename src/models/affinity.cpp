@@ -170,7 +170,7 @@ trame::affinity::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doub
     //
     arma::vec opt_vec = arma::zeros(dX*dY,1);
 
-    success = optim::generic_optim(opt_vec,trame::affinity::mme_woregul_opt_objfn,&opt_data);
+    success = optim::bfgs(opt_vec,trame::affinity::mme_woregul_opt_objfn,&opt_data);
     //
     if (success) {
         theta_hat = opt_vec;

@@ -347,13 +347,12 @@ const
         return 0.0;
     }
     //
-    arma::vec lb = arma::zeros(nbY,1);
-    arma::vec ub = mubar_x;
 
-    arma::vec sol_vec = mubar_x/2.0;
-    double obj_val = 0, ret = 0;
+    double ret = 0;
+
     //
     // opt data
+
     trame_rsc_gbar_opt_data opt_data;
 
     opt_data.x = x;
@@ -370,9 +369,22 @@ const
     opt_data.quantile_eps_vec = aux_quant_eps_vec;
 
     opt_data.dist_pars = dist_pars;
+
     //
-    bool success = optim::generic_constr_optim(sol_vec,lb,ub,Gbar_opt_objfn,&opt_data,Gbar_opt_constr,&opt_data,obj_val);
+
+    optim::opt_settings settings;
+
+    settings.vals_bound = true;
+
+    settings.lower_bounds = arma::zeros(nbY,1);
+    settings.upper_bounds = mubar_x;
+
+    arma::vec sol_vec = mubar_x/2.0;
+
+    bool success = optim::sumt(sol_vec,Gbar_opt_objfn,&opt_data,Gbar_opt_constr,&opt_data,settings);
+    
     //
+    
     if (success) {
         mu_x_out = sol_vec;
 
@@ -380,7 +392,7 @@ const
         Gstarx(sol_vec,U_x_temp,x);
         U_x_out = U_x_temp;
 
-        ret = -obj_val;
+        ret = - settings.opt_value;
     } else {
         printf("error: optim failed in rsc::Gbarx\n");
     }
@@ -697,7 +709,8 @@ trame::arums::rsc::Gbar_opt_constr(const arma::vec& vals_inp, arma::mat* jacob_o
     if (jacob_out) {
         trame_rsc_gbar_opt_data *d = reinterpret_cast<trame_rsc_gbar_opt_data*>(constr_data);
 
-        *jacob_out = arma::ones(d->nbY,1);
+        jacob_out->set_size(1, d->nbY);
+        jacob_out->row(0) = arma::ones(1,d->nbY);
     }
     //
     return ret;

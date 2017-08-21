@@ -57,7 +57,7 @@ template<typename Tm>
 struct trame_model_mme_opt_data {
     int dim_theta;
 
-    arma::mat C_hat;
+    arma::vec C_hat;
     arma::mat kron_term;
 
     Tm market;
@@ -313,7 +313,7 @@ model_dmu(dse<arums::logit,arums::logit,transfers::tu>& market_obj, const arma::
     // arma::cube dlog_mu_x0_full(nbX,nbY,dim_theta);
     // arma::cube dlog_mu_0y_full(nbX,nbY,dim_theta);
 
-    arma::mat dlog_mu_x0_full_mat = arma::repmat(dlog_mu_x0,nbY,1); // R: matrix(dlogmux0full, ncol=rangeTheta) 
+    arma::mat dlog_mu_x0_full_mat = arma::repmat(dlog_mu_x0,nbY,1); // R: matrix(dlogmux0full, ncol=rangeTheta)
 
     arma::mat dlog_mu_0y_full_mat(nbX*nbY,dim_theta);
 

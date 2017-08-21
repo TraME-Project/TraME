@@ -16,6 +16,16 @@
   ##
   ################################################################################*/
 
+/*
+ * Optimization control parameters
+ *
+ * Keith O'Hara
+ * 08/04/2016
+ *
+ * This version:
+ * 08/14/2017
+ */
+
 #ifndef optim_structs_HPP
 #define optim_structs_HPP
 
@@ -24,6 +34,18 @@ struct opt_settings {
     int conv_failure_switch = 0;
     int iter_max = 2000;
     double err_tol = 1E-08;
+
+    bool vals_bound = false;
+    
+    arma::vec lower_bounds;
+    arma::vec upper_bounds;
+
+    // returned by algorithms
+    double opt_value;      // will be returned by the optimization algorithm
+    arma::vec zero_values; // will be returned by the root-finding method
+
+    int opt_iter;
+    double opt_err;
 
     // SUMT parameter
     double sumt_par_eta = 10.0;
@@ -53,8 +75,11 @@ struct opt_settings {
     double de_par_tau_F  = 0.1;
     double de_par_tau_CR = 0.1;
 
-    arma::vec de_lb; // this will default to -0.5
-    arma::vec de_ub; // this will default to  0.5
+    arma::vec de_initial_lb; // this will default to -0.5
+    arma::vec de_initial_ub; // this will default to  0.5
+
+    // L-BFGS
+    int lbfgs_par_M = 10;
 
     // Nelder-Mead
     bool nm_adaptive= true;
@@ -88,10 +113,8 @@ struct opt_settings {
     double pso_par_initial_c_soc = 0.5;
     double pso_par_final_c_soc   = 2.5;
 
-    arma::vec pso_lb; // this will default to -0.5
-    arma::vec pso_ub; // this will default to  0.5
-
-    bool pso_par_bounds = false;
+    arma::vec pso_initial_lb; // this will default to -0.5
+    arma::vec pso_initial_ub; // this will default to  0.5
 };
 
 #endif

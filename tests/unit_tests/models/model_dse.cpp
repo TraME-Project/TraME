@@ -20,16 +20,13 @@ int main()
     //
     // inputs:
 
-    const int nbX = 80;
-    const int nbY = 72;
+    const int nbX = 5;
+    const int nbY = 4;
     const int dX = 3;
     const int dY = 3;
 
     arma::mat X_vals = arma::randu(nbX,dX);
     arma::mat Y_vals = arma::randu(nbY,dY);
-
-    X_vals.load("xs.txt",arma::auto_detect);
-    Y_vals.load("ys.txt",arma::auto_detect);
 
     arma::vec n = arma::ones(nbX,1);
     arma::vec m = arma::ones(nbY,1);
@@ -62,17 +59,13 @@ int main()
     mfe_obj_TU.solve(mu_mfe);
 
     arma::mat mu_hat = mu_mfe % noise;
-
-    mu_hat.load("mu_hat.txt",arma::auto_detect);
-
-    arma::cout << mu_hat.rows(0,9) << arma::endl;  
     
     // MME and MLE
 
     arma::mat theta_hat_mme, theta_hat_mle;
-    // TU_logit_model.mme(mu_hat,theta_hat_mme,nullptr);
+    TU_logit_model.mme(mu_hat,theta_hat_mme,nullptr);
 
-    // arma::cout << "theta_hat mme: \n" << theta_hat_mme << arma::endl; 
+    arma::cout << "theta_hat mme: \n" << theta_hat_mme << arma::endl; 
 
     TU_logit_model.mle(mu_hat,theta_hat_mle,nullptr);
 

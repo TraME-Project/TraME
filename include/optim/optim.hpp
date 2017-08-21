@@ -40,10 +40,10 @@ namespace optim
 
     // line search
     #include "line_search/more_thuente.hpp"
-    #include "line_search/wolfe.hpp"
 
     // unconstrained optimization
     #include "unconstrained/bfgs.hpp"
+    #include "unconstrained/lbfgs.hpp" 
     #include "unconstrained/cg.hpp"
     #include "unconstrained/de.hpp"
     #include "unconstrained/de_prmm.hpp"
@@ -53,10 +53,6 @@ namespace optim
 
     // constrained optimization
     #include "constrained/sumt.hpp"
-
-    // generic wrappers
-    #include "generic/generic_optim.hpp"
-    #include "generic/generic_constr_optim.hpp"
 
     // solving systems of nonlinear equations
     #include "zeros/broyden.hpp"

@@ -429,7 +429,7 @@ model<mfe<Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (
         opt_params.iter_max = *max_iter_inp;
     }
 
-    bool success = optim::generic_optim_int(init_out_vals,opt_objfn,opt_data,value_out,&opt_params);
+    bool success = optim::bfgs_int(init_out_vals,opt_objfn,opt_data,&opt_params);
     //
     return success;
 }

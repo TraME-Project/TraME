@@ -325,7 +325,7 @@ model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<do
         opt_params.iter_max = *max_iter_inp;
     }
 
-    return optim::generic_optim_int(init_out_vals,opt_objfn,opt_data,value_out,&opt_params);
+    return optim::bfgs_int(init_out_vals,opt_objfn,opt_data,&opt_params);
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -400,7 +400,7 @@ model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<do
         opt_params.iter_max = *max_iter_inp;
     }
 
-    return optim::generic_optim_int(init_out_vals,opt_objfn,opt_data,value_out,&opt_params);
+    return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,&opt_params);
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -413,12 +413,12 @@ model<dse<Tg,Th,Tt>>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* 
     const int nbY = d->market.nbY;
     const int dim_theta = d->dim_theta;
 
-    const arma::mat C_hat = d->C_hat;
+    const arma::vec C_hat = d->C_hat;
     const arma::mat kron_term = d->kron_term;
     //
     const arma::mat U = arma::reshape(vals_inp.rows(0,nbX*nbY-1),nbX,nbY);
 
-    const arma::mat theta = vals_inp.rows(nbX*nbY,dim_theta + nbX*nbY - 1);
+    const arma::vec theta = vals_inp.rows(nbX*nbY,dim_theta + nbX*nbY - 1);
     const arma::mat phi_mat = arma::reshape(kron_term * theta,nbX,nbY);
     //
     arma::mat mu_G, mu_H;

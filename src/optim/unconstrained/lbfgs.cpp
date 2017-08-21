@@ -17,19 +17,19 @@
   ################################################################################*/
 
 /*
- * BFGS method for quasi-Newton-based non-linear optimization
+ * L-BFGS method for quasi-Newton-based non-linear optimization
  *
  * Keith O'Hara
  * 12/23/2016
  *
  * This version:
- * 08/14/2017
+ * 08/20/2017
  */
 
 #include "optim.hpp"
 
 bool
-optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, opt_settings* settings_inp)
+optim::lbfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, opt_settings* settings_inp)
 {   // notation: 'p' stands for '+1'.
     //
     bool success = false;
@@ -51,6 +51,8 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
 
     const double wolfe_cons_1 = 1E-03; // line search tuning parameters
     const double wolfe_cons_2 = 0.90;
+
+    const int par_M = settings.lbfgs_par_M;
 
     const bool vals_bound = settings.vals_bound;
     
@@ -97,7 +99,7 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
     arma::vec x = init_out_vals;
 
     if (!x.is_finite()) {
-        printf("bfgs error: non-finite initial value(s).\n");
+        printf("lbfgs error: non-finite initial value(s).\n");
         
         return false;
     }
@@ -106,8 +108,6 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
 	    x = transform(x, bounds_type, lower_bounds, upper_bounds);
     }
 
-    arma::mat W = arma::eye(n_vals,n_vals); // initial approx. to (inverse) Hessian 
-    const arma::mat I_mat = arma::eye(n_vals,n_vals);
 
     arma::vec grad(n_vals); // gradient vector
     box_objfn(x,&grad,opt_data);
@@ -122,7 +122,7 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
     // if ||gradient(initial values)|| > tolerance, then continue
 
     // double t_line = 1.0;    // initial line search value
-    arma::vec d = - W*grad; // direction
+    arma::vec d = - grad; // direction
 
     arma::vec x_p = x, grad_p = grad;
 
@@ -134,37 +134,17 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
         return true;
     }
 
-    // if (t_line < 1E-14) {
-    //     printf("bfgs error: line search failed using initial values. Trying random initial values.\n");
-
-    //     x_p.randu();
-    //     t_line = line_search_mt(1.0, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, box_objfn, opt_data);
-    // }
-
     //
     // if ||gradient(x_p)|| > tolerance, then continue
 
     arma::vec s = x_p - x;
     arma::vec y = grad_p - grad;
 
-    // if (arma::norm(s,2) < 1E-14) {
-    //     init_out_vals = x_p;
-    //     return true;
-    // }
+    arma::mat s_mat(n_vals,par_M);
+    arma::mat y_mat(n_vals,par_M);
 
-    //
-    // update W
-
-    double W_denom_term = arma::dot(y,s);
-    arma::mat W_term_1;
-
-    if (W_denom_term > 1E-10) { // checking the curvature condition y's > 0
-        W_term_1 = I_mat - s*y.t() / W_denom_term;
-    
-        W = W_term_1*W*W_term_1.t() + s*s.t() / W_denom_term; // update inverse Hessian approximation
-    } else {
-        W = 0.1*W;
-    }
+    s_mat.col(0) = s;
+    y_mat.col(0) = y;
 
     grad = grad_p;
 
@@ -176,7 +156,10 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
     while (err > err_tol && iter < iter_max) {
         iter++;
         //
-        d = - W*grad;
+        int par_M_act = std::min(iter,par_M);
+
+        d = - lbfgs_recur(grad,s_mat,y_mat,par_M_act);
+
         line_search_mt(1.0, x_p, grad_p, d, &wolfe_cons_1, &wolfe_cons_2, box_objfn, opt_data);
         
         // err = arma::accu(arma::abs(grad_p));
@@ -191,17 +174,16 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
 
         err = arma::norm(s, 2);
 
-        // update W
-        W_denom_term = arma::dot(y,s);
-
-        if (W_denom_term > 1E-10) { // checking the curvature condition y's > 0
-            W_term_1 = I_mat - s*y.t() / W_denom_term;
-        
-            W = W_term_1*W*W_term_1.t() + s*s.t() / W_denom_term;
-        }
         //
+
         x = x_p;
         grad = grad_p;
+
+        s_mat.cols(1,par_M-1) = s_mat.cols(0,par_M-2);
+        y_mat.cols(1,par_M-1) = y_mat.cols(0,par_M-2);
+
+        s_mat.col(0) = s;
+        y_mat.col(0) = y;
     }
     //
     if (vals_bound) {
@@ -214,13 +196,41 @@ optim::bfgs_int(arma::vec& init_out_vals, std::function<double (const arma::vec&
 }
 
 bool
-optim::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data)
+optim::lbfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data)
 {
-    return bfgs_int(init_out_vals,opt_objfn,opt_data,nullptr);
+    return lbfgs_int(init_out_vals,opt_objfn,opt_data,nullptr);
 }
 
 bool
-optim::bfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, opt_settings& settings)
+optim::lbfgs(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, opt_settings& settings)
 {
-    return bfgs_int(init_out_vals,opt_objfn,opt_data,&settings);
+    return lbfgs_int(init_out_vals,opt_objfn,opt_data,&settings);
+}
+
+arma::vec
+optim::lbfgs_recur(arma::vec q, const arma::mat& s_mat, const arma::mat& y_mat, const int M)
+{
+    arma::vec alpha_vec(M);
+
+    double rho = 1.0;
+
+    for (int i=0; i < M; i++) {
+        rho = 1.0 / arma::dot(y_mat.col(i),s_mat.col(i));
+        alpha_vec(i) = rho*arma::dot(s_mat.col(i),q);
+
+        q -= alpha_vec(i)*y_mat.col(i);
+    }
+
+    arma::vec r = q * ( arma::dot(s_mat.col(0),y_mat.col(0)) / arma::dot(y_mat.col(0),y_mat.col(0)) );
+
+    double beta = 1.0;
+
+    for (int i = M - 1; i >= 0; i--) {
+        rho = 1.0 / arma::dot(y_mat.col(i),s_mat.col(i));
+        beta = rho*arma::dot(y_mat.col(i),r);
+
+        r += (alpha_vec(i) - beta)*s_mat.col(i);
+    }
+
+    return r;
 }

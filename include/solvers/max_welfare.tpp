@@ -155,7 +155,7 @@ max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::ve
         opt_params.iter_max = *max_iter_inp;
     }
 
-    return optim::generic_optim_int(init_out_vals,opt_objfn,opt_data,value_out,&opt_params);
+    return optim::bfgs_int(init_out_vals,opt_objfn,opt_data,&opt_params);
 }
 
 template<typename Tg, typename Th, typename Tt>

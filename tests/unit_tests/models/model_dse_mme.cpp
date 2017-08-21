@@ -22,7 +22,7 @@
   ################################################################################*/
 
 /*
- * DSE model class test using data generated from R test code, where
+ * test MME objective function using data generated from R test code, where
  * seed=777, nbX=5, nbY=4, noiseScale=0.1, dX=3, dY=3
  *
  * Keith O'Hara
@@ -41,29 +41,16 @@ int main()
     //
     // inputs:
 
-    bool small_ver = false;
-
-    int nbX = 80;
-    int nbY = 72;
-
-    if (small_ver) {
-        nbX = 5;
-        nbY = 4;
-    }
-
+    const int nbX = 5;
+    const int nbY = 4;
     const int dX = 3;
     const int dY = 3;
 
     arma::mat X_vals(nbX,dX);
     arma::mat Y_vals(nbY,dY);
 
-    if (small_ver) {
-        X_vals.load("xs_small.txt",arma::auto_detect);
-        Y_vals.load("ys_small.txt",arma::auto_detect);
-    } else {
-        X_vals.load("xs.txt",arma::auto_detect);
-        Y_vals.load("ys.txt",arma::auto_detect);
-    }
+    X_vals.load("xs_small.txt",arma::auto_detect);
+    Y_vals.load("ys_small.txt",arma::auto_detect);
 
     arma::vec n = arma::ones(nbX,1);
     arma::vec m = arma::ones(nbY,1);
@@ -80,25 +67,43 @@ int main()
     trame::model<trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::tu>> TU_logit_model; 
     TU_logit_model.build(X_vals,Y_vals,n,m);
 
-    arma::mat mu_hat(nbX,nbY);
 
-    if (small_ver) {
-        mu_hat.load("mu_hat_small.txt",arma::auto_detect);
-    } else {
-        mu_hat.load("mu_hat.txt",arma::auto_detect);
-    }
+    arma::mat mu_hat;
+    mu_hat.load("mu_hat_small.txt",arma::auto_detect);
 
-    // MME and MLE
+    // calculate loglikelihood
 
-    arma::mat theta_hat_mme, theta_hat_mle;
+    arma::mat theta = arma::ones(dX*dY);
 
-    TU_logit_model.mme(mu_hat,theta_hat_mme,nullptr);
+    arma::mat dtheta_Psi;
+    TU_logit_model.dtheta(nullptr,dtheta_Psi);
 
-    arma::cout << "theta_hat mme: \n" << theta_hat_mme << arma::endl; 
+    TU_logit_model.model_to_market(theta);
 
-    TU_logit_model.mle(mu_hat,theta_hat_mle,nullptr);
+    const arma::mat kron_term = dtheta_Psi;
+    const arma::vec C_hat = arma::vectorise(arma::trans(arma::vectorise(mu_hat)) * kron_term);
 
-    arma::cout << "theta_hat mle: \n" << theta_hat_mle << arma::endl;
+    arma::cout << "mu_hat:\n" << mu_hat << arma::endl;
+    arma::cout << "kron_term:\n" << kron_term << arma::endl;
+    arma::cout << "C_hat:\n" << C_hat << arma::endl;
+
+    //
+    // add optimization data
+        
+    trame::trame_model_mme_opt_data<trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::tu>> opt_data;
+
+    opt_data.market = TU_logit_model.market_obj;
+    opt_data.dim_theta = TU_logit_model.dim_theta;
+    opt_data.C_hat = C_hat;
+    opt_data.kron_term = kron_term;
+    //
+    arma::vec sol_vec = arma::join_cols(arma::vectorise(kron_term * theta)/2.0,theta);
+
+    arma::vec grad_vec;
+
+    double mme_val = TU_logit_model.model_mme_opt_objfn(sol_vec,&grad_vec,&opt_data);
+    std::cout << "mme_val = " << mme_val << std::endl;
+    arma::cout << "grad:\n" << grad_vec << arma::endl;
 
     //
     printf("\n*===================    End of general model Test    ===================*\n");

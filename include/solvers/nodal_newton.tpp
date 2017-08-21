@@ -156,7 +156,7 @@ nodal_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma
         opt_params.iter_max = *max_iter_inp;
     }
 
-    return optim::broyden_int(init_out_vals,opt_objfn,opt_data,value_out,&opt_params);
+    return optim::broyden_int(init_out_vals,opt_objfn,opt_data,&opt_params);
 }
 
 inline
@@ -174,7 +174,7 @@ nodal_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma
         opt_params.iter_max = *max_iter_inp;
     }
 
-    return optim::broyden_df_int(init_out_vals,opt_objfn,opt_data,jacob_objfn,jacob_data,value_out,&opt_params);
+    return optim::broyden_df_int(init_out_vals,opt_objfn,opt_data,jacob_objfn,jacob_data,&opt_params);
 }
 
 template<typename Tt>
