@@ -71,6 +71,8 @@ int main()
     trame::byrow(br_vec_2,dim_1,dim_2);
     trame::byrow(br_X,dim_1,dim_2);
 
+    trame::byrow(br_vec_1,dim_1+1,dim_2+1); // error
+
     // elem-by-elem operations
     printf("done\n");
 
@@ -82,22 +84,30 @@ int main()
 
     trame::elem_add(eX_mat_1,eX_mat_2);
     trame::elem_add(eX_vec_1,eX_mat_2);
+    trame::elem_add(eX_mat_2,eX_vec_1);
     trame::elem_add(eX_mat_1,eX_vec_2);
+    trame::elem_add(eX_vec_2,eX_mat_1);
     trame::elem_add(eX_vec_1,eX_vec_2);
 
     trame::elem_sub(eX_mat_1,eX_mat_2);
     trame::elem_sub(eX_vec_1,eX_mat_2);
+    trame::elem_sub(eX_mat_2,eX_vec_1);
     trame::elem_sub(eX_mat_1,eX_vec_2);
+    trame::elem_sub(eX_vec_2,eX_mat_1);
     trame::elem_sub(eX_vec_1,eX_vec_2);
 
     trame::elem_prod(eX_mat_1,eX_mat_2);
     trame::elem_prod(eX_vec_1,eX_mat_2);
+    trame::elem_prod(eX_mat_2,eX_vec_1);
     trame::elem_prod(eX_mat_1,eX_vec_2);
+    trame::elem_prod(eX_vec_2,eX_mat_1);
     trame::elem_prod(eX_vec_1,eX_vec_2);
 
     trame::elem_div(eX_mat_1,eX_mat_2);
     trame::elem_div(eX_vec_1,eX_mat_2);
+    trame::elem_div(eX_mat_2,eX_vec_1);
     trame::elem_div(eX_mat_1,eX_vec_2);
+    trame::elem_div(eX_vec_2,eX_mat_1);
     trame::elem_div(eX_vec_1,eX_vec_2);
 
     trame::elem_min(eX_mat_1);
@@ -118,6 +128,7 @@ int main()
 
     trame::cube_sum(cs_X,0);
     trame::cube_sum(cs_X,1);
+    trame::cube_sum(cs_X,2); // error
 
     // cube_to_mat
 

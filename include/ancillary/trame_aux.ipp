@@ -170,7 +170,7 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
     arma::mat ret;
 
     if (!same_rows && !same_cols) {
-        printf("elem_sub: need matrices to agree on at least one dimension\n");
+        printf("elem_add: need matrices to agree on at least one dimension\n");
         return ret;
     }
 
@@ -191,7 +191,7 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
                 ret.col(i) = mat_1.col(i) + mat_2;
             }
         } else {
-            printf("elem_sub: need one of the matrices to be a column vector\n");
+            printf("elem_add: need one of the matrices to be a column vector\n");
             return ret;
         }
     } else if (!same_rows && same_cols) {
@@ -206,11 +206,11 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
                 ret.row(i) = mat_1.row(i) + mat_2;
             }
         } else {
-            printf("elem_sub: need one of the matrices to be a row vector\n");
+            printf("elem_add: need one of the matrices to be a row vector\n");
             return ret;
         }
     } else {
-        printf("elem_sub: unknown error\n");
+        printf("elem_add: unknown error\n");
         return ret;
     }
     //
