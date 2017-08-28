@@ -34,7 +34,7 @@ int main()
     // load data
 
     arma::mat Xvals, Yvals;
-	Xvals.load("data/Xvals.txt",arma::auto_detect);
+    Xvals.load("data/Xvals.txt",arma::auto_detect);
     Yvals.load("data/Yvals.txt",arma::auto_detect);
     
     const int nbX = Xvals.n_rows;
