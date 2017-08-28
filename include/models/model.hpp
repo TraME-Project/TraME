@@ -128,7 +128,7 @@ class model<mfe<Tt>> : public model_base
         arma::mat dtheta(const arma::mat* delta_theta_inp);
 
         bool mme_regul(const arma::mat& mu_hat, const double lambda, arma::mat& theta_hat, double& val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp);
-        bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp);
+        bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp, const int* optim_method_inp);
 
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
         bool mme(const arma::mat& mu_hat, double lambda_inp, arma::mat& theta_hat);
@@ -150,7 +150,7 @@ class model<mfe<Tt>> : public model_base
 
         // optimization-related objects
 
-        bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp);
+        bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method);
         static double model_mfe_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
 
