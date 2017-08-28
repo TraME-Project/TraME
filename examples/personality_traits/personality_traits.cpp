@@ -40,6 +40,9 @@ int main()
     const int nbX = Xvals.n_rows;
     const int nbY = Yvals.n_rows;
 
+    const int dX = Xvals.n_cols;
+    const int dY = Yvals.n_cols;
+
     arma::mat mu_hat = arma::eye(nbX,nbX);
 
     arma::vec n = arma::ones(nbX,1);
@@ -48,7 +51,8 @@ int main()
     //
     // estimate
 
-    trame::model< trame::mfe<trame::mmfs::geo> > aff_model;
+    // trame::model< trame::mfe<trame::mmfs::geo> > aff_model;
+    trame::model_affinity aff_model;
 
     aff_model.build(Xvals,Yvals,n,m);
 
@@ -60,12 +64,12 @@ int main()
     aff_model.mme_regul(mu_hat,lambda,theta_hat_aff,val_hat_1,&err_tol,nullptr,nullptr,nullptr);
     std::cout << "obj. value with regularization: " << val_hat_1 << std::endl;
 
-    arma::cout << "theta_hat:\n" << theta_hat_aff << arma::endl;
+    arma::cout << "theta_hat:\n" << arma::reshape(theta_hat_aff,dX,dY) << arma::endl;
 
     aff_model.mme_woregul(mu_hat,theta_hat_aff,val_hat_2,&err_tol,nullptr,nullptr,nullptr,nullptr);
     std::cout << "obj. value without regularization: " << val_hat_2 << std::endl;
     
-    arma::cout << "theta_hat:\n" << theta_hat_aff << arma::endl;
+    arma::cout << "theta_hat:\n" << arma::reshape(theta_hat_aff,dX,dY) << arma::endl;
 
     return 0;
 }

@@ -31,7 +31,7 @@
  * 06/06/2017
  */
 
-// Note: 'theta' refers to model parameters;'params' refers to the structural parameters
+// Note: 'theta' refers to model parameters; 'params' refers to the structural parameters
 
 //
 // build
@@ -364,6 +364,8 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double lambda, arma::ma
 
             // opt_check = arma::accu(arma::pow(A - arma::vectorise(U.cols(0,d_l-1) * D_opt *V.cols(0,d_l-1).t()), 2));
             opt_check = std::pow( arma::norm(A - arma::vectorise(U.cols(0,d_l-1) * D_opt *V.cols(0,d_l-1).t()),2) , 2);
+
+            std::cout << "Regularized MME: testing optimality: " << opt_check << std::endl;
         }
 
         //
