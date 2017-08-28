@@ -176,7 +176,7 @@ model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doubl
     double xtol_rel = (xtol_rel_inp) ? *xtol_rel_inp : 1E-04;
     int max_eval = (max_eval_inp) ? *max_eval_inp : 1E05;
 
-    double tol_ipfp = (tol_ipfp_inp) ? *tol_ipfp_inp : 1E-14;
+    double tol_ipfp = (tol_ipfp_inp) ? *tol_ipfp_inp : 1E-12;
     int max_iter_ipfp = (max_iter_ipfp_inp) ? *max_iter_ipfp_inp : 1E05;
     //
     arma::mat C_hat = Phi_k(mu_hat);
@@ -263,7 +263,7 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double lambda, arma::ma
     double xtol_rel = (xtol_rel_inp) ? *xtol_rel_inp : 1E-04;
     int max_eval = (max_eval_inp) ? *max_eval_inp : 1E05;
 
-    double tol_ipfp = (tol_ipfp_inp) ? *tol_ipfp_inp : 1E-14;
+    double tol_ipfp = (tol_ipfp_inp) ? *tol_ipfp_inp : 1E-12;
     int max_iter_ipfp = (max_iter_ipfp_inp) ? *max_iter_ipfp_inp : 1E05;
 
     double sigma = market_obj.sigma;
@@ -292,8 +292,8 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double lambda, arma::ma
     arma::mat g = IX * q.t();
 
     arma::mat Pi_hat = mu_hat / total_mass;
-    arma::mat v = arma::zeros(1,nbY);
-    arma::mat A = arma::zeros(dX*dY,1);
+    arma::rowvec v = arma::zeros(1,nbY);
+    arma::vec A = arma::zeros(dX*dY,1);
 
     arma::mat Phi = arma::reshape(dtheta(&A),nbX,nbY);
 
@@ -301,12 +301,15 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double lambda, arma::ma
     //
     int iter_ipfp = 0, iter_count = 0;
     double err_ipfp = 2*tol_ipfp, err_val = 1.0;
-    double t_k = 0.3; // step size for the prox grad algorithm (or grad descent when lambda=0)
-    double alpha = 1.0; // for optimality check
+
+    const double t_k = 0.3; // step size for the prox grad algorithm (or grad descent when lambda=0)
+    const double alpha = 1.0; // for optimality check
 
     double the_val = 1.0, the_val_old = 1E04;
+    double opt_check = 1.0;
+
     arma::vec d, d_opt;
-    arma::mat v_next = v, u, Pi, the_grad, A_mat, U, V, D, svd_mat, D_opt, opt_mat;
+    arma::mat v_next = v, u, Pi, the_grad, A_mat, U, V, D, svd_mat, D_opt;
 
     while (err_val > xtol_rel && iter_count < max_eval) {
         iter_count++;
@@ -341,10 +344,12 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double lambda, arma::ma
 
             D = arma::diagmat(elem_max(d - lambda*t_k,0.0));
 
-            const int d_l = d.n_elem;
-
-            // A = arma::vectorise(U * D * V.t()); // R's SVD behaves differently
-            A = arma::vectorise(U.cols(0,d_l-1) * D * V.cols(0,d_l-1).t());
+            if (dX != dY) { // R's SVD behaves differently
+                const int d_l = d.n_elem;
+                A = arma::vectorise(U.cols(0,d_l-1) * D * V.cols(0,d_l-1).t());
+            } else {
+                A = arma::vectorise(U * D * V.t());
+            }
         } // if lambda = 0 then we are just taking one step of gradient descent
         
         //
@@ -357,7 +362,8 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double lambda, arma::ma
             D_opt = arma::diagmat(elem_max(d_opt - alpha*lambda, 0.0));
             const int d_l = d_opt.n_elem;
 
-            opt_mat = arma::accu(arma::pow(A - arma::vectorise(U.cols(0,d_l-1) * D_opt *V.cols(0,d_l-1).t()), 2));
+            // opt_check = arma::accu(arma::pow(A - arma::vectorise(U.cols(0,d_l-1) * D_opt *V.cols(0,d_l-1).t()), 2));
+            opt_check = std::pow( arma::norm(A - arma::vectorise(U.cols(0,d_l-1) * D_opt *V.cols(0,d_l-1).t()),2) , 2);
         }
 
         //
@@ -380,9 +386,12 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, const double lambda, arma::ma
     if (err_val <= xtol_rel && iter_count < max_eval) {
         success = true;
     }
+
     //
+
     theta_hat = arma::vectorise(A);
     val_ret = the_val;
+    
     //
     return success;
 }
@@ -441,9 +450,7 @@ inline
 arma::mat
 model<mfe<Tt>>::Phi_k(const arma::mat& mu_hat)
 {
-    arma::mat ret = arma::vectorise(arma::trans(arma::vectorise(mu_hat))*model_data);
-    //
-    return ret;
+    return arma::vectorise(arma::trans(arma::vectorise(mu_hat))*model_data);
 }
 
 //
