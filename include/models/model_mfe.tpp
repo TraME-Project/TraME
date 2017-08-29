@@ -127,14 +127,14 @@ template<typename Tt>
 bool
 model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat)
 {
-    return this->mme_woregul(mu_hat,theta_hat,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+    return this->mme_woregul(mu_hat,theta_hat,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tt>
 bool
 model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret)
 {
-    return this->mme_woregul(mu_hat,theta_hat,&val_ret,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+    return this->mme_woregul(mu_hat,theta_hat,&val_ret,nullptr,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tt>

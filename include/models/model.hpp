@@ -133,7 +133,7 @@ class model<mfe<Tt>> : public model_base
 
         bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat);
         bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret);
-        bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_ret, double* xtol_ret, int* max_iter, double* tol_ipfp, double* max_iter_ipfp, const int* optim_method_inp);
+        bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_ret, double* xtol_rel_inp, int* max_iter_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp, const int* optim_method_inp);
 
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
         bool mme(const arma::mat& mu_hat, double lambda_inp, arma::mat& theta_hat);
