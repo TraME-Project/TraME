@@ -61,12 +61,12 @@ int main()
 
     arma::mat theta_hat_aff;
 
-    aff_model.mme_regul(mu_hat,lambda,theta_hat_aff,val_hat_1,&err_tol,nullptr,nullptr,nullptr);
+    aff_model.mme_regul(mu_hat,theta_hat_aff,lambda,&val_hat_1,&err_tol,nullptr,nullptr,nullptr);
     std::cout << "obj. value with regularization: " << val_hat_1 << std::endl;
 
     arma::cout << "theta_hat:\n" << arma::reshape(theta_hat_aff,dX,dY) << arma::endl;
 
-    aff_model.mme_woregul(mu_hat,theta_hat_aff,val_hat_2,&err_tol,nullptr,nullptr,nullptr,nullptr);
+    aff_model.mme_woregul(mu_hat,theta_hat_aff,&val_hat_2,&err_tol,nullptr,nullptr,nullptr,nullptr);
     std::cout << "obj. value without regularization: " << val_hat_2 << std::endl;
     
     arma::cout << "theta_hat:\n" << arma::reshape(theta_hat_aff,dX,dY) << arma::endl;
