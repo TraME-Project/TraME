@@ -412,6 +412,7 @@ sed -e "s|@CC@|${CC}|" \
     -e "s|@TRAME_OPT_FLAGS@|${TRAME_OPT_FLAGS}|" \
     -e "s|@TRAME_SHLIB_NAME@|${TRAME_SHLIB_NAME}|" \
     -e "s|@TRAME_SHLIB_FLAGS@|${TRAME_SHLIB_FLAGS}|" \
+    -e "s|@TRAME_BUILD_PATH@|${WDIR}|" \
     -e "s|@TRAME_INSTALL_PATH@|${TRAME_INSTALL_PATH}|" \
     -e "s|@LP_INCLUDE_PATH@|${LP_INCLUDE_PATH}|" \
     -e "s|@LP_LIB_PATH@|${LP_LIB_PATH}|" \
