@@ -26,8 +26,8 @@
 
 namespace trame
 {
-    #include "markets/dse.hpp"
-    #include "markets/mfe.hpp"
+    #include "dse.hpp"
+    #include "mfe.hpp"
 }
 
 #endif

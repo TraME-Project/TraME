@@ -27,10 +27,10 @@
 namespace trame
 {
     namespace transfers {
-        #include "transfers/transfers_etu.hpp"
-        #include "transfers/transfers_ltu.hpp"
-        #include "transfers/transfers_ntu.hpp"
-        #include "transfers/transfers_tu.hpp"
+        #include "transfers_etu.hpp"
+        #include "transfers_ltu.hpp"
+        #include "transfers_ntu.hpp"
+        #include "transfers_tu.hpp"
     }
 }
 

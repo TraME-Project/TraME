@@ -26,7 +26,7 @@
 
 namespace trame
 {
-    #include "models/model.hpp"
+    #include "model.hpp"
 }
 
 #endif

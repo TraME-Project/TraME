@@ -29,11 +29,11 @@
 
 namespace trame
 {
-    #include "ancillary/trame_aux.hpp"
-    #include "ancillary/trame_stats.hpp"
+    #include "trame_aux.hpp"
+    #include "trame_stats.hpp"
 
-    #include "ancillary/inv_pwa.hpp"
-    #include "ancillary/zeroin.hpp"
+    #include "inv_pwa.hpp"
+    #include "zeroin.hpp"
 
     #include "lp/generic_lp.hpp"
 }

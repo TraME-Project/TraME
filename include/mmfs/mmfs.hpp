@@ -27,10 +27,10 @@
 namespace trame
 {
     namespace mmfs {
-        #include "mmfs/mmfs_ces.hpp"
-        #include "mmfs/mmfs_cd.hpp"
-        #include "mmfs/mmfs_min.hpp"
-        #include "mmfs/mmfs_geo.hpp"
+        #include "mmfs_ces.hpp"
+        #include "mmfs_cd.hpp"
+        #include "mmfs_min.hpp"
+        #include "mmfs_geo.hpp"
     }
 }
 
