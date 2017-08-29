@@ -52,7 +52,7 @@ int main()
     // estimate
 
     // trame::model< trame::mfe<trame::mmfs::geo> > aff_model;
-    trame::model_affinity aff_model;
+    trame::affinity_model aff_model;
 
     aff_model.build(Xvals,Yvals,n,m);
 

@@ -34,6 +34,7 @@ int main()
     // load data
 
     arma::mat Xvals, Yvals;
+
     Xvals.load("data/Xvals.txt",arma::auto_detect);
     Yvals.load("data/Yvals.txt",arma::auto_detect);
 
@@ -52,7 +53,7 @@ int main()
     // estimate
 
     // trame::model< trame::mfe<trame::mmfs::geo> > aff_model;
-    trame::model_affinity aff_model;
+    trame::affinity_model aff_model;
 
     aff_model.build(Xvals,Yvals,n,m);
 

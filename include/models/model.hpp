@@ -163,6 +163,6 @@ class model<mfe<Tt>> : public model_base
 #include "model_dse.tpp"
 #include "model_mfe.tpp"
 
-typedef model<mfe<mmfs::geo>> model_affinity;
+typedef model<mfe<mmfs::geo>> affinity_model;
 
 #endif
