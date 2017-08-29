@@ -46,16 +46,14 @@ bool
 oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool* x_first_inp, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out)
 {
     bool success = false;
+    
     //
-    // warnings
-    if (!market.TU) {
-        printf("oap_lp only works for TU transfers.\n");
-        return false;
-    }
-    //
+
     const int nbX = market.nbX;
     const int nbY = market.nbY;
+    
     //
+
     arma::vec obj_lp = arma::vectorise(market.trans_obj.phi);
 
     arma::mat A_1_lp = arma::kron(arma::ones(1,nbY),arma::eye(nbX,nbX));
@@ -67,9 +65,8 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool
     const int k_lp = A_lp.n_rows;
     const int n_lp = A_lp.n_cols;
 
-    int jj;
     char* sense_lp = new char[k_lp];
-    for (jj=0; jj<k_lp; jj++) {
+    for (int jj=0; jj<k_lp; jj++) {
         sense_lp[jj] = '<';
     }
     //
@@ -133,7 +130,7 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool
         const int n_bis = A_bis.n_cols;
 
         char* sense_bis = new char[k_bis];
-        for (jj=0; jj<k_bis-1; jj++) {
+        for (int jj=0; jj<k_bis-1; jj++) {
             sense_bis[jj] = '>';
         }
         sense_bis[k_bis-1] = '=';

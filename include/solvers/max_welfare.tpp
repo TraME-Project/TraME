@@ -47,12 +47,6 @@ max_welfare_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma:
 {
     bool success = false;
     //
-    // warnings
-    if (!market.TU) {
-        printf("max_welfare only works for TU transfers.\n");
-        return false;
-    }
-    //
     const double err_tol = (err_tol_inp) ? *err_tol_inp : 1E-06;
     const int max_iter = (max_iter_inp) ? *max_iter_inp : 2000;
 

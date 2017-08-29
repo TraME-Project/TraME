@@ -47,12 +47,6 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
 {
     bool success = false;
     //
-    // warnings
-    if (!market.NTU) {
-        printf("darum only works for NTU transfers.\n");
-        return false;
-    }
-    //
     const int nbX = market.nbX;
     const int nbY = market.nbY;
 
