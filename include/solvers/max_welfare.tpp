@@ -33,6 +33,14 @@
 
 // internal max_welfare
 
+template<typename Tg, typename Th, typename Tt>
+bool
+max_welfare_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* err_tol_inp, const int* max_iter_inp)
+{
+    printf("max_welfare only works for TU transfers.\n");
+    return false;
+}
+
 template<typename Tg, typename Th>
 bool
 max_welfare_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* err_tol_inp, const int* max_iter_inp)
@@ -56,12 +64,12 @@ max_welfare_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma:
 
     double obj_val = 0;
     arma::vec sol_vec = arma::vectorise(market.trans_obj.phi / 2.0); // initial value
-    
+
     success = max_welfare_optim(sol_vec,max_welfare_opt_objfn<Tg,Th,transfers::tu>,&opt_data,&obj_val,&err_tol,&max_iter);
     //
     // construct equilibrium objects
     arma::mat U = arma::reshape(sol_vec,nbX,nbY);
-    
+
     arma::mat mu_G, mu_H;
     double val_G = market.arums_G.G(market.n,U,mu_G);
     double val_H = market.arums_H.G(market.m,arma::trans(market.trans_obj.phi - U),mu_H);
@@ -94,7 +102,7 @@ max_welfare_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma:
     return success;
 }
 
-// wrappers 
+// wrappers
 
 template<typename Tg, typename Th, typename Tt>
 bool
@@ -142,7 +150,7 @@ max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out
 // optimization functions
 
 inline
-bool 
+bool
 max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp)
 {
     optim::opt_settings opt_params;
@@ -166,7 +174,7 @@ max_welfare_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void *opt_data
     //
     const int nbX = d->market.nbX;
     const int nbY = d->market.nbY;
-    
+
     arma::mat U = arma::reshape(vals_inp,nbX,nbY);
 
     arma::mat mu_G, mu_H;

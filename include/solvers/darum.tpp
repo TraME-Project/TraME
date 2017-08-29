@@ -33,6 +33,14 @@
 
 // internal darum
 
+template<typename Tg, typename Th, typename Tt>
+bool
+darum_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp)
+{
+    printf("darum only works for NTU transfers.\n");
+    return false;
+}
+
 template<typename Tg, typename Th>
 bool
 darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp)
@@ -58,7 +66,7 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
     //
     int iter = 0;
     double err = 2*tol;
-    
+
     arma::mat U_P, U_D, mu_P, mu_D, mu_diff;
 
     while (err > tol && iter < max_iter) {
@@ -72,7 +80,7 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
         //
         err = elem_max(arma::abs(mu_diff));
     }
-    
+
     if (err <= tol && iter < max_iter) {
         success = true;
     }
@@ -99,7 +107,7 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
     return success;
 }
 
-// wrappers 
+// wrappers
 
 template<typename Tg, typename Th, typename Tt>
 bool

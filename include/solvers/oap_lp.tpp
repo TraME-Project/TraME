@@ -33,6 +33,14 @@
 
 // internal oap_lp
 
+template<typename Tg, typename Th, typename Tt>
+bool
+oap_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, const bool* x_first_inp, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out)
+{
+    printf("oap_lp only works for TU transfers.\n");
+    return false;
+}
+
 template<typename Tg, typename Th>
 bool
 oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, const bool* x_first_inp, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, double* val_out, arma::mat* residuals_out)

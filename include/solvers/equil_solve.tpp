@@ -107,7 +107,7 @@ equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, arma::mat& U_out
             res = max_welfare(market_obj,mu_sol,U_out,V_out);
         }
         if (sig=='o') {
-            res = oap_lp(market_obj,mu_sol,U_out,V_out);
+            // res = oap_lp(market_obj,mu_sol,U_out,V_out);
         }
     } else { // default
         if (market_obj.NTU) {
@@ -189,7 +189,7 @@ equil_solve(const dse<arums::logit,arums::logit,transfers::tu>& market_obj, arma
 {
     mfe<mmfs::geo> mfe_obj(market_obj.n,market_obj.m);
     mfe_obj.mmfs_obj = market_obj.trans_obj.gen_mmf();
-    
+
     return ipfp(mfe_obj,mu_sol);
 }
 
@@ -201,7 +201,7 @@ equil_solve(const dse<arums::logit,arums::logit,transfers::tu>& market_obj, arma
     std::cout << "yep" << std::endl;
     mfe<mmfs::geo> mfe_obj(market_obj.n,market_obj.m);
     mfe_obj.mmfs_obj = market_obj.trans_obj.gen_mmf();
-    
+
     return ipfp(mfe_obj,mu_sol,U_out,V_out);
 }
 
