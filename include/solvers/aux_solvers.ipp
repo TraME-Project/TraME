@@ -38,36 +38,46 @@
 
 inline
 int 
-build_disaggregate_epsilon(arma::vec n, const trame::arums::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix)
+build_disaggregate_epsilon(const arma::vec& n, const trame::arums::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix)
 {
     const int nbX = arums_emp_inp.nbX;
     const int nbY = arums_emp_inp.nbY;
 
-    const int nb_draws = arums_emp_inp.aux_nb_draws;
-    const int nbI = nbX * nb_draws;
+    const int n_draws = arums_emp_inp.aux_n_draws;
+    const int nbI = nbX * n_draws;
 
     arma::vec I_01(nbX);
-    arma::mat epsilon;
-    arma::mat epsilons = arma::zeros(nbI,nbY+1);
     I_ix.zeros(nbI,nbX);
+
+    arma::mat epsilons = arma::zeros(nbI,nbY+1);
+
     //
+
     for (int x=0; x < nbX; x++) {
+        arma::mat epsilon;
+
         if (arums_emp_inp.x_homogeneous) {
             epsilon = arums_emp_inp.atoms.slice(0);
         } else {
             epsilon = arums_emp_inp.atoms.slice(x);
         }
+
+        epsilons.rows(x*n_draws,(x+1)*n_draws-1) = std::move(epsilon);
+        
         //
-        epsilons.rows(x*nb_draws,(x+1)*nb_draws-1) = epsilon;
-        //
+
         I_01.zeros();
         I_01(x) = 1;
         
-        I_ix.rows(x*nb_draws,(x+1)*nb_draws-1) = arma::repmat(I_01.t(),nb_draws,1); // Keith: check use of byrow here
+        I_ix.rows(x*n_draws,(x+1)*n_draws-1) = arma::repmat(I_01.t(),n_draws,1); // Keith: check use of byrow here
     }
+
     //
-    epsilon_iy = epsilons.cols(0,nbY-1);
-    epsilon0_i = epsilons.col(nbY);
+
+    epsilon_iy = std::move(epsilons.cols(0,nbY-1));
+    epsilon0_i = std::move(epsilons.col(nbY));
+    
     //
-    return nb_draws;
+
+    return n_draws;
 }

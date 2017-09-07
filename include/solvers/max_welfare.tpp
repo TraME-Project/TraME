@@ -46,9 +46,11 @@ bool
 max_welfare_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* err_tol_inp, const int* max_iter_inp)
 {
     bool success = false;
-    //
+    
     const double err_tol = (err_tol_inp) ? *err_tol_inp : 1E-06;
     const int max_iter = (max_iter_inp) ? *max_iter_inp : 2000;
+
+    //
 
     const int nbX = market.nbX;
     const int nbY = market.nbY;
@@ -56,21 +58,33 @@ max_welfare_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma:
     trame_market_opt_data<Tg,Tg,transfers::tu> opt_data;
     opt_data.market = market;
 
-    double obj_val = 0;
+    // optim
+
+    const int optim_method = 2;
+
+    optim::opt_settings settings;
+
+    settings.err_tol = err_tol;
+    settings.iter_max = max_iter;
+
     arma::vec sol_vec = arma::vectorise(market.trans_obj.phi / 2.0); // initial value
 
-    success = max_welfare_optim(sol_vec,max_welfare_opt_objfn<Tg,Th,transfers::tu>,&opt_data,&obj_val,&err_tol,&max_iter);
+    success = max_welfare_optim(sol_vec,max_welfare_opt_objfn<Tg,Th,transfers::tu>,&opt_data,&settings,optim_method);
+
     //
     // construct equilibrium objects
-    arma::mat U = arma::reshape(sol_vec,nbX,nbY);
+
+    // arma::mat U = arma::reshape(sol_vec,nbX,nbY);
+    arma::mat U(sol_vec.memptr(),nbX,nbY,false,true);
 
     arma::mat mu_G, mu_H;
     double val_G = market.arums_G.G(market.n,U,mu_G);
     double val_H = market.arums_H.G(market.m,arma::trans(market.trans_obj.phi - U),mu_H);
 
     double val = val_G + val_H;
-    //
+    
     // return equilibrium objects
+
     if (mu_out) {
         *mu_out = mu_G;
     }
@@ -145,19 +159,16 @@ max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out
 
 inline
 bool
-max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp)
+max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method)
 {
-    optim::opt_settings opt_params;
-
-    if (err_tol_inp) {
-        opt_params.err_tol = *err_tol_inp;
+    if (optim_method == 1) {
+        return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
+    } else if (optim_method == 2) {
+        return optim::bfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
+    } else {
+        printf("error: unrecognized optim_method choice.\n");
+        return false;
     }
-
-    if (max_iter_inp) {
-        opt_params.iter_max = *max_iter_inp;
-    }
-
-    return optim::bfgs_int(init_out_vals,opt_objfn,opt_data,&opt_params);
 }
 
 template<typename Tg, typename Th, typename Tt>

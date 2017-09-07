@@ -446,12 +446,12 @@ const
 }
 
 trame::arums::empirical
-trame::arums::logit::simul(int nb_draws, int seed)
+trame::arums::logit::simul(int n_draws, int seed)
 const
 {
     empirical emp_obj;
     
-    this->simul_int(emp_obj,&nb_draws,&seed);
+    this->simul_int(emp_obj,&n_draws,&seed);
     //
     return emp_obj;
 }
@@ -464,20 +464,20 @@ const
 }
 
 void
-trame::arums::logit::simul(empirical& obj_out, const int nb_draws, const int seed)
+trame::arums::logit::simul(empirical& obj_out, const int n_draws, const int seed)
 const
 {
-    this->simul_int(obj_out,&nb_draws,&seed);
+    this->simul_int(obj_out,&n_draws,&seed);
 }
 
 void
-trame::arums::logit::simul_int(empirical& obj_out, const int* nb_draws, const int* seed_val)
+trame::arums::logit::simul_int(empirical& obj_out, const int* n_draws_inp, const int* seed_val)
 const
 {
     int n_draws = 0;
 
-    if (nb_draws) {
-        n_draws = *nb_draws;
+    if (n_draws_inp) {
+        n_draws = *n_draws_inp;
     } else {
 #ifdef TRAME_DEFAULT_SIM_DRAWS
         n_draws = TRAME_DEFAULT_SIM_DRAWS;

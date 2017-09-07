@@ -153,11 +153,14 @@ arma::vec
 arc_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
 {
     trame_market_opt_data<Tg,Th,Tt> *d = reinterpret_cast<trame_market_opt_data<Tg,Th,Tt>*>(opt_data);
+    
     //
+
     const int nbX = d->market.nbX;
     const int nbY = d->market.nbY;
 
-    arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
+    // arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
+    arma::mat inp_mat(const_cast<double*>(vals_inp.memptr()),nbX,nbY,false,true); // this is potentially very unsafe, but more efficient?
 
     arma::mat U = d->market.trans_obj.UW(inp_mat);
     arma::mat V = d->market.trans_obj.VW(inp_mat);
@@ -165,10 +168,10 @@ arc_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
     arma::mat mu_G, mu_H;
     d->market.arums_G.G(d->market.n,U,mu_G);
     d->market.arums_H.G(d->market.m,V.t(),mu_H);
+    
     //
-    arma::vec ret = arma::vectorise(mu_G - mu_H.t());
-    //
-    return ret;
+
+    return arma::vectorise(mu_G - mu_H.t());
 }
 
 template<typename Tg, typename Th, typename Tt>
@@ -176,11 +179,14 @@ arma::mat
 arc_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
 {
     trame_market_opt_data<Tg,Th,Tt> *d = reinterpret_cast<trame_market_opt_data<Tg,Th,Tt>*>(jacob_data);
+
     //
+    
     const int nbX = d->market.nbX;
     const int nbY = d->market.nbY;
 
-    arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
+    // arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
+    arma::mat inp_mat(const_cast<double*>(vals_inp.memptr()),nbX,nbY,false,true); // this is potentially very unsafe, but more efficient?
 
     arma::mat U = d->market.trans_obj.UW(inp_mat);
     arma::mat V = d->market.trans_obj.VW(inp_mat);
@@ -192,10 +198,10 @@ arc_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
     d->market.arums_G.D2G(D2G_mat,d->market.n,U,true);
     d->market.arums_H.D2G(D2H_mat,d->market.m,V.t(),false);
 
-    arma::mat term_1 = elem_prod(arma::vectorise(dwUW),D2G_mat);
-    arma::mat term_2 = elem_prod(arma::vectorise(dwVW),D2H_mat);
+    // arma::mat term_1 = elem_prod(arma::vectorise(dwUW),D2G_mat);
+    // arma::mat term_2 = elem_prod(arma::vectorise(dwVW),D2H_mat);
 
-    arma::mat ret = term_1 - term_2;
     //
-    return ret;
+
+    return elem_prod(arma::vectorise(dwUW),D2G_mat) - elem_prod(arma::vectorise(dwVW),D2H_mat);
 }

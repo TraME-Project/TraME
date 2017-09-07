@@ -38,22 +38,26 @@ bool
 cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out)
 {
     bool success = false;
+    
     //
+
     if (market.need_norm) {
         printf("CupidsLP does not yet allow for the case without unmatched agents.\n");
         return false;
     }
+    
     //
+
     const int nbX = market.nbX;
     const int nbY = market.nbY;
 
-    arma::mat phi = market.trans_obj.phi;
     //
+
     arma::mat epsilon_iy, epsilon_0i, I_ix;
     arma::mat eta_xj, eta_0j, I_yj;
 
-    const int nb_draws_1 = build_disaggregate_epsilon(market.n,market.arums_G,epsilon_iy,epsilon_0i,I_ix);
-    const int nb_draws_2 = build_disaggregate_epsilon(market.m,market.arums_H,eta_xj,eta_0j,I_yj);
+    const int n_draws_1 = build_disaggregate_epsilon(market.n,market.arums_G,epsilon_iy,epsilon_0i,I_ix);
+    const int n_draws_2 = build_disaggregate_epsilon(market.m,market.arums_H,eta_xj,eta_0j,I_yj);
 
     eta_xj = eta_xj.t();
 
@@ -61,16 +65,20 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     eta_0j = arma::vectorise(eta_0j);
 
     I_yj = I_yj.t();
+
     //
-    const arma::vec n_i = arma::vectorise(I_ix * market.n) / (double) nb_draws_1;
-    const arma::vec m_j = arma::vectorise(market.m.t() * I_yj) / (double) nb_draws_2;
+
+    const arma::vec n_i = arma::vectorise(I_ix * market.n) / (double) n_draws_1;
+    const arma::vec m_j = arma::vectorise(market.m.t() * I_yj) / (double) n_draws_2;
 
     const int nbI = n_i.n_elem;
     const int nbJ = m_j.n_elem;
+
     //
     // use batch allocation to construct the sparse constraint matrix (A)
+
     int jj, kk, ll, count_val = 0;
-    const int num_non_zero = nbI*nbY + nbJ*nbX + nb_draws_1*(nbX*nbY) + nbX*nb_draws_2*nbY;
+    const int num_non_zero = nbI*nbY + nbJ*nbX + n_draws_1*(nbX*nbY) + nbX*n_draws_2*nbY;
 
     arma::umat location_mat(2,num_non_zero);
     arma::rowvec vals_mat(num_non_zero);
@@ -101,9 +109,9 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
     // lower blocks
     for (jj=0; jj<(nbX*nbY); jj++) {
-        for (kk=0; kk<nb_draws_1; kk++) {
+        for (kk=0; kk<n_draws_1; kk++) {
             location_mat(0,count_val) = nbI + nbJ + jj; // rows
-            location_mat(1,count_val) = jj*nb_draws_1 + kk; // columns
+            location_mat(1,count_val) = jj*n_draws_1 + kk; // columns
 
             vals_mat(count_val) = -1;
 
@@ -112,10 +120,10 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     }
 
     for (jj=0; jj<nbY; jj++) {
-        for (kk=0; kk<nb_draws_2; kk++) {
+        for (kk=0; kk<n_draws_2; kk++) {
             for (ll=0; ll<nbX; ll++) {
                 location_mat(0,count_val) = nbI + nbJ + jj*nbX + ll; // rows
-                location_mat(1,count_val) = nbI*nbY + kk*nbX + jj*nbX*nb_draws_2 + ll; // columns
+                location_mat(1,count_val) = nbI*nbY + kk*nbX + jj*nbX*n_draws_2 + ll; // columns
 
                 vals_mat(count_val) = 1;
 
@@ -147,20 +155,33 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     for (jj=0; jj<k_lp+1; jj++) {
         vbeg_lp[jj] = col_vals[jj];
     }
+
     //
+
     char* sense_lp = new char[k_lp];
     for (jj=0; jj<k_lp; jj++) {
         sense_lp[jj] = '>';
     }
 
-    arma::vec lb_lp(epsilon_0i.n_elem + eta_0j.n_elem + nbX*nbY);
-    lb_lp.rows(0,epsilon_0i.n_elem-1) = arma::vectorise(epsilon_0i);
-    lb_lp.rows(epsilon_0i.n_elem,epsilon_0i.n_elem + eta_0j.n_elem - 1) = eta_0j;
-    lb_lp.rows(epsilon_0i.n_elem + eta_0j.n_elem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
+    //
 
-    arma::vec rhs_lp(epsilon_iy.n_elem + eta_xj.n_elem);
-    rhs_lp.rows(0,epsilon_iy.n_elem-1) = arma::vectorise(epsilon_iy);
-    rhs_lp.rows(epsilon_iy.n_elem,rhs_lp.n_elem-1) = arma::vectorise(eta_xj + phi * I_yj);
+    const int eta_0j_nelem = eta_0j.n_elem;
+    arma::vec lb_lp(epsilon_0i.n_elem + eta_0j_nelem + nbX*nbY);
+
+    lb_lp.rows(0,epsilon_0i.n_elem-1) = arma::vectorise(epsilon_0i);
+    lb_lp.rows(epsilon_0i.n_elem,epsilon_0i.n_elem + eta_0j_nelem - 1) = std::move(eta_0j);
+    lb_lp.rows(epsilon_0i.n_elem + eta_0j_nelem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
+
+
+    //
+
+    const int epsilon_iy_nelem = epsilon_iy.n_elem;
+    arma::vec rhs_lp(epsilon_iy_nelem + eta_xj.n_elem);
+
+    rhs_lp.rows(0,epsilon_iy_nelem-1) = std::move(arma::vectorise(epsilon_iy));
+    rhs_lp.rows(epsilon_iy_nelem,rhs_lp.n_elem-1) = arma::vectorise(eta_xj + market.trans_obj.phi * I_yj);
+
+    //
 
     arma::vec obj_lp(nbI + nbJ + nbX*nbY);
     obj_lp.rows(0,nbI-1) = n_i;
@@ -181,19 +202,20 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
         if (lp_optimal) {
             const arma::mat mu_iy = arma::reshape(dual_mat(arma::span(0,nbI*nbY-1),0),nbI,nbY);
             const arma::mat mu = I_ix.t() * mu_iy;
-            //
+
             // package up solution
+            
             if (mu_out) {
                 *mu_out = mu;
             }
 
             if (U_out && V_out) {
                 *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
-                *V_out = phi - *U_out;
+                *V_out = market.trans_obj.phi - *U_out;
             } else if (U_out) {
                 *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
             } else if (V_out) {
-                *V_out = phi - arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
+                *V_out = market.trans_obj.phi - arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
             }
 
             if (mu_x0_out) {
@@ -202,7 +224,9 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
             if (mu_0y_out) {
                 *mu_0y_out = market.m - arma::trans(arma::sum(mu,0));
             }
+
             //
+
             success = true;
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;

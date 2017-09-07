@@ -46,40 +46,47 @@ bool
 darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp)
 {
     bool success = false;
+
+    const double tol = (tol_inp) ? *tol_inp : 1E-12;
+    const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
+
     //
+
     const int nbX = market.nbX;
     const int nbY = market.nbY;
 
-    arma::mat alpha = market.trans_obj.alpha;
-    arma::mat gamma = market.trans_obj.gamma;
-
     arma::mat mu_NR = arma::max(market.n * arma::ones(1,nbY), arma::ones(nbX,1) * market.m.t());
+    
     //
-    const double tol = (tol_inp) ? *tol_inp : 1E-12;
-    const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
-    //
+
     int iter = 0;
     double err = 2*tol;
 
-    arma::mat U_P, U_D, mu_P, mu_D, mu_diff;
+    arma::mat U_P, U_D, mu_P, mu_D;
 
     while (err > tol && iter < max_iter) {
         iter++;
-        //
-        market.arums_G.Gbar(alpha,mu_NR,market.n,U_P,mu_P);
-        market.arums_H.Gbar(gamma.t(),mu_P.t(),market.m,U_D,mu_D);
 
-        mu_diff = mu_P - mu_D.t();
-        mu_NR -= mu_diff;
         //
+        
+        market.arums_G.Gbar(market.trans_obj.alpha,mu_NR,market.n,U_P,mu_P);
+        market.arums_H.Gbar(market.trans_obj.gamma.t(),mu_P.t(),market.m,U_D,mu_D);
+
+        arma::mat mu_diff = mu_P - mu_D.t();
+        mu_NR -= mu_diff;
+
+        //
+
         err = elem_max(arma::abs(mu_diff));
     }
 
     if (err <= tol && iter < max_iter) {
         success = true;
     }
+
     //
     // return equilibrium objects
+
     if (mu_out) {
         *mu_out = mu_D.t();
     }
@@ -97,7 +104,9 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
     if (V_out) {
         *V_out = U_D.t();
     }
+
     //
+
     return success;
 }
 

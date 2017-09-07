@@ -38,7 +38,9 @@ bool
 ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, arma::vec* u_out, arma::vec* v_out, const double* err_tol_inp, const int* max_iter_inp, const arma::vec* by_start)
 {
     bool success = false;
+
     //
+    
     const int nbX = market.nbX;
     const int nbY = market.nbY;
 
@@ -51,7 +53,7 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
     arma::vec ax(nbX);
     arma::vec by = (by_start) ? *by_start : market.m;
 
-    arma::vec val_old(nbX+nbY);
+    arma::vec val_old = arma::join_cols(ax,by);
     arma::vec val_new(nbX+nbY);
 
     int iter = 0;
@@ -60,15 +62,17 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
     while (err > err_tol && iter < max_iter) {
         iter++;
 
-        val_old = arma::join_cols(ax,by);
-
         // Solve for 'ax' and then 'by'
         ax = market.marg_x_inv(by);
         by = market.marg_y_inv(ax);
 
         val_new = arma::join_cols(ax,by);
 
+        //
+
         err = elem_max(arma::abs(val_new - val_old));
+
+        val_old = std::move(val_new);
     }
 
     if (err <= err_tol && iter < max_iter) {

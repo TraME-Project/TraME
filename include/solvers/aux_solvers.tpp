@@ -46,8 +46,10 @@ w_upper_bound(const dse<Tg,Th,Tt>& market)
     const int nbX = market.nbX;
     const int nbY = market.nbY;
 
-    int transfers_type = market.trans_obj.transfers_type;
+    const int transfers_type = market.trans_obj.transfers_type;
+
     //
+
     int iter = 0;
     const int max_iter = 1000;
     
@@ -82,14 +84,20 @@ w_upper_bound(const dse<Tg,Th,Tt>& market)
                 return w;
             }
         }
+        
         //
+
         arma::mat mu_G, mu_H;
         market.arums_G.G(market.n,U,mu_G);
         market.arums_H.G(market.m,V.t(),mu_H);
 
-        arma::mat Z = mu_G - mu_H.t();
-        Z_min_val = elem_min(Z);
+        // arma::mat Z = mu_G - mu_H.t();
+        // Z_min_val = elem_min(Z);
+
+        Z_min_val = elem_min(mu_G - mu_H.t());
+
         //
+
         k *= 2;
     }
     //

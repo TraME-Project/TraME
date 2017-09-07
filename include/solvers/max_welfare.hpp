@@ -59,7 +59,7 @@ bool max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x
 
 // optimization-related functions
 
-bool max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, double* value_out, const double* err_tol_inp, const int* max_iter_inp);
+bool max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method);
 
 template<typename Tg, typename Th, typename Tt>
 double max_welfare_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void *opt_data);

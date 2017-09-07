@@ -38,15 +38,19 @@ bool
 eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* u_out, arma::mat* v_out, const bool* x_first_inp, const double* tol_inp, const int* max_iter_inp)
 {
     bool success = false;
-    //
-    const int nbX = market.nbX;
-    const int nbY = market.nbY;
 
     const bool x_first = (x_first_inp) ? *x_first_inp : true;
     const double tol = (tol_inp) ? *tol_inp : 1E-12;
     const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
+
     //
-    arma::mat v_curr, v_next;
+
+    const int nbX = market.nbX;
+    const int nbY = market.nbY;
+
+    //
+
+    arma::mat v_curr;
 
     if (x_first) {
         v_curr = v_from_us(market.trans_obj,arma::zeros(nbX,1),nullptr,nullptr);
@@ -56,6 +60,7 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
 
     int iter = 0;
     double err = 2*tol;
+    arma::mat v_next;
 
     while (err > tol && iter < max_iter) {
         iter++;
@@ -63,9 +68,11 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
         v_next = update_v(market.trans_obj,v_curr,market.n,market.m,x_first);
         err = elem_max(arma::abs(v_next - v_curr));
 
-        v_curr = v_next;
+        v_curr = std::move(v_next);
     }
+
     //
+
     arma::mat subdiff;
     arma::mat u = u_from_vs(market.trans_obj,v_curr,nullptr,&subdiff);
 
@@ -77,8 +84,10 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
     if (v_out) {
         *v_out = v_curr;
     }
+
     //
-    arma::vec obj_lp = arma::vectorise(subdiff);
+
+    arma::vec obj_lp = std::move(arma::vectorise(subdiff));
 
     arma::mat A_1_lp = arma::kron(arma::ones(1,nbY), arma::eye(nbX,nbX));
     arma::mat A_2_lp = arma::kron(arma::eye(nbY,nbY), arma::ones(1,nbX));
@@ -105,13 +114,19 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
 
     bool LP_optimal = false;
     double val_lp = 0.0;
+
     //
+
     try {
         LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, nullptr, nullptr, nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
         if (LP_optimal) {
-            arma::mat mu = arma::reshape(sol_mat.col(0),nbX,nbY);
+
+            // arma::mat mu = arma::reshape(sol_mat.col(0),nbX,nbY);
+            arma::mat mu(sol_mat.colptr(0),nbX,nbY,false,true);
+            
             //
+
             if (mu_out) {
                 *mu_out = mu;
             }
@@ -122,7 +137,9 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
             if (mu_0y_out) {
                 *mu_0y_out = market.m - arma::trans(arma::sum(mu,0));
             }
+
             //
+
             success = true;
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;
@@ -238,9 +255,9 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
 
     arma::mat the_mat = arma::zeros(nbX,nbY);
     arma::mat v_updated = arma::zeros(nbY,1);
+
     //
     // LP setup
-    int jj, y, x, yp;
 
     arma::vec obj_lp(nbX+1,1);
     obj_lp.rows(0,nbX-1) = n;
@@ -254,7 +271,7 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
     const int n_lp = A_lp.n_cols;
 
     char* sense_lp = new char[k_lp];
-    for (jj=0; jj<k_lp; jj++) {
+    for (int jj=0; jj<k_lp; jj++) {
         sense_lp[jj] = '>';
     }
 
@@ -266,7 +283,9 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
     arma::mat dual_mat(k_lp, 2);
 
     double val_lp = 0.0;
+
     //
+
     arma::vec obj_bis = arma::zeros(nbX+1,1);
     obj_bis(nbX,0) = 1.0;
 
@@ -283,7 +302,7 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
     const int n_bis = A_bis.n_cols;
 
     char* sense_bis = new char[k_bis];
-    for (jj=0; jj<k_bis-1; jj++) {
+    for (int jj=0; jj < k_bis-1; jj++) {
         sense_bis[jj] = '>';
     }
     sense_bis[k_bis-1] = '=';
@@ -294,22 +313,22 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
     arma::mat dual_mat_bis(k_bis, 2);
 
     double val_bis = 0.0;
-    //
-    double temp_u;
-    arma::mat u;
 
-    for (y=0; y<nbY; y++) {
-        for (x=0; x<nbX; x++) {
-            for (yp=0; yp<nbY; yp++) {
+    //
+
+    // arma::mat u;
+
+    for (int y=0; y<nbY; y++) {
+        for (int x=0; x<nbX; x++) {
+            for (int yp=0; yp<nbY; yp++) {
                 if (yp==y) {
                     the_mat(x,yp) = trans_obj.Vcal(0.0,x,y);
                 } else {
-                    temp_u = trans_obj.Ucal(v(yp),x,yp);
+                    double temp_u = trans_obj.Ucal(v(yp),x,yp);
                     the_mat(x,yp) = trans_obj.Vcal(temp_u,x,y);
                 }
             } // end of yp loop
         } // end of x loop
-        //
 
         lb_lp.rows(0,nbX-1) = - arma::min(the_mat,1);
         obj_lp(nbX,0) = m(y);
@@ -340,7 +359,7 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
             LP_optimal = generic_LP(k_bis, n_bis, obj_bis.memptr(), A_bis.memptr(), modelSense_bis, rhs_bis.memptr(), sense_bis, nullptr, lb_lp.memptr(), nullptr, nullptr, val_bis, sol_mat_bis.colptr(0), sol_mat_bis.colptr(1), dual_mat_bis.colptr(0), dual_mat_bis.colptr(1));
 
             if (LP_optimal) {
-                u = sol_mat.col(0).rows(0,nbX-1);
+                // u = sol_mat.col(0).rows(0,nbX-1);
                 v_updated(y,0) = sol_mat(nbX,0);
             } else {
                 std::cout << "Non-optimal value found during optimization" << std::endl;

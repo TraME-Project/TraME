@@ -49,7 +49,7 @@ struct trame_mfe_opt_data {
 template<typename Tg, typename Th, typename Tt>
 arma::mat w_upper_bound(const dse<Tg,Th,Tt>& market);
 
-int build_disaggregate_epsilon(arma::vec n, const arums::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix);
+int build_disaggregate_epsilon(const arma::vec& n, const arums::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix);
 
 #include "aux_solvers.ipp"
 #include "aux_solvers.tpp"

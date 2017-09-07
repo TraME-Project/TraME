@@ -118,7 +118,7 @@ dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 template<typename Tg, typename Th> 
 template<typename Ta, typename Tb>
 void
-dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, const int nb_draws, const int seed, const bool need_norm_inp)
+dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, const int n_draws, const int seed, const bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -130,8 +130,8 @@ dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     outside_option = (need_norm_inp) ? false : true;
     //
-    arums_G_inp.simul(arums_G,nb_draws,seed);
-    arums_H_inp.simul(arums_H,nb_draws,seed);
+    arums_G_inp.simul(arums_G,n_draws,seed);
+    arums_H_inp.simul(arums_H,n_draws,seed);
 
     trans_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
     //
@@ -188,7 +188,7 @@ dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 template<typename Tg, typename Th> 
 template<typename Ta, typename Tb>
 void
-dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const int nb_draws, const int seed, const bool need_norm_inp)
+dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const int n_draws, const int seed, const bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -200,8 +200,8 @@ dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     outside_option = (need_norm_inp) ? false : true;
     //
-    arums_G_inp.simul(arums_G,nb_draws,seed);
-    arums_H_inp.simul(arums_H,nb_draws,seed);
+    arums_G_inp.simul(arums_G,n_draws,seed);
+    arums_H_inp.simul(arums_H,n_draws,seed);
 
     trans_obj.build(lambda_inp,phi_inp,need_norm_inp);
     //
@@ -258,7 +258,7 @@ dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 template<typename Tg, typename Th> 
 template<typename Ta, typename Tb>
 void
-dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, const int nb_draws, const int seed, const bool need_norm_inp)
+dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, const int n_draws, const int seed, const bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -270,8 +270,8 @@ dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 
     outside_option = (need_norm_inp) ? false : true;
     //
-    arums_G_inp.simul(arums_G,nb_draws,seed);
-    arums_H_inp.simul(arums_H,nb_draws,seed);
+    arums_G_inp.simul(arums_G,n_draws,seed);
+    arums_H_inp.simul(arums_H,n_draws,seed);
 
     trans_obj.build(alpha_inp,gamma_inp,need_norm_inp);
     //
@@ -328,7 +328,7 @@ dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, 
 template<typename Tg, typename Th> 
 template<typename Ta, typename Tb>
 void
-dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const int nb_draws, const int seed, const bool need_norm_inp)
+dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const int n_draws, const int seed, const bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
@@ -340,8 +340,8 @@ dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, 
 
     outside_option = (need_norm_inp) ? false : true;
     //
-    arums_G_inp.simul(arums_G,nb_draws,seed);
-    arums_H_inp.simul(arums_H,nb_draws,seed);
+    arums_G_inp.simul(arums_G,n_draws,seed);
+    arums_H_inp.simul(arums_H,n_draws,seed);
 
     trans_obj.build(phi_inp,need_norm_inp);
     //

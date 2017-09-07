@@ -71,7 +71,7 @@ class model<dse<Tg,Th,Tt>> : public model_base
         void build(const arma::mat& X_inp, const arma::mat& Y_inp);
         void build(const arma::mat& X_inp, const arma::mat& Y_inp, const arma::vec& n_inp, const arma::vec& m_inp);
 
-        // template<typename Ta, typename Tb> void build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp, int nb_draws, int seed);
+        // template<typename Ta, typename Tb> void build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp, int n_draws, int seed);
 
         void model_to_market(const arma::mat& theta);
         void model_to_market(const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp);

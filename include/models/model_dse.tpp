@@ -131,9 +131,9 @@ model<dse<Tg,Th,Tt>>::model_to_market(const arma::mat& theta, const Tg& arums_G_
 // template<typename Tm>
 // template<typename Ta, typename Tb>
 // void
-// model<dse<Tg,Th,Tt>>::build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp, int nb_draws, int seed)
+// model<dse<Tg,Th,Tt>>::build_market_TU(const arma::mat& theta, const Ta& arums_G_inp, const Tb& arums_H_inp, int n_draws, int seed)
 // {
-//     market_obj.build(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,nb_draws,seed,need_norm);
+//     market_obj.build(n,m,Phi_xy_theta(theta),arums_G_inp,arums_H_inp,n_draws,seed,need_norm);
 // }
 
 //
@@ -497,8 +497,8 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     arma::mat epsilon_iy, epsilon_0i, I_ix;
     arma::mat eta_xj, eta_0j, I_yj;
 
-    const int nb_draws_1 = build_disaggregate_epsilon(n,market_obj.arums_G,epsilon_iy,epsilon_0i,I_ix);
-    const int nb_draws_2 = build_disaggregate_epsilon(m,market_obj.arums_H,eta_xj,eta_0j,I_yj);
+    const int n_draws_1 = build_disaggregate_epsilon(n,market_obj.arums_G,epsilon_iy,epsilon_0i,I_ix);
+    const int n_draws_2 = build_disaggregate_epsilon(m,market_obj.arums_H,eta_xj,eta_0j,I_yj);
 
     epsilon_0i = arma::vectorise(epsilon_0i);
 
@@ -506,8 +506,8 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     eta_0j = arma::vectorise(eta_0j);
     I_yj = I_yj.t();
 
-    const arma::vec n_i = arma::vectorise(I_ix * n) / (double) nb_draws_1;
-    const arma::vec m_j = arma::vectorise(m.t() * I_yj) / (double) nb_draws_2;
+    const arma::vec n_i = arma::vectorise(I_ix * n) / (double) n_draws_1;
+    const arma::vec m_j = arma::vectorise(m.t() * I_yj) / (double) n_draws_2;
 
     const int nbI = n_i.n_elem;
     const int nbJ = m_j.n_elem;
@@ -525,14 +525,14 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
      * 1 to nbI*nbY nothing but zeros; then nbJ blocks of nbX-length row vectors of ones
      *
      * third block begins on row nbI+nbJ+1 and ends on nbI+nbJ+nbX*nbY;
-     * there are nbX*nbY blocks of length nb_draws_1 from columns (1,nbI*nbY);
+     * there are nbX*nbY blocks of length n_draws_1 from columns (1,nbI*nbY);
      * for columns (nbI+1)
      *
      * fourth block is filled from (nbI*nbY+1,nbI*nbY + nbJ*nbX) with kron_data_mat
      */
 
     int jj, kk, ll, count_val = 0;
-    int num_nonzero_elem = nbI*nbY + nbJ*nbX + nbX*nbY*nb_draws_1 + nbY*nb_draws_2*nbX + dim_theta*nbJ*nbX;
+    int num_nonzero_elem = nbI*nbY + nbJ*nbX + nbX*nbY*n_draws_1 + nbY*n_draws_2*nbX + dim_theta*nbJ*nbX;
 
     arma::umat location_mat_1(2,num_nonzero_elem);
     arma::rowvec vals_mat_1(num_nonzero_elem);
@@ -560,9 +560,9 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     }
 
     for (jj=0; jj < nbX*nbY; jj++) { // third block, part 1
-        for (kk=0; kk < nb_draws_1; kk++) {
+        for (kk=0; kk < n_draws_1; kk++) {
             location_mat_1(0,count_val) = nbI + nbJ + jj;
-            location_mat_1(1,count_val) = kk + jj*nb_draws_1;
+            location_mat_1(1,count_val) = kk + jj*n_draws_1;
 
             vals_mat_1(count_val) = -1.0;
 
@@ -571,10 +571,10 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     }
 
     for (jj=0; jj < nbY; jj++) { // third block, part 2
-        for (kk=0; kk < nb_draws_2; kk++) {
+        for (kk=0; kk < n_draws_2; kk++) {
             for (ll=0; ll < nbX; ll++) {
                 location_mat_1(0,count_val) = nbI + nbJ + jj*nbX + ll;
-                location_mat_1(1,count_val) = nbI*nbY + jj*(nb_draws_2*nbX) + kk*nbX + ll;
+                location_mat_1(1,count_val) = nbI*nbY + jj*(n_draws_2*nbX) + kk*nbX + ll;
 
                 vals_mat_1(count_val) = 1.0;
 
