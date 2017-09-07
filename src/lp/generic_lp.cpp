@@ -31,7 +31,7 @@
  * 02/22/2017
  */
 
-#include "trame.hpp"
+ #include "ancillary/ancillary.hpp"
 
 extern "C" {
     #include "lp/generic_lp_c.h"
