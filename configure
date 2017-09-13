@@ -5,7 +5,7 @@
 while getopts :b:cl:m:o:pv option; do
     case "${option}" in
         b) TRAME_BUILD=${OPTARG};;
-        c) TRAME_COVERAGE="y";;
+        c) TRAME_COVERAGE_BUILD="y";;
         l) TRAME_LP=${OPTARG};;
         m) TRAME_MATRIX_OPS=${OPTARG};;
         o) TRAME_OPT=${OPTARG};;
@@ -30,6 +30,13 @@ if [[ !(-z ${KEITH_DEV_SETTINGS+x}) ]]; then
     FC=gfortran-mp-7
 fi
 
+# compiler checks
+
+IS_DARWIN=$($CXX -dumpmachine 2>&1 | grep -i -c "darwin")
+APPLE_COMPILER=$($CXX --version 2>&1 | grep -i -c -E 'apple llvm')
+
+IS_FAST_OPT=0
+
 # announcements
 
 echo ""
@@ -37,7 +44,7 @@ if [[ "${TRAME_BUILD}" == "dev" ]]; then
     echo "TraME: dev version"
 fi
 
-if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
+if [[ "${TRAME_COVERAGE_BUILD}" == "y" ]]; then 
     echo "TraME: coverage build"
 fi
 
@@ -46,8 +53,6 @@ WDIR=${PWD}
 
 # look for Armadillo
 if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
-    echo ""
-    echo "TraME: ARMA_INCLUDE_PATH not set"
     if [ -f ${WDIR}/include/armadillo ]; then 
         ARMA_INCLUDE_PATH="./include"
     elif [ -f /usr/include/armadillo ]; then
@@ -71,27 +76,35 @@ if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
         echo ""
     fi
 fi
+
 echo "TraME: ARMA_INCLUDE_PATH set to ${ARMA_INCLUDE_PATH}"
 
 # set build and optimization flags
-if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
-    TRAME_OPT_FLAGS="-O0 -Wall -g --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
+
+if [[ "${TRAME_COVERAGE_BUILD}" == "y" ]]; then 
+    TRAME_OPT_FLAGS="-O0 -g --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
 else
     if [[ "${TRAME_OPT}" == "fast" ]]; then
         echo "TraME: experimental optimization"
-        # TRAME_OPT_FLAGS="-Ofast -Wall -march=native"
-        TRAME_OPT_FLAGS="-Ofast -DARMA_NO_DEBUG"
+
+        IS_FAST_OPT=1
+
+        TRAME_OPT_FLAGS="-Ofast -march=native -DARMA_NO_DEBUG"
+        # TRAME_OPT_FLAGS="-Ofast -DARMA_NO_DEBUG"
     else
-        TRAME_OPT_FLAGS="-O3 -Wall"
+        TRAME_OPT_FLAGS="-O3"
     fi
 
     if [[ "${TRAME_PARALLEL}" == "y" ]]; then
         echo "TraME: using OpenMP"
-        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp -DTRAME_OMP"
+        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp -DTRAME_OMP -DARMA_USE_OPENMP -DARMA_USE_CXX11"
     fi
 fi
 
-# shared library names
+TRAME_WARN_FLAGS="-Wall"
+
+# shared library name and install path
+
 TRAME_SHLIB_NAME="libtrame.so"
 
 if [[ !("${TRAME_BUILD}" == "dev") ]]; then
@@ -102,7 +115,9 @@ if [[ !("${TRAME_BUILD}" == "dev") ]]; then
     echo "TraME: install path set to ${TRAME_INSTALL_PATH}"
 fi
 
+#
 # switch between OSX and Linux
+
 if [[ $OSTYPE == darwin* ]] ; then
     if [[ !(-z ${TRAME_R_VERSION+x}) ]]; then 
         TRAME_SHLIB_FLAGS="-dynamiclib -install_name "@loader_path/${TRAME_SHLIB_NAME}" -Wl,-headerpad_max_install_names -undefined dynamic_lookup -single_module -multiply_defined suppress"
@@ -388,18 +403,24 @@ else
     LP_LIB_RPATH=
 fi
 
+# final settings
+
 if [[ !(-z ${TRAME_MATRIX_OPS+x}) ]]; then
     TRAME_BLAS_LAPACK="${TRAME_MATRIX_OPS}"
     echo ""
     echo "TraME: BLAS and Lapack libraries set to ${TRAME_BLAS_LAPACK}"
 fi
 
-# some final flags for the shared library
-
-if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
+if [[ "${TRAME_COVERAGE_BUILD}" == "y" ]]; then 
     TRAME_SHLIB_FLAGS="--coverage ${TRAME_SHLIB_FLAGS}"
 else
     TRAME_SHLIB_FLAGS="${TRAME_OPT_FLAGS} ${TRAME_SHLIB_FLAGS}"
+fi
+
+if [ "$IS_FAST_OPT" -eq "1" ] && [ "$IS_DARWIN" -eq "1" ] && [ "$APPLE_COMPILER" -eq "0" ]; then
+    echo ""
+    echo "TraME: To use AVX features, your compiler use the Apple LLVM assembler"
+    TRAME_OPT_FLAGS="-Wa,-q ${TRAME_OPT_FLAGS}"
 fi
 
 # create Makefile
@@ -409,6 +430,7 @@ sed -e "s|@CC@|${CC}|" \
     -e "s|@FC@|${FC}|" \
     -e "s|@ARMA_INCLUDE_PATH@|${ARMA_INCLUDE_PATH}|" \
     -e "s|@TRAME_BLAS_LAPACK@|${TRAME_BLAS_LAPACK}|" \
+    -e "s|@TRAME_WARN_FLAGS@|${TRAME_WARN_FLAGS}|" \
     -e "s|@TRAME_OPT_FLAGS@|${TRAME_OPT_FLAGS}|" \
     -e "s|@TRAME_SHLIB_NAME@|${TRAME_SHLIB_NAME}|" \
     -e "s|@TRAME_SHLIB_FLAGS@|${TRAME_SHLIB_FLAGS}|" \

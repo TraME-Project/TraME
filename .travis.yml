@@ -1,7 +1,8 @@
 langauge: cpp
-compiler: gcc
 sudo: required
+os: linux
 dist: trusty
+compiler: gcc
 
 env:
     global:

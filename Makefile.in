@@ -1,14 +1,12 @@
 
 # core compiling options
-#CC  = gcc-mp-5
-#CXX = g++-mp-5
-#FC  = gfortran-mp-5
+
 CC  = @CC@
 CXX = @CXX@
 FC  = @FC@
 
 CXX_STD = -std=c++11
-OPT_FLAGS = @TRAME_OPT_FLAGS@
+OPT_FLAGS = @TRAME_WARN_FLAGS@ @TRAME_OPT_FLAGS@
 
 ARMA_INCLUDE_PATH = @ARMA_INCLUDE_PATH@
 
@@ -123,7 +121,6 @@ $(TRAME_SRC_DIR)/transfers/%.o: $(TRAME_SRC_DIR)/transfers/%.cpp
 # shared library
 $(TRAME_DIR)/$(SHLIB): $(OBJECTS_TRAME)
 	$(CXX) $(SHLIB_FLAGS) -o $@ $^ $(LIBS) $(LP_LIBS)
-#    ar -rvs ../../inst/libs/libtrame.a $^
 
 # cleanup and install
 .PHONY: clean
