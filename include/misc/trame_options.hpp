@@ -23,7 +23,7 @@
 
 #pragma once
 
-#ifdef TRAME_OMP
+#ifdef TRAME_USE_OMP
     #include "omp.h" //  OpenMP
 #endif
 

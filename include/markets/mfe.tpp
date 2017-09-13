@@ -194,7 +194,7 @@ const
     //
     arma::vec the_a_xs(index_vec.n_elem);
 
-#ifdef TRAME_OMP
+#ifdef TRAME_USE_OMP
     #pragma omp parallel for firstprivate(root_data)
 #endif
     for (int j=0; j < (int) index_vec.n_elem; j++) {
@@ -234,7 +234,7 @@ const
     //
     arma::vec the_b_ys(index_vec.n_elem);
     
-#ifdef TRAME_OMP
+#ifdef TRAME_USE_OMP
     #pragma omp parallel for firstprivate(root_data)
 #endif
     for (int j=0; j < (int) index_vec.n_elem; j++) {

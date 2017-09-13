@@ -64,7 +64,7 @@ else
 
     if [[ "${TRAME_PARALLEL}" == "y" ]]; then 
         echo "TraME tests: using OpenMP"
-        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp -DTRAME_OMP"
+        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp -DTRAME_USE_OMP"
     fi
 fi
 

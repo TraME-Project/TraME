@@ -42,7 +42,7 @@ trame::inv_pwa(const arma::vec& a, const arma::mat& B, const arma::mat& C, const
     //
     arma::vec vals = arma::zeros(nb_X,1);
     
-#ifdef TRAME_OMP
+#ifdef TRAME_USE_OMP
     #pragma omp parallel for
 #endif
     for (int x=0; x < nb_X; x++) {
