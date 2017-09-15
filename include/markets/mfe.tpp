@@ -28,7 +28,7 @@
  * 08/16/2016
  *
  * This version:
- * 07/26/2017
+ * 09/15/2017
  */
 
 template<typename Tt>
@@ -345,7 +345,7 @@ mfe<Tt>::solve(arma::mat& mu_sol, const char* solver)
             res = ipfp(*this,mu_sol);
         }
         if (sig=='n') {
-            //res = nodal_newton(*this,mu_sol);
+            res = nodal_newton(*this,mu_sol);
         }
     } else {
         res = ipfp(*this,mu_sol);
@@ -366,7 +366,7 @@ mfe<Tt>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char
             res = ipfp(*this,mu_sol,U_out,V_out);
         }
         if (sig=='n') {
-            //res = nodal_newton(*this,mu_sol,U_out,V_out);
+            res = nodal_newton(*this,mu_sol,U_out,V_out);
         }
     } else {
         res = ipfp(*this,mu_sol,U_out,V_out);
