@@ -91,12 +91,12 @@ nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out,
         *V_out = sigma * arma::trans(arma::log(elem_div(mu.t(),mu_0y_s)));
     }
 
-    /*
     if (val_out) {
-        *val_out = val;
+        *val_out = arma::accu(settings.zero_values);
     }
-    */
+    
     //
+    
     return success;
 }
 
