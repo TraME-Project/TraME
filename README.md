@@ -1,6 +1,6 @@
 # TraME
 
-_Tra_nsportation _M_ethods for _E_conometrics
+**Tra**nsportation **M**ethods for **E**conometrics
 
 ### Overview
 
@@ -8,10 +8,9 @@ TraME (Transportation Methods for Econometrics) is a C++ library for
 solving problems of equilibrium computation and estimation in consumer 
 demand and matching frameworks via the Mass Transportation Approach.
 
-### Status [![Build Status](https://travis-ci.org/TraME-Project/TraME.svg)](https://travis-ci.org/TraME-Project/TraME)
+### Status [![Build Status](https://travis-ci.org/TraME-Project/TraME.svg)](https://travis-ci.org/TraME-Project/TraME) [![Build Status](https://codecov.io/github/TraME-Project/TraME/coverage.svg?branch=master)](https://codecov.io/github/TraME-Project/TraME?branch=master)
 
-The package is under active development and should be considered as
-`alpha stage' software.
+The package is under active development.
 
 ### Installation and Testing
 
