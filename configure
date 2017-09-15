@@ -419,7 +419,7 @@ fi
 
 if [ "$IS_FAST_OPT" -eq "1" ] && [ "$IS_DARWIN" -eq "1" ] && [ "$APPLE_COMPILER" -eq "0" ]; then
     echo ""
-    echo "TraME: To use AVX features, your compiler use the Apple LLVM assembler"
+    echo "TraME: To enable AVX features, your compiler will use the Apple LLVM assembler"
     TRAME_OPT_FLAGS="-Wa,-q ${TRAME_OPT_FLAGS}"
 fi
 
