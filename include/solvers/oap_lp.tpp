@@ -209,7 +209,7 @@ template<typename Tg, typename Th, typename Tt>
 bool
 oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& u_out, arma::vec& v_out)
 {
-    return oap_lp_int(market,&mu_out,nullptr,nullptr,&u_out,&v_out,nullptr,nullptr);
+    return oap_lp_int(market,&mu_out,nullptr,nullptr,&u_out,&v_out,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
