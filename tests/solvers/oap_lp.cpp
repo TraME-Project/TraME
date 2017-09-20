@@ -15,8 +15,10 @@ int main()
 {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
+
     //
     // inputs:
+
     int nbX = 8;
     int nbY = 5;
 
@@ -27,26 +29,28 @@ int main()
     arma::mat gamma  = arma::randu(nbX,nbY);
 
     arma::mat phi = alpha + gamma;
+
     //
     // results
+
     printf("\n*===================   Start of oap_lp Test   ===================*\n");
     printf("\n");
+    
     //
     // TU
+
     trame::dse<trame::arums::none,trame::arums::none,trame::transfers::tu> dse_obj_TU;
     dse_obj_TU.build(n,m,phi,false);
-    //
-    //double val;
-    //arma::vec mux0, mu0y, u, v;
+
     arma::mat mu_TU, residuals;
-    //trame::oap_lp(dse_obj_TU, true, mu_TU, mux0, mu0y, u, v, val, residuals);
+
     trame::oap_lp(dse_obj_TU, mu_TU);
     trame::oap_lp(dse_obj_TU, mu_TU, residuals);
     
 
     std::cout << "Solution of TU-none problem using oap_lp:\n" << std::endl;
     arma::cout << "mu:\n" << mu_TU << "\n resid:\n" << residuals << arma::endl;
-    //arma::cout << "u:\n" << u << "\n v:\n" << v << "\n resid:\n" << residuals << arma::endl;
+    
     //
     printf("\n*===================    End of oap_lp Test    ===================*\n");
     printf("\n");
