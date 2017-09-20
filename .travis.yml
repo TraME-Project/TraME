@@ -52,7 +52,9 @@ matrix:
       # compiler: clang
 
 before_install:
+    - export FC=gfortran
     - eval "${MATRIX_EVAL}"
+    - echo $FC
 
 install:
     - |
