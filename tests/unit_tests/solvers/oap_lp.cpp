@@ -85,7 +85,7 @@ int main()
 
     double val_out;
 
-    trame::oap_lp(dse_obj_TU,mu_TU,x_first,mux0,mu0y,u,v,val_out,resid_out);
+    trame::oap_lp(dse_obj_TU,mu_TU,mux0,mu0y,u,v,x_first,val_out,resid_out);
 
     //
     printf("\n*===================    End of oap_lp Test    ===================*\n");
