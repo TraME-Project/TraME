@@ -73,9 +73,9 @@ int main()
 
     arma::mat theta_hat_aff;
 
-    aff_model.mme_regul(mu_hat,lambda,theta_hat_aff,val_hat_1,nullptr,nullptr,nullptr,nullptr);
+    aff_model.mme_regul(mu_hat,theta_hat_aff,lambda,&val_hat_1,nullptr,nullptr,nullptr,nullptr);
     std::cout << "the_val with regularization: " << val_hat_1 << std::endl;
-    aff_model.mme_woregul(mu_hat,theta_hat_aff,val_hat_2,nullptr,nullptr,nullptr,nullptr);
+    aff_model.mme_woregul(mu_hat,theta_hat_aff,&val_hat_2,nullptr,nullptr,nullptr,nullptr);
     std::cout << "the_val without regularization: " << val_hat_2 << std::endl;
 
     arma::cout << "theta_hat: \n" << theta_hat_aff << arma::endl;
