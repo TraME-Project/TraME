@@ -75,12 +75,13 @@ int main()
     
     //
 
+    double val_out;
     arma::vec mu_x0_out, mu_0y_out;
     arma::mat mu_TU, U_out, V_out;
 
     trame::cupids_lp(dse_obj_TU,mu_TU);
     trame::cupids_lp(dse_obj_TU,mu_TU,U_out,V_out);
-    trame::cupids_lp(dse_obj_TU,mu_TU,mu_x0_out,mu_0y_out,U_out,V_out);
+    trame::cupids_lp(dse_obj_TU,mu_TU,mu_x0_out,mu_0y_out,U_out,V_out,val_out);
 
     //
     printf("\n*===================    End of cupids_lp Test    ===================*\n");

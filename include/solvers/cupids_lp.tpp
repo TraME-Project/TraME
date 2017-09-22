@@ -35,7 +35,7 @@
 
 template<typename Tg, typename Th, typename Tt>
 bool
-cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out)
+cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out)
 {
     bool success = false;
     
@@ -195,7 +195,9 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
     bool lp_optimal = false;
     double val_lp = 0.0;
+
     //
+
     try {
         lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_non_zero, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         
@@ -225,6 +227,10 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
                 *mu_0y_out = market.m - arma::trans(arma::sum(mu,0));
             }
 
+            if (val_out) {
+                *val_out = val_lp;
+            }
+
             //
 
             success = true;
@@ -244,19 +250,19 @@ template<typename Tg, typename Th, typename Tt>
 bool
 cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    return cupids_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr);
+    return cupids_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    return cupids_lp_int(market,&mu_out,nullptr,nullptr,&U_out,&V_out);
+    return cupids_lp_int(market,&mu_out,nullptr,nullptr,&U_out,&V_out,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out)
+cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out)
 {
-    return cupids_lp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out);
+    return cupids_lp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,&val_out);
 }

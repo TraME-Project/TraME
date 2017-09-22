@@ -36,7 +36,7 @@
 
 // internal function
 template<typename Tg, typename Th, typename Tt>
-bool cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out);
+bool cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out);
 
 // wrappers
 template<typename Tg, typename Th, typename Tt>
@@ -46,7 +46,7 @@ template<typename Tg, typename Th, typename Tt>
 bool cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out);
+bool cupids_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out);
 
 #include "cupids_lp.tpp"
 
