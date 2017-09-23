@@ -135,33 +135,21 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     //
     // now proceed to solve the LP problem
 
-    arma::sp_mat A_sp_t(location_mat,vals_mat); // transpose of A
+    arma::sp_mat A_lp_t(location_mat,vals_mat); // this is the transpose of the constraint matrix
     
-    const int k_lp = A_sp_t.n_cols; // n_cols as we are working with the transpose of A
-    const int n_lp = A_sp_t.n_rows; // n_rows as we are working with the transpose of A
+    const int k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
+    const int n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
 
-    const arma::uword* row_vals = &(*A_sp_t.row_indices);
-    const arma::uword* col_vals = &(*A_sp_t.col_ptrs);
+    int* vind_lp = uword_to_int(A_lp_t.row_indices,num_non_zero); // index of what row each non-zero value belongs to
+    int* vbeg_lp = uword_to_int(A_lp_t.col_ptrs,k_lp+1);             // index of how many non-zero values are in each column
 
-    int* vind_lp = new int[num_non_zero];
-    int* vbeg_lp = new int[k_lp+1];
     double* vval_lp = new double[num_non_zero];
-
-    for (jj=0; jj<num_non_zero; jj++) {
-        vind_lp[jj] = row_vals[jj];
-        vval_lp[jj] = A_sp_t.values[jj];
-    }
-
-    for (jj=0; jj<k_lp+1; jj++) {
-        vbeg_lp[jj] = col_vals[jj];
-    }
+    std::memcpy(vval_lp, A_lp_t.values, num_non_zero * sizeof(double));
 
     //
 
     char* sense_lp = new char[k_lp];
-    for (jj=0; jj<k_lp; jj++) {
-        sense_lp[jj] = '>';
-    }
+    std::memset(sense_lp, '>', k_lp * sizeof (char));
 
     //
 
@@ -171,7 +159,6 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     lb_lp.rows(0,epsilon_0i.n_elem-1) = arma::vectorise(epsilon_0i);
     lb_lp.rows(epsilon_0i.n_elem,epsilon_0i.n_elem + eta_0j_nelem - 1) = std::move(eta_0j);
     lb_lp.rows(epsilon_0i.n_elem + eta_0j_nelem, lb_lp.n_rows - 1).fill(-arma::datum::inf);
-
 
     //
 
@@ -240,7 +227,16 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }
+
     //
+
+    delete[] vbeg_lp;
+    delete[] vind_lp;
+    delete[] vval_lp;
+    delete[] sense_lp;
+
+    //
+
     return success;
 }
 

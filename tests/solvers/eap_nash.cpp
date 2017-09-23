@@ -49,7 +49,7 @@ int main()
     arma::cout << "mu:\n" << mu_LTU << arma::endl;
     //arma::cout << "u:\n" << u << "\n v:\n" << v << arma::endl;
     //
-    printf("\n*===================    End of oap_nash Test    ===================*\n");
+    printf("\n*===================    End of eap_nash Test    ===================*\n");
     printf("\n");
     //
     end = std::chrono::system_clock::now();

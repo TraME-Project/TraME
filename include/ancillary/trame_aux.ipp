@@ -111,6 +111,23 @@ uvec_linspace(const int a, const int b)
     return ret;
 }
 
+//
+// convert uword object (const long long int*) to int*
+// note: a simple reinterpret_cast will NOT work here
+
+inline
+int*
+uword_to_int(const arma::uword* var_inp, const int n_elem)
+{
+    int* var_out = new int[n_elem];
+
+    for (int jj=0; jj < n_elem; jj++) {
+        var_out[jj] = var_inp[jj];
+    }
+
+    return var_out;
+}
+
 // by-row reconstruction of a matrix (mimics R's 'byrow=TRUE')
 
 inline

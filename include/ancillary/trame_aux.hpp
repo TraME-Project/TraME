@@ -37,6 +37,7 @@
 arma::uvec which_max(const arma::mat& X, const int which_dim);
 arma::vec unit_vec(const int j, const int n);
 arma::uvec uvec_linspace(const int a, const int b);
+int* uword_to_int(const arma::uword* var_inp, const int n_elem);
 
 arma::mat byrow(const arma::mat& X, const int n_rows, const int n_cols);
 

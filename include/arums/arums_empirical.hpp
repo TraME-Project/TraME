@@ -97,25 +97,25 @@ class empirical
         /*
          * these private member objects are used by the LP solvers
          */
-        void presolve_LP_Gstar();
-        void presolve_LP_Gbar();
+        void presolve_LP_Gstar() const;
+        void presolve_LP_Gbar() const;
 
-        bool TRAME_PRESOLVED_GSTAR = false;
-        bool TRAME_PRESOLVED_GBAR  = false;
+        mutable bool TRAME_PRESOLVED_GSTAR = false;
+        mutable bool TRAME_PRESOLVED_GBAR  = false;
 
-        int k_Gstar;
-        int n_Gstar;
-        int numnz_Gstar;
-        int* vind_Gstar;
-        int* vbeg_Gstar;
-        double* vval_Gstar;
+        mutable int k_Gstar;
+        mutable int n_Gstar;
+        mutable int num_non_zero_Gstar;
+        mutable int* vind_Gstar;
+        mutable int* vbeg_Gstar;
+        mutable double* vval_Gstar;
 
-        int k_Gbar;
-        int n_Gbar;
-        int numnz_Gbar;
-        int* vind_Gbar;
-        int* vbeg_Gbar;
-        double* vval_Gbar;
+        mutable int k_Gbar;
+        mutable int n_Gbar;
+        mutable int num_non_zero_Gbar;
+        mutable int* vind_Gbar;
+        mutable int* vbeg_Gbar;
+        mutable double* vval_Gbar;
 };
 
 #endif

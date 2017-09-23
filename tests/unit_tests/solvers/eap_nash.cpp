@@ -93,7 +93,7 @@ int main()
     
 
     //
-    printf("\n*===================    End of oap_nash Test    ===================*\n");
+    printf("\n*===================    End of eap_nash Test    ===================*\n");
     printf("\n");
     //
     end = std::chrono::system_clock::now();
