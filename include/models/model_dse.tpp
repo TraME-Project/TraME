@@ -532,10 +532,10 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
      */
 
     int jj, kk, ll, count_val = 0;
-    int num_nonzero_elem = nbI*nbY + nbJ*nbX + nbX*nbY*n_draws_1 + nbY*n_draws_2*nbX + dim_theta*nbJ*nbX;
+    int num_non_zero = nbI*nbY + nbJ*nbX + nbX*nbY*n_draws_1 + nbY*n_draws_2*nbX + dim_theta*nbJ*nbX;
 
-    arma::umat location_mat_1(2,num_nonzero_elem);
-    arma::rowvec vals_mat_1(num_nonzero_elem);
+    arma::umat location_mat_1(2,num_non_zero);
+    arma::rowvec vals_mat_1(num_non_zero);
 
     for (jj=0; jj < nbY; jj++) { // first block
         for (kk=0; kk < nbI; kk++) {
@@ -597,31 +597,23 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     //
     // now proceed to solve the LP problem
 
-    arma::sp_mat A_sp_t(location_mat_1,vals_mat_1); // transpose of A
+    arma::sp_mat A_lp_t(location_mat_1,vals_mat_1); // this is the transpose of the constraint matrix
 
-    const int k_lp = A_sp_t.n_cols; // n_cols as we are working with the transpose of A
-    const int n_lp = A_sp_t.n_rows; // n_rows as we are working with the transpose of A
+    const int k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
+    const int n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
 
-    const arma::uword* row_vals = &(*A_sp_t.row_indices);
-    const arma::uword* col_vals = &(*A_sp_t.col_ptrs);
+    int* vind_lp = uword_to_int(A_lp_t.row_indices,num_non_zero); // index of what row each non-zero value belongs to
+    int* vbeg_lp = uword_to_int(A_lp_t.col_ptrs,k_lp+1);    // index of how many non-zero values are in each column
 
-    int* vind_lp = new int[num_nonzero_elem];
-    int* vbeg_lp = new int[k_lp+1];
-    double* vval_lp = new double[num_nonzero_elem];
+    double* vval_lp = new double[num_non_zero];
+    std::memcpy(vval_lp, A_lp_t.values, num_non_zero * sizeof(double));
 
-    for (jj=0; jj<num_nonzero_elem; jj++) {
-        vind_lp[jj] = row_vals[jj];
-        vval_lp[jj] = A_sp_t.values[jj];
-    }
-
-    for (jj=0; jj<k_lp+1; jj++) {
-        vbeg_lp[jj] = col_vals[jj];
-    }
     //
+
     char* sense_lp = new char[k_lp];
-    for (jj=0; jj<k_lp; jj++) {
-        sense_lp[jj] = '>';
-    }
+    std::memset(sense_lp, '>', k_lp * sizeof (char));
+
+    //
 
     arma::vec lb_lp(epsilon_0i.n_elem + eta_0j.n_elem + nbX*nbY + dim_theta);
     lb_lp.rows(0,epsilon_0i.n_elem-1) = arma::vectorise(epsilon_0i);
@@ -645,9 +637,11 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
 
     bool lp_optimal = false;
     double val_lp = 0.0;
+
     //
+
     try {
-        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_nonzero_elem, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_non_zero, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
         if (lp_optimal) {
 
@@ -715,24 +709,29 @@ model<dse<arums::none,arums::none,transfers::tu>>::mme(const arma::mat& mu_hat, 
     const int k_lp = A_lp.n_rows;
     const int n_lp = A_lp.n_cols;
 
+    //
+
     char* sense_lp = new char[k_lp];
-    for (int jj=0; jj < k_lp - 1; jj++) {
-        sense_lp[jj] = '>';
-    }
+    std::memset(sense_lp, '>', (k_lp-1) * sizeof (char));
+
     sense_lp[k_lp-1] = '=';
+
+    //
 
     const int modelSense = 0; // minimize
 
     arma::mat sol_mat(n_lp, 2);
     arma::mat dual_mat(k_lp, 2);
 
-    bool LP_optimal = false;
+    bool lp_optimal = false;
     double val_lp = 0.0;
-    //
-    try {
-        LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
-        if (LP_optimal) {
+    //
+
+    try {
+        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+
+        if (lp_optimal) {
             theta_hat = sol_mat(arma::span(nbX+nbY,nbX+nbY+dim_theta-1),0);
             //
             success = true;
@@ -742,6 +741,8 @@ model<dse<arums::none,arums::none,transfers::tu>>::mme(const arma::mat& mu_hat, 
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }
+
     //
+
     return success;
 }

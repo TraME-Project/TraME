@@ -273,11 +273,15 @@ const
 
     arma::vec lb_grbi = arma::zeros(nbAlt,1);
     arma::vec ub_grbi = arma::join_cols(mubar_x,arma::ones(1,1));
+
+    //
     
-    char* sense_grbi = new char[1];
-    sense_grbi[0] = '=';
+    char* sense_lp = new char[1];
+    sense_lp[0] = '=';
+
+    //
     
-    bool LP_optimal;
+    bool lp_optimal;
     int modelSense = 0; // minimize
     double objval;
     
@@ -285,9 +289,9 @@ const
     arma::mat dual_mat(1,2);
     
     try {
-        LP_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_grbi, Q_grbi.memptr(), lb_grbi.memptr(), ub_grbi.memptr(), nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        lp_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_lp, Q_grbi.memptr(), lb_grbi.memptr(), ub_grbi.memptr(), nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
-        if (LP_optimal) {
+        if (lp_optimal) {
             mu_x_out = sol_mat(arma::span(0,nbAlt-2),0);
 
             arma::mat A_mu = arma::vectorise(aux_A.slice(x) * mu_x_out);
@@ -301,7 +305,13 @@ const
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }
+
     //
+
+    delete[] sense_lp;
+
+    //
+
     return val_x;
 }
 

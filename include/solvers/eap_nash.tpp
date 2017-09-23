@@ -85,18 +85,46 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
         *v_out = v_curr;
     }
 
+    // build constraint matrix
+
+    const int num_non_zero_lp = nbX*nbY*2;
+
+    arma::umat location_mat_lp(2,num_non_zero_lp);
+    arma::rowvec vals_mat_lp = arma::ones(1,num_non_zero_lp);
+
+    int count_val = 0;
+
+    for (int kk=0; kk < nbY; kk++) {
+        for (int jj=0; jj < nbX; jj++) {
+            location_mat_lp(0,count_val) = jj + kk*nbX;
+            location_mat_lp(1,count_val) = jj;
+            ++count_val;
+        }
+        for (int jj=0; jj < nbX; jj++) {
+            location_mat_lp(0,count_val) = jj + kk*nbX;
+            location_mat_lp(1,count_val) = kk + nbX;
+            ++count_val;
+        }
+    }
+
+    arma::sp_mat A_lp_t(location_mat_lp,vals_mat_lp); // this is the transpose of the constraint matrix
+
+    const int k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
+    const int n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
+
+    int* vind_lp = uword_to_int(A_lp_t.row_indices,num_non_zero_lp); // index of what row each non-zero value belongs to
+    int* vbeg_lp = uword_to_int(A_lp_t.col_ptrs,k_lp+1);    // index of how many non-zero values are in each column
+
+    double* vval_lp = new double[num_non_zero_lp];
+    std::memcpy(vval_lp, A_lp_t.values, num_non_zero_lp * sizeof(double));
+
     //
 
     arma::vec obj_lp = std::move(arma::vectorise(subdiff));
 
-    arma::mat A_1_lp = arma::kron(arma::ones(1,nbY), arma::eye(nbX,nbX));
-    arma::mat A_2_lp = arma::kron(arma::eye(nbY,nbY), arma::ones(1,nbX));
-    arma::mat A_lp = arma::join_cols(A_1_lp, A_2_lp);
-
     arma::vec rhs_lp = arma::join_cols(market.n,market.m);
 
-    const int k_lp = A_lp.n_rows;
-    const int n_lp = A_lp.n_cols;
+    //
 
     char* sense_lp = new char[k_lp];
     for (int jj=0; jj<k_lp; jj++) {
@@ -107,20 +135,19 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
         }
     }
 
+    //
+
+    bool lp_optimal = false;
     int modelSense = 1; // maximize
+    double val_lp = 0.0;
 
     arma::mat sol_mat(n_lp, 2);
     arma::mat dual_mat(k_lp, 2);
 
-    bool LP_optimal = false;
-    double val_lp = 0.0;
-
-    //
-
     try {
-        LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, nullptr, nullptr, nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_non_zero_lp, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, nullptr, nullptr, nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
-        if (LP_optimal) {
+        if (lp_optimal) {
 
             // arma::mat mu = arma::reshape(sol_mat.col(0),nbX,nbY);
             arma::mat mu(sol_mat.colptr(0),nbX,nbY,false,true);
@@ -259,30 +286,92 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
     //
     // LP setup
 
+    const int num_non_zero_lp = 2*nbX;
+
+    arma::umat location_mat_lp(2,num_non_zero_lp);
+    arma::rowvec vals_mat_lp = arma::ones(1,num_non_zero_lp);
+
+    int count_val = 0;
+
+    for (int kk=0; kk < nbX; kk++) {
+        location_mat_lp(0,count_val) = kk;
+        location_mat_lp(1,count_val) = kk;
+        ++count_val;
+
+        location_mat_lp(0,count_val) = nbX;
+        location_mat_lp(1,count_val) = kk;
+
+        ++count_val;
+    }
+
+    arma::sp_mat A_lp_t(location_mat_lp,vals_mat_lp); // this is the transpose of the constraint matrix
+
+    const int k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
+    const int n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
+
+    int* vind_lp = uword_to_int(A_lp_t.row_indices,num_non_zero_lp); // index of what row each non-zero value belongs to
+    int* vbeg_lp = uword_to_int(A_lp_t.col_ptrs,k_lp+1);    // index of how many non-zero values are in each column
+
+    double* vval_lp = new double[num_non_zero_lp];
+    std::memcpy(vval_lp, A_lp_t.values, num_non_zero_lp * sizeof(double));
+
+    //
+
     arma::vec obj_lp(nbX+1,1);
     obj_lp.rows(0,nbX-1) = n;
     obj_lp.row(nbX) = m(0);
 
     arma::vec rhs_lp = arma::zeros(nbX,1);
-    arma::mat A_lp = arma::join_rows(arma::eye(nbX,nbX),arma::ones(nbX,1));
     arma::mat lb_lp = arma::zeros(nbX+1,1);
 
-    const int k_lp = A_lp.n_rows;
-    const int n_lp = A_lp.n_cols;
+    //
 
     char* sense_lp = new char[k_lp];
-    for (int jj=0; jj<k_lp; jj++) {
-        sense_lp[jj] = '>';
-    }
+    std::memset(sense_lp, '>', k_lp * sizeof (char));
 
-    bool LP_optimal = false;
-    int modelSense = 0; // minimize
-    double objval;
+    //
+
+    bool lp_optimal = false;
+    int modelSense_lp = 0; // minimize
+    double val_lp = 0.0;
 
     arma::mat sol_mat(n_lp, 2);
     arma::mat dual_mat(k_lp, 2);
 
-    double val_lp = 0.0;
+    //
+    // BIS setup
+
+    const int num_non_zero_bis = 2*nbX + nbX + 1;
+
+    arma::umat location_mat_bis(2,num_non_zero_bis);
+    arma::rowvec vals_mat_bis = arma::ones(1,num_non_zero_bis);
+
+    location_mat_bis.cols(0,num_non_zero_lp-1) = location_mat_lp;
+
+    vals_mat_bis.cols(0,num_non_zero_lp-1) = vals_mat_lp;
+    vals_mat_bis.cols(num_non_zero_lp,num_non_zero_bis-2) = n.t();
+    vals_mat_bis.col(num_non_zero_bis-1) = m(0);
+
+    count_val = num_non_zero_lp;
+
+    for (int kk=0; kk < nbX + 1; kk++) {
+        location_mat_bis(0,count_val) = kk;
+        location_mat_bis(1,count_val) = nbX;
+        ++count_val;
+    }
+
+    arma::sp_mat A_bis_t(location_mat_bis,vals_mat_bis); // this is the transpose of the constraint matrix
+
+    const int k_bis = A_bis_t.n_cols; // n_cols as we are working with the transpose of A
+    const int n_bis = A_bis_t.n_rows; // n_rows as we are working with the transpose of A
+
+    int* vind_bis = uword_to_int(A_bis_t.row_indices,num_non_zero_bis); // index of what row each non-zero value belongs to
+    int* vbeg_bis = uword_to_int(A_bis_t.col_ptrs,k_bis+1);    // index of how many non-zero values are in each column
+
+    double* vval_bis = new double[num_non_zero_bis];
+    std::memcpy(vval_bis, A_bis_t.values, num_non_zero_bis * sizeof(double));
+
+    arma::cout << A_bis_t << arma::endl;
 
     //
 
@@ -292,20 +381,14 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
     arma::vec rhs_bis = arma::zeros(nbX+1,1);
     rhs_bis.rows(0,nbX-1) = rhs_lp;
 
-    arma::mat A_bis(nbX+1,nbX+1);
-    A_bis.rows(0,nbX-1) = A_lp;
-    A_bis.row(nbX) = obj_lp.t();
-
-    arma::mat lb_bis = arma::zeros(nbX+1,1);
-
-    const int k_bis = A_bis.n_rows;
-    const int n_bis = A_bis.n_cols;
+    //
 
     char* sense_bis = new char[k_bis];
-    for (int jj=0; jj < k_bis-1; jj++) {
-        sense_bis[jj] = '>';
-    }
+    std::memset(sense_bis, '>', (k_bis-1) * sizeof (char));
+    
     sense_bis[k_bis-1] = '=';
+
+    //
 
     int modelSense_bis = (x_first) ? 0 : 1;
 
@@ -314,9 +397,7 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
 
     double val_bis = 0.0;
 
-    //
-
-    // arma::mat u;
+    // begin loop
 
     for (int y=0; y<nbY; y++) {
         for (int x=0; x<nbX; x++) {
@@ -334,14 +415,9 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
         obj_lp(nbX,0) = m(y);
 
         try {
-            LP_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+            lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_non_zero_lp, vbeg_lp, vind_lp, vval_lp, modelSense_lp, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
-            if (LP_optimal) {
-                //u0  = sol_mat.col(0).rows(0,nbX-1);
-                //v0y = sol_mat(nbX,0);
-
-                val_lp = objval;
-            } else {
+            if (!lp_optimal) {
                 std::cout << "Non-optimal value found during optimization" << std::endl;
             }
         } catch(...) {
@@ -350,16 +426,14 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
 
         //
         // second LP
-        //
 
-        A_bis(nbX,nbX) = m(y);
+        vval_bis[num_non_zero_bis-1] = m(y);
         rhs_bis(nbX) = val_lp;
 
         try {
-            LP_optimal = generic_LP(k_bis, n_bis, obj_bis.memptr(), A_bis.memptr(), modelSense_bis, rhs_bis.memptr(), sense_bis, nullptr, lb_lp.memptr(), nullptr, nullptr, val_bis, sol_mat_bis.colptr(0), sol_mat_bis.colptr(1), dual_mat_bis.colptr(0), dual_mat_bis.colptr(1));
+            lp_optimal = generic_LP(k_bis, n_bis, obj_bis.memptr(), num_non_zero_bis, vbeg_bis, vind_bis, vval_bis, modelSense_bis, rhs_bis.memptr(), sense_bis, nullptr, lb_lp.memptr(), nullptr, nullptr, val_bis, sol_mat_bis.colptr(0), sol_mat_bis.colptr(1), dual_mat_bis.colptr(0), dual_mat_bis.colptr(1));
 
-            if (LP_optimal) {
-                // u = sol_mat.col(0).rows(0,nbX-1);
+            if (lp_optimal) {
                 v_updated(y,0) = sol_mat(nbX,0);
             } else {
                 std::cout << "Non-optimal value found during optimization" << std::endl;
@@ -368,6 +442,20 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
             std::cout << "Exception during optimization" << std::endl;
         }
     }
+
     //
+
+    delete[] vbeg_lp;
+    delete[] vind_lp;
+    delete[] vval_lp;
+    delete[] sense_lp;
+
+    delete[] vbeg_bis;
+    delete[] vind_bis;
+    delete[] vval_bis;
+    delete[] sense_bis;
+
+    //
+
     return v_updated;
 }
