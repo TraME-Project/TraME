@@ -371,8 +371,6 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
     double* vval_bis = new double[num_non_zero_bis];
     std::memcpy(vval_bis, A_bis_t.values, num_non_zero_bis * sizeof(double));
 
-    arma::cout << A_bis_t << arma::endl;
-
     //
 
     arma::vec obj_bis = arma::zeros(nbX+1,1);

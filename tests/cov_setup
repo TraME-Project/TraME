@@ -17,11 +17,6 @@ cd ../arums
 make
 ./cov_check
 
-cd ../mmfs
-./configure -b dev -c
-make
-./cov_check
-
 cd ../solvers
 ./configure -b dev -c
 make
