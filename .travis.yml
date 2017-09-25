@@ -1,9 +1,6 @@
 language: c++
 sudo: required
 
-branches:
-  except: /pr\/.*/
-
 matrix:
   include:
     - os: linux
