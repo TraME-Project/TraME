@@ -32,7 +32,7 @@
 
 extern "C" {
     void beta_cdf_(double* x, double* p, double* q, double* result);
-	void beta_cdf_inv_(double* x, double* p, double* q, double* result);
+    void beta_cdf_inv_(double* x, double* p, double* q, double* result);
     void beta_cdf_inv_int_(double* x, double* p, double* q, double* result);
     void beta_pdf_(double* x, double* p, double* q, double* result);
 }

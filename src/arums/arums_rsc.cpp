@@ -684,7 +684,7 @@ trame::arums::rsc::Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, vo
     //
     arma::vec mu_x_inp = vals_inp, U_x_temp;
 
-	double val_x = Gstarx(U_x_temp, mu_x_inp, zeta,
+    double val_x = Gstarx(U_x_temp, mu_x_inp, zeta,
                           aux_DinvPsigma,aux_Psigma,
                           aux_Influence_lhs,aux_Influence_rhs,
                           d->pot_eps_vec,d->quantile_eps_vec,

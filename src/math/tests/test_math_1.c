@@ -16,20 +16,20 @@ extern double r8_lbeta_(double* a, double* b);
 
 int main()
 {
-	double x[] = {3.0};
+    double x[] = {3.0};
     
-	double res_gamma = r8_gamma_(x);
-	
-	printf("gamma fn: %.4f\n", res_gamma);
+    double res_gamma = r8_gamma_(x);
     
-	//
-	
-	double a[] = {2.0};
-	double b[] = {3.0};
-	
-	double res_lbeta = r8_lbeta_(a,b);
-	
-	printf("gamma fn: %.4f\n", res_lbeta);
-	
-	return 0;
+    printf("gamma fn: %.4f\n", res_gamma);
+    
+    //
+    
+    double a[] = {2.0};
+    double b[] = {3.0};
+    
+    double res_lbeta = r8_lbeta_(a,b);
+    
+    printf("gamma fn: %.4f\n", res_lbeta);
+    
+    return 0;
 }

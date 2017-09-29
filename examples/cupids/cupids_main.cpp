@@ -42,7 +42,7 @@
 int main()
 {
     arma::mat nSingles, marr, nAvail;
-	nSingles.load("data/n_singles.txt",arma::auto_detect);
+    nSingles.load("data/n_singles.txt",arma::auto_detect);
     marr.load("data/marr.txt",arma::auto_detect);
     nAvail.load("data/n_avail.txt",arma::auto_detect);
     //
