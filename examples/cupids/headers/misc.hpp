@@ -5,7 +5,7 @@ outer_prod_minus(const arma::vec& mat_1, const arma::vec& mat_2)
 {
     arma::mat ret(mat_1.n_elem,mat_2.n_elem);
 
-    for (int j=0; j < (int) mat_1.n_elem; j++) {
+    for (int j=0; j < static_cast<int>(mat_1.n_elem); j++) {
         ret.row(j) =  mat_2.t() - mat_1(j);
     }
     //
@@ -18,7 +18,7 @@ outer_prod_plus(const arma::vec& mat_1, const arma::vec& mat_2)
 {
     arma::mat ret(mat_1.n_elem,mat_2.n_elem);
 
-    for (int j=0; j < (int) mat_1.n_elem; j++) {
+    for (int j=0; j < static_cast<int>(mat_1.n_elem); j++) {
         ret.row(j) = mat_1(j) + mat_2.t();
     }
     //

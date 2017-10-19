@@ -180,7 +180,7 @@ arma::vec
 mfe<Tt>::marg_x_inv(const arma::mat& B_ys, const arma::uvec* xs)
 const
 {
-    const arma::uvec index_vec = (xs) ? *xs : uvec_linspace(0, (int) nbX - 1);
+    const arma::uvec index_vec = (xs) ? *xs : uvec_linspace(0, static_cast<int>(nbX - 1));
     const bool coeff = (need_norm) ? false : true;
 
     arma::vec ubs(nbX);
@@ -197,7 +197,7 @@ const
 #ifdef TRAME_USE_OMP
     #pragma omp parallel for firstprivate(root_data)
 #endif
-    for (int j=0; j < (int) index_vec.n_elem; j++) {
+    for (int j=0; j < static_cast<int>(index_vec.n_elem); j++) {
         int x = index_vec(j);
         root_data.x_ind = x;
 
@@ -237,7 +237,7 @@ const
 #ifdef TRAME_USE_OMP
     #pragma omp parallel for firstprivate(root_data)
 #endif
-    for (int j=0; j < (int) index_vec.n_elem; j++) {
+    for (int j=0; j < static_cast<int>(index_vec.n_elem); j++) {
         int y = index_vec(j);
         root_data.y_ind = y;
 

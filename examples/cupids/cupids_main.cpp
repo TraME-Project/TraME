@@ -61,7 +61,7 @@ int main()
     arma::mat n = nAvail(arma::span(0,nb_categ-1),0);
     arma::mat m = nAvail(arma::span(0,nb_categ-1),1);
     //
-    int nb_couples = (int) (arma::accu(mu_hat_xy));
+    int nb_couples = static_cast<int>(arma::accu(mu_hat_xy));
 
     mu_hat_x0 /= nb_couples;
     mu_hat_0y /= nb_couples;

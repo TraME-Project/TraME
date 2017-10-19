@@ -289,7 +289,7 @@ const
     arma::mat dual_mat(1,2);
     
     try {
-        lp_optimal = generic_LP((int) A_grbi.n_rows, (int) A_grbi.n_cols, obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_lp, Q_grbi.memptr(), lb_grbi.memptr(), ub_grbi.memptr(), nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        lp_optimal = generic_LP(static_cast<int>(A_grbi.n_rows), static_cast<int>(A_grbi.n_cols), obj_grbi.memptr(), A_grbi.memptr(), modelSense, rhs_grbi.memptr(), sense_lp, Q_grbi.memptr(), lb_grbi.memptr(), ub_grbi.memptr(), nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
         if (lp_optimal) {
             mu_x_out = sol_mat(arma::span(0,nbAlt-2),0);

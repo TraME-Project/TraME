@@ -96,8 +96,8 @@ arma::mat
 trame::mmfs::cd::M(const double a_xs, const arma::mat& b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
-    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
-    const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) nbY-1);
+    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, static_cast<int>(nbX-1));
+    const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, static_cast<int>(nbY-1));
     //
     const arma::mat term_1 = arma::exp(lambda(x_ind,y_ind) * std::log(a_xs));
     const arma::mat term_2 = arma::trans(arma::exp( elem_prod(arma::trans(aux_zeta(x_ind,y_ind)), arma::log(b_ys)) ));
@@ -110,8 +110,8 @@ arma::mat
 trame::mmfs::cd::M(const arma::mat& a_xs, const double b_ys, const arma::uvec* xs, const arma::uvec* ys)
 const
 {
-    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, (int) nbX-1);
-    const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, (int) nbY-1);
+    const arma::uvec x_ind = (xs) ? *xs : uvec_linspace(0, static_cast<int>(nbX-1));
+    const arma::uvec y_ind = (ys) ? *ys : uvec_linspace(0, static_cast<int>(nbY-1));
     //
     const arma::mat term_1 = arma::exp(elem_prod(lambda(x_ind,y_ind), arma::log(a_xs)));
     const arma::mat term_2 = arma::exp(aux_zeta(x_ind,y_ind) * std::log(b_ys));

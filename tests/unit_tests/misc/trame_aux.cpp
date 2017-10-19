@@ -49,12 +49,12 @@ int main()
 
     arma::mat X = arma::randu(dim_1,dim_2);
 
-    trame::which_max(X, (int) 0);
-    trame::which_max(X, (int) 1);
+    trame::which_max(X, static_cast<int>(0));
+    trame::which_max(X, static_cast<int>(1));
 
     // unit_vec
 
-    trame::unit_vec((int) 1, (int) 5);
+    trame::unit_vec(static_cast<int>(1), static_cast<int>(5));
 
     // uvec_linspace
 
