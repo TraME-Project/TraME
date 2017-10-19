@@ -66,7 +66,7 @@ w_upper_bound(const dse<Tg,Th,Tt>& market)
             x_ind(0) = x;
 
             if (transfers_type == 1) {
-                double mu_fill = 1.0 / (std::pow(2.0,-k) + (double) nbY);
+                double mu_fill = 1.0 / (std::pow(2.0,-k) + static_cast<double>(nbY));
                 mu_cond_x.fill(mu_fill);
 
                 market.arums_G.Gstarx(mu_cond_x,U_star_x,x);

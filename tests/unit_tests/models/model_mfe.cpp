@@ -69,7 +69,7 @@ int main()
     double lambda = 0.15;
     double val_hat_1, val_hat_2;
 
-    mu_hat = arma::ones(nbX,nbY)/ ((double) nbX);
+    mu_hat = arma::ones(nbX,nbY)/ static_cast<double>(nbX);
 
     arma::mat theta_hat_aff;
 

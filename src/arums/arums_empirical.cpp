@@ -114,13 +114,13 @@ const
     const arma::vec argmaxs = arma::max(Utilde,1);       // take max over dim = 1
     const arma::uvec argmax_inds = which_max(Utilde,1);
 
-    double val_x = arma::accu(argmaxs) / (double)(aux_n_draws);
+    double val_x = arma::accu(argmaxs) / static_cast<double>(aux_n_draws);
     //
     arma::uvec temp_find;
 
     for (int tt=0; tt < nbY; tt++) {
         temp_find = arma::find(argmax_inds==tt);
-        mu_x_out(tt,0) = (double)(temp_find.n_elem)/(double)(aux_n_draws);
+        mu_x_out(tt,0) = static_cast<double>(temp_find.n_elem)/static_cast<double>(aux_n_draws);
     }
     //
     return val_x;
@@ -172,7 +172,7 @@ const
 
     const arma::mat Phi = (x_homogeneous) ? atoms.slice(0) : atoms.slice(x);
     
-    arma::vec p = arma::ones(aux_n_draws,1)/ (double) aux_n_draws;
+    arma::vec p = arma::ones(aux_n_draws,1)/ static_cast<double>(aux_n_draws);
     arma::mat q;
 
     if (outside_option) {

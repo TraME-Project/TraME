@@ -68,8 +68,8 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
     //
 
-    const arma::vec n_i = arma::vectorise(I_ix * market.n) / (double) n_draws_1;
-    const arma::vec m_j = arma::vectorise(market.m.t() * I_yj) / (double) n_draws_2;
+    const arma::vec n_i = arma::vectorise(I_ix * market.n) / static_cast<double>(n_draws_1);
+    const arma::vec m_j = arma::vectorise(market.m.t() * I_yj) / static_cast<double>(n_draws_2);
 
     const int nbI = n_i.n_elem;
     const int nbJ = m_j.n_elem;

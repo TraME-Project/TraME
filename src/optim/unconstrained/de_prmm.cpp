@@ -314,7 +314,7 @@ optim::de_prmm_int(arma::vec& init_out_vals, std::function<double (const arma::v
                 the_sum += (best_vec_best(j) - min_val) / (xchg_vec(j) - min_val);
             }
 
-            the_sum /= (double) n_vals;
+            the_sum /= static_cast<double>(n_vals);
 
             if (std::abs(the_sum - 1.0) > d_eps) {
                 best_vec_main = best_vec_best;

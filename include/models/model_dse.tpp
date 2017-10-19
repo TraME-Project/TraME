@@ -506,8 +506,8 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     eta_0j = arma::vectorise(eta_0j);
     I_yj = I_yj.t();
 
-    const arma::vec n_i = arma::vectorise(I_ix * n) / (double) n_draws_1;
-    const arma::vec m_j = arma::vectorise(m.t() * I_yj) / (double) n_draws_2;
+    const arma::vec n_i = arma::vectorise(I_ix * n) / static_cast<double>(n_draws_1);
+    const arma::vec m_j = arma::vectorise(m.t() * I_yj) / static_cast<double>(n_draws_2);
 
     const int nbI = n_i.n_elem;
     const int nbJ = m_j.n_elem;

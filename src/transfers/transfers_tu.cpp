@@ -273,7 +273,7 @@ double
 trame::transfers::tu::UW(const double Ws, const int x_ind, const int y_ind)
 const
 {
-    return - Psi((double) 0.0,-Ws,x_ind,y_ind);
+    return - Psi(0.0,-Ws,x_ind,y_ind);
 }
 
 arma::mat 
@@ -297,7 +297,7 @@ double
 trame::transfers::tu::VW(const double Ws, const int x_ind, const int y_ind)
 const
 {
-    return - Psi(Ws,(double) 0.0,x_ind,y_ind);
+    return - Psi(Ws,0.0,x_ind,y_ind);
 }
 
 // dw
