@@ -85,12 +85,16 @@ if [[ "${TRAME_COVERAGE_BUILD}" == "y" ]]; then
     TRAME_OPT_FLAGS="-O0 -g --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
 else
     if [[ "${TRAME_OPT}" == "fast" ]]; then
-        echo "TraME: experimental optimization"
+        echo "TraME: experimental optimization enabled; use of NaN or +/-Inf not recognized"
 
         IS_FAST_OPT=1
 
         TRAME_OPT_FLAGS="-Ofast -march=native -DARMA_NO_DEBUG"
         # TRAME_OPT_FLAGS="-Ofast -DARMA_NO_DEBUG"
+    elif [[ "${TRAME_OPT}" == "native" ]]; then
+        IS_FAST_OPT=1
+
+        TRAME_OPT_FLAGS="-O3 -march=native -DARMA_NO_DEBUG"
     else
         TRAME_OPT_FLAGS="-O3"
     fi

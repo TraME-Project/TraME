@@ -28,11 +28,13 @@
  * 08/08/2016
  *
  * This version:
- * 07/17/2017
+ * 11/14/2017
  */
 
 #ifndef _trame_aux_HPP
 #define _trame_aux_HPP
+
+double lse(const arma::mat& X);
 
 arma::uvec which_max(const arma::mat& X, const int which_dim);
 arma::vec unit_vec(const int j, const int n);

@@ -28,8 +28,19 @@
  * 08/08/2016
  *
  * This version:
- * 07/17/2017
+ * 11/14/2017
  */
+
+//
+// LogSumExp
+
+inline
+double
+lse(const arma::mat& X) {
+    double max_elem = X.max();
+
+    return max_elem + std::log( arma::accu( arma::exp(X - max_elem) ) );
+}
 
 //
 // Find indices that correspond to maximum values

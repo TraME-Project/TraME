@@ -44,6 +44,14 @@ int main()
     //
     printf("\n*===================   Start of trame_aux test   ===================*\n");
     printf("\n");
+
+    // LogSumExp
+
+    arma::vec lse_vec(3);
+    lse_vec(0) = 2.0; lse_vec(1) = 3.0; lse_vec(2) = 4.0;
+
+    double lse_val = trame::lse(lse_vec);
+    std::cout << "lse_val = " << lse_val << std::endl;
     
     // which max
 
@@ -74,7 +82,6 @@ int main()
     trame::byrow(br_vec_1,dim_1+1,dim_2+1); // error
 
     // elem-by-elem operations
-    printf("done\n");
 
     arma::mat eX_mat_1 = arma::randu(dim_1,dim_2);
     arma::mat eX_mat_2 = arma::randu(dim_1,dim_2);
