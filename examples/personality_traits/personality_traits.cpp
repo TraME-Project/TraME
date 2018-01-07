@@ -2,7 +2,7 @@
 
 /*################################################################################
   ##
-  ##   Copyright (C) 2015 - 2017 the TraME Team:
+  ##   Copyright (C) 2015-2018 the TraME Team:
   ##      Alfred Galichon
   ##      Keith O'Hara
   ##
