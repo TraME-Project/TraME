@@ -77,7 +77,7 @@ install:
       fi
 
 script:
-  - ./configure -b dev -c -l glpk
+  - ./configure -c -d -l glpk
   - make
   - cd ./tests
   - ./cov_setup

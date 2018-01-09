@@ -8,17 +8,17 @@ export LD_LIBRARY_PATH="$PWD:$PWD/glpk_tmp/lib":$LD_LIBRARY_PATH
 cd tests
 
 cd ancillary
-./configure -b dev -c
+./configure -c -d
 make
 ./cov_check
 
 cd ../arums
-./configure -b dev -c
+./configure -c -d
 make
 ./cov_check
 
 cd ../solvers
-./configure -b dev -c
+./configure -c -d
 make
 ./cov_check
 
@@ -26,32 +26,32 @@ make
 cd $TESTS_WDIR/unit_tests
 
 cd misc
-./configure -b dev -c
+./configure -c -d
 make
 ./cov_check
 
 cd ../arums
-./configure -b dev -c
+./configure -c -d
 make
 ./cov_check
 
 cd ../mmfs
-./configure -b dev -c
+./configure -c -d
 make
 ./cov_check
 
 cd ../models
-./configure -b dev -c
+./configure -c -d
 make
 ./cov_check
 
 cd ../solvers
-./configure -b dev -c
+./configure -c -d
 make
 ./cov_check
 
 cd ../transfers
-./configure -b dev -c
+./configure -c -d
 make
 ./cov_check
 
