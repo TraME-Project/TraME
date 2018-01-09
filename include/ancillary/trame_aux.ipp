@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 11/14/2017
+ * 01/09/2018
  */
 
 //
@@ -58,6 +58,7 @@ which_max(const arma::mat& X, const int which_dim)
 
     if (which_dim==0) { // each column
         max_vec.set_size(k);
+
         for (int j=0; j < k; j++) {
             max_val = X(0,j);
             max_ind = 0;
@@ -73,6 +74,7 @@ which_max(const arma::mat& X, const int which_dim)
         }
     } else { // each row
         max_vec.set_size(n);
+
         for (int i=0; i<n; i++) {
             max_val = X(i,0);
             max_ind = 0;
@@ -139,7 +141,8 @@ uword_to_int(const arma::uword* var_inp, const int n_elem)
     return var_out;
 }
 
-// by-row reconstruction of a matrix (mimics R's 'byrow=TRUE')
+//
+// by-row reconstruction of a matrix (mimics R's 'byrow=TRUE' option when constructing a matrix)
 
 inline
 arma::mat
@@ -207,7 +210,7 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
 
     if (same_rows && same_cols) {
         ret = mat_1 + mat_2;
-    } else if (same_rows && !same_cols) {
+    } else if (same_rows && !same_cols) { // same #rows, different #cols
         if (cols_1==1) {
             ret.set_size(rows_1,cols_2);
             for (int i=0; i < cols_2; i++) {
@@ -222,7 +225,7 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
             printf("elem_add: need one of the matrices to be a column vector\n");
             return ret;
         }
-    } else if (!same_rows && same_cols) {
+    } else if (!same_rows && same_cols) { // same #cols, different #rows
         if (rows_1==1) {
             ret.set_size(rows_2,cols_1);
             for (int i=0; i < rows_2; i++) {
@@ -241,7 +244,9 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
         printf("elem_add: unknown error\n");
         return ret;
     }
+
     //
+
     return ret;
 }
 
