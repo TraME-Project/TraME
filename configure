@@ -2,10 +2,10 @@
 ## TraME config script
 
 # inputs
-while getopts :b:cl:m:o:pv option; do
+while getopts cdl:m:o:pv option; do
     case "${option}" in
-        b) TRAME_BUILD=${OPTARG};;
         c) TRAME_COVERAGE_BUILD="y";;
+        d) TRAME_BUILD="dev";;
         l) TRAME_LP=${OPTARG};;
         m) TRAME_MATRIX_OPS=${OPTARG};;
         o) TRAME_OPT=${OPTARG};;

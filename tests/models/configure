@@ -1,10 +1,10 @@
 #!/bin/bash
 ## TraME tests config script
 
-while getopts :b:cl:m:o:p option; do
+while getopts cdl:m:o:p option; do
     case "${option}" in
-        b) TRAME_BUILD=${OPTARG};;
         c) TRAME_COVERAGE="y";;
+        d) TRAME_BUILD="dev";;
         l) TRAME_LP=${OPTARG};;
         m) TRAME_MATRIX_OPS=${OPTARG};;
         o) TRAME_OPT=${OPTARG};;
