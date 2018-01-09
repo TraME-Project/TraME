@@ -50,11 +50,10 @@ echo "TraME tests: ARMA_INCLUDE_PATH set to ${ARMA_INCLUDE_PATH}"
 if [[ "${TRAME_COVERAGE}" == "y" ]]; then 
     TRAME_OPT_FLAGS="-O0 -Wall -g --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
 else
-    if [[ "${TRAME_OPT}" == "fast" ]]; then
-        echo "TraME tests: experimental optimization"
-        TRAME_OPT_FLAGS="-Ofast -DARMA_NO_DEBUG"
+    if [[ "${TRAME_OPT}" == "" ]]; then
+        TRAME_OPT_FLAGS="-O3 -march=native -DARMA_NO_DEBUG"
     else
-        TRAME_OPT_FLAGS="-O3 -Wall"
+        TRAME_OPT_FLAGS="${TRAME_OPT}"
     fi
 
     if [[ "${TRAME_PARALLEL}" == "y" ]]; then 
