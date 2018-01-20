@@ -44,8 +44,8 @@ ipfp_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::v
     const int nbX = market.nbX;
     const int nbY = market.nbY;
 
-    const double err_tol = (err_tol_inp) ? *err_tol_inp : 1E-12;
-    const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
+    const double err_tol = (err_tol_inp) ? *err_tol_inp : 1E-08;
+    const int max_iter = (max_iter_inp) ? *max_iter_inp : 5000;
 
     //
     // begin loop

@@ -40,7 +40,7 @@ int main()
     double val;
     arma::vec mux0, mu0y, u, v;
     arma::mat mu_TU, residuals;
-    trame::oap_lp(dse_obj_TU, mu_TU, true, mux0, mu0y, u, v, val, residuals);
+    trame::oap_lp(dse_obj_TU, mu_TU, mux0, mu0y, u, v, true, val, residuals);
 
     std::cout << "Solution of TU-none problem using oap_lp:\n" << std::endl;
     arma::cout << "u:\n" << u << "\n v:\n" << v << "\n resid:\n" << residuals << arma::endl;
