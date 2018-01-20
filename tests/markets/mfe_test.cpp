@@ -3,10 +3,6 @@
  *
  * Keith O'Hara
  * 08/01/2016
- * 
- * cd ~/Desktop/SCM/GitHub/TraME/src/trame/tests/markets
- *
- * g++-mp-5 -O2 -Wall -std=c++11 -I/usr/local/include/trame mfe_test.cpp -o mfe.test -L/usr/local/lib -ltrame -framework Accelerate
  */
 
 #include "trame.hpp"
@@ -15,8 +11,10 @@ int main()
 {
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
+
     //
     // inputs:
+
     int nbX = 18;
     int nbY = 5;
     double sigma = 1;
@@ -33,23 +31,28 @@ int main()
 
     arma::mat lambda_LTU = lambda/(lambda+zeta);
     arma::mat phi_LTU = (lambda%alpha + zeta%gamma) / (lambda+zeta);
+
     //
     // results
+
     printf("\n*===================   Start of MFE Test   ===================*\n");
     printf("\n");
-    //
-    //
-    //trame::mfe<trame::tu> mfe_obj_TU;
-    trame::mfe<trame::mmfs::geo> mfe_obj_TU;
-    mfe_obj_TU.build_TU(n,m,phi,&sigma,false);
 
-    trame::mfe<trame::mmfs::cd> mfe_obj_LTU;
-    mfe_obj_LTU.build_LTU(n,m,lambda_LTU,phi_LTU,&sigma,false);
+    //
+    // build
 
-    trame::mfe<trame::mmfs::min> mfe_obj_NTU;
-    mfe_obj_NTU.build_NTU(n,m,alpha,gamma,&sigma,false);
+    trame::mfe<trame::mmfs::geo> mfe_obj_TU(sigma,false);
+    mfe_obj_TU.build(n,m,phi);
+
+    trame::mfe<trame::mmfs::cd> mfe_obj_LTU(sigma,false);
+    mfe_obj_LTU.build(n,m,lambda_LTU,phi_LTU);
+
+    trame::mfe<trame::mmfs::min> mfe_obj_NTU(sigma,false);
+    mfe_obj_NTU.build(n,m,alpha,gamma);
+
     //
     //
+
     double tol = 1E-06;
     int max_iter = 5000;
 
@@ -74,10 +77,12 @@ int main()
     trame::ipfp(mfe_obj_LTU,mu_LTU);
 
     arma::cout << "Solution of LTU-logit problem using ipfp:\n" << mu_LTU << arma::endl;
+
     //
     printf("\n*===================    End of MFE Test    ===================*\n");
     printf("\n");
     //
+
     end = std::chrono::system_clock::now();
         
     std::chrono::duration<double> elapsed_seconds = end-start;
@@ -85,6 +90,8 @@ int main()
         
     std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
+    
     //
+
     return 0;
 }
