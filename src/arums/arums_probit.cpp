@@ -169,14 +169,12 @@ const
         arma::arma_rng::set_seed(*seed_val);
     }
     //
-    arma::vec V;
-    arma::mat Q, SqrtCovar;
+    arma::mat SqrtCovar;
     arma::cube atoms(n_draws,aux_nb_options,nbX);
     
-    for (int j=0; j<nbX; j++) {
-        eig_sym(V, Q, Covar.slice(j));
-        SqrtCovar = Q * arma::diagmat(1.0/arma::sqrt(V)) * Q.t();
-        //
+    for (int j=0; j<nbX; j++)
+    {
+        SqrtCovar = arma::chol( Covar.slice(j) );
         atoms.slice(j) = arma::randn(n_draws,aux_nb_options) * SqrtCovar;
     }
     //
