@@ -23,7 +23,7 @@ There are several configure options available:
 * `-g` a debugging build
 * `-l` specify the linear programming library to link against, either GLPK (`-l glpk`) or Gurobi (`-l gurobi`)
 * `-m` specify the BLAS and Lapack libraries to link against; for example, `-m "-lopenblas"` or `-m "-framework Accelerate"`
-* `-o` compiler optimization options; defaults to `-O3 -march=native -ffp-contract=fast -flto -DARMA_NO_DEBUG`
+* `-o` compiler optimization options; defaults to `-O3 -march=native -flto -DARMA_NO_DEBUG`
 * `-p` enable OpenMP parallelization features
 
 ## Example
