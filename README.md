@@ -1,6 +1,6 @@
 # TraME &nbsp; [![Build Status](https://travis-ci.org/TraME-Project/TraME.svg)](https://travis-ci.org/TraME-Project/TraME) [![Build Status](https://codecov.io/github/TraME-Project/TraME/coverage.svg?branch=master)](https://codecov.io/github/TraME-Project/TraME?branch=master)
 
-## Overview
+<!-- ## Overview -->
 
 TraME (**Tra**nsportation **M**ethods for **E**conometrics) is a C++ library for 
 solving problems of equilibrium computation and estimation in consumer 
