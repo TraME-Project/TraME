@@ -154,7 +154,6 @@ class model<mfe<Tt>> : public model_base
         arma::mat Phi_k(const arma::mat& mu_hat);
 
         // optimization-related objects
-
         bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method);
         static double model_mfe_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };
@@ -163,6 +162,6 @@ class model<mfe<Tt>> : public model_base
 #include "model_dse.tpp"
 #include "model_mfe.tpp"
 
-typedef model<mfe<mmfs::geo>> affinity_model;
+using affinity_model = model<mfe<mmfs::geo>>;
 
 #endif
