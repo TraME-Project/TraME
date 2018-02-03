@@ -220,7 +220,7 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
     const int optim_method = (optim_method_inp) ? *optim_method_inp : 1;
 
-    optim::opt_settings settings;
+    optim::algo_settings settings;
 
     // settings.err_tol  = 1E-06;
     // settings.iter_max = 1000;
@@ -278,7 +278,7 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
     const int optim_method = (optim_method_inp) ? *optim_method_inp : 1;
 
-    optim::opt_settings settings;
+    optim::algo_settings settings;
 
     // settings.err_tol = 1E-04;
     // settings.iter_max = 1000;
@@ -351,7 +351,7 @@ model<dse<Tg,Th,Tt>>::initial_theta()
 
 template<typename Tg, typename Th, typename Tt>
 bool
-model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method)
+model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings* settings_inp, const int optim_method)
 {
     if (optim_method == 1) {
         return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
@@ -427,7 +427,7 @@ model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_
 
 template<typename Tg, typename Th, typename Tt>
 bool
-model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method)
+model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings* settings_inp, const int optim_method)
 {
     if (optim_method == 1) {
         return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);

@@ -207,7 +207,7 @@ model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doubl
 
     const int optim_method = (optim_method_inp) ? *optim_method_inp : 1;
 
-    optim::opt_settings settings;
+    optim::algo_settings settings;
 
     settings.err_tol = xtol_rel;
     settings.iter_max = max_eval;
@@ -437,7 +437,7 @@ model<mfe<Tt>>::Phi_k(const arma::mat& mu_hat)
 
 template<typename Tt>
 bool
-model<mfe<Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method)
+model<mfe<Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings* settings_inp, const int optim_method)
 {
     if (optim_method == 1) {
         return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);

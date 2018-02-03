@@ -50,7 +50,7 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
 
     // optim
 
-    optim::opt_settings settings;
+    optim::algo_settings settings;
 
     settings.err_tol = err_tol;
     settings.iter_max = max_iter;
@@ -149,7 +149,7 @@ arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out,
 
 inline
 bool
-arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp)
+arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings* settings_inp)
 {
     return optim::broyden_df_int(init_out_vals,opt_objfn,opt_data,settings_inp);
 }
@@ -157,7 +157,7 @@ arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::
 inline
 bool
 arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
-                             std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data, optim::opt_settings* settings_inp)
+                             std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data, optim::algo_settings* settings_inp)
 {
     return optim::broyden_df_int(init_out_vals,opt_objfn,opt_data,jacob_objfn,jacob_data,settings_inp);
 }

@@ -372,7 +372,7 @@ const
 
     //
 
-    optim::opt_settings settings;
+    optim::algo_settings settings;
 
     settings.vals_bound = true;
 

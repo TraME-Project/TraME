@@ -62,7 +62,7 @@ max_welfare_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma:
 
     const int optim_method = 2;
 
-    optim::opt_settings settings;
+    optim::algo_settings settings;
 
     settings.err_tol = err_tol;
     settings.iter_max = max_iter;
@@ -159,7 +159,7 @@ max_welfare(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out
 
 inline
 bool
-max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::opt_settings* settings_inp, const int optim_method)
+max_welfare_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings* settings_inp, const int optim_method)
 {
     if (optim_method == 1) {
         return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
