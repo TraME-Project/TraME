@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/25/2017
+ * 02/04/2018
  */
 
 #ifndef _trame_arums_rusc_HPP
@@ -38,9 +38,9 @@ class rusc
 {
     public:
         // build objects
-        int nbX;
-        int nbY;
-        int dim_params;
+        uint_t nbX;
+        uint_t nbY;
+        uint_t dim_params;
         bool outside_option;
         
         arma::mat zeta;
@@ -61,22 +61,22 @@ class rusc
         // member functions
         ~rusc(){};
          rusc(){};
-        explicit rusc(const int nbX_inp, const int nbY_inp);
+        explicit rusc(const uint_t nbX_inp, const uint_t nbY_inp);
         explicit rusc(const arma::mat& zeta_inp, const bool outside_option_inp);
 
-        void build(const int nbX_inp, const int nbY_inp);
+        void build(const uint_t nbX_inp, const uint_t nbY_inp);
         void build(const arma::mat& zeta_inp, const bool outside_option_inp);
         
         double G(const arma::vec& n);
         double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out) const;
-        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const int x) const;
+        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const uint_t x) const;
         
         double Gstar(const arma::vec& n);
         double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out) const;
-        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const int x) const;
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const uint_t x) const;
         
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out) const;
-        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x) const;
+        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const uint_t x) const;
 
         arma::mat D2G(const arma::vec& n, const bool x_first) const;
         void D2G(arma::mat &H, const arma::vec& n, const bool x_first) const;
@@ -94,12 +94,12 @@ class rusc
         void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first) const;
         
         empirical simul() const;
-        empirical simul(const int n_draws, const int seed) const;
+        empirical simul(const uint_t n_draws, const uint_t seed) const;
         void simul(empirical& obj_out) const;
-        void simul(empirical& obj_out, const int n_draws, const int seed) const;
+        void simul(empirical& obj_out, const uint_t n_draws, const uint_t seed) const;
 
     protected:
-        void simul_int(empirical& obj_out, const int* n_draws_inp, const int* seed) const;
+        void simul_int(empirical& obj_out, const uint_t* n_draws_inp, const uint_t* seed) const;
 };
 
 #endif

@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/25/2017
+ * 02/04/2018
  */
 
 #include "ancillary/ancillary.hpp"
@@ -37,18 +37,18 @@
 //
 // build functions
 
-trame::arums::logit::logit(const int nbX_inp, const int nbY_inp)
+trame::arums::logit::logit(const uint_t nbX_inp, const uint_t nbY_inp)
 {   
     this->build(nbX_inp,nbY_inp);
 }
 
-trame::arums::logit::logit(const int nbX_inp, const int nbY_inp, const double sigma_inp, const bool outside_option_inp)
+trame::arums::logit::logit(const uint_t nbX_inp, const uint_t nbY_inp, const double sigma_inp, const bool outside_option_inp)
 {   
     this->build(nbX_inp,nbY_inp,sigma_inp,outside_option_inp);
 }
 
 void
-trame::arums::logit::build(const int nbX_inp, const int nbY_inp)
+trame::arums::logit::build(const uint_t nbX_inp, const uint_t nbY_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -56,7 +56,7 @@ trame::arums::logit::build(const int nbX_inp, const int nbY_inp)
 }
 
 void
-trame::arums::logit::build(const int nbX_inp, const int nbY_inp, const double sigma_inp, const bool outside_option_inp)
+trame::arums::logit::build(const uint_t nbX_inp, const uint_t nbY_inp, const double sigma_inp, const bool outside_option_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -80,10 +80,14 @@ const
 {   
     const arma::mat expU = arma::exp(U_inp / sigma);
     const arma::vec denom = (outside_option) ? (1.0 + arma::sum(expU,1)) : 0.0 + arma::sum(expU,1); // the '0.0 + ' fixes a compiling bug
+
     //
+
     mu_out = elem_prod(n/denom, expU);
-    double val = sigma*arma::accu(n % arma::log(denom));
+    double val = sigma * arma::accu(n % arma::log(denom));
+
     //
+
     return val;
 }
 
@@ -101,19 +105,25 @@ trame::arums::logit::Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::ma
 const
 {
     double val = 0.0;
-
     arma::mat n_repd = arma::repmat(n,1,nbY);
+
     //
-    if (outside_option) {
+
+    if (outside_option)
+    {
         arma::vec mu_x0 = n - arma::sum(mu_inp,1);
         
         val   = sigma * ( arma::accu(mu_inp % arma::log(mu_inp/n_repd)) + arma::accu(mu_x0 % arma::log(mu_x0/n)) );
         U_out = sigma * arma::log(elem_div(mu_inp, mu_x0));
-    } else {
+    }
+    else
+    {
         val   = sigma * arma::accu(mu_inp % arma::log(mu_inp/n_repd));
         U_out = sigma * arma::log(mu_inp / n_repd);
     }
+
     //
+
     return val;
 }
 
@@ -122,8 +132,11 @@ trame::arums::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out)
 const
 {
     double val_x = 0.0;
+
     //
-    if (outside_option) {
+
+    if (outside_option)
+    {
         double mu0 = 1 - arma::accu(mu_x_inp);
         
         val_x   = sigma * ( mu0 * std::log(mu0) + arma::accu(mu_x_inp % arma::log(mu_x_inp)) );
@@ -132,26 +145,34 @@ const
         val_x   = sigma * arma::accu(mu_x_inp % arma::log(mu_x_inp));
         U_x_out = sigma * arma::log(mu_x_inp);
     }
+
     //
+
     return val_x;
 }
 
 // just to conform with other arums classes
 double
-trame::arums::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const int x)
+trame::arums::logit::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const uint_t x)
 const
 {
     double val_x = 0.0;
 
-    if (mu_x_inp.n_rows > 1 && mu_x_inp.n_cols > 1) {
+    if (mu_x_inp.n_rows > 1 && mu_x_inp.n_cols > 1)
+    {
         val_x = this->Gstarx(mu_x_inp.row(x).t(),U_x_out);
-    } else if (mu_x_inp.n_rows == 1 && mu_x_inp.n_cols > 1) { 
+    }
+    else if (mu_x_inp.n_rows == 1 && mu_x_inp.n_cols > 1)
+    {
         val_x = this->Gstarx(mu_x_inp.t(),U_x_out);
-        // val_x = this->Gstarx(mu_x_inp,U_x_out);
-    } else {
+    }
+    else
+    {
         val_x = this->Gstarx(mu_x_inp,U_x_out);
     }
+
     //
+
     return val_x;
 }
 
@@ -167,15 +188,22 @@ const
     U_out.set_size(nbX,nbY);
     mu_out.set_size(nbX,nbY);
     arma::mat U_x_temp, mu_x_temp;
+
     //
-    for (int i=0; i<nbX; i++) {
+
+    for (uint_t i=0; i < nbX; i++)
+    {
         val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp);
+
         //
+
         val += n(i)*val_temp;
         U_out.row(i) = arma::trans(U_x_temp);
         mu_out.row(i) = arma::trans(n(i)*mu_x_temp);
     }
+
     //
+
     return val;
 }
 
@@ -185,27 +213,34 @@ const
 {
     double valx = 0.0;
 
-    if (outside_option) {
+    if (outside_option)
+    {
         arma::mat exp_Ubar_X = arma::exp(Ubar_x/sigma);
         
         trame_logit_zeroin_data root_data;
         root_data.exp_Ubar_X = exp_Ubar_X;
         root_data.mubar_X = mubar_x;
+
+        //
         
         double mu_x0 = zeroin(0.0, 1.0, differMargX, &root_data, nullptr, nullptr);
+        
         //
+
         mu_x_out = arma::min(mu_x0 * exp_Ubar_X, mubar_x);
         U_x_out  = sigma * arma::log(mu_x_out/mu_x0);
-        //
+        
         valx = arma::accu(mu_x_out % Ubar_x) - sigma*(mu_x0*std::log(mu_x0) + arma::accu(mu_x_out % arma::log(mu_x_out)));
     }
+
     //
+
     return valx;
 }
 
 // just to conform with the other arums classes
 double
-trame::arums::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x)
+trame::arums::logit::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const uint_t x)
 const
 {
     return this->Gbarx(Ubar_x, mubar_x, U_x_out, mu_x_out);
@@ -216,10 +251,9 @@ trame::arums::logit::differMargX(double z, void* opt_data)
 {
     trame_logit_zeroin_data *d = reinterpret_cast<trame_logit_zeroin_data*>(opt_data);
 
-    arma::mat temp_mat = arma::min(z * d->exp_Ubar_X, d->mubar_X);
-    double ret = z + arma::accu(temp_mat) - 1;
-    //
-    return ret;
+    arma::mat tmp_mat = arma::min(z * d->exp_Ubar_X, d->mubar_X);
+
+    return z + arma::accu(tmp_mat) - 1.0;
 }
 
 //
@@ -243,17 +277,23 @@ const
     
     arma::mat mu_xy = mu_sol;
     H.zeros(nbX*nbY,nbX*nbY);
+
     //
-    for (int x = 0; x < nbX; x++) {
-        for (int y = 0; y < nbY; y++) {
-            for (int y_prime = 0; y_prime < nbY; y_prime++) {
-                if (x_first) {
+
+    for (uint_t x = 0; x < nbX; x++) {
+        for (uint_t y = 0; y < nbY; y++) {
+            for (uint_t y_prime = 0; y_prime < nbY; y_prime++) 
+            {
+                if (x_first)
+                {
                     if (y==y_prime) {
                         H(x + nbX*y, x + nbX*y_prime) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
                     } else {
                         H(x + nbX*y, x + nbX*y_prime) = - mu_xy(x,y)*mu_xy(x,y_prime) / (n(x)*sigma);
                     }
-                } else {
+                }
+                else
+                {
                     if (y==y_prime) {
                         H(y + nbY*x, y_prime + nbY*x) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
                     } else {
@@ -285,17 +325,23 @@ const
     this->G(n,U_inp,mu_xy);
     
     H.zeros(nbX*nbY,nbX*nbY);
+
     //
-    for (int x = 0; x < nbX; x++) {
-        for (int y = 0; y < nbY; y++) {
-            for (int y_prime = 0; y_prime < nbY; y_prime++) {
-                if (x_first) {
+
+    for (uint_t x = 0; x < nbX; x++) {
+        for (uint_t y = 0; y < nbY; y++) {
+            for (uint_t y_prime = 0; y_prime < nbY; y_prime++)
+            {
+                if (x_first)
+                {
                     if (y==y_prime) {
                         H(x + nbX*y, x + nbX*y_prime) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
                     } else {
                         H(x + nbX*y, x + nbX*y_prime) = - mu_xy(x,y)*mu_xy(x,y_prime) / (n(x)*sigma);
                     }
-                } else {
+                }
+                else
+                {
                     if (y==y_prime) {
                         H(y + nbY*x, y_prime + nbY*x) = mu_xy(x,y)*(1 - mu_xy(x,y)/n(x)) / sigma;
                     } else {
@@ -345,14 +391,17 @@ const
     arma::mat mu_xy_recip = arma::ones(mu_inp.n_rows,mu_inp.n_cols) / mu_inp;
     
     H.zeros(nbX*nbY,nbX*nbY);
+
     //
-    for (int x = 0; x < nbX; x++) {
-        for (int y = 0; y < nbY; y++) {
-            for (int y_prime = 0; y_prime < nbY; y_prime++) {
+
+    for (uint_t x = 0; x < nbX; x++) {
+        for (uint_t y = 0; y < nbY; y++) {
+            for (uint_t y_prime = 0; y_prime < nbY; y_prime++)
+            {
                 if (x_first) {
                     if (y==y_prime) {
                         H(x + nbX*y, x + nbX*y_prime) = mu_x0_recip(x) + mu_xy_recip(x,y);
-                    }else{
+                    } else {
                         H(x + nbX*y, x + nbX*y_prime) = mu_x0_recip(x);
                     }
                 } else {
@@ -365,6 +414,7 @@ const
             }
         }
     }
+
     H *= sigma;
 }
 
@@ -406,10 +456,14 @@ const
 
     arma::mat dparams = (dparams_inp) ? *dparams_inp : arma::ones(1,1);
     
-    if (dparams.n_elem==0) {
+    if (dparams.n_elem==0)
+    {
         ret.zeros(nbX*nbY,0);
-    } else {
-        if (outside_option) {
+    }
+    else
+    {
+        if (outside_option) 
+        {
             mu_x0 = arma::repmat(n - arma::sum(mu_inp,1),1,mu_inp.n_cols);
             
             if (x_first) {
@@ -417,15 +471,21 @@ const
             } else {
                 logmu_temp = arma::vectorise(arma::trans(arma::log(mu_inp/mu_x0)));
             }
+
             //
+
             ret = elem_prod(arma::vectorise(dparams), logmu_temp);
-        } else {
+        } 
+        else
+        {
             if (x_first) {
                 logmu_temp = arma::vectorise(log(mu_inp));
             } else {
                 logmu_temp = arma::vectorise(arma::trans(arma::log(mu_inp)));
             }
+
             //
+
             ret = elem_prod(arma::vectorise(dparams), logmu_temp);
         }
     }
@@ -439,18 +499,16 @@ trame::arums::logit::simul()
 const
 {
     empirical emp_obj;
-    
     this->simul_int(emp_obj,nullptr,nullptr);
     //
     return emp_obj;
 }
 
 trame::arums::empirical
-trame::arums::logit::simul(int n_draws, int seed)
+trame::arums::logit::simul(const uint_t n_draws, const uint_t seed)
 const
 {
     empirical emp_obj;
-    
     this->simul_int(emp_obj,&n_draws,&seed);
     //
     return emp_obj;
@@ -464,17 +522,17 @@ const
 }
 
 void
-trame::arums::logit::simul(empirical& obj_out, const int n_draws, const int seed)
+trame::arums::logit::simul(empirical& obj_out, const uint_t n_draws, const uint_t seed)
 const
 {
     this->simul_int(obj_out,&n_draws,&seed);
 }
 
 void
-trame::arums::logit::simul_int(empirical& obj_out, const int* n_draws_inp, const int* seed_val)
+trame::arums::logit::simul_int(empirical& obj_out, const uint_t* n_draws_inp, const uint_t* seed_val)
 const
 {
-    int n_draws = 0;
+    uint_t n_draws = 0;
 
     if (n_draws_inp) {
         n_draws = *n_draws_inp;
@@ -489,8 +547,9 @@ const
     if (seed_val) {
         arma::arma_rng::set_seed(*seed_val);
     }
-    //
+    
     // note: digamma(1) \approx -0.5772156649
+
     arma::cube atoms;
 
     if (outside_option) {
@@ -500,7 +559,9 @@ const
     }
     
     obj_out.build(nbX,nbY,atoms,false,outside_option);
+
     //
+
     if (seed_val) {
         arma::arma_rng::set_seed_random(); // need to reset the seed
     }

@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/25/2017
+ * 02/04/2018
  */
 
 #ifndef _trame_arums_empirical_HPP
@@ -38,12 +38,12 @@ class empirical
 {
     public:
         // build objects
-        int nbX;
-        int nbY;
+        uint_t nbX;
+        uint_t nbY;
 
-        int dim_params;
-        int aux_n_draws;
-        int nb_options;
+        uint_t dim_params;
+        uint_t aux_n_draws;
+        uint_t nb_options;
 
         bool x_homogeneous;
         bool outside_option;
@@ -61,22 +61,22 @@ class empirical
         // member functions
         ~empirical(){};
          empirical(){};
-        explicit empirical(const int nbX_inp, const int nbY_inp);
-        explicit empirical(const int nbX_inp, const int nbY_inp, const arma::cube& atoms_inp, const bool x_homogeneous_inp, const bool outside_option_inp);
+        explicit empirical(const uint_t nbX_inp, const uint_t nbY_inp);
+        explicit empirical(const uint_t nbX_inp, const uint_t nbY_inp, const arma::cube& atoms_inp, const bool x_homogeneous_inp, const bool outside_option_inp);
 
-        void build(const int nbX_inp, const int nbY_inp);
-        void build(const int nbX_inp, const int nbY_inp, const arma::cube& atoms_inp, const bool x_homogeneous_inp, const bool outside_option_inp);
+        void build(const uint_t nbX_inp, const uint_t nbY_inp);
+        void build(const uint_t nbX_inp, const uint_t nbY_inp, const arma::cube& atoms_inp, const bool x_homogeneous_inp, const bool outside_option_inp);
 
         double G(const arma::vec& n);
         double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out) const;
-        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const int x) const;
+        double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const uint_t x) const;
 
         double Gstar(const arma::vec& n);
         double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out) const;
-        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const int x) const;
+        double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const uint_t x) const;
 
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out) const;
-        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x) const;
+        double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const uint_t x) const;
 
         arma::mat D2G(const arma::vec& n, const bool x_first) const;
         void D2G(arma::mat &H, const arma::vec& n, const bool x_first) const;

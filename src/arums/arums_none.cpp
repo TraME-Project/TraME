@@ -37,13 +37,13 @@
 //
 // build functions
 
-trame::arums::none::none(const int nbX_inp, const int nbY_inp)
+trame::arums::none::none(const uint_t nbX_inp, const uint_t nbY_inp)
 {   
     this->build(nbX_inp,nbY_inp);
 }
 
 void
-trame::arums::none::build(const int nbX_inp, const int nbY_inp)
+trame::arums::none::build(const uint_t nbX_inp, const uint_t nbY_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -67,14 +67,21 @@ const
     
     mu_out.set_size(nbX,nbY);
     arma::mat mu_x_temp;
+
     //
-    for (int i=0; i<nbX; i++) {
+
+    for (uint_t i=0; i < nbX; i++)
+    {
         double val_x = Gx(U_inp.row(i).t(),mu_x_temp);
+
         //
+
         val += n(i)*val_x;
         mu_out.row(i) = arma::trans(n(i)*mu_x_temp);
     }
+
     //
+
     return val;
 }
 
@@ -83,32 +90,43 @@ trame::arums::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out)
 const
 {
     const arma::uvec temp_vec = which_max(U_x_inp, 0);
-    const int y = temp_vec(0);
+    const uint_t y = temp_vec(0);
+
     //
+
     mu_x_out.zeros(nbY,1);
     
     if (y < nbY) {
         mu_x_out(y) = 1;
     }
+
     //
+
     return std::max(elem_max(U_x_inp), 0.0);
 }
 
 // just to conform with other arums classes
 double 
-trame::arums::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const int x)
+trame::arums::none::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const uint_t x)
 const
 {
     double val_x = 0.0;
 
-    if (U_x_inp.n_rows > 1 && U_x_inp.n_cols > 1) {
+    if (U_x_inp.n_rows > 1 && U_x_inp.n_cols > 1)
+    {
         val_x = this->Gx(U_x_inp.row(x).t(),mu_x_out);
-    } else if (U_x_inp.n_rows == 1 && U_x_inp.n_cols > 1) { 
+    }
+    else if (U_x_inp.n_rows == 1 && U_x_inp.n_cols > 1)
+    { 
         val_x = this->Gx(U_x_inp.t(),mu_x_out);
-    } else {
+    }
+    else
+    {
         val_x = this->Gx(U_x_inp,mu_x_out);
     }
+
     //
+
     return val_x;
 }
 
@@ -133,7 +151,7 @@ const
 }
 
 double
-trame::arums::none::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const int x)
+trame::arums::none::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const uint_t x)
 const
 {   
     printf("Gstarx not yet defined for the no arums case.\n");
@@ -152,17 +170,24 @@ const
     
     U_out.set_size(nbX,nbY);
     mu_out.set_size(nbX,nbY);
+
     //
+
     arma::mat U_x_temp, mu_x_temp;
     
-    for (int i=0; i<nbX; i++) {
+    for (uint_t i=0; i < nbX; i++)
+    {
         double val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp);
+
         //
+
         val += n(i)*val_temp;
         U_out.row(i) = arma::trans(U_x_temp);
         mu_out.row(i) = arma::trans(n(i)*mu_x_temp);
     }
+
     //
+
     return val;
 }
 
@@ -170,36 +195,43 @@ double
 trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out)
 const
 {
-    int count_int = 0;
-    const int nb_y0 = Ubar_x.n_elem;
+    uint_t count_int = 0;
+    const uint_t nb_y0 = Ubar_x.n_elem;
 
     mu_x_out.set_size(nb_y0,1);
+
     //
+
     arma::uvec srt_ind = arma::sort_index(Ubar_x,"descend");
-    //
+    
     mu_x_out.set_size(nb_y0,1);
     double cumul = arma::as_scalar(mubar_x(srt_ind(count_int)));
     
-    while ((count_int < nb_y0-1) && (cumul < 1.0) && (Ubar_x(srt_ind(count_int)) > 0)) {
+    while ((count_int < nb_y0-1) && (cumul < 1.0) && (Ubar_x(srt_ind(count_int)) > 0))
+    {
         mu_x_out(srt_ind(count_int)) = mubar_x(srt_ind(count_int));
 
         count_int++;
 
         cumul += mubar_x(srt_ind(count_int)); // Keith: is this in the correct place?
     }
+    
     //
+
     if (Ubar_x(srt_ind(count_int)) > 0) {
         mu_x_out(srt_ind(count_int)) = mubar_x(srt_ind(count_int)) + 1 - cumul;
     }
 
     U_x_out = arma::zeros(nb_y0,1);
+
     //
+
     return arma::accu(mu_x_out % Ubar_x);
 }
 
 // just to conform with other arums classes
 double
-trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x)
+trame::arums::none::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const uint_t x)
 const
 {
     return this->Gbarx(Ubar_x, mubar_x, U_x_out, mu_x_out);
@@ -328,18 +360,16 @@ trame::arums::none::simul()
 const
 {
     empirical emp_obj;
-    
     this->simul_int(emp_obj,nullptr,nullptr);
     //
     return emp_obj;
 }
 
 trame::arums::empirical
-trame::arums::none::simul(const int n_draws, const int seed)
+trame::arums::none::simul(const uint_t n_draws, const uint_t seed)
 const
 {
     empirical emp_obj;
-    
     this->simul_int(emp_obj,&n_draws,&seed);
     //
     return emp_obj;
@@ -353,17 +383,17 @@ const
 }
 
 void
-trame::arums::none::simul(empirical& obj_out, const int n_draws, const int seed)
+trame::arums::none::simul(empirical& obj_out, const uint_t n_draws, const uint_t seed)
 const
 {
     this->simul_int(obj_out,&n_draws,&seed);
 }
 
 void
-trame::arums::none::simul_int(empirical& obj_out, const int* n_draws_inp, const int* seed_val)
+trame::arums::none::simul_int(empirical& obj_out, const uint_t* n_draws_inp, const uint_t* seed_val)
 const
 {
-    int n_draws = 0;
+    uint_t n_draws = 0;
 
     if (n_draws_inp) {
         n_draws = *n_draws_inp;
@@ -374,9 +404,13 @@ const
         n_draws = 1000;
 #endif
     }
+
     //
+
     obj_out.build(nbX,nbY,arma::zeros(n_draws,nbY+1,nbX),false,false); // Keith: is the 'outside_option = false' ?
+
     //
+
     if (seed_val) {
         arma::arma_rng::set_seed_random(); // need to reset the seed
     }

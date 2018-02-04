@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/25/2017
+ * 02/04/2018
  */
 
 #include "ancillary/ancillary.hpp"
@@ -37,42 +37,42 @@
 //
 // build functions
 
-trame::arums::probit::probit(const int nbX_inp, const int nbY_inp)
+trame::arums::probit::probit(const uint_t nbX_inp, const uint_t nbY_inp)
 {   
     this->build(nbX_inp, nbY_inp);
 }
 
-trame::arums::probit::probit(const int nbX_inp, const int nbY_inp, const bool outside_option_inp)
+trame::arums::probit::probit(const uint_t nbX_inp, const uint_t nbY_inp, const bool outside_option_inp)
 {   
     this->build_int(nbX_inp, nbY_inp, nullptr, outside_option_inp);
 }
 
-trame::arums::probit::probit(const int nbX_inp, const int nbY_inp, const double rho_inp, const bool outside_option_inp)
+trame::arums::probit::probit(const uint_t nbX_inp, const uint_t nbY_inp, const double rho_inp, const bool outside_option_inp)
 {   
     this->build_int(nbX_inp, nbY_inp, &rho_inp, outside_option_inp);
 }
 
 void
-trame::arums::probit::build(const int nbX_inp, const int nbY_inp)
+trame::arums::probit::build(const uint_t nbX_inp, const uint_t nbY_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
 }
 
 void
-trame::arums::probit::build(const int nbX_inp, const int nbY_inp, const bool outside_option_inp)
+trame::arums::probit::build(const uint_t nbX_inp, const uint_t nbY_inp, const bool outside_option_inp)
 {   
     this->build_int(nbX_inp, nbY_inp, nullptr, outside_option_inp);
 }
 
 void
-trame::arums::probit::build(const int nbX_inp, const int nbY_inp, const double rho_inp, const bool outside_option_inp)
+trame::arums::probit::build(const uint_t nbX_inp, const uint_t nbY_inp, const double rho_inp, const bool outside_option_inp)
 {   
     this->build_int(nbX_inp, nbY_inp, &rho_inp, outside_option_inp);
 }
 
 void
-trame::arums::probit::build_int(const int nbX_inp, const int nbY_inp, const double* rho_inp, const bool outside_option_inp)
+trame::arums::probit::build_int(const uint_t nbX_inp, const uint_t nbY_inp, const double* rho_inp, const bool outside_option_inp)
 {   
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -96,18 +96,20 @@ trame::arums::probit::unifCorrelCovMatrices(const double rho_inp)
 {
     arma::mat Sig = rho_inp * arma::ones(aux_nb_options,aux_nb_options) + (1.0 - rho_inp) * arma::eye(aux_nb_options,aux_nb_options);
     
-    if (outside_option) {
+    if (outside_option)
+    {
         Sig.col(aux_nb_options-1).fill(0);
         Sig.row(aux_nb_options-1).fill(0);
         Sig(aux_nb_options-1,aux_nb_options-1) = 1;
     }
+
     //
+
     Covar.set_size(aux_nb_options,aux_nb_options,nbX); // note: this is different to the R code
 
-    for (int i=0; i<nbX; i++) {
+    for (uint_t i=0; i<nbX; i++) {
         Covar.slice(i) = Sig;
     }
-    //
 }
 
 //
@@ -125,7 +127,7 @@ const
 }
 
 trame::arums::empirical
-trame::arums::probit::simul(const int n_draws, const int seed)
+trame::arums::probit::simul(const uint_t n_draws, const uint_t seed)
 const
 {
     empirical emp_obj;
@@ -143,17 +145,17 @@ const
 }
 
 void
-trame::arums::probit::simul(empirical& obj_out, const int n_draws, const int seed)
+trame::arums::probit::simul(empirical& obj_out, const uint_t n_draws, const uint_t seed)
 const
 {
     this->simul_int(obj_out,&n_draws,&seed);
 }
 
 void
-trame::arums::probit::simul_int(empirical& obj_out, const int* n_draws_inp, const int* seed_val)
+trame::arums::probit::simul_int(empirical& obj_out, const uint_t* n_draws_inp, const uint_t* seed_val)
 const
 {
-    int n_draws = 0;
+    uint_t n_draws = 0;
     
     if (n_draws_inp) {
         n_draws = *n_draws_inp;
@@ -164,22 +166,28 @@ const
         n_draws = 1000;
 #endif
     }
+
     //
+
     if (seed_val) {
         arma::arma_rng::set_seed(*seed_val);
     }
+
     //
+
     arma::mat SqrtCovar;
     arma::cube atoms(n_draws,aux_nb_options,nbX);
     
-    for (int j=0; j<nbX; j++)
+    for (uint_t j=0; j<nbX; j++)
     {
         SqrtCovar = arma::chol( Covar.slice(j) );
         atoms.slice(j) = arma::randn(n_draws,aux_nb_options) * SqrtCovar;
     }
-    //
+
     obj_out.build(nbX,nbY,atoms,false,outside_option);
+
     //
+    
     if (seed_val) {
         arma::arma_rng::set_seed_random(); // need to reset the seed
     }

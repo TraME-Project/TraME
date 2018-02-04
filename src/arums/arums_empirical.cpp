@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/25/2017
+ * 02/04/2017
  */
 
 #include "ancillary/ancillary.hpp"
@@ -37,25 +37,25 @@
 //
 // build functions
 
-trame::arums::empirical::empirical(const int nbX_inp, const int nbY_inp)
+trame::arums::empirical::empirical(const uint_t nbX_inp, const uint_t nbY_inp)
 {
     this->build(nbX_inp, nbY_inp);
 }
 
-trame::arums::empirical::empirical(const int nbX_inp, const int nbY_inp, const arma::cube& atoms_inp, const bool x_homogeneous_inp, const bool outside_option_inp)
+trame::arums::empirical::empirical(const uint_t nbX_inp, const uint_t nbY_inp, const arma::cube& atoms_inp, const bool x_homogeneous_inp, const bool outside_option_inp)
 {
     this->build(nbX_inp, nbY_inp, atoms_inp, x_homogeneous_inp, outside_option_inp);
 }
 
 void
-trame::arums::empirical::build(const int nbX_inp, const int nbY_inp)
+trame::arums::empirical::build(const uint_t nbX_inp, const uint_t nbY_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
 }
 
 void
-trame::arums::empirical::build(const int nbX_inp, const int nbY_inp, const arma::cube& atoms_inp, const bool x_homogeneous_inp, const bool outside_option_inp)
+trame::arums::empirical::build(const uint_t nbX_inp, const uint_t nbY_inp, const arma::cube& atoms_inp, const bool x_homogeneous_inp, const bool outside_option_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -89,40 +89,52 @@ const
 {
     double val=0.0, val_x;
     mu_out.set_size(nbX,nbY);
+
     //
+
     arma::mat mu_x_temp;
 
-    for (int i=0; i<nbX; i++) {
+    for (uint_t i=0; i < nbX; i++) 
+    {
         val_x = Gx(U_inp.row(i).t(), mu_x_temp, i);
 
         val += n(i)*val_x;
         mu_out.row(i) = arma::trans(n(i)*mu_x_temp);
     }
+
     //
+
     return val;
 }
 
 double
-trame::arums::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const int x)
+trame::arums::empirical::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const uint_t x)
 const
 {
     mu_x_out.set_size(nbY,1);
-    //
+    
     arma::mat U_xs = (outside_option) ? arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1)) : U_x_inp;
     const arma::mat Utilde = (x_homogeneous) ? arma::ones(aux_n_draws,1) * U_xs.t() + atoms.slice(0) : arma::ones(aux_n_draws,1) * U_xs.t() + atoms.slice(x);
+
     //
+    
     const arma::vec argmaxs = arma::max(Utilde,1);       // take max over dim = 1
     const arma::uvec argmax_inds = which_max(Utilde,1);
 
     double val_x = arma::accu(argmaxs) / static_cast<double>(aux_n_draws);
+
     //
+
     arma::uvec temp_find;
 
-    for (int tt=0; tt < nbY; tt++) {
+    for (uint_t tt=0; tt < nbY; tt++)
+    {
         temp_find = arma::find(argmax_inds==tt);
         mu_x_out(tt,0) = static_cast<double>(temp_find.n_elem)/static_cast<double>(aux_n_draws);
     }
+
     //
+
     return val_x;
 }
 
@@ -143,25 +155,28 @@ const
         presolve_LP_Gstar();
     }
 
-    //
-
     double val = 0.0, val_x = 0.0;
     U_out.set_size(nbX,nbY);
+
     //
+
     arma::mat U_x;
 
-    for (int i=0; i < nbX; i++) {
+    for (uint_t i=0; i < nbX; i++)
+    {
         val_x = Gstarx((mu_inp.row(i).t())/n(i),U_x,i);
 
         val += n(i)*val_x;
         U_out.row(i) = arma::trans(U_x);
     }
+
     //
+
     return val;
 }
 
 double
-trame::arums::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const int x)
+trame::arums::empirical::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const uint_t x)
 const
 {
     if (!TRAME_PRESOLVED_GSTAR) {
@@ -187,7 +202,6 @@ const
     //
 
     arma::vec obj_lp = arma::vectorise(Phi);
-
     arma::vec rhs_lp = arma::join_cols(p,q);
 
     //
@@ -209,7 +223,8 @@ const
         
         //
 
-        if (lp_optimal) {
+        if (lp_optimal)
+        {
             arma::mat u = dual_mat.col(0).rows(0,aux_n_draws-1);
 
             if (outside_option) {
@@ -219,7 +234,7 @@ const
                 const arma::mat U_x_temp = dual_mat.col(0).rows(aux_n_draws,aux_n_draws+nbY-1);
                 U_x_out = - U_x_temp - arma::accu(p % u);
             }
-            //
+            
             val_x = -objval;
         } else {
             std::cout << "Non-optimal value found during optimization" << std::endl;
@@ -227,8 +242,6 @@ const
     } catch(...) {
         std::cout << "Exception during optimization" << std::endl;
     }
-
-    //
 
     delete[] sense_lp;
 
@@ -258,7 +271,8 @@ const
 
     //
     
-    for (int i=0; i<nbX; i++) {
+    for (uint_t i=0; i < nbX; i++)
+    {
         const double val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
 
         val += n(i)*val_temp;
@@ -272,7 +286,7 @@ const
 }
 
 double
-trame::arums::empirical::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x)
+trame::arums::empirical::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const uint_t x)
 const
 {
     if (!TRAME_PRESOLVED_GBAR) {
@@ -321,7 +335,8 @@ const
     try {
         lp_optimal = generic_LP(k_Gbar, n_Gbar, obj_lp.memptr(), num_non_zero_Gbar, vbeg_Gbar, vind_Gbar, vval_Gbar, modelSense, rhs_lp.memptr(), sense_lp, nullptr, nullptr, nullptr, nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         //
-        if (lp_optimal) {
+        if (lp_optimal)
+        {
             U_x_out = sol_mat.col(0).rows(0,nbY-1);
             arma::vec delta_mu_x = dual_mat.col(0).rows(0,nbY-1);
             mu_x_out = mubar_x - delta_mu_x;
@@ -483,15 +498,18 @@ const
     arma::umat location_mat(2,num_non_zero_Gstar);
     arma::rowvec vals_mat = arma::ones(1,num_non_zero_Gstar);
 
-    int count_val = 0;
+    uint_t count_val = 0;
 
-    for (int kk=0; kk < nb_options; kk++) {
-        for (int jj=0; jj < aux_n_draws; jj++) {
+    for (uint_t kk=0; kk < nb_options; kk++)
+    {
+        for (uint_t jj=0; jj < aux_n_draws; jj++)
+        {
             location_mat(0,count_val) = jj + kk*aux_n_draws;
             location_mat(1,count_val) = jj;
             ++count_val;
         }
-        for (int jj=0; jj < aux_n_draws; jj++) {
+        for (uint_t jj=0; jj < aux_n_draws; jj++)
+        {
             location_mat(0,count_val) = jj + kk*aux_n_draws;
             location_mat(1,count_val) = kk + aux_n_draws;
             ++count_val;
@@ -538,7 +556,8 @@ const
 
     int count_val = 0;
 
-    for (int jj=0; jj < nbY; jj++) { // top-left diagonal block
+    for (uint_t jj=0; jj < nbY; jj++)
+    {   // top-left diagonal block
         location_mat_2(0,count_val) = jj;
         location_mat_2(1,count_val) = jj;
 
@@ -547,9 +566,12 @@ const
         ++count_val;
     }
 
-    for (int kk=0; kk < (nbY+1); kk++) {
-        if (kk < nbY) { // top section 
-            for (int jj=0; jj < aux_n_draws; jj++) {
+    for (uint_t kk=0; kk < (nbY+1); kk++)
+    {
+        if (kk < nbY) 
+        {   // top section 
+            for (uint_t jj=0; jj < aux_n_draws; jj++)
+            {
                 location_mat_2(0,count_val) = kk;
                 location_mat_2(1,count_val) = nbY + jj + kk*aux_n_draws;
 
@@ -559,7 +581,8 @@ const
             }
         }
 
-        for (int jj=0; jj < aux_n_draws; jj++) { // diagonal terms (nbY+1 number of blocks)
+        for (uint_t jj=0; jj < aux_n_draws; jj++)
+        {   // diagonal terms (nbY+1 number of blocks)
             location_mat_2(0,count_val) = nbY + jj;
             location_mat_2(1,count_val) = nbY + jj + kk*aux_n_draws;
 

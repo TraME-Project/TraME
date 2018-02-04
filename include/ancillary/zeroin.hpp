@@ -34,6 +34,7 @@
 #ifndef _trame_zeroin_HPP
 #define _trame_zeroin_HPP
 
-double zeroin(const double ax, const double bx, std::function<double (const double val_inp, void* opt_data)> zero_objfn, void* opt_data, const double* tol_inp, const int* max_iter_inp);
+double zeroin(const double ax, const double bx, std::function<double (const double val_inp, void* opt_data)> zero_objfn, 
+              void* opt_data, const double* tol_inp, const int* max_iter_inp);
 
 #endif

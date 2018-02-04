@@ -28,7 +28,7 @@
  * 08/08/2016
  * 
  * This version:
- * 07/31/2017
+ * 02/04/2018
  */
 
 #include "ancillary/ancillary.hpp"
@@ -37,7 +37,7 @@
 //
 // build functions
 
-trame::arums::rsc::rsc(const int nbX_inp, const int nbY_inp)
+trame::arums::rsc::rsc(const uint_t nbX_inp, const uint_t nbY_inp)
 {
     this->build(nbX_inp, nbY_inp);
 }
@@ -53,7 +53,7 @@ trame::arums::rsc::rsc(const arma::mat& zeta_inp, const double alpha, const doub
 }
 
 void
-trame::arums::rsc::build(const int nbX_inp, const int nbY_inp)
+trame::arums::rsc::build(const uint_t nbX_inp, const uint_t nbY_inp)
 {
     nbX = nbX_inp;
     nbY = nbY_inp;
@@ -63,10 +63,12 @@ void
 trame::arums::rsc::build(const arma::mat& zeta_inp, const bool outside_option_inp)
 {
     if (!outside_option_inp) {
-        printf("TraME: rsc_build not defined when outside_option==false.\n");
+        printf("TraME: rsc_build not defined when outside_option = false.\n");
         return;
     }
+
     //
+
     outside_option = true;
     nbX = zeta_inp.n_rows;
     nbY = zeta_inp.n_cols - 1;
@@ -74,12 +76,16 @@ trame::arums::rsc::build(const arma::mat& zeta_inp, const bool outside_option_in
 
     zeta = zeta_inp;
     aux_ord = arma::zeros(nbX,nbY+1);
+
     //
+
     const arma::mat D =  arma::eye(nbY+1,nbY+1) - arma::join_cols(arma::zeros(1,nbY+1), arma::join_rows(arma::eye(nbY,nbY),arma::zeros(nbY,1)));
     const arma::mat D_inv = arma::inv(D);
 
     const arma::mat N_temp = arma::join_rows(arma::eye(nbY,nbY), -arma::ones(nbY,1));
+
     //
+
     arma::uvec ordx_temp;
     arma::mat Psigmax(nbY+1,nbY+1);
 
@@ -87,13 +93,17 @@ trame::arums::rsc::build(const arma::mat& zeta_inp, const bool outside_option_in
     aux_Influence_rhs.zeros(nbY+1,nbY+1,nbX);
     aux_Psigma.zeros(nbY+1,nbY+1,nbX);
     aux_DinvPsigma.zeros(nbY+1,nbY+1,nbX);
+
     //
-    for (int i=0; i < nbX; i++) {
+
+    for (uint_t i=0; i < nbX; i++)
+    {
         ordx_temp = arma::sort_index(zeta_inp.row(i));
         aux_ord.row(i) = arma::conv_to< arma::rowvec >::from(ordx_temp);
 
         Psigmax.zeros();
-        for (int j=0; j < nbY+1; j++) {
+        for (uint_t j=0; j < nbY + 1; j++) 
+        {
             Psigmax(j,ordx_temp(j)) = 1;
         }
 
@@ -122,7 +132,9 @@ trame::arums::rsc::build_beta(const arma::mat& zeta_inp, const double alpha, con
     aux_quant_eps_vec = qbeta;
     aux_pdf_eps_vec   = dbeta;
     aux_pot_eps_vec   = iqbeta;
+
     //
+
     build(zeta_inp,true);
 }
 
@@ -142,24 +154,29 @@ const
     double val = 0.0;
 
     mu_out.set_size(nbX,nbY);
+
     //
+
     arma::mat mu_x_temp;
 
-    for (int i=0; i<nbX; i++) {
+    for (uint_t i=0; i < nbX; i++)
+    {
         double val_x = Gx(U_inp.row(i).t(), mu_x_temp, i);
-        //
+        
         val += n(i)*val_x;
         mu_out.row(i) = arma::trans(n(i)*mu_x_temp);
     }
+
     //
+
     return val;
 }
 
 double
-trame::arums::rsc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const int x)
+trame::arums::rsc::Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const uint_t x)
 const
 {
-    const int nbAlt = nbY + 1;
+    const uint_t nbAlt = nbY + 1;
 
     double val_x=0, E_eps_temp=0, E_eps_temp_next=0, cumul_temp=0;
     double run_max=0, run_min=0, run_temp=0;
@@ -167,13 +184,18 @@ const
 
     arma::vec mu_x_tilde = arma::zeros(nbAlt,1);
     arma::vec U_x_tilde = arma::join_cols(arma::vectorise(U_x_inp),arma::zeros(1,1)); // Keith: RSC only works with outside_option = true?
+    
     //
+
     int j,y,z;
 
-    for (int i=0; i < nbAlt; i++) {
+    for (uint_t i=0; i < nbAlt; i++)
+    {
         y = aux_ord(x,i);
         run_max = quantile(0);
+
         //
+
         j = 0;
 
         while (j < i) {
@@ -188,9 +210,13 @@ const
 
             j++;
         }
+
         //
+
         run_min = quantile(1);
+
         //
+
         j = nbAlt-1;
 
         while (j > i) {
@@ -203,7 +229,9 @@ const
 
             j--;
         }
+
         //
+
         if (run_min > run_max) {
             mu_x_tilde_y = std::max(cdf(run_min) - cdf(run_max),0.0);
         } else {
@@ -211,8 +239,11 @@ const
         }
 
         mu_x_tilde(y) = mu_x_tilde_y;
+
         //
-        if (mu_x_tilde_y > 0) {
+
+        if (mu_x_tilde_y > 0)
+        {
             cumul_temp += mu_x_tilde_y;
             e_y = quantile(cumul_temp);
 
@@ -223,9 +254,13 @@ const
             E_eps_temp = E_eps_temp_next;
         }
     }
+
     //
+
     mu_x_out = mu_x_tilde.rows(0,nbAlt-2);
+
     //
+
     return val_x;
 }
 
@@ -245,21 +280,26 @@ const
     double val=0.0, val_x_temp;
 
     U_out.set_size(nbX,nbY);
+
     //
+
     arma::vec U_x_temp;
 
-    for (int i=0; i<nbX; i++) {
+    for (uint_t i=0; i<nbX; i++)
+    {
         val_x_temp = Gstarx((mu_inp.row(i).t())/n(i),U_x_temp,i);
         //
         val += n(i)*val_x_temp;
         U_out.row(i) = arma::trans(U_x_temp);
     }
+
     //
+
     return val;
 }
 
 double
-trame::arums::rsc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const int x)
+trame::arums::rsc::Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const uint_t x)
 const
 {
     double val_x = 0;
@@ -270,17 +310,23 @@ const
 
     arma::vec ts_full = aux_DinvPsigma.slice(x) * ts_temp;
     arma::vec ts = ts_full.rows(0,nbY-1);
+
     //
+
     arma::vec pots_inp = arma::join_cols(arma::zeros(1,1),ts_full);
     arma::vec pots = pot(pots_inp);
 
     arma::vec diff_pots = pots.rows(1,nbY+1) - pots.rows(0,nbY);
+
     //
+
     val_x = - arma::accu( (aux_Psigma.slice(x)*zeta.row(x).t()) % diff_pots );
 
     arma::mat e_mat = arma::diagmat( arma::join_cols(arma::zeros(1,1),quantile(ts)) );
     U_x_out = - aux_Influence_lhs.slice(x) * e_mat * aux_Influence_rhs.slice(x) * zeta.row(x).t();
+
     //
+
     return val_x;
 }
 
@@ -291,25 +337,32 @@ trame::arums::rsc::Gstarx(arma::vec& U_x, const arma::vec& mu_x_inp, const arma:
                           const arma::mat& aux_Influence_lhs, const arma::mat& aux_Influence_rhs,
                           arma::vec (*pot_eps_vec)(arma::vec pot_inp, double* dist_pars),
                           arma::vec (*quantile_eps_vec)(arma::vec quant_inp, double* dist_pars),
-                          double* dist_pars, int nbY, int x)
+                          double* dist_pars, const uint_t nbY, const uint_t x)
 {
     arma::vec ts_temp(mu_x_inp.n_elem+1);
+
     ts_temp.rows(0,mu_x_inp.n_elem-1) = mu_x_inp;
-    ts_temp(mu_x_inp.n_elem) = 1-arma::accu(mu_x_inp);
+    ts_temp(mu_x_inp.n_elem) = 1.0 - arma::accu(mu_x_inp);
 
     arma::vec ts_full = aux_DinvPsigma * ts_temp;
     arma::vec ts = ts_full.rows(0,nbY-1);
+
     //
+
     arma::vec pots_inp = arma::join_cols(arma::zeros(1,1),ts_full);
     arma::vec pots = (*pot_eps_vec)(pots_inp, dist_pars);
 
     arma::vec diff_pots = pots.rows(1,nbY+1) - pots.rows(0,nbY);
+
     //
+
     double val_x = - arma::accu( aux_Psigma*zeta.row(x).t() % diff_pots );
 
     arma::mat e_mat = arma::diagmat( arma::join_cols(arma::zeros(1,1),(*quantile_eps_vec)(ts,dist_pars)) );
     U_x = - aux_Influence_lhs * e_mat * aux_Influence_rhs * zeta.row(x).t();
+
     //
+
     return val_x;
 }
 
@@ -324,28 +377,34 @@ const
 
     U_out.set_size(nbX,nbY);
     mu_out.set_size(nbX,nbY);
+
     //
+
     arma::mat U_x_temp, mu_x_temp;
 
-    for (int i=0; i<nbX; i++) {
+    for (uint_t i=0; i<nbX; i++)
+    {
         double val_temp = Gbarx(Ubar.row(i).t(),(mubar.row(i).t())/n(i),U_x_temp,mu_x_temp,i);
 
         val += n(i)*val_temp;
         U_out.row(i) = arma::trans(U_x_temp);
         mu_out.row(i) = arma::trans(n(i)*mu_x_temp);
     }
+
     //
+
     return val;
 }
 
 double
-trame::arums::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const int x)
+trame::arums::rsc::Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const uint_t x)
 const
 {
     if (!outside_option) {
         printf("Gbarx not implemented yet when outside_option==false");
         return 0.0;
     }
+
     //
 
     double ret = 0;
@@ -385,7 +444,8 @@ const
     
     //
     
-    if (success) {
+    if (success)
+    {
         mu_x_out = sol_vec;
 
         arma::vec U_x_temp;
@@ -396,7 +456,9 @@ const
     } else {
         printf("error: optim failed in rsc::Gbarx\n");
     }
+
     //
+
     return ret;
 }
 
@@ -478,8 +540,9 @@ const
     arma::vec mu_x0 = n - arma::sum(mu_inp,1);
 
     arma::umat mat_inds(nbY,nbX); // indices to place the results (complicated)
-    for (int i=0; i < nbX; i++) {
-        for (int j=0; j < nbY; j++) {
+
+    for (uint_t i=0; i < nbX; i++) {
+        for (uint_t j=0; j < nbY; j++) {
             if (x_first) {
                 mat_inds(j,i) = i + j*nbX;
             } else {
@@ -487,25 +550,34 @@ const
             }
         }
     }
+
     //
+
     arma::mat C, d_mu_e_temp, d_mu_e;
     arma::vec ts_temp(nbY+1), ts_full, erestr_temp, erestr, erestr_pdf;
 
-    for (int i=0; i < nbX; i++) {
+    for (uint_t i=0; i < nbX; i++)
+    {
         C = - arma::trans( arma::repmat(aux_Influence_rhs.slice(i) * zeta.row(i).t(),1,nbY) % aux_Influence_lhs.slice(i).t() );
 
         ts_temp.rows(0,nbY-1) = mu_inp.row(i).t();
         ts_temp(nbY) = mu_x0(i);
 
         ts_full = aux_DinvPsigma.slice(i) * ts_temp / n(i);
+
         //
+
         erestr_temp = quantile(ts_full);
         erestr = erestr_temp.rows(0,nbY-1);
         erestr_pdf = pdf(erestr);
+
         //
+
         d_mu_e_temp = arma::join_cols(arma::zeros(1,nbY),arma::diagmat(1 / erestr_pdf)) * aux_DinvPsigma.slice(i).rows(0,nbY-1);
         d_mu_e = d_mu_e_temp.cols(0,nbY-1) - arma::repmat(d_mu_e_temp.col(nbY),1,nbY);
+
         //
+
         hess(mat_inds.col(i),mat_inds.col(i)) = C * d_mu_e / n(i);
     }
 }
@@ -546,23 +618,29 @@ const
 {
     arma::mat dparams_mat = (dparams_inp) ? *dparams_inp : arma::eye(dim_params,dim_params);
 
-    const int nbDirs = std::floor(dparams_mat.n_elem / (nbX*nbX*(nbY+1)));
+    const uint_t nbDirs = std::floor(dparams_mat.n_elem / (nbX*nbX*(nbY+1)));
 
-    ret.set_size(nbX*nbY,nbX*nbDirs);
-    ret.zeros();
+    ret = arma::zeros(nbX*nbY,nbX*nbDirs);
+
     //
     // indices to place the results (complicated)
+
     arma::umat mat_inds_1(nbDirs,nbX);
     arma::umat mat_inds_2(nbDirs,nbX);
     arma::umat mat_inds_3(nbDirs,nbX);
 
-    for (int i=0; i<nbX; i++) {
-        for (int j=0; j<nbDirs; j++) {
-            if (x_first) {
+    for (uint_t i=0; i < nbX; i++)
+    {
+        for (uint_t j=0; j < nbDirs; j++)
+        {
+            if (x_first)
+            {
                 mat_inds_1(j,i) = i + j*nbX;
                 mat_inds_2(j,i) = i + j*nbX;
                 mat_inds_3(j,i) = i + j*nbX;
-            } else {
+            }
+            else
+            {
                 mat_inds_1(j,i) = i + j*nbX;
                 mat_inds_2(j,i) = i + j*nbX;
                 mat_inds_3(j,i) = i*nbY + j;
@@ -573,11 +651,14 @@ const
     if (nbDirs > nbY) {
         mat_inds_3.shed_row(nbDirs-1);
     }
+
     //
+
     arma::mat e_mat;
     arma::vec ts_temp(nbY+1), ts_full, ts;
 
-    for (int i=0; i<nbX; i++) {
+    for (uint_t i=0; i<nbX; i++)
+    {
         ts_temp.rows(0,nbY-1) = mu_inp.row(i).t();
         ts_temp(nbY) = n(i) - arma::accu(mu_inp.row(i));
 
@@ -605,7 +686,7 @@ const
 }
 
 trame::arums::empirical
-trame::arums::rsc::simul(const int n_draws, const int seed)
+trame::arums::rsc::simul(const uint_t n_draws, const uint_t seed)
 const
 {
     empirical emp_obj;
@@ -623,17 +704,17 @@ const
 }
 
 void
-trame::arums::rsc::simul(empirical& obj_out, const int n_draws, const int seed)
+trame::arums::rsc::simul(empirical& obj_out, const uint_t n_draws, const uint_t seed)
 const
 {
     this->simul_int(obj_out,&n_draws,&seed);
 }
 
 void
-trame::arums::rsc::simul_int(empirical& obj_out, const int* n_draws_inp, const int* seed_val)
+trame::arums::rsc::simul_int(empirical& obj_out, const uint_t* n_draws_inp, const uint_t* seed_val)
 const
 {
-    int n_draws = 0;
+    uint_t n_draws = 0;
 
     if (n_draws_inp) {
         n_draws = *n_draws_inp;
@@ -644,19 +725,27 @@ const
         n_draws = 1000;
 #endif
     }
+
     //
+
     if (seed_val) {
         arma::arma_rng::set_seed(*seed_val);
     }
+
     //
+
     arma::cube atoms(n_draws,nbY+1,nbX);
 
-    for (int i=0; i<nbX; i++) {
+    for (uint_t i=0; i < nbX; i++) {
         atoms.slice(i) = quantile(arma::randu(n_draws,1)) * zeta.row(i);
     }
+    
     //
+
     obj_out.build(nbX,nbY,atoms,false,outside_option);
+    
     //
+
     if (seed_val) {
         arma::arma_rng::set_seed_random(); // need to reset the seed
     }
@@ -669,9 +758,11 @@ double
 trame::arums::rsc::Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
 {
     trame_rsc_gbar_opt_data *d = reinterpret_cast<trame_rsc_gbar_opt_data*>(opt_data);
+
     //
-    int x = d->x;
-    int nbY = d->nbY;
+
+    uint_t x = d->x;
+    uint_t nbY = d->nbY;
 
     arma::mat Ubar_x = d->Ubar_x;
     arma::mat zeta = d->zeta;
@@ -681,7 +772,9 @@ trame::arums::rsc::Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, vo
     arma::mat aux_Influence_rhs = d->aux_Influence_rhs;
 
     double* dist_pars = d->dist_pars;
+
     //
+
     arma::vec mu_x_inp = vals_inp, U_x_temp;
 
     double val_x = Gstarx(U_x_temp, mu_x_inp, zeta,
@@ -691,28 +784,36 @@ trame::arums::rsc::Gbar_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, vo
                           dist_pars,nbY,x);
 
     double ret = val_x - arma::accu(mu_x_inp % Ubar_x);
+
     //
+
     if (grad) {
         *grad = U_x_temp - Ubar_x;
     }
+
     //
+
     return ret;
 }
 
 arma::vec
 trame::arums::rsc::Gbar_opt_constr(const arma::vec& vals_inp, arma::mat* jacob_out, void* constr_data)
 {
-    //
     arma::vec ret(1);
     ret(0) = arma::accu(vals_inp) - 1;
+
     //
-    if (jacob_out) {
+
+    if (jacob_out)
+    {
         trame_rsc_gbar_opt_data *d = reinterpret_cast<trame_rsc_gbar_opt_data*>(constr_data);
 
         jacob_out->set_size(1, d->nbY);
         jacob_out->row(0) = arma::ones(1,d->nbY);
     }
+
     //
+
     return ret;
 }
 

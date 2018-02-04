@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 07/25/2017
+ * 02/04/2018
  */
 
 #ifndef _trame_arums_probit_HPP
@@ -38,10 +38,10 @@ class probit
 {
     public:
         // build objects
-        int nbX;
-        int nbY;
-        int dim_params;
-        int aux_nb_options;
+        uint_t nbX;
+        uint_t nbY;
+        uint_t dim_params;
+        uint_t aux_nb_options;
         
         bool outside_option;
         
@@ -52,26 +52,26 @@ class probit
         // member functions
         ~probit(){};
          probit(){};
-        explicit probit(const int nbX_inp, const int nbY_inp);
-        explicit probit(const int nbX_inp, const int nbY_inp, const bool outside_option_inp);
-        explicit probit(const int nbX_inp, const int nbY_inp, const double rho_inp, const bool outside_option_inp);
+        explicit probit(const uint_t nbX_inp, const uint_t nbY_inp);
+        explicit probit(const uint_t nbX_inp, const uint_t nbY_inp, const bool outside_option_inp);
+        explicit probit(const uint_t nbX_inp, const uint_t nbY_inp, const double rho_inp, const bool outside_option_inp);
 
-        void build(const int nbX_inp, const int nbY_inp);
-        void build(const int nbX_inp, const int nbY_inp, const bool outside_option_inp);
-        void build(const int nbX_inp, const int nbY_inp, const double rho_inp, const bool outside_option_inp);
+        void build(const uint_t nbX_inp, const uint_t nbY_inp);
+        void build(const uint_t nbX_inp, const uint_t nbY_inp, const bool outside_option_inp);
+        void build(const uint_t nbX_inp, const uint_t nbY_inp, const double rho_inp, const bool outside_option_inp);
 
         void unifCorrelCovMatrices();
         void unifCorrelCovMatrices(const double rho_inp);
 
         empirical simul() const;
-        empirical simul(const int n_draws, const int seed) const;
+        empirical simul(const uint_t n_draws, const uint_t seed) const;
         void simul(empirical& obj_out) const;
-        void simul(empirical& obj_out, const int n_draws, const int seed) const;
+        void simul(empirical& obj_out, const uint_t n_draws, const uint_t seed) const;
     
     protected:
-         void build_int(const int nbX_inp, const int nbY_inp, const double* rho_inp, const bool outside_option_inp);
+         void build_int(const uint_t nbX_inp, const uint_t nbY_inp, const double* rho_inp, const bool outside_option_inp);
 
-         void simul_int(empirical& obj_out, const int* n_draws_inp, const int* seed) const;
+         void simul_int(empirical& obj_out, const uint_t* n_draws_inp, const uint_t* seed) const;
 };
 
 #endif

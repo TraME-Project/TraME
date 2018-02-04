@@ -28,7 +28,7 @@
  * 08/08/2016
  *
  * This version:
- * 11/14/2017
+ * 02/03/2018
  */
 
 #ifndef _trame_aux_HPP
