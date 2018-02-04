@@ -38,13 +38,16 @@
 #include <stdio.h>
 #include "glpk.h"
 
-int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_sense, 
-               double* rhs, char* constr_sense, double* lb, double* ub,
-               double* objval, double* sol_mat_X, double* sol_mat_RC,
-               double* dual_mat_PI, double* dual_mat_SLACK);
-int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbeg, int* vind, double* vval, 
-                      int model_opt_sense, double* rhs, char* constr_sense, double* lb, double* ub, 
-                      double* objval, double* sol_mat_X, double* sol_mat_RC, 
-                      double* dual_mat_PI, double* dual_mat_SLACK);
+int trame_glpk(int n_constr, int n_vars, double* __restrict obj, double* __restrict A, int model_opt_sense, 
+               double* __restrict rhs, char* __restrict constr_sense, double* lb, double* ub, 
+               double* __restrict objval, double* __restrict sol_mat_X, double* __restrict sol_mat_RC, 
+               double* __restrict dual_mat_PI, double* __restrict dual_mat_SLACK);
+
+int trame_glpk_sparse(int n_constr, int n_vars, double* __restrict obj, int numnz, 
+                      int* __restrict vbeg, int* __restrict vind, double* __restrict vval, 
+                      int model_opt_sense, double* __restrict rhs, char* __restrict constr_sense, 
+                      double* lb, double* ub, 
+                      double* __restrict objval, double* __restrict sol_mat_X, double* __restrict sol_mat_RC, 
+                      double* __restrict dual_mat_PI, double* __restrict dual_mat_SLACK);
 
 #endif

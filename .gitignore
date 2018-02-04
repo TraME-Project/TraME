@@ -9,10 +9,13 @@ Makefile
 *.o
 *.so
 *.test
+*.tmp
 *.vscode
-include/armadillo*
-glpk_tmp
+
 *.gcda
 *.gcno
 *.gcov
 *.dSYM
+
+include/armadillo*
+glpk_tmp

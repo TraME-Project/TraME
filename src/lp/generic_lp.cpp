@@ -42,19 +42,18 @@ trame::generic_LP(int k, int n, double *obj, double* A, int model_opt_sense, dou
 {
     // k: number of constraints ('rows')
     // n: number of variables ('columns')
-    //
-    // Initialize
+    
     bool success = false;
 
-    // Call C-version of the solver
     int solved = generic_LP_C(k, n, obj, A, model_opt_sense, rhs, constr_sense, Q, lb, ub, 
                               &objval, sol_mat_X, sol_mat_RC, dual_mat_PI, dual_mat_SLACK);
-    //
-    //
+    
     if (solved == 1) {
         success = true;
     }
+
     //
+
     return success;
 }
     
@@ -63,18 +62,17 @@ trame::generic_LP(int k, int n, double *obj, int numnz, int* vbeg, int* vind, do
 {
     // k: number of constraints ('rows')
     // n: number of variables ('columns')
-    //
-    // Initialize
+
     bool success = false;
-    //
-    // Call C-version of the solver
+    
     int solved = generic_LP_C_sparse(k, n, obj, numnz, vbeg, vind, vval, model_opt_sense, rhs, constr_sense, Q, lb, ub, 
                                      &objval, sol_mat_X, sol_mat_RC, dual_mat_PI, dual_mat_SLACK);
-    //
-    // Put solution matrices together
+    
     if (solved == 1) {
         success = true;
     }
+    
     //
+
     return success;
 }

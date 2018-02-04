@@ -28,26 +28,29 @@
  * 02/24/2017
  *
  * This version:
- * 07/25/2017
+ * 02/03/2018
  */
 
 #include "lp/trame_glpk.h"
 
 //
 // Dense setup; to be used with Armadillo memptr-based passing 
-// Armadillo uses column-major ordering, as opposed to C-standard row-major ordering
-int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_sense, 
-               double* rhs, char* constr_sense, double* lb, double* ub, 
-               double* objval, double* sol_mat_X, double* sol_mat_RC, 
-               double* dual_mat_PI, double* dual_mat_SLACK)
+// Note: Armadillo uses column-major ordering, as opposed to C-standard row-major ordering
+
+int trame_glpk(int n_constr, int n_vars, double* __restrict obj, double* __restrict A, int model_opt_sense, 
+               double* __restrict rhs, char* __restrict constr_sense, double* lb, double* ub, 
+               double* __restrict objval, double* __restrict sol_mat_X, double* __restrict sol_mat_RC, 
+               double* __restrict dual_mat_PI, double* __restrict dual_mat_SLACK)
 {
     int success = 0;
+
     //
+
     const int has_lb = (lb) ? 1 : 0;
     const int has_ub = (ub) ? 1 : 0;
 
     int i,j;
-    //
+    
     // we need this for inputting constraint matrix values
     int* row_inds = malloc(sizeof(int) * (n_constr+1));
     for (i=1; i < n_constr + 1; i++) {
@@ -160,7 +163,7 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
     }
 
     success = 1;
-    // retrieve optimum
+    
     *objval = glp_get_obj_val(lp);
     
     for (i=0; i < n_vars; i++) {
@@ -172,6 +175,7 @@ int trame_glpk(int n_constr, int n_vars, double* obj, double* A, int model_opt_s
         dual_mat_PI[j] = glp_get_row_dual(lp, j+1);
         dual_mat_SLACK[j] = glp_get_row_prim(lp, j+1);
     }
+
     //
 
 QUIT:
@@ -183,19 +187,27 @@ QUIT:
 
 //
 // for use with sparse constraint matrix A
-int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbeg, int* vind, double* vval, 
-                      int model_opt_sense, double* rhs, char* constr_sense, double* lb, double* ub, 
-                      double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
+
+int trame_glpk_sparse(int n_constr, int n_vars, double* __restrict obj, int numnz, 
+                      int* __restrict vbeg, int* __restrict vind, double* __restrict vval, 
+                      int model_opt_sense, double* __restrict rhs, char* __restrict constr_sense, 
+                      double* lb, double* ub, 
+                      double* __restrict objval, double* __restrict sol_mat_X, double* __restrict sol_mat_RC, 
+                      double* __restrict dual_mat_PI, double* __restrict dual_mat_SLACK)
 {
 
     int success = 0;
+
     //
+
     const int has_lb = (lb) ? 1 : 0;
     const int has_ub = (ub) ? 1 : 0;
 
     int i,j;
+
     //
     // we need this for inputting constraint matrix values
+
     int* col_inds = malloc(sizeof(int) * (n_constr+1));
     double* row_vals = malloc(sizeof(double) * (n_constr+1));
 
@@ -316,7 +328,7 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbe
     }
 
     success = 1;
-    // retrieve optimum
+    
     *objval = glp_get_obj_val(lp);
     
     for (i=0; i < n_vars; i++) {
@@ -328,6 +340,7 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* obj, int numnz, int* vbe
         dual_mat_PI[j] = glp_get_row_dual(lp, j+1);
         dual_mat_SLACK[j] = glp_get_row_prim(lp, j+1);
     }
+
     //
 
 QUIT:
