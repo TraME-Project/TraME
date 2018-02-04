@@ -48,24 +48,30 @@ lse(const arma::mat& X)
 
 inline
 arma::uvec
-which_max(const arma::mat& X, const int which_dim)
+which_max(const arma::mat& X, const uint_t which_dim)
 {
-    const int n = X.n_rows;
-    const int k = X.n_cols;
+    const size_t n = X.n_rows;
+    const size_t k = X.n_cols;
+
     //
-    int max_ind = 0;
+
+    size_t max_ind = 0;
     double max_val = 0;
     arma::uvec max_vec;
 
-    if (which_dim==0) { // each column
+    if (which_dim == 0)
+    {   // each column
         max_vec.set_size(k);
 
-        for (int j=0; j < k; j++) {
+        for (size_t j=0; j < k; j++)
+        {
             max_val = X(0,j);
             max_ind = 0;
 
-            for (int i=1; i < n; i++) {
-                if (X(i,j) > max_val) {
+            for (size_t i=1; i < n; i++)
+            {
+                if (X(i,j) > max_val)
+                {
                     max_val = X(i,j);
                     max_ind = i;
                 }
@@ -73,15 +79,20 @@ which_max(const arma::mat& X, const int which_dim)
 
             max_vec(j) = max_ind;
         }
-    } else { // each row
+    }
+    else
+    {   // each row
         max_vec.set_size(n);
 
-        for (int i=0; i<n; i++) {
+        for (size_t i=0; i < n; i++)
+        {
             max_val = X(i,0);
             max_ind = 0;
 
-            for (int j=0; j < k; j++) {
-                if (X(i,j) > max_val) {
+            for (size_t j=0; j < k; j++)
+            {
+                if (X(i,j) > max_val) 
+                {
                     max_val = X(i,j);
                     max_ind = j;
                 }
@@ -90,7 +101,9 @@ which_max(const arma::mat& X, const int which_dim)
             max_vec(i) = max_ind;
         }
     }
+
     //
+    
     return max_vec;
 }
 
@@ -99,7 +112,7 @@ which_max(const arma::mat& X, const int which_dim)
 
 inline
 arma::vec
-unit_vec(const int j, const int n)
+unit_vec(const uint_t j, const size_t n)
 {
     arma::vec ret = arma::zeros(n,1);
     ret(j) = 1;
@@ -117,11 +130,15 @@ uvec_linspace(const int a, const int b)
     const int n_points = b - a + 1;
 
     arma::uvec ret(n_points);
+    
     //
+
     for (int i=0; i < n_points; i++) {
         ret(i) = a + i;
     }
+
     //
+
     return ret;
 }
 
@@ -131,11 +148,11 @@ uvec_linspace(const int a, const int b)
 
 inline
 int*
-uword_to_int(const arma::uword* var_inp, const int n_elem)
+uword_to_int(const arma::uword* var_inp, const size_t n_elem)
 {
     int* var_out = new int[n_elem];
 
-    for (int jj=0; jj < n_elem; jj++) {
+    for (size_t jj=0; jj < n_elem; jj++) {
         var_out[jj] = var_inp[jj];
     }
 
@@ -147,14 +164,15 @@ uword_to_int(const arma::uword* var_inp, const int n_elem)
 
 inline
 arma::mat
-byrow(const arma::mat& mat_inp, const int n_rows, const int n_cols)
+byrow(const arma::mat& mat_inp, const size_t n_rows, const size_t n_cols)
 {
     arma::vec vec_tmp = arma::vectorise(mat_inp);
-    const int n_vals = vec_tmp.n_elem;
+    const size_t n_vals = vec_tmp.n_elem;
 
     arma::mat ret(n_rows,n_cols);
 
-    if (n_vals != n_rows*n_cols) { // use repmat in this case
+    if (n_vals != n_rows*n_cols)
+    {   // use repmat in this case
         if (n_vals == n_rows) {
             ret = arma::repmat(vec_tmp,1,n_cols);
         } else if (n_vals == n_cols) {
@@ -163,16 +181,19 @@ byrow(const arma::mat& mat_inp, const int n_rows, const int n_cols)
             printf("error in byrow\n");
             return ret;
         }
-    } else { // otherwise rebuild the input matrix using byrow
+    }
+    else
+    {   // otherwise rebuild the input matrix using byrow
+        uint_t kr = 0, kc = 0;
 
-        int kr = 0, kc = 0;
-
-        for (int i=0; i < n_rows*n_cols; i++) {
+        for (size_t i=0; i < n_rows*n_cols; i++)
+        {
             ret(kr,kc) = vec_tmp(i);
 
             kc++;
 
-            if (kc >= n_cols) {
+            if (kc >= n_cols)
+            {
                 kc = 0;
                 kr++;
             }
@@ -190,18 +211,21 @@ inline
 arma::mat
 elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
 {
-    const int rows_1 = mat_1.n_rows;
-    const int rows_2 = mat_2.n_rows;
+    const size_t rows_1 = mat_1.n_rows;
+    const size_t rows_2 = mat_2.n_rows;
 
-    const int cols_1 = mat_1.n_cols;
-    const int cols_2 = mat_2.n_cols;
+    const size_t cols_1 = mat_1.n_cols;
+    const size_t cols_2 = mat_2.n_cols;
 
     const bool same_rows = (rows_1==rows_2) ? true : false;
     const bool same_cols = (cols_1==cols_2) ? true : false;
+
     //
+
     arma::mat ret;
 
-    if (!same_rows && !same_cols) {
+    if (!same_rows && !same_cols)
+    {
         printf("elem_add: need matrices to agree on at least one dimension\n");
         return ret;
     }
@@ -211,37 +235,69 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
 
     if (same_rows && same_cols) {
         ret = mat_1 + mat_2;
-    } else if (same_rows && !same_cols) { // same #rows, different #cols
-        if (cols_1==1) {
+    } 
+    else if (same_rows && !same_cols)
+    {   // same #rows, different #cols
+        if (cols_1==1)
+        {
             ret.set_size(rows_1,cols_2);
-            for (int i=0; i < cols_2; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < cols_2; i++) {
                 ret.col(i) = mat_1 + mat_2.col(i);
             }
-        } else if (cols_2==1) {
+        }
+        else if (cols_2==1)
+        {
             ret.set_size(rows_1,cols_1);
-            for (int i=0; i < cols_1; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < cols_1; i++) {
                 ret.col(i) = mat_1.col(i) + mat_2;
             }
-        } else {
+        }
+        else
+        {
             printf("elem_add: need one of the matrices to be a column vector\n");
             return ret;
         }
-    } else if (!same_rows && same_cols) { // same #cols, different #rows
-        if (rows_1==1) {
+    }
+    else if (!same_rows && same_cols)
+    {   // same #cols, different #rows
+        if (rows_1==1)
+        {
             ret.set_size(rows_2,cols_1);
-            for (int i=0; i < rows_2; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < rows_2; i++) {
                 ret.row(i) = mat_1 + mat_2.row(i);
             }
-        } else if (rows_2==1) {
+        }
+        else if (rows_2==1)
+        {
             ret.set_size(rows_1,cols_1);
-            for (int i=0; i < rows_1; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < rows_1; i++) {
                 ret.row(i) = mat_1.row(i) + mat_2;
             }
-        } else {
+        }
+        else
+        {
             printf("elem_add: need one of the matrices to be a row vector\n");
             return ret;
         }
-    } else {
+    }
+    else
+    {
         printf("elem_add: unknown error\n");
         return ret;
     }
@@ -259,18 +315,21 @@ inline
 arma::mat
 elem_sub(const arma::mat& mat_1, const arma::mat& mat_2)
 {
-    const int rows_1 = mat_1.n_rows;
-    const int rows_2 = mat_2.n_rows;
+    const size_t rows_1 = mat_1.n_rows;
+    const size_t rows_2 = mat_2.n_rows;
 
-    const int cols_1 = mat_1.n_cols;
-    const int cols_2 = mat_2.n_cols;
+    const size_t cols_1 = mat_1.n_cols;
+    const size_t cols_2 = mat_2.n_cols;
 
     const bool same_rows = (rows_1==rows_2) ? true : false;
     const bool same_cols = (cols_1==cols_2) ? true : false;
+
     //
+
     arma::mat ret;
 
-    if (!same_rows && !same_cols) {
+    if (!same_rows && !same_cols)
+    {
         printf("elem_sub: need matrices to agree on at least one dimension\n");
         return ret;
     }
@@ -280,41 +339,75 @@ elem_sub(const arma::mat& mat_1, const arma::mat& mat_2)
 
     if (same_rows && same_cols) {
         ret = mat_1 - mat_2;
-    } else if (same_rows && !same_cols) {
-        if (cols_1==1) {
+    }
+    else if (same_rows && !same_cols)
+    {
+        if (cols_1==1) 
+        {
             ret.set_size(rows_1,cols_2);
-            for (int i=0; i < cols_2; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < cols_2; i++) {
                 ret.col(i) = mat_1 - mat_2.col(i);
             }
-        } else if (cols_2==1) {
+        }
+        else if (cols_2==1)
+        {
             ret.set_size(rows_1,cols_1);
-            for (int i=0; i < cols_1; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < cols_1; i++) {
                 ret.col(i) = mat_1.col(i) - mat_2;
             }
-        } else {
+        }
+        else
+        {
             printf("elem_sub: need one of the matrices to be a column vector\n");
             return ret;
         }
-    } else if (!same_rows && same_cols) {
-        if (rows_1==1) {
+    }
+    else if (!same_rows && same_cols)
+    {
+        if (rows_1==1)
+        {
             ret.set_size(rows_2,cols_1);
-            for (int i=0; i < rows_2; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < rows_2; i++) {
                 ret.row(i) = mat_1 - mat_2.row(i);
             }
-        } else if (rows_2==1) {
+        }
+        else if (rows_2==1)
+        {
             ret.set_size(rows_1,cols_1);
-            for (int i=0; i < rows_1; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < rows_1; i++) {
                 ret.row(i) = mat_1.row(i) - mat_2;
             }
-        } else {
+        }
+        else
+        {
             printf("elem_sub: need one of the matrices to be a row vector\n");
             return ret;
         }
-    } else {
+    }
+    else
+    {
         printf("elem_sub: unknown error\n");
         return ret;
     }
+
     //
+
     return ret;
 }
 
@@ -326,18 +419,21 @@ inline
 arma::mat
 elem_prod(const arma::mat& mat_1, const arma::mat& mat_2)
 {
-    const int rows_1 = mat_1.n_rows;
-    const int rows_2 = mat_2.n_rows;
+    const size_t rows_1 = mat_1.n_rows;
+    const size_t rows_2 = mat_2.n_rows;
 
-    const int cols_1 = mat_1.n_cols;
-    const int cols_2 = mat_2.n_cols;
+    const size_t cols_1 = mat_1.n_cols;
+    const size_t cols_2 = mat_2.n_cols;
 
     const bool same_rows = (rows_1==rows_2) ? true : false;
     const bool same_cols = (cols_1==cols_2) ? true : false;
+
     //
+
     arma::mat ret;
 
-    if (!same_rows && !same_cols) {
+    if (!same_rows && !same_cols)
+    {
         printf("elem_prod: need matrices to agree on at least one dimension\n");
         return ret;
     }
@@ -347,41 +443,75 @@ elem_prod(const arma::mat& mat_1, const arma::mat& mat_2)
 
     if (same_rows && same_cols) {
         ret = mat_1 % mat_2;
-    } else if (same_rows && !same_cols) {
-        if (cols_1==1) {
+    } 
+    else if (same_rows && !same_cols)
+    {
+        if (cols_1==1)
+        {
             ret.set_size(rows_1,cols_2);
-            for (int i=0; i < cols_2; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < cols_2; i++) {
                 ret.col(i) = mat_1 % mat_2.col(i);
             }
-        } else if (cols_2==1) {
+        }
+        else if (cols_2==1)
+        {
             ret.set_size(rows_1,cols_1);
-            for (int i=0; i < cols_1; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < cols_1; i++) {
                 ret.col(i) = mat_1.col(i) % mat_2;
             }
-        } else {
+        }
+        else
+        {
             printf("elem_prod: need one of the matrices to be a column vector\n");
             return ret;
         }
-    } else if (!same_rows && same_cols) {
-        if (rows_1==1) {
+    }
+    else if (!same_rows && same_cols)
+    {
+        if (rows_1==1)
+        {
             ret.set_size(rows_2,cols_1);
-            for (int i=0; i < rows_2; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < rows_2; i++) {
                 ret.row(i) = mat_1 % mat_2.row(i);
             }
-        } else if (rows_2==1) {
+        }
+        else if (rows_2==1)
+        {
             ret.set_size(rows_1,cols_1);
-            for (int i=0; i < rows_1; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < rows_1; i++) {
                 ret.row(i) = mat_1.row(i) % mat_2;
             }
-        } else {
+        }
+        else
+        {
             printf("elem_prod: need one of the matrices to be a row vector\n");
             return ret;
         }
-    } else {
+    }
+    else
+    {
         printf("elem_prod: unknown error\n");
         return ret;
     }
+
     //
+
     return ret;
 }
 
@@ -393,18 +523,21 @@ inline
 arma::mat
 elem_div(const arma::mat& mat_1, const arma::mat& mat_2)
 {
-    const int rows_1 = mat_1.n_rows;
-    const int rows_2 = mat_2.n_rows;
+    const size_t rows_1 = mat_1.n_rows;
+    const size_t rows_2 = mat_2.n_rows;
 
-    const int cols_1 = mat_1.n_cols;
-    const int cols_2 = mat_2.n_cols;
+    const size_t cols_1 = mat_1.n_cols;
+    const size_t cols_2 = mat_2.n_cols;
 
     const bool same_rows = (rows_1==rows_2) ? true : false;
     const bool same_cols = (cols_1==cols_2) ? true : false;
+
     //
+
     arma::mat ret;
 
-    if (!same_rows && !same_cols) {
+    if (!same_rows && !same_cols) 
+    {
         printf("elem_div: need matrices to agree on at least one dimension\n");
         return ret;
     }
@@ -412,43 +545,78 @@ elem_div(const arma::mat& mat_1, const arma::mat& mat_2)
     //
     // instead of loops we could also use arma::repmat, not sure which is quicker...
 
-    if (same_rows && same_cols) {
+    if (same_rows && same_cols)
+    {
         ret = mat_1 / mat_2;
-    } else if (same_rows && !same_cols) {
-        if (cols_1==1) {
+    }
+    else if (same_rows && !same_cols)
+    {
+        if (cols_1==1)
+        {
             ret.set_size(rows_1,cols_2);
-            for (int i=0; i < cols_2; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < cols_2; i++) {
                 ret.col(i) = mat_1 / mat_2.col(i);
             }
-        } else if (cols_2==1) {
+        }
+        else if (cols_2==1)
+        {
             ret.set_size(rows_1,cols_1);
-            for (int i=0; i < cols_1; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < cols_1; i++) {
                 ret.col(i) = mat_1.col(i) / mat_2;
             }
-        } else {
+        }
+        else
+        {
             printf("elem_div: need one of the matrices to be a column vector\n");
             return ret;
         }
-    } else if (!same_rows && same_cols) {
-        if (rows_1==1) {
+    }
+    else if (!same_rows && same_cols)
+    {
+        if (rows_1==1)
+        {
             ret.set_size(rows_2,cols_1);
-            for (int i=0; i < rows_2; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < rows_2; i++) {
                 ret.row(i) = mat_1 / mat_2.row(i);
             }
-        } else if (rows_2==1) {
+        }
+        else if (rows_2==1)
+        {
             ret.set_size(rows_1,cols_1);
-            for (int i=0; i < rows_1; i++) {
+
+#ifdef TRAME_USE_OMP
+            #pragma omp parallel for
+#endif
+            for (size_t i=0; i < rows_1; i++) {
                 ret.row(i) = mat_1.row(i) / mat_2;
             }
-        } else {
+        }
+        else
+        {
             printf("elem_div: need one of the matrices to be a row vector\n");
             return ret;
         }
-    } else {
+    }
+    else
+    {
         printf("elem_div: unknown error\n");
         return ret;
     }
+
     //
+
     return ret;
 }
 
@@ -479,9 +647,11 @@ inline
 arma::mat
 elem_min(const arma::mat& mat_1, const double comp_val)
 {
-    const int rows_1 = mat_1.n_rows;
-    const int cols_1 = mat_1.n_cols;
+    const size_t rows_1 = mat_1.n_rows;
+    const size_t cols_1 = mat_1.n_cols;
+
     //
+
     arma::mat comp_mat(rows_1,cols_1);
     comp_mat.fill(comp_val);
 
@@ -532,9 +702,11 @@ inline
 arma::mat
 elem_max(const arma::mat& mat_1, const double comp_val)
 {
-    const int rows_1 = mat_1.n_rows;
-    const int cols_1 = mat_1.n_cols;
+    const size_t rows_1 = mat_1.n_rows;
+    const size_t cols_1 = mat_1.n_cols;
+
     //
+
     arma::mat comp_mat(rows_1,cols_1);
     comp_mat.fill(comp_val);
 
@@ -563,32 +735,49 @@ elem_max(const double comp_val_1, const double comp_val_2)
 
 inline
 arma::mat
-cube_sum(const arma::cube& cube_inp, const int which_dim)
+cube_sum(const arma::cube& cube_inp, const uint_t which_dim)
 {
-    if (which_dim > 1 || which_dim < 0) {
-        printf("error: cube_sum: unrecognized dim value; should be in (0,1)\n");
+    if (which_dim > 1) {
+        printf("error: cube_sum: unrecognized dim value; should be in {0,1}\n");
     }
+
     //
-    const int dim_0 = cube_inp.n_rows;
-    const int dim_1 = cube_inp.n_cols;
-    const int dim_2 = cube_inp.n_slices;
+
+    const size_t dim_0 = cube_inp.n_rows;
+    const size_t dim_1 = cube_inp.n_cols;
+    const size_t dim_2 = cube_inp.n_slices;
 
     arma::mat ret;
 
-    if (which_dim == 0) { // over rows
+    if (which_dim == 0) 
+    {   // over rows
         ret.set_size(dim_0,dim_2);
-        for (int i=0; i < dim_2; i++) {
+
+#ifdef TRAME_USE_OMP
+        #pragma omp parallel for
+#endif
+        for (size_t i=0; i < dim_2; i++)
+        {
             arma::mat mat_s = cube_inp.slice(i);
             ret.col(i) = arma::sum(mat_s,1);
         }
-    } else { // dim == 1
+    } 
+    else
+    {   // dim == 1
         ret.set_size(dim_1,dim_2);
-        for (int i=0; i < dim_2; i++) {
+
+#ifdef TRAME_USE_OMP
+        #pragma omp parallel for
+#endif
+        for (size_t i=0; i < dim_2; i++)
+        {
             arma::mat mat_s = cube_inp.slice(i);
             ret.col(i) = arma::trans(arma::sum(mat_s,0));
         }
     }
+
     //
+
     return ret;
 }
 
@@ -600,13 +789,13 @@ inline
 arma::mat
 cube_to_mat(const arma::cube& cube_inp)
 {
-    const int dim_0 = cube_inp.n_rows;
-    const int dim_1 = cube_inp.n_cols;
-    const int dim_2 = cube_inp.n_slices;
+    const size_t dim_0 = cube_inp.n_rows;
+    const size_t dim_1 = cube_inp.n_cols;
+    const size_t dim_2 = cube_inp.n_slices;
 
     arma::mat mat_out(dim_0*dim_1,dim_2);
 
-    for(int k = 0; k < dim_2; k++) {
+    for(size_t k = 0; k < dim_2; k++) {
         mat_out.col(k) = arma::vectorise(cube_inp.slice(k));
     }
 

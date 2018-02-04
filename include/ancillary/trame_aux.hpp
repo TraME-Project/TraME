@@ -36,12 +36,12 @@
 
 double lse(const arma::mat& X);
 
-arma::uvec which_max(const arma::mat& X, const int which_dim);
-arma::vec unit_vec(const int j, const int n);
+arma::uvec which_max(const arma::mat& X, const uint_t which_dim);
+arma::vec unit_vec(const uint_t j, const size_t n);
 arma::uvec uvec_linspace(const int a, const int b);
-int* uword_to_int(const arma::uword* var_inp, const int n_elem);
+int* uword_to_int(const arma::uword* var_inp, const size_t n_elem);
 
-arma::mat byrow(const arma::mat& X, const int n_rows, const int n_cols);
+arma::mat byrow(const arma::mat& X, const size_t n_rows, const size_t n_cols);
 
 arma::mat elem_add(const arma::mat& mat_1, const arma::mat& mat_2);
 arma::mat elem_sub(const arma::mat& mat_1, const arma::mat& mat_2);
@@ -60,7 +60,7 @@ arma::mat elem_max(const arma::mat& mat_1, const double comp_val);
 arma::mat elem_max(const double comp_val, const arma::mat& mat_1);
 double elem_max(const double comp_val_1, const double comp_val_2);
 
-arma::mat cube_sum(const arma::cube& cube_inp, const int which_dim);
+arma::mat cube_sum(const arma::cube& cube_inp, const uint_t which_dim);
 arma::mat cube_to_mat(const arma::cube& cube_inp);
 
 #include "trame_aux.ipp"
