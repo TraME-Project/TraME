@@ -28,7 +28,7 @@
  * 08/16/2016
  *
  * This version:
- * 07/26/2017
+ * 02/04/2018
  */
 
 #ifndef _trame_mfe_market_HPP
@@ -42,8 +42,8 @@ class mfe
         bool need_norm = false;
         bool outside_option = true;
 
-        int nbX;
-        int nbY;
+        uint_t nbX;
+        uint_t nbY;
 
         double sigma = 1.0;
 
@@ -87,8 +87,8 @@ template<class Tt>
 struct trame_mfe_zeroin_data {
     bool coeff;
 
-    int x_ind;
-    int y_ind;
+    uint_t x_ind;
+    uint_t y_ind;
 
     arma::mat A_xs;
     arma::mat B_ys;

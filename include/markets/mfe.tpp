@@ -28,7 +28,7 @@
  * 08/16/2016
  *
  * This version:
- * 09/15/2017
+ * 02/04/2018
  */
 
 template<typename Tt>
@@ -185,20 +185,25 @@ const
 
     arma::vec ubs(nbX);
     (need_norm) ? ubs.fill(1E10) : ubs = n;
+
     //
+
     trame_mfe_zeroin_data<Tt> root_data;
 
     root_data.mfe_obj = *this;
     root_data.coeff = coeff;
     root_data.B_ys  = B_ys;
+
     //
+
     arma::vec the_a_xs(index_vec.n_elem);
 
 #ifdef TRAME_USE_OMP
     #pragma omp parallel for firstprivate(root_data)
 #endif
-    for (int j=0; j < static_cast<int>(index_vec.n_elem); j++) {
-        int x = index_vec(j);
+    for (uint_t j=0; j < index_vec.n_elem; j++)
+    {
+        uint_t x = index_vec(j);
         root_data.x_ind = x;
 
         the_a_xs(j) = zeroin(0.0, ubs(x), marg_x_inv_fn, &root_data, nullptr, nullptr);
@@ -237,8 +242,9 @@ const
 #ifdef TRAME_USE_OMP
     #pragma omp parallel for firstprivate(root_data)
 #endif
-    for (int j=0; j < static_cast<int>(index_vec.n_elem); j++) {
-        int y = index_vec(j);
+    for (uint_t j=0; j < index_vec.n_elem; j++)
+    {
+        uint_t y = index_vec(j);
         root_data.y_ind = y;
 
         the_b_ys(j) = zeroin(0.0, ubs(y), marg_y_inv_fn, &root_data, nullptr, nullptr);
