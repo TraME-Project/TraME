@@ -29,7 +29,7 @@
  * 11/19/2016
  *
  * This version:
- * 08/20/2017
+ * 02/04/2018
  */
 
 //
@@ -274,7 +274,7 @@ model_dmu(dse<arums::logit,arums::logit,transfers::tu>& market_obj, const arma::
     mfe<mmfs::geo> mfe_obj(market_obj.n,market_obj.m);
     mfe_obj.mmfs_obj = market_obj.trans_obj.gen_mmf();
 
-    ipfp(mfe_obj,mu,mu_x0,mu_0y,U,V,u_vec,v_vec,nullptr,nullptr,nullptr);  // should be ipfp
+    ipfp(mfe_obj,mu,mu_x0,mu_0y,U,V,u_vec,v_vec,nullptr,1E-08,5000);
 
     //
 

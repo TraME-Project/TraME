@@ -28,15 +28,20 @@
  * 08/16/2016
  *
  * This version:
- * 07/26/2017
+ * 02/04/2018
  */
 
 #ifndef _trame_oap_lp_HPP
 #define _trame_oap_lp_HPP
 
-// internal function
-template<typename Tg, typename Th, typename Tt>
-bool oap_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, const bool* x_first_inp, double* val_out, arma::mat* residuals_out);
+// internal functions
+template<typename Tg, typename Th, typename Tt, typename std::enable_if<!std::is_same<Tt,transfers::tu>::value>::type* = nullptr>
+bool oap_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, 
+                double* val_out, arma::mat* residuals_out, const bool x_first = true);
+
+template<typename Tg, typename Th, typename Tt, typename std::enable_if<std::is_same<Tt,transfers::tu>::value>::type* = nullptr>
+bool oap_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, 
+                double* val_out, arma::mat* residuals_out, const bool x_first = true);
 
 // wrappers
 template<typename Tg, typename Th, typename Tt>
@@ -49,13 +54,14 @@ template<typename Tg, typename Th, typename Tt>
 bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& residuals_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, arma::mat& residuals_out);
+bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& residuals_out, const bool x_first_inp);
 
 template<typename Tg, typename Th, typename Tt>
 bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& u_out, arma::vec& v_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool x_first_inp, double& val_out, arma::mat& residuals_out);
+bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, 
+            double* val_out, arma::mat* residuals_out, const bool x_first_inp);
 
 #include "oap_lp.tpp"
 

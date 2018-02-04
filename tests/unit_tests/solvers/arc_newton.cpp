@@ -72,16 +72,18 @@ int main()
     arma::mat mu_TU;
 
     trame::arc_newton(dse_obj_TU,mu_TU);
-    trame::arc_newton(dse_obj_TU,mu_TU,tol);
-    trame::arc_newton(dse_obj_TU,mu_TU,max_iter);
     trame::arc_newton(dse_obj_TU,mu_TU,tol,max_iter);
 
-    arma::mat U_out, V_out;
-    trame::arc_newton(dse_obj_TU,mu_TU,U_out,V_out);
+    arma::cout << "arc_newton solution:\n" << mu_TU << arma::endl;
+
+    //
 
     double val_out;
     arma::vec mu_x0_out, mu_0y_out;
-    trame::arc_newton(dse_obj_TU,mu_TU,mu_x0_out,mu_0y_out,U_out,V_out,val_out,&tol,&max_iter);
+    arma::mat U_out, V_out;
+
+    trame::arc_newton(dse_obj_TU,mu_TU,U_out,V_out);
+    trame::arc_newton(dse_obj_TU,mu_TU,mu_x0_out,mu_0y_out,U_out,V_out,val_out,tol,max_iter);
 
     //
     printf("\n*===================    End of arc_newton Test    ===================*\n");

@@ -49,7 +49,7 @@ int main()
     arma::vec m = arma::ones(nbY,1);
 
     arma::mat phi = 1.0 + arma::randu(nbX,nbY);
-    
+
     //
     // results
 
@@ -58,7 +58,7 @@ int main()
 
     //
     // build
-    
+
     trame::mfe<trame::mmfs::geo> mfe_obj_TU(sigma,false);
     mfe_obj_TU.build(n,m,phi);
 
@@ -69,26 +69,27 @@ int main()
 
     arma::mat mu_TU;
     trame::nodal_newton(mfe_obj_TU,mu_TU);
-
-    trame::nodal_newton(mfe_obj_TU,mu_TU,tol);
-    trame::nodal_newton(mfe_obj_TU,mu_TU,max_iter);
     trame::nodal_newton(mfe_obj_TU,mu_TU,tol,max_iter);
 
-    arma::mat U_out, V_out;
-    trame::nodal_newton(mfe_obj_TU,mu_TU,U_out,V_out);
+    arma::cout << "nodal_newton solution:\n" << mu_TU << arma::endl;
+
+    //
 
     double val_out;
     arma::vec mu_x0_out, mu_0y_out;
-    trame::nodal_newton(mfe_obj_TU,mu_TU,mu_x0_out,mu_0y_out,U_out,V_out,val_out,&tol,&max_iter);
+    arma::mat U_out, V_out;
+    trame::nodal_newton(mfe_obj_TU,mu_TU,U_out,V_out);
+    trame::nodal_newton(mfe_obj_TU,mu_TU,mu_x0_out,mu_0y_out,U_out,V_out,val_out,tol,max_iter);
+
     //
     printf("\n*===================    End of nodal_newton Test    ===================*\n");
     printf("\n");
     //
     end = std::chrono::system_clock::now();
-        
+
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-        
+
     std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
     //

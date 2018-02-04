@@ -28,7 +28,7 @@
  * 08/23/2016
  *
  * This version:
- * 07/26/2016
+ * 02/04/2018
  */
 
 /*
@@ -37,23 +37,25 @@
  */
 
 inline
-int 
+uint_t 
 build_disaggregate_epsilon(const arma::vec& n, const trame::arums::empirical& arums_emp_inp, arma::mat& epsilon_iy, arma::mat& epsilon0_i, arma::mat& I_ix)
 {
-    const int nbX = arums_emp_inp.nbX;
-    const int nbY = arums_emp_inp.nbY;
+    const uint_t nbX = arums_emp_inp.nbX;
+    const uint_t nbY = arums_emp_inp.nbY;
 
-    const int n_draws = arums_emp_inp.aux_n_draws;
-    const int nbI = nbX * n_draws;
+    const uint_t n_draws = arums_emp_inp.aux_n_draws;
+    const uint_t nbI = nbX * n_draws;
 
-    arma::vec I_01(nbX);
     I_ix.zeros(nbI,nbX);
-
     arma::mat epsilons = arma::zeros(nbI,nbY+1);
 
     //
 
-    for (int x=0; x < nbX; x++) {
+#ifdef TRAME_USE_OMP
+    #pragma omp parallel for
+#endif
+    for (uint_t x=0; x < nbX; x++) 
+    {
         arma::mat epsilon;
 
         if (arums_emp_inp.x_homogeneous) {
@@ -66,7 +68,7 @@ build_disaggregate_epsilon(const arma::vec& n, const trame::arums::empirical& ar
         
         //
 
-        I_01.zeros();
+        arma::vec I_01 = arma::zeros(nbX);
         I_01(x) = 1;
         
         I_ix.rows(x*n_draws,(x+1)*n_draws-1) = arma::repmat(I_01.t(),n_draws,1); // Keith: check use of byrow here

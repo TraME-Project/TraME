@@ -52,13 +52,13 @@ int main()
     arma::mat gamma  = arma::randu(nbX,nbY);
 
     arma::mat phi = alpha + gamma;
-    
+
     //
     // results
 
     printf("\n*===================   Start of cupids_lpTest   ===================*\n");
     printf("\n");
-    
+
     //
     // build
 
@@ -72,7 +72,7 @@ int main()
     trame::arums::empirical logit_sim_2 = logit_2.simul(n_draws_2,321);
 
     dse_obj_TU.build(n,m,phi,logit_sim_1,logit_sim_2,false);
-    
+
     //
 
     double val_out;
@@ -80,8 +80,16 @@ int main()
     arma::mat mu_TU, U_out, V_out;
 
     trame::cupids_lp(dse_obj_TU,mu_TU);
+
+    arma::cout << "cupids_lp solution:\n" << mu_TU << arma::endl;
+
     trame::cupids_lp(dse_obj_TU,mu_TU,U_out,V_out);
     trame::cupids_lp(dse_obj_TU,mu_TU,mu_x0_out,mu_0y_out,U_out,V_out,val_out);
+
+    // check template specialization
+
+    trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::tu> dse_obj_logit;
+    trame::cupids_lp(dse_obj_logit,mu_TU); // should print a warning and return false
 
     //
     printf("\n*===================    End of cupids_lp Test    ===================*\n");
@@ -89,10 +97,10 @@ int main()
     //
 
     end = std::chrono::system_clock::now();
-        
+
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-        
+
     std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
     //

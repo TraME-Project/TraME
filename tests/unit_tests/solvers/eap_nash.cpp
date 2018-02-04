@@ -67,7 +67,7 @@ int main()
     trame::dse<trame::arums::none,trame::arums::none,trame::transfers::ltu> dse_obj_LTU;
     dse_obj_LTU.build(n,m,lambda_LTU,phi_LTU,false);
 
-    // 
+    //
 
     double tol = 1E-06;
     int max_iter = 5000;
@@ -78,29 +78,26 @@ int main()
 
     trame::eap_nash(dse_obj_LTU,mu_LTU);
 
-    trame::eap_nash(dse_obj_LTU,mu_LTU,true);
-    trame::eap_nash(dse_obj_LTU,mu_LTU,false);
+    arma::cout << "eap_nash solution:\n" << mu_LTU << arma::endl;
 
-    trame::eap_nash(dse_obj_LTU,mu_LTU,tol);
-    trame::eap_nash(dse_obj_LTU,mu_LTU,max_iter);
+    trame::eap_nash(dse_obj_LTU,mu_LTU,true);
+    trame::eap_nash(dse_obj_LTU.trans(),mu_LTU,false);
 
     trame::eap_nash(dse_obj_LTU,mu_LTU,tol,max_iter);
     trame::eap_nash(dse_obj_LTU,mu_LTU,true,tol,max_iter);
 
     trame::eap_nash(dse_obj_LTU,mu_LTU,u,v);
-
-    trame::eap_nash(dse_obj_LTU,mu_LTU,mux0,mu0y,u,v,&x_first,&tol,&max_iter);
-    
+    trame::eap_nash(dse_obj_LTU,mu_LTU,mux0,mu0y,u,v,x_first,tol,max_iter);
 
     //
     printf("\n*===================    End of eap_nash Test    ===================*\n");
     printf("\n");
     //
     end = std::chrono::system_clock::now();
-        
+
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-        
+
     std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
     //

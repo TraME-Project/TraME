@@ -28,24 +28,22 @@
  * 01/17/2016
  *
  * This version:
- * 07/26/2017
+ * 02/04/2018
  */
 
 // internal nodal_newton
 
 template<typename Tt>
 bool
-nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* err_tol_inp, const int* max_iter_inp)
+nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out,
+                 double* val_out, const double err_tol, const uint_t max_iter)
 {
     bool success = false;
-    
-    const double err_tol = (err_tol_inp) ? *err_tol_inp : 1E-06;
-    const int max_iter = (max_iter_inp) ? *max_iter_inp : 2000;
 
     //
 
-    const int nbX = market.nbX;
-    const int nbY = market.nbY;
+    const uint_t nbX = market.nbX;
+    const uint_t nbY = market.nbY;
 
     const double sigma = market.sigma; // we don't check for arums_G.sigma == arums_H.sigma
 
@@ -106,40 +104,27 @@ template<typename Tt>
 bool
 nodal_newton(const mfe<Tt>& market, arma::mat& mu_out)
 {
-    return nodal_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+    return nodal_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tt>
 bool
-nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double err_tol_inp)
+nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double err_tol_inp, const uint_t max_iter_inp)
 {
-    return nodal_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,nullptr);
-}
-
-template<typename Tt>
-bool
-nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const int max_iter_inp)
-{
-    return nodal_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
-}
-
-template<typename Tt>
-bool
-nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp)
-{
-    return nodal_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,&max_iter_inp);
+    return nodal_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,err_tol_inp,max_iter_inp);
 }
 
 template<typename Tt>
 bool
 nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    return nodal_newton_int(market,&mu_out,nullptr,nullptr,&U_out,&V_out,nullptr,nullptr,nullptr);
+    return nodal_newton_int(market,&mu_out,nullptr,nullptr,&U_out,&V_out,nullptr);
 }
 
 template<typename Tt>
 bool
-nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* err_tol_inp, const int* max_iter_inp)
+nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, 
+             double& val_out, const double err_tol_inp, const uint_t max_iter_inp)
 {
     return nodal_newton_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,&val_out,err_tol_inp,max_iter_inp);
 }
@@ -170,8 +155,8 @@ nodal_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
 
     //
 
-    const int nbX = d->market.nbX;
-    const int nbY = d->market.nbY;
+    const uint_t nbX = d->market.nbX;
+    const uint_t nbY = d->market.nbY;
     const double sigma = d->market.sigma;
 
     const arma::vec mu_x0_s = arma::exp(- vals_inp.rows(0,nbX-1) / sigma);
@@ -192,8 +177,8 @@ nodal_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
 
     //
 
-    const int nbX = d->market.nbX;
-    const int nbY = d->market.nbY;
+    const uint_t nbX = d->market.nbX;
+    const uint_t nbY = d->market.nbY;
     const double sigma = d->market.sigma;
 
     const arma::vec mu_x0_s = arma::exp(- vals_inp.rows(0,nbX-1) / sigma);

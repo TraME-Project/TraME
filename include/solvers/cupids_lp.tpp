@@ -28,12 +28,22 @@
  * 08/25/2016
  *
  * This version:
- * 07/26/2017
+ * 02/04/2018
  */
 
 // internal cupids_lp
 
-template<typename Tg, typename Th, typename Tt>
+template<typename Tg, typename Th, typename Tt, 
+         typename std::enable_if< !(std::is_same<Tg,arums::empirical>::value && std::is_same<Th,arums::empirical>::value) >::type*>
+bool
+cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out)
+{
+    printf("cupids_lp only works in the two-side arums::empirical case.\n");
+    return false;
+}
+
+template<typename Tg, typename Th, typename Tt, 
+         typename std::enable_if< (std::is_same<Tg,arums::empirical>::value && std::is_same<Th,arums::empirical>::value) >::type*>
 bool
 cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out)
 {
@@ -42,22 +52,22 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     //
 
     if (market.need_norm) {
-        printf("CupidsLP does not yet allow for the case without unmatched agents.\n");
+        printf("Trame: cupids_lp does not yet allow for the case without unmatched agents.\n");
         return false;
     }
     
     //
 
-    const int nbX = market.nbX;
-    const int nbY = market.nbY;
+    const uint_t nbX = market.nbX;
+    const uint_t nbY = market.nbY;
 
     //
 
     arma::mat epsilon_iy, epsilon_0i, I_ix;
     arma::mat eta_xj, eta_0j, I_yj;
 
-    const int n_draws_1 = build_disaggregate_epsilon(market.n,market.arums_G,epsilon_iy,epsilon_0i,I_ix);
-    const int n_draws_2 = build_disaggregate_epsilon(market.m,market.arums_H,eta_xj,eta_0j,I_yj);
+    const uint_t n_draws_1 = build_disaggregate_epsilon(market.n,market.arums_G,epsilon_iy,epsilon_0i,I_ix);
+    const uint_t n_draws_2 = build_disaggregate_epsilon(market.m,market.arums_H,eta_xj,eta_0j,I_yj);
 
     eta_xj = eta_xj.t();
 
@@ -71,14 +81,14 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     const arma::vec n_i = arma::vectorise(I_ix * market.n) / static_cast<double>(n_draws_1);
     const arma::vec m_j = arma::vectorise(market.m.t() * I_yj) / static_cast<double>(n_draws_2);
 
-    const int nbI = n_i.n_elem;
-    const int nbJ = m_j.n_elem;
+    const uint_t nbI = n_i.n_elem;
+    const uint_t nbJ = m_j.n_elem;
 
     //
     // use batch allocation to construct the sparse constraint matrix (A)
 
-    int jj, kk, ll, count_val = 0;
-    const int num_non_zero = nbI*nbY + nbJ*nbX + n_draws_1*(nbX*nbY) + nbX*n_draws_2*nbY;
+    uint_t jj, kk, ll, count_val = 0;
+    const uint_t num_non_zero = nbI*nbY + nbJ*nbX + n_draws_1*(nbX*nbY) + nbX*n_draws_2*nbY;
 
     arma::umat location_mat(2,num_non_zero);
     arma::rowvec vals_mat(num_non_zero);
@@ -137,8 +147,8 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
     arma::sp_mat A_lp_t(location_mat,vals_mat); // this is the transpose of the constraint matrix
     
-    const int k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
-    const int n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
+    const uint_t k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
+    const uint_t n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
 
     int* vind_lp = uword_to_int(A_lp_t.row_indices,num_non_zero); // index of what row each non-zero value belongs to
     int* vbeg_lp = uword_to_int(A_lp_t.col_ptrs,k_lp+1);             // index of how many non-zero values are in each column
@@ -153,7 +163,7 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
     //
 
-    const int eta_0j_nelem = eta_0j.n_elem;
+    const uint_t eta_0j_nelem = eta_0j.n_elem;
     arma::vec lb_lp(epsilon_0i.n_elem + eta_0j_nelem + nbX*nbY);
 
     lb_lp.rows(0,epsilon_0i.n_elem-1) = arma::vectorise(epsilon_0i);
@@ -162,7 +172,7 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
     //
 
-    const int epsilon_iy_nelem = epsilon_iy.n_elem;
+    const uint_t epsilon_iy_nelem = epsilon_iy.n_elem;
     arma::vec rhs_lp(epsilon_iy_nelem + eta_xj.n_elem);
 
     rhs_lp.rows(0,epsilon_iy_nelem-1) = std::move(arma::vectorise(epsilon_iy));

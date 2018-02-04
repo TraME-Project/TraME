@@ -73,30 +73,41 @@ int main()
 
     trame::oap_lp(dse_obj_TU,mu_TU);
 
+    arma::cout << "oap_lp solution:\n" << mu_TU << arma::endl;
+
+    //
+
     trame::oap_lp(dse_obj_TU,mu_TU,true);
-    trame::oap_lp(dse_obj_TU,mu_TU,false);
+    trame::oap_lp(dse_obj_TU.trans(),mu_TU,false);
 
     arma::mat resid_out;
     trame::oap_lp(dse_obj_TU,mu_TU,resid_out);
 
-    trame::oap_lp(dse_obj_TU,mu_TU,true,resid_out);
+    trame::oap_lp(dse_obj_TU,mu_TU,resid_out,true);
 
-    trame::oap_lp(dse_obj_TU,mu_TU,u,v);
+    //
 
     double val_out;
 
-    trame::oap_lp(dse_obj_TU,mu_TU,mux0,mu0y,u,v,x_first,val_out,resid_out);
+    trame::oap_lp(dse_obj_TU,mu_TU,u,v);
+    trame::oap_lp(dse_obj_TU,mu_TU,mux0,mu0y,u,v,val_out,resid_out,x_first);
+
+    //
+
+    trame::dse<trame::arums::none,trame::arums::none,trame::transfers::ltu> dse_obj_LTU;
+    trame::oap_lp(dse_obj_LTU,mu_TU); // should print a warning and return false
+
 
     //
     printf("\n*===================    End of oap_lp Test    ===================*\n");
     printf("\n");
     //
-    
+
     end = std::chrono::system_clock::now();
-        
+
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-        
+
     std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
     //

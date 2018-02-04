@@ -28,25 +28,22 @@
  * 08/16/2016
  *
  * This version:
- * 07/26/2017
+ * 02/04/2018
  */
 
 // internal eap_nash
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* u_out, arma::mat* v_out, const bool* x_first_inp, const double* tol_inp, const int* max_iter_inp)
+eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* u_out, arma::mat* v_out,
+             const bool x_first, const double err_tol, const uint_t max_iter)
 {
     bool success = false;
 
-    const bool x_first = (x_first_inp) ? *x_first_inp : true;
-    const double tol = (tol_inp) ? *tol_inp : 1E-12;
-    const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
-
     //
 
-    const int nbX = market.nbX;
-    const int nbY = market.nbY;
+    const uint_t nbX = market.nbX;
+    const uint_t nbY = market.nbY;
 
     //
 
@@ -58,11 +55,12 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
         v_curr = arma::zeros(nbY,1); // Keith: should this be u_from_vs?
     }
 
-    int iter = 0;
-    double err = 2*tol;
+    uint_t iter = 0;
+    double err = 2*err_tol;
     arma::mat v_next;
 
-    while (err > tol && iter < max_iter) {
+    while (err > err_tol && iter < max_iter)
+    {
         iter++;
 
         v_next = update_v(market.trans_obj,v_curr,market.n,market.m,x_first);
@@ -87,20 +85,20 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
 
     // build constraint matrix
 
-    const int num_non_zero_lp = nbX*nbY*2;
+    const uint_t num_non_zero_lp = nbX*nbY*2;
 
     arma::umat location_mat_lp(2,num_non_zero_lp);
     arma::rowvec vals_mat_lp = arma::ones(1,num_non_zero_lp);
 
-    int count_val = 0;
+    uint_t count_val = 0;
 
-    for (int kk=0; kk < nbY; kk++) {
-        for (int jj=0; jj < nbX; jj++) {
+    for (uint_t kk=0; kk < nbY; kk++) {
+        for (uint_t jj=0; jj < nbX; jj++) {
             location_mat_lp(0,count_val) = jj + kk*nbX;
             location_mat_lp(1,count_val) = jj;
             ++count_val;
         }
-        for (int jj=0; jj < nbX; jj++) {
+        for (uint_t jj=0; jj < nbX; jj++) {
             location_mat_lp(0,count_val) = jj + kk*nbX;
             location_mat_lp(1,count_val) = kk + nbX;
             ++count_val;
@@ -109,8 +107,8 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
 
     arma::sp_mat A_lp_t(location_mat_lp,vals_mat_lp); // this is the transpose of the constraint matrix
 
-    const int k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
-    const int n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
+    const uint_t k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
+    const uint_t n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
 
     int* vind_lp = uword_to_int(A_lp_t.row_indices,num_non_zero_lp); // index of what row each non-zero value belongs to
     int* vbeg_lp = uword_to_int(A_lp_t.col_ptrs,k_lp+1);    // index of how many non-zero values are in each column
@@ -127,8 +125,9 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
     //
 
     char* sense_lp = new char[k_lp];
-    for (int jj=0; jj<k_lp; jj++) {
-        if (uv_vec(jj) - 0 < tol) {
+    for (uint_t jj=0; jj<k_lp; jj++)
+    {
+        if (uv_vec(jj) - 0 < err_tol) {
             sense_lp[jj] = '<';
         } else {
             sense_lp[jj] = '=';
@@ -184,56 +183,43 @@ template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp)
 {
-    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&x_first_inp,nullptr,nullptr);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,x_first_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp)
+eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const uint_t max_iter_inp)
 {
-    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&tol_inp,nullptr);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,true,err_tol_inp,max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp)
+eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, const double err_tol_inp, const uint_t max_iter_inp)
 {
-    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
-}
-
-template<typename Tg, typename Th, typename Tt>
-bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp, const int max_iter_inp)
-{
-    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&tol_inp,&max_iter_inp);
-}
-
-template<typename Tg, typename Th, typename Tt>
-bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, const double tol_inp, const int max_iter_inp)
-{
-    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&x_first_inp,&tol_inp,&max_iter_inp);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,x_first_inp,err_tol_inp,max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& u_out, arma::mat& v_out)
 {
-    return eap_nash_int(market,&mu_out,nullptr,nullptr,&u_out,&v_out,nullptr,nullptr,nullptr);
+    return eap_nash_int(market,&mu_out,nullptr,nullptr,&u_out,&v_out);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& u_out, arma::mat& v_out, const bool* x_first_inp, const double* tol_inp, const int* max_iter_inp)
+eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& u_out, arma::mat& v_out,
+         const bool x_first_inp, const double err_tol_inp, const uint_t max_iter_inp)
 {
-    return eap_nash_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&u_out,&v_out,x_first_inp,tol_inp,max_iter_inp);
+    return eap_nash_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&u_out,&v_out,x_first_inp,err_tol_inp,max_iter_inp);
 }
 
 // internal functions
@@ -277,8 +263,8 @@ template<typename Tt>
 arma::mat
 update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, const bool x_first)
 {
-    const int nbX = trans_obj.nbX;
-    const int nbY = trans_obj.nbY;
+    const uint_t nbX = trans_obj.nbX;
+    const uint_t nbY = trans_obj.nbY;
 
     arma::mat the_mat = arma::zeros(nbX,nbY);
     arma::mat v_updated = arma::zeros(nbY,1);
@@ -286,14 +272,14 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
     //
     // LP setup
 
-    const int num_non_zero_lp = 2*nbX;
+    const uint_t num_non_zero_lp = 2*nbX;
 
     arma::umat location_mat_lp(2,num_non_zero_lp);
     arma::rowvec vals_mat_lp = arma::ones(1,num_non_zero_lp);
 
-    int count_val = 0;
+    uint_t count_val = 0;
 
-    for (int kk=0; kk < nbX; kk++) {
+    for (uint_t kk=0; kk < nbX; kk++) {
         location_mat_lp(0,count_val) = kk;
         location_mat_lp(1,count_val) = kk;
         ++count_val;
@@ -306,8 +292,8 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
 
     arma::sp_mat A_lp_t(location_mat_lp,vals_mat_lp); // this is the transpose of the constraint matrix
 
-    const int k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
-    const int n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
+    const uint_t k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
+    const uint_t n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
 
     int* vind_lp = uword_to_int(A_lp_t.row_indices,num_non_zero_lp); // index of what row each non-zero value belongs to
     int* vbeg_lp = uword_to_int(A_lp_t.col_ptrs,k_lp+1);    // index of how many non-zero values are in each column
@@ -341,7 +327,7 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
     //
     // BIS setup
 
-    const int num_non_zero_bis = 2*nbX + nbX + 1;
+    const uint_t num_non_zero_bis = 2*nbX + nbX + 1;
 
     arma::umat location_mat_bis(2,num_non_zero_bis);
     arma::rowvec vals_mat_bis = arma::ones(1,num_non_zero_bis);
@@ -354,7 +340,7 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
 
     count_val = num_non_zero_lp;
 
-    for (int kk=0; kk < nbX + 1; kk++) {
+    for (uint_t kk=0; kk < nbX + 1; kk++) {
         location_mat_bis(0,count_val) = kk;
         location_mat_bis(1,count_val) = nbX;
         ++count_val;
@@ -362,8 +348,8 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
 
     arma::sp_mat A_bis_t(location_mat_bis,vals_mat_bis); // this is the transpose of the constraint matrix
 
-    const int k_bis = A_bis_t.n_cols; // n_cols as we are working with the transpose of A
-    const int n_bis = A_bis_t.n_rows; // n_rows as we are working with the transpose of A
+    const uint_t k_bis = A_bis_t.n_cols; // n_cols as we are working with the transpose of A
+    const uint_t n_bis = A_bis_t.n_rows; // n_rows as we are working with the transpose of A
 
     int* vind_bis = uword_to_int(A_bis_t.row_indices,num_non_zero_bis); // index of what row each non-zero value belongs to
     int* vbeg_bis = uword_to_int(A_bis_t.col_ptrs,k_bis+1);    // index of how many non-zero values are in each column
@@ -397,9 +383,9 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
 
     // begin loop
 
-    for (int y=0; y<nbY; y++) {
-        for (int x=0; x<nbX; x++) {
-            for (int yp=0; yp<nbY; yp++) {
+    for (uint_t y=0; y<nbY; y++) {
+        for (uint_t x=0; x<nbX; x++) {
+            for (uint_t yp=0; yp<nbY; yp++) {
                 if (yp==y) {
                     the_mat(x,yp) = trans_obj.Vcal(0.0,x,y);
                 } else {

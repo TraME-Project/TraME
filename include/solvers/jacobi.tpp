@@ -28,12 +28,13 @@
  * 08/25/2016
  *
  * This version:
- * 07/26/2017
+ * 02/04/2018
  */
 
 template<typename Tg, typename Th, typename Tt>
 bool
-jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::mat* w_up_inp, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* err_tol_inp, const int* max_iter_inp)
+jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::mat* w_up_inp, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, 
+           const double err_tol, const uint_t max_iter)
 {
     bool success = false;
 
@@ -46,11 +47,8 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
 
     //
 
-    const int nbX = market.nbX;
-    const int nbY = market.nbY;
-
-    const double err_tol = (err_tol_inp) ? *err_tol_inp : 1E-04;
-    const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
+    const uint_t nbX = market.nbX;
+    const uint_t nbY = market.nbY;
 
     arma::mat mu_G, mu_H;
 
@@ -111,7 +109,7 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
 
     //
 
-    int iter = 0;
+    uint_t iter = 0;
     double err = 2*err_tol;
 
     trame_jacobi_zeroin_data<Tg,Th,Tt> root_data;
@@ -126,10 +124,10 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
     while (err > err_tol && iter < max_iter) {
         iter++;
 
-        for (int x=0; x < nbX; x++) {
+        for (uint_t x=0; x < nbX; x++) {
             root_data.x_ind = x;
 
-            for (int y=0; y < nbY; y++) {
+            for (uint_t y=0; y < nbY; y++) {
                 root_data.y_ind = y;
 
                 w(x,y) = zeroin(w_low(x,y), w(x,y), jacobi_zeroin_fn<Tg,Th,Tt>, &root_data, nullptr, nullptr);
@@ -186,40 +184,27 @@ template<typename Tg, typename Th, typename Tt>
 bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp)
+jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const uint_t max_iter_inp)
 {
-    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,nullptr);
-}
-
-template<typename Tg, typename Th, typename Tt>
-bool
-jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp)
-{
-    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
-}
-
-template<typename Tg, typename Th, typename Tt>
-bool
-jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp)
-{
-    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,&max_iter_inp);
+    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,nullptr,nullptr,err_tol_inp,max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,&U_out,&V_out,nullptr,nullptr);
+    return jacobi_int(market,nullptr,nullptr,&mu_out,nullptr,nullptr,&U_out,&V_out);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-jacobi(const dse<Tg,Th,Tt>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* err_tol_inp, const int* max_iter_inp)
+jacobi(const dse<Tg,Th,Tt>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out,
+       const double err_tol_inp, const uint_t max_iter_inp)
 {
     return jacobi_int(market,&w_low_inp,&w_up_inp,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,err_tol_inp,max_iter_inp);
 }

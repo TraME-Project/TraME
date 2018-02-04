@@ -26,32 +26,29 @@
  *
  * Keith O'Hara
  * 08/23/2016
+ *
+ * This version:
+ * 02/04/2018
  */
 
 /*
  * w upper bound
  * used in jacobi and arc_newton solvers
- *
- * Keith O'Hara
- * 03/22/2017
- *
- * This version:
- * 07/26/2017
  */
 
 template<typename Tg, typename Th, typename Tt>
 arma::mat
 w_upper_bound(const dse<Tg,Th,Tt>& market)
 {
-    const int nbX = market.nbX;
-    const int nbY = market.nbY;
+    const uint_t nbX = market.nbX;
+    const uint_t nbY = market.nbY;
 
-    const int transfers_type = market.trans_obj.transfers_type;
+    const uint_t transfers_type = market.trans_obj.transfers_type;
 
     //
 
-    int iter = 0;
-    const int max_iter = 1000;
+    uint_t iter = 0;
+    const uint_t max_iter = 1000;
     
     double k = 1.0, Z_min_val = -10.0;
     arma::uvec x_ind(1);
@@ -60,9 +57,10 @@ w_upper_bound(const dse<Tg,Th,Tt>& market)
     arma::mat U_star_x, w(nbX,nbY), U(nbX,nbY), V(nbX,nbY);
 
     while (Z_min_val < 0 && iter < max_iter) {
-        iter ++;
+        iter++;
 
-        for (int x=0; x < nbX; x++) {
+        for (uint_t x=0; x < nbX; x++)
+        {
             x_ind(0) = x;
 
             if (transfers_type == 1) {
@@ -90,9 +88,6 @@ w_upper_bound(const dse<Tg,Th,Tt>& market)
         arma::mat mu_G, mu_H;
         market.arums_G.G(market.n,U,mu_G);
         market.arums_H.G(market.m,V.t(),mu_H);
-
-        // arma::mat Z = mu_G - mu_H.t();
-        // Z_min_val = elem_min(Z);
 
         Z_min_val = elem_min(mu_G - mu_H.t());
 

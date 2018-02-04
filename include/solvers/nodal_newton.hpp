@@ -28,7 +28,7 @@
  * 01/17/2016
  *
  * This version:
- * 07/26/2017
+ * 02/04/2018
  */
 
 #ifndef _trame_nodal_newton_HPP
@@ -36,26 +36,22 @@
 
 // internal function
 template<typename Tt>
-bool nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* err_tol_inp, const int* max_iter_inp);
+bool nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, 
+                      double* val_out, const double err_tol = 1E-06, const uint_t max_iter = 2000);
 
 // wrappers
 template<typename Tt>
 bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out);
 
 template<typename Tt>
-bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double err_tol_inp);
-
-template<typename Tt>
-bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const int max_iter_inp);
-
-template<typename Tt>
-bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp);
+bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, const double err_tol_inp, const uint_t max_iter_inp);
 
 template<typename Tt>
 bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
 template<typename Tt>
-bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* err_tol_inp, const int* max_iter_inp);
+bool nodal_newton(const mfe<Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out,
+                  double& val_out, const double err_tol_inp, const uint_t max_iter_inp);
 
 // optimization-related functions
 

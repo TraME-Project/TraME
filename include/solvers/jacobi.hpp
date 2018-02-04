@@ -28,7 +28,7 @@
  * 08/25/2016
  *
  * This version:
- * 07/26/2017
+ * 02/04/2018
  */
 
 #ifndef _trame_jacobi_HPP
@@ -36,26 +36,22 @@
 
 // internal
 template<typename Tg, typename Th, typename Tt>
-bool jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::mat* w_up_inp, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* err_tol_inp, const int* max_iter_inp);
+bool jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::mat* w_up_inp, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, 
+                const double err_tol = 1E-04, const uint_t max_iter = 5000);
 
 // wrappers
 template<typename Tg, typename Th, typename Tt>
 bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp);
-
-template<typename Tg, typename Th, typename Tt>
-bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp);
-
-template<typename Tg, typename Th, typename Tt>
-bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp);
+bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const uint_t max_iter_inp);
 
 template<typename Tg, typename Th, typename Tt>
 bool jacobi(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool jacobi(const dse<Tg,Th,Tt>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* err_tol_inp, const int* max_iter_inp);
+bool jacobi(const dse<Tg,Th,Tt>& market, const arma::mat& w_low_inp, const arma::mat& w_up_inp, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, 
+            const double* err_tol_inp, const uint_t* max_iter_inp);
 
 // zeroin function
 
@@ -64,8 +60,8 @@ double jacobi_zeroin_fn(double z, void* opt_data);
 
 template<typename Tg, typename Th, typename Tt>
 struct trame_jacobi_zeroin_data {
-    int x_ind;
-    int y_ind;
+    uint_t x_ind;
+    uint_t y_ind;
 
     arma::mat U;
     arma::mat V;

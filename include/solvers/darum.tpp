@@ -28,43 +28,43 @@
  * 08/16/2016
  *
  * This version:
- * 07/26/2017
+ * 02/04/2018
  */
 
 // internal darum
 
-template<typename Tg, typename Th, typename Tt>
+template<typename Tg, typename Th, typename Tt, typename std::enable_if<!std::is_same<Tt,transfers::ntu>::value>::type*>
 bool
-darum_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp)
+darum_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, 
+          const double err_tol, const uint_t max_iter)
 {
     printf("darum only works for NTU transfers.\n");
     return false;
 }
 
-template<typename Tg, typename Th>
+template<typename Tg, typename Th, typename Tt, typename std::enable_if<std::is_same<Tt,transfers::ntu>::value>::type*>
 bool
-darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, const double* tol_inp, const int* max_iter_inp)
+darum_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, 
+          const double err_tol, const uint_t max_iter)
 {
     bool success = false;
 
-    const double tol = (tol_inp) ? *tol_inp : 1E-12;
-    const int max_iter = (max_iter_inp) ? *max_iter_inp : 10000;
-
     //
 
-    const int nbX = market.nbX;
-    const int nbY = market.nbY;
+    const uint_t nbX = market.nbX;
+    const uint_t nbY = market.nbY;
 
     arma::mat mu_NR = arma::max(market.n * arma::ones(1,nbY), arma::ones(nbX,1) * market.m.t());
     
     //
 
-    int iter = 0;
-    double err = 2*tol;
+    uint_t iter = 0;
+    double err = 2*err_tol;
 
     arma::mat U_P, U_D, mu_P, mu_D;
 
-    while (err > tol && iter < max_iter) {
+    while (err > err_tol && iter < max_iter)
+    {
         iter++;
 
         //
@@ -80,7 +80,7 @@ darum_int(const dse<Tg,Th,transfers::ntu>& market, arma::mat* mu_out, arma::vec*
         err = elem_max(arma::abs(mu_diff));
     }
 
-    if (err <= tol && iter < max_iter) {
+    if (err <= err_tol && iter < max_iter) {
         success = true;
     }
 
@@ -116,40 +116,27 @@ template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    return darum_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+    return darum_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp)
+darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const uint_t max_iter_inp)
 {
-    return darum_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&tol_inp,nullptr);
-}
-
-template<typename Tg, typename Th, typename Tt>
-bool
-darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp)
-{
-    return darum_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
-}
-
-template<typename Tg, typename Th, typename Tt>
-bool
-darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double tol_inp, const int max_iter_inp)
-{
-    return darum_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&tol_inp,&max_iter_inp);
+    return darum_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,err_tol_inp,max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    return darum_int(market,&mu_out,nullptr,nullptr,&U_out,&V_out,nullptr,nullptr);
+    return darum_int(market,&mu_out,nullptr,nullptr,&U_out,&V_out);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, const double* tol_inp, const int* max_iter_inp)
+darum(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, 
+      const double err_tol_inp, const uint_t max_iter_inp)
 {
-    return darum_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,tol_inp,max_iter_inp);
+    return darum_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,err_tol_inp,max_iter_inp);
 }

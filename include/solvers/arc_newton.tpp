@@ -28,7 +28,7 @@
  * 01/17/2016
  *
  * This version:
- * 07/25/2017
+ * 02/04/2018
  */
 
 //
@@ -36,12 +36,10 @@
 
 template<typename Tg, typename Th, typename Tt>
 bool
-arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* err_tol_inp, const int* max_iter_inp)
+arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, 
+               double* val_out, const double err_tol, const uint_t max_iter)
 {
     bool success = false;
-    
-    const double err_tol = (err_tol_inp) ? *err_tol_inp : 1E-06;
-    const int max_iter = (max_iter_inp) ? *max_iter_inp : 2000;
 
     //
 
@@ -65,7 +63,6 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
     arma::mat sol_mat = arma::reshape(sol_vec,market.nbX,market.nbY);
     arma::mat U = market.trans_obj.UW(sol_mat);
 
-    // Tg* arums_G = const_cast<Tg*>(&market.arums_G);
     arma::mat mu_G;
     market.arums_G.G(market.n,U,mu_G);
 
@@ -106,40 +103,27 @@ template<typename Tg, typename Th, typename Tt>
 bool
 arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    return arc_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+    return arc_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp)
+arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const uint_t max_iter_inp)
 {
-    return arc_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,nullptr);
-}
-
-template<typename Tg, typename Th, typename Tt>
-bool
-arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp)
-{
-    return arc_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,&max_iter_inp);
-}
-
-template<typename Tg, typename Th, typename Tt>
-bool
-arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp)
-{
-    return arc_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&err_tol_inp,&max_iter_inp);
+    return arc_newton_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,err_tol_inp,max_iter_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out)
 {
-    return arc_newton_int(market,&mu_out,nullptr,nullptr,&U_out,&V_out,nullptr,nullptr,nullptr);
+    return arc_newton_int(market,&mu_out,nullptr,nullptr,&U_out,&V_out,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* err_tol_inp, const int* max_iter_inp)
+arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, 
+           double& val_out, const double err_tol_inp, const uint_t max_iter_inp)
 {
     return arc_newton_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&U_out,&V_out,&val_out,err_tol_inp,max_iter_inp);
 }
@@ -170,8 +154,8 @@ arc_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
     
     //
 
-    const int nbX = d->market.nbX;
-    const int nbY = d->market.nbY;
+    const uint_t nbX = d->market.nbX;
+    const uint_t nbY = d->market.nbY;
 
     // arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
     arma::mat inp_mat(const_cast<double*>(vals_inp.memptr()),nbX,nbY,false,true); // this is potentially very unsafe, but more efficient?
@@ -196,11 +180,11 @@ arc_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
 
     //
     
-    const int nbX = d->market.nbX;
-    const int nbY = d->market.nbY;
+    const uint_t nbX = d->market.nbX;
+    const uint_t nbY = d->market.nbY;
 
     // arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
-    arma::mat inp_mat(const_cast<double*>(vals_inp.memptr()),nbX,nbY,false,true); // this is potentially very unsafe, but more efficient?
+    arma::mat inp_mat(const_cast<double*>(vals_inp.memptr()),nbX,nbY,false,true); // this is potentially unsafe, but more efficient?
 
     arma::mat U = d->market.trans_obj.UW(inp_mat);
     arma::mat V = d->market.trans_obj.VW(inp_mat);

@@ -28,7 +28,7 @@
  * 01/17/2016
  *
  * This version:
- * 07/25/2017
+ * 02/04/2018
  */
 
 #ifndef _trame_arc_newton_HPP
@@ -36,26 +36,22 @@
 
 // internal function
 template<typename Tg, typename Th, typename Tt>
-bool arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out, const double* err_tol_inp, const int* max_iter_inp);
+bool arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, 
+                    double* val_out, const double err_tol = 1E-06, const uint_t max_iter = 2000);
 
 // wrappers
 template<typename Tg, typename Th, typename Tt>
 bool arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp);
-
-template<typename Tg, typename Th, typename Tt>
-bool arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const int max_iter_inp);
-
-template<typename Tg, typename Th, typename Tt>
-bool arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const int max_iter_inp);
+bool arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const double err_tol_inp, const uint_t max_iter_inp);
 
 template<typename Tg, typename Th, typename Tt>
 bool arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& U_out, arma::mat& V_out);
 
 template<typename Tg, typename Th, typename Tt>
-bool arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, double& val_out, const double* err_tol_inp, const int* max_iter_inp);
+bool arc_newton(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& U_out, arma::mat& V_out, 
+                double& val_out, const double err_tol_inp, const uint_t max_iter_inp);
 
 // optimization-related functions
 bool arc_newton_optim(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings* settings_inp);

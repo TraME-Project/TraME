@@ -59,11 +59,11 @@ int main()
     // build
 
     trame::arums::logit logit_1(nbX,nbY), logit_2(nbY,nbX);
-    
+
     trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::tu> dse_obj_TU;
 
     dse_obj_TU.build(n,m,phi,logit_1,logit_2,false);
-    
+
     //
 
     double tol = 1E-06;
@@ -71,28 +71,32 @@ int main()
 
     arma::vec mux0, mu0y;
     arma::mat mu_TU, U, V;
-    
+
     trame::max_welfare(dse_obj_TU,mu_TU);
-    trame::max_welfare(dse_obj_TU,mu_TU,tol);
-    trame::max_welfare(dse_obj_TU,mu_TU,max_iter);
     trame::max_welfare(dse_obj_TU,mu_TU,tol,max_iter);
 
-    trame::max_welfare(dse_obj_TU,mu_TU,U,V);
+    arma::cout << "max_welfare solution:\n" << mu_TU << arma::endl;
+
+    //
 
     double val_out;
+    trame::max_welfare(dse_obj_TU,mu_TU,U,V);
+    trame::max_welfare(dse_obj_TU,mu_TU,mux0,mu0y,U,V,val_out,tol,max_iter);
 
-    trame::max_welfare(dse_obj_TU,mu_TU,mux0,mu0y,U,V,val_out,&tol,&max_iter);
+    // check template specialization
 
-    
+    trame::dse<trame::arums::logit,trame::arums::logit,trame::transfers::ltu> dse_obj_LTU;
+    trame::max_welfare(dse_obj_LTU,mu_TU,tol,max_iter); // should print a warning and return false
+
     //
     printf("\n*===================    End of max_welfare Test    ===================*\n");
     printf("\n");
     //
     end = std::chrono::system_clock::now();
-        
+
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-        
+
     std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
     //

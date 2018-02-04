@@ -28,14 +28,19 @@
  * 08/25/2016
  *
  * This version:
- * 03/22/2017
+ * 02/04/2019
  */
 
 #ifndef _trame_cupids_lp_HPP
 #define _trame_cupids_lp_HPP
 
 // internal function
-template<typename Tg, typename Th, typename Tt>
+template<typename Tg, typename Th, typename Tt, 
+         typename std::enable_if< !(std::is_same<Tg,arums::empirical>::value && std::is_same<Th,arums::empirical>::value) >::type* = nullptr>
+bool cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out);
+
+template<typename Tg, typename Th, typename Tt, 
+         typename std::enable_if< (std::is_same<Tg,arums::empirical>::value && std::is_same<Th,arums::empirical>::value) >::type* = nullptr>
 bool cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::mat* U_out, arma::mat* V_out, double* val_out);
 
 // wrappers

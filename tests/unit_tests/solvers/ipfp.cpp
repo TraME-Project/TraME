@@ -55,7 +55,7 @@ int main()
 
     printf("\n*===================   Start of ipfp Test   ===================*\n");
     printf("\n");
-    
+
     //
     // build
 
@@ -70,17 +70,15 @@ int main()
     arma::mat mu_TU;
     trame::ipfp(mfe_obj_TU,mu_TU);
 
-    trame::ipfp(mfe_obj_TU,mu_TU,tol);
-    trame::ipfp(mfe_obj_TU,mu_TU,max_iter);
     trame::ipfp(mfe_obj_TU,mu_TU,tol,max_iter);
 
-    trame::ipfp(mfe_obj_TU,mu_TU,tol,max_iter,mfe_obj_TU.m);
+    trame::ipfp(mfe_obj_TU,mu_TU,mfe_obj_TU.m,tol,max_iter);
 
     arma::mat U_out, V_out;
     trame::ipfp(mfe_obj_TU,mu_TU,U_out,V_out);
 
     arma::vec mu_x0_out, mu_0y_out, u_out, v_out;
-    trame::ipfp(mfe_obj_TU,mu_TU,mu_x0_out,mu_0y_out,U_out,V_out,u_out,v_out,&tol,&max_iter,&mfe_obj_TU.m);
+    trame::ipfp(mfe_obj_TU,mu_TU,mu_x0_out,mu_0y_out,U_out,V_out,u_out,v_out,&mfe_obj_TU.m,tol,max_iter);
 
     //
     printf("\n*===================    End of ipfp Test    ===================*\n");
@@ -88,10 +86,10 @@ int main()
     //
 
     end = std::chrono::system_clock::now();
-        
+
     std::chrono::duration<double> elapsed_seconds = end-start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);
-        
+
     std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
     //

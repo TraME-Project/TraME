@@ -28,7 +28,7 @@
  * 08/01/2016
  *
  * This version:
- * 07/26/2017
+ * 02/04/2018
  */
 
 template<typename Tg, typename Th, typename Tt>
@@ -45,13 +45,14 @@ equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, const char* solv
     bool res = false;
     const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not nullptr
+    if (solver)
+    {
         if (sig=='a') {
             res = arc_newton(market_obj,mu_sol);
         }
-        // if (sig=='c') { // only works with empirical case
-        //     res = cupids_lp(market_obj,mu_sol);
-        // }
+        if (sig=='c') { // only works with empirical case
+            res = cupids_lp(market_obj,mu_sol);
+        }
         if (sig=='d') {
             res = darum(market_obj,mu_sol);
         }
@@ -67,7 +68,9 @@ equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, const char* solv
         if (sig=='o') {
             res = oap_lp(market_obj,mu_sol);
         }
-    } else { // default
+    }
+    else
+    {
         if (market_obj.NTU) {
             res = darum(market_obj,mu_sol);
         } else if (market_obj.TU) {
@@ -76,7 +79,9 @@ equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, const char* solv
             res = jacobi(market_obj,mu_sol);
         }
     }
+
     //
+
     return res;
 }
 
@@ -87,13 +92,13 @@ equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, arma::mat& U_out
     bool res = false;
     const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not nullptr
+    if (solver) {
         if (sig=='a') {
             res = arc_newton(market_obj,mu_sol,U_out,V_out);
         }
-        // if (sig=='c') { // only works with empirical case
-        //     res = cupids_lp(market_obj,mu_sol);
-        // }
+        if (sig=='c') { // only works with empirical case
+            res = cupids_lp(market_obj,mu_sol);
+        }
         if (sig=='d') {
             res = darum(market_obj,mu_sol,U_out,V_out);
         }
@@ -107,9 +112,9 @@ equil_solve(const dse<Tg,Th,Tt>& market_obj, arma::mat& mu_sol, arma::mat& U_out
             res = max_welfare(market_obj,mu_sol,U_out,V_out);
         }
         if (sig=='o') {
-            // res = oap_lp(market_obj,mu_sol,U_out,V_out);
+            res = oap_lp(market_obj,mu_sol,U_out,V_out);
         }
-    } else { // default
+    } else {
         if (market_obj.NTU) {
             res = darum(market_obj,mu_sol,U_out,V_out);
         } else if (market_obj.TU) {
@@ -132,11 +137,11 @@ equil_solve(const dse<Tg,Th,transfers::etu>& market_obj, arma::mat& mu_sol, cons
     bool res = false;
     const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not nullptr
+    if (solver) {
         if (sig=='j') {
             res = jacobi(market_obj,mu_sol);
         }
-    } else { // default
+    } else {
         res = jacobi(market_obj,mu_sol);
     }
     //
@@ -150,11 +155,11 @@ equil_solve(const dse<Tg,Th,transfers::ltu>& market_obj, arma::mat& mu_sol, cons
     bool res = false;
     const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not nullptr
+    if (solver) {
         if (sig=='j') {
             res = jacobi(market_obj,mu_sol);
         }
-    } else { // default
+    } else {
         res = jacobi(market_obj,mu_sol);
     }
     //
@@ -168,14 +173,14 @@ equil_solve(const dse<Tg,Th,transfers::ntu>& market_obj, arma::mat& mu_sol, cons
     bool res = false;
     const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not nullptr
+    if (solver) {
         if (sig=='d') {
             res = darum(market_obj,mu_sol);
         }
         if (sig=='j') {
             res = jacobi(market_obj,mu_sol);
         }
-    } else { // default
+    } else {
         res = darum(market_obj,mu_sol);
     }
     //
@@ -212,7 +217,7 @@ equil_solve(const dse<Tg,Th,transfers::tu>& market_obj, arma::mat& mu_sol, const
     bool res = false;
     const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-    if (solver) { // not nullptr
+    if (solver) {
         if (sig=='a') {
             res = arc_newton(market_obj,mu_sol);
         }
@@ -222,7 +227,7 @@ equil_solve(const dse<Tg,Th,transfers::tu>& market_obj, arma::mat& mu_sol, const
         if (sig=='m') {
             res = max_welfare(market_obj,mu_sol);
         }
-    } else { // default
+    } else {
         res = max_welfare(market_obj,mu_sol);
     }
     //
@@ -236,7 +241,7 @@ equil_solve(const dse<Tg,Th,transfers::tu>& market_obj, arma::mat& mu_sol, const
 //     bool res = false;
 //     const char sig = (solver != nullptr) ? solver[0] : char(0);
 
-//     if (solver) { // not nullptr
+//     if (solver) {
 //         if (sig=='a') {
 //             std::cout << "arc_newton" << std::endl;
 //             res = arc_newton(market_obj,mu_sol,U_out,V_out);
@@ -249,7 +254,7 @@ equil_solve(const dse<Tg,Th,transfers::tu>& market_obj, arma::mat& mu_sol, const
 //             std::cout << "max_welfare" << std::endl;
 //             res = max_welfare(market_obj,mu_sol,U_out,V_out);
 //         }
-//     } else { // default
+//     } else {
 //         res = max_welfare(market_obj,mu_sol,U_out,V_out);
 //     }
 //     //

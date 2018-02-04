@@ -28,46 +28,48 @@
  * 08/16/2016
  *
  * This version:
- * 09/23/2017
+ * 02/04/2018
  */
 
 // internal oap_lp
 
-template<typename Tg, typename Th, typename Tt>
+template<typename Tg, typename Th, typename Tt, typename std::enable_if<!std::is_same<Tt,transfers::tu>::value>::type*>
 bool
-oap_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, const bool* x_first_inp, double* val_out, arma::mat* residuals_out)
+oap_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out,
+           double* val_out, arma::mat* residuals_out, const bool x_first)
 {
     printf("oap_lp only works for TU transfers.\n");
     return false;
 }
 
-template<typename Tg, typename Th>
+template<typename Tg, typename Th, typename Tt, typename std::enable_if<std::is_same<Tt,transfers::tu>::value>::type*>
 bool
-oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out, const bool* x_first_inp, double* val_out, arma::mat* residuals_out)
+oap_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, arma::vec* mu_0y_out, arma::vec* u_out, arma::vec* v_out,
+           double* val_out, arma::mat* residuals_out, const bool x_first)
 {
     bool success = false;
     
     //
 
-    const int nbX = market.nbX;
-    const int nbY = market.nbY;
+    const uint_t nbX = market.nbX;
+    const uint_t nbY = market.nbY;
     
     // build constraint matrix
 
-    const int num_non_zero_lp = nbX*nbY*2;
+    const uint_t num_non_zero_lp = nbX*nbY*2;
 
     arma::umat location_mat_lp(2,num_non_zero_lp);
     arma::rowvec vals_mat_lp = arma::ones(1,num_non_zero_lp);
 
-    int count_val = 0;
+    uint_t count_val = 0;
 
-    for (int kk=0; kk < nbY; kk++) {
-        for (int jj=0; jj < nbX; jj++) {
+    for (uint_t kk=0; kk < nbY; kk++) {
+        for (uint_t jj=0; jj < nbX; jj++) {
             location_mat_lp(0,count_val) = jj + kk*nbX;
             location_mat_lp(1,count_val) = jj;
             ++count_val;
         }
-        for (int jj=0; jj < nbX; jj++) {
+        for (uint_t jj=0; jj < nbX; jj++) {
             location_mat_lp(0,count_val) = jj + kk*nbX;
             location_mat_lp(1,count_val) = kk + nbX;
             ++count_val;
@@ -76,8 +78,8 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma::vec*
 
     arma::sp_mat A_lp_t(location_mat_lp,vals_mat_lp); // this is the transpose of the constraint matrix
 
-    const int k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
-    const int n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
+    const uint_t k_lp = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
+    const uint_t n_lp = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
 
     int* vind_lp = uword_to_int(A_lp_t.row_indices,num_non_zero_lp); // index of what row each non-zero value belongs to
     int* vbeg_lp = uword_to_int(A_lp_t.col_ptrs,k_lp+1);    // index of how many non-zero values are in each column
@@ -148,15 +150,13 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma::vec*
     if ( lp_optimal && (u_out || v_out || residuals_out) ) {
         arma::vec obj_bis = arma::join_cols(market.n,-market.m);
 
-        const bool x_first = (x_first_inp) ? *x_first_inp : true;
-
         if (!x_first) {
             obj_bis *= -1.0;
         }
 
         // build constraint matrix
 
-        const int num_non_zero_bis = nbX*nbY*2 + nbX + nbY;
+        const uint_t num_non_zero_bis = nbX*nbY*2 + nbX + nbY;
 
         arma::umat location_mat_bis(2,num_non_zero_bis);
         arma::rowvec vals_mat_bis(num_non_zero_bis);
@@ -168,7 +168,7 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma::vec*
 
         count_val = num_non_zero_lp;
 
-        for (int kk=0; kk < nbX + nbY; kk++) {
+        for (uint_t kk=0; kk < nbX + nbY; kk++) {
             location_mat_bis(0,count_val) = kk;
             location_mat_bis(1,count_val) = nbX*nbY;
 
@@ -179,8 +179,8 @@ oap_lp_int(const dse<Tg,Th,transfers::tu>& market, arma::mat* mu_out, arma::vec*
 
         arma::sp_mat A_bis_t(location_mat_bis,vals_mat_bis); // this is the transpose of A_sp
 
-        const int k_bis = A_bis_t.n_cols; // n_cols as we are working with the transpose of A
-        const int n_bis = A_bis_t.n_rows; // n_rows as we are working with the transpose of A
+        const uint_t k_bis = A_bis_t.n_cols; // n_cols as we are working with the transpose of A
+        const uint_t n_bis = A_bis_t.n_rows; // n_rows as we are working with the transpose of A
 
         int* vind_bis = uword_to_int(A_bis_t.row_indices,num_non_zero_bis); // index of what row each non-zero value belongs to
         int* vbeg_bis = uword_to_int(A_bis_t.col_ptrs,k_bis+1);    // index of how many non-zero values are in each column
@@ -257,40 +257,41 @@ template<typename Tg, typename Th, typename Tt>
 bool
 oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out)
 {
-    return oap_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
+    return oap_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp)
 {
-    return oap_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&x_first_inp,nullptr,nullptr);
+    return oap_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,x_first_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& residuals_out)
 {
-    return oap_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr,&residuals_out);
+    return oap_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&residuals_out);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, const bool x_first_inp, arma::mat& residuals_out)
+oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::mat& residuals_out, const bool x_first_inp)
 {
-    return oap_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,&x_first_inp,nullptr,&residuals_out);
+    return oap_lp_int(market,&mu_out,nullptr,nullptr,nullptr,nullptr,nullptr,&residuals_out,x_first_inp);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
 oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& u_out, arma::vec& v_out)
 {
-    return oap_lp_int(market,&mu_out,nullptr,nullptr,&u_out,&v_out,nullptr,nullptr,nullptr);
+    return oap_lp_int(market,&mu_out,nullptr,nullptr,&u_out,&v_out,nullptr,nullptr);
 }
 
 template<typename Tg, typename Th, typename Tt>
 bool
-oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, const bool x_first_inp, double& val_out, arma::mat& residuals_out)
+oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, 
+       double& val_out, arma::mat& residuals_out, const bool x_first_inp)
 {
-    return oap_lp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&u_out,&v_out,&x_first_inp,&val_out,&residuals_out);
+    return oap_lp_int(market,&mu_out,&mu_x0_out,&mu_0y_out,&u_out,&v_out,&val_out,&residuals_out,x_first_inp);
 }
