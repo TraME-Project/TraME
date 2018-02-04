@@ -28,7 +28,7 @@
  * 08/17/2016
  *
  * This version:
- * 07/26/2017
+ * 02/04/2018
  */
 
 //
@@ -69,70 +69,90 @@ dse_base::build(const arma::vec& n_inp, const arma::vec& m_inp, const bool need_
 }
 
 //
-// etu case
 
-template<typename Tg, typename Th>
+template<typename Tg, typename Th, typename Tt>
 void
-dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const bool need_norm_inp)
+dse<Tg,Th,Tt>::build_simple(const arma::vec& n_inp, const arma::vec& m_inp, const bool need_norm_inp)
 {
     nbX = n_inp.n_elem;
     nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
 
     need_norm = need_norm_inp;
 
+    n = n_inp;
+    m = m_inp;
+
     outside_option = (need_norm_inp) ? false : true;
+}
+
+//
+
+template<typename Tg, typename Th, typename Tt>
+void
+dse<Tg,Th,Tt>::build_with_arums(const arma::vec& n_inp, const arma::vec& m_inp, const bool need_norm_inp)
+{
+    build_simple(n_inp,m_inp,need_norm_inp);
     //
     arums_G.build(nbX,nbY);
     arums_H.build(nbY,nbX);
-
-    trans_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
-    //
-    ETU = true;
 }
 
-template<typename Tg, typename Th>
+template<typename Tg, typename Th, typename Tt>
 void
-dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
+dse<Tg,Th,Tt>::build_with_arums(const arma::vec& n_inp, const arma::vec& m_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    outside_option = (need_norm_inp) ? false : true;
+    build_simple(n_inp,m_inp,need_norm_inp);
     //
     arums_G = arums_G_inp;
     arums_H = arums_H_inp;
+}
 
+template<typename Tg, typename Th, typename Tt>
+template<typename Ta, typename Tb>
+void
+dse<Tg,Th,Tt>::build_with_arums(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, 
+                                Ta arums_G_inp, Tb arums_H_inp, const uint_t n_draws, const uint_t seed, const bool need_norm_inp)
+{
+    build_simple(n_inp,m_inp,need_norm_inp);
+    //
+    arums_G_inp.simul(arums_G,n_draws,seed);
+    arums_H_inp.simul(arums_H,n_draws,seed);
+}
+
+//
+// etu case
+
+template<typename Tg, typename Th, typename Tt>
+template<typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::etu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const bool need_norm_inp)
+{
+    build_with_arums(n_inp,m_inp,need_norm_inp);
+    //
     trans_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
     //
     ETU = true;
 }
 
-template<typename Tg, typename Th> 
-template<typename Ta, typename Tb>
-void
-dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, const int n_draws, const int seed, const bool need_norm_inp)
+template<typename Tg, typename Th, typename Tt>
+template<typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::etu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    outside_option = (need_norm_inp) ? false : true;
+    build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,need_norm_inp);
     //
-    arums_G_inp.simul(arums_G,n_draws,seed);
-    arums_H_inp.simul(arums_H,n_draws,seed);
+    trans_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
+    //
+    ETU = true;
+}
 
+template<typename Tg, typename Th, typename Tt>
+template<typename Ta, typename Tb, typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::etu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, const uint_t n_draws, const uint_t seed, const bool need_norm_inp)
+{
+    build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,n_draws,seed,need_norm_inp);
+    //
     trans_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
     //
     ETU = true;
@@ -141,68 +161,37 @@ dse<Tg,Th,transfers::etu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 //
 // ltu case
 
-template<typename Tg, typename Th>
-void
-dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const bool need_norm_inp)
+template<typename Tg, typename Th, typename Tt>
+template<typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::ltu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    outside_option = (need_norm_inp) ? false : true;
+    build_with_arums(n_inp,m_inp,need_norm_inp);
     //
-    arums_G.build(nbX,nbY);
-    arums_H.build(nbY,nbX);
-
     trans_obj.build(lambda_inp,phi_inp,need_norm_inp);
     //
     LTU = true;
 }
 
-template<typename Tg, typename Th>
-void
-dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
+template<typename Tg, typename Th, typename Tt>
+template<typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::ltu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    outside_option = (need_norm_inp) ? false : true;
+    build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,need_norm_inp);
     //
-    arums_G = arums_G_inp;
-    arums_H = arums_H_inp;
-
     trans_obj.build(lambda_inp,phi_inp,need_norm_inp);
     //
     LTU = true;
 }
 
-template<typename Tg, typename Th> 
-template<typename Ta, typename Tb>
-void
-dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const int n_draws, const int seed, const bool need_norm_inp)
+template<typename Tg, typename Th, typename Tt>
+template<typename Ta, typename Tb, typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::ltu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const uint_t n_draws, const uint_t seed, const bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    outside_option = (need_norm_inp) ? false : true;
+    build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,n_draws,seed,need_norm_inp);
     //
-    arums_G_inp.simul(arums_G,n_draws,seed);
-    arums_H_inp.simul(arums_H,n_draws,seed);
-
     trans_obj.build(lambda_inp,phi_inp,need_norm_inp);
     //
     LTU = true;
@@ -211,68 +200,37 @@ dse<Tg,Th,transfers::ltu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 //
 // ntu case
 
-template<typename Tg, typename Th>
-void
-dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const bool need_norm_inp)
+template<typename Tg, typename Th, typename Tt>
+template<typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::ntu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    outside_option = (need_norm_inp) ? false : true;
+    build_with_arums(n_inp,m_inp,need_norm_inp);
     //
-    arums_G.build(nbX,nbY);
-    arums_H.build(nbY,nbX);
-
     trans_obj.build(alpha_inp,gamma_inp,need_norm_inp);
     //
     NTU = true;
 }
 
-template<typename Tg, typename Th>
-void
-dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
+template<typename Tg, typename Th, typename Tt>
+template<typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::ntu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    outside_option = (need_norm_inp) ? false : true;
+    build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,need_norm_inp);
     //
-    arums_G = arums_G_inp;
-    arums_H = arums_H_inp;
-
     trans_obj.build(alpha_inp,gamma_inp,need_norm_inp);
     //
     NTU = true;
 }
 
-template<typename Tg, typename Th> 
-template<typename Ta, typename Tb>
-void
-dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, const int n_draws, const int seed, const bool need_norm_inp)
+template<typename Tg, typename Th, typename Tt>
+template<typename Ta, typename Tb, typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::ntu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, const uint_t n_draws, const uint_t seed, const bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    outside_option = (need_norm_inp) ? false : true;
+    build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,n_draws,seed,need_norm_inp);
     //
-    arums_G_inp.simul(arums_G,n_draws,seed);
-    arums_H_inp.simul(arums_H,n_draws,seed);
-
     trans_obj.build(alpha_inp,gamma_inp,need_norm_inp);
     //
     NTU = true;
@@ -281,68 +239,37 @@ dse<Tg,Th,transfers::ntu>::build(const arma::vec& n_inp, const arma::vec& m_inp,
 //
 // tu case
 
-template<typename Tg, typename Th>
-void
-dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const bool need_norm_inp)
+template<typename Tg, typename Th, typename Tt>
+template<typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::tu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    outside_option = (need_norm_inp) ? false : true;
+    build_with_arums(n_inp,m_inp,need_norm_inp);
     //
-    arums_G.build(nbX,nbY); // this avoids nbX and nbY not being set in arums
-    arums_H.build(nbY,nbX);
-
     trans_obj.build(phi_inp,need_norm_inp);
     //
     TU = true;
 }
 
-template<typename Tg, typename Th>
-void
-dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
+template<typename Tg, typename Th, typename Tt>
+template<typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::tu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    outside_option = (need_norm_inp) ? false : true;
+    build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,need_norm_inp);
     //
-    arums_G = arums_G_inp;
-    arums_H = arums_H_inp;
-
     trans_obj.build(phi_inp,need_norm_inp);
     //
     TU = true;
 }
 
-template<typename Tg, typename Th> 
-template<typename Ta, typename Tb>
-void
-dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const int n_draws, const int seed, const bool need_norm_inp)
+template<typename Tg, typename Th, typename Tt>
+template<typename Ta, typename Tb, typename Tq>
+typename std::enable_if<std::is_same<Tq,transfers::tu>::value>::type
+dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const uint_t n_draws, const uint_t seed, const bool need_norm_inp)
 {
-    nbX = n_inp.n_elem;
-    nbY = m_inp.n_elem;
-    
-    n = n_inp;
-    m = m_inp;
-
-    need_norm = need_norm_inp;
-
-    outside_option = (need_norm_inp) ? false : true;
+    build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,n_draws,seed,need_norm_inp);
     //
-    arums_G_inp.simul(arums_G,n_draws,seed);
-    arums_H_inp.simul(arums_H,n_draws,seed);
-
     trans_obj.build(phi_inp,need_norm_inp);
     //
     TU = true;
@@ -350,10 +277,6 @@ dse<Tg,Th,transfers::tu>::build(const arma::vec& n_inp, const arma::vec& m_inp, 
 
 //
 // market transpose
-//
-
-//
-// general case
 
 template<typename Tg, typename Th, typename Tt>
 void
@@ -393,103 +316,7 @@ const
 }
 
 //
-// etu case
-
-template<typename Tg, typename Th>
-void
-dse<Tg,Th,transfers::etu>::trans(dse<Th,Tg,transfers::etu>& trans_market_obj)
-const
-{
-    trans_market(*this,trans_market_obj);
-}
-
-template<typename Tg, typename Th>
-dse<Th,Tg,transfers::etu> 
-dse<Tg,Th,transfers::etu>::trans()
-const
-{
-    dse<Th,Tg,transfers::etu> new_market;
-
-    trans_market(*this,new_market);
-    //
-    return new_market;
-}
-
-//
-// ltu case
-
-template<typename Tg, typename Th>
-void
-dse<Tg,Th,transfers::ltu>::trans(dse<Th,Tg,transfers::ltu>& trans_market_obj)
-const
-{
-    trans_market(*this,trans_market_obj);
-}
-
-template<typename Tg, typename Th>
-dse<Th,Tg,transfers::ltu> 
-dse<Tg,Th,transfers::ltu>::trans()
-const
-{
-    dse<Th,Tg,transfers::ltu> new_market;
-
-    trans_market(*this,new_market);
-    //
-    return new_market;
-}
-
-//
-// ntu case
-
-template<typename Tg, typename Th>
-void
-dse<Tg,Th,transfers::ntu>::trans(dse<Th,Tg,transfers::ntu>& trans_market_obj)
-const
-{
-    trans_market(*this,trans_market_obj);
-}
-
-template<typename Tg, typename Th>
-dse<Th,Tg,transfers::ntu> 
-dse<Tg,Th,transfers::ntu>::trans()
-const
-{
-    dse<Th,Tg,transfers::ntu> new_market;
-
-    trans_market(*this,new_market);
-    //
-    return new_market;
-}
-
-//
-// tu case
-
-template<typename Tg, typename Th>
-void
-dse<Tg,Th,transfers::tu>::trans(dse<Th,Tg,transfers::tu>& trans_market_obj)
-const
-{
-    trans_market(*this,trans_market_obj);
-}
-
-template<typename Tg, typename Th>
-dse<Th,Tg,transfers::tu> 
-dse<Tg,Th,transfers::tu>::trans()
-const
-{
-    dse<Th,Tg,transfers::tu> new_market;
-
-    trans_market(*this,new_market);
-    //
-    return new_market;
-}
-
-//
 // solve functions
-//
-
-//
-// general
 
 template<typename Tg, typename Th, typename Tt>
 bool
@@ -511,114 +338,3 @@ dse<Tg,Th,Tt>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, cons
 {
     return equil_solve(*this,mu_sol,U_out,V_out,solver);
 }
-
-//
-// etu
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::etu>::solve(arma::mat& mu_sol)
-{
-    return equil_solve(*this,mu_sol);
-}
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::etu>::solve(arma::mat& mu_sol, const char* solver)
-{
-    return equil_solve(*this,mu_sol,solver);
-}
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::etu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
-{
-    return equil_solve(*this,mu_sol,U_out,V_out,solver);
-}
-
-//
-// ltu
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::ltu>::solve(arma::mat& mu_sol)
-{
-    return equil_solve(*this,mu_sol);
-}
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::ltu>::solve(arma::mat& mu_sol, const char* solver)
-{
-    return equil_solve(*this,mu_sol,solver);
-}
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::ltu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
-{
-    return equil_solve(*this,mu_sol,U_out,V_out,solver);
-}
-
-//
-// ntu
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::ntu>::solve(arma::mat& mu_sol)
-{
-    return equil_solve(*this,mu_sol);
-}
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::ntu>::solve(arma::mat& mu_sol, const char* solver)
-{
-    return equil_solve(*this,mu_sol,solver);
-}
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::ntu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
-{
-    return equil_solve(*this,mu_sol,U_out,V_out,solver);
-}
-
-//
-// tu
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::tu>::solve(arma::mat& mu_sol)
-{
-    return equil_solve(*this,mu_sol);
-}
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::tu>::solve(arma::mat& mu_sol, const char* solver)
-{
-    return equil_solve(*this,mu_sol,solver);
-}
-
-template<typename Tg, typename Th>
-bool
-dse<Tg,Th,transfers::tu>::solve(arma::mat& mu_sol, arma::mat& U_out, arma::mat& V_out, const char* solver)
-{
-    return equil_solve(*this,mu_sol,U_out,V_out,solver);
-}
-
-//
-// further specializations
-
-// // we specialize because cupids_lp is only defined for empirical classes
-// template<>
-// inline
-// bool
-// dse<arums::empirical,arums::empirical,transfers::tu>::solve(arma::mat& mu_sol, const char* solver)
-// {
-//     bool res = false;
-//     res = cupids_lp(*this,mu_sol);
-//     //
-//     return res;
-// }
