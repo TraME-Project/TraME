@@ -26,7 +26,7 @@
  *
  * Keith O'Hara
  * 08/08/2016
- * 
+ *
  * This version:
  * 02/04/2018
  */
@@ -41,39 +41,40 @@ class rsc
         uint_t nbX;
         uint_t nbY;
         uint_t dim_params;
+        
         bool outside_option;
-        
+
         double* dist_pars;
-        
+
         arma::mat zeta;
         arma::mat aux_ord;
-        
+
         arma::cube aux_Influence_lhs;
         arma::cube aux_Influence_rhs;
-        
-        arma::cube aux_DinvPsigma; 
+
+        arma::cube aux_DinvPsigma;
         arma::cube aux_Psigma;
-        
+
         double   (*aux_cdf_eps)(double x, double* dist_pars);
         double (*aux_quant_eps)(double x, double* dist_pars);
-       
+
         double (*aux_pdf_eps)(double x, double* dist_pars);
         double (*aux_pot_eps)(double x, double* dist_pars);
-        
+
         arma::vec   (*aux_cdf_eps_vec)(arma::vec x, double* dist_pars);
         arma::vec (*aux_quant_eps_vec)(arma::vec x, double* dist_pars);
-       
+
         arma::vec (*aux_pdf_eps_vec)(arma::vec x, double* dist_pars);
         arma::vec (*aux_pot_eps_vec)(arma::vec x, double* dist_pars);
-        
+
         // input objects
         arma::mat U;
         arma::mat mu;
-        
+
         // equilibrium objects
         arma::mat U_sol;
         arma::mat mu_sol;
-        
+
         // member functions
         ~rsc(){};
          rsc(){};
@@ -85,11 +86,11 @@ class rsc
         void build(const arma::mat& zeta_inp, const bool outside_option_inp);
 
         void build_beta(const arma::mat& zeta_inp, const double alpha, const double beta);
-        
+
         double G(const arma::vec& n);
         double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out) const;
         double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const uint_t x) const;
-        
+
         double Gstar(const arma::vec& n);
         double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out) const;
         double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const uint_t x) const;
@@ -101,7 +102,7 @@ class rsc
         void D2G(arma::mat &H, const arma::vec& n, const bool x_first) const;
         arma::mat D2G(const arma::vec& n, const arma::mat& U_inp, const bool x_first) const;
         void D2G(arma::mat &H, const arma::vec& n, const arma::mat& U_inp, const bool x_first) const;
-        
+
         arma::mat D2Gstar(const arma::vec& n, const bool x_first) const;
         void D2Gstar(arma::mat &ret, const arma::vec& n, const bool x_first) const;
         arma::mat D2Gstar(const arma::vec& n, const arma::mat& mu_inp, const bool x_first) const;
@@ -111,12 +112,12 @@ class rsc
         void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat* dparams_inp, const bool x_first) const;
         arma::mat dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first) const;
         void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first) const;
-        
+
         empirical simul() const;
         empirical simul(const uint_t n_draws, const uint_t seed) const;
         void simul(empirical& obj_out) const;
         void simul(empirical& obj_out, const uint_t n_draws, const uint_t seed) const;
-        
+
     protected:
         void simul_int(empirical& obj_out, const uint_t* n_draws_inp, const uint_t* seed) const;
 

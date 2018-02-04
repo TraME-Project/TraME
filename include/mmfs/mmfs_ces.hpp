@@ -43,9 +43,9 @@ class ces
         // build objects
         bool need_norm;
 
-        int nbX;
-        int nbY;
-        int dim_params;
+        uint_t nbX;
+        uint_t nbY;
+        uint_t dim_params;
 
         arma::mat alpha;
         arma::mat gamma;

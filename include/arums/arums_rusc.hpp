@@ -41,23 +41,24 @@ class rusc
         uint_t nbX;
         uint_t nbY;
         uint_t dim_params;
-        bool outside_option;
         
+        bool outside_option;
+
         arma::mat zeta;
         arma::mat aux_ord;
-        
+
         arma::cube aux_A;
         arma::mat  aux_b;
         arma::vec  aux_c;
-        
+
         // input objects
         arma::mat mu;
         arma::mat U;
-        
+
         // equilibrium objects
         arma::mat mu_sol;
         arma::mat U_sol;
-        
+
         // member functions
         ~rusc(){};
          rusc(){};
@@ -66,15 +67,15 @@ class rusc
 
         void build(const uint_t nbX_inp, const uint_t nbY_inp);
         void build(const arma::mat& zeta_inp, const bool outside_option_inp);
-        
+
         double G(const arma::vec& n);
         double G(const arma::vec& n, const arma::mat& U_inp, arma::mat& mu_out) const;
         double Gx(const arma::mat& U_x_inp, arma::mat& mu_x_out, const uint_t x) const;
-        
+
         double Gstar(const arma::vec& n);
         double Gstar(const arma::vec& n, const arma::mat& mu_inp, arma::mat& U_out) const;
         double Gstarx(const arma::mat& mu_x_inp, arma::mat &U_x_out, const uint_t x) const;
-        
+
         double Gbar(const arma::mat& Ubar, const arma::mat& mubar, const arma::vec& n, arma::mat& U_out, arma::mat& mu_out) const;
         double Gbarx(const arma::vec& Ubar_x, const arma::vec& mubar_x, arma::mat& U_x_out, arma::mat& mu_x_out, const uint_t x) const;
 
@@ -92,7 +93,7 @@ class rusc
         void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat* dparams_inp, const bool x_first) const;
         arma::mat dparams_NablaGstar(const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first) const;
         void dparams_NablaGstar(arma::mat &ret, const arma::vec& n, const arma::mat& mu_inp, const arma::mat* dparams_inp, const bool x_first) const;
-        
+
         empirical simul() const;
         empirical simul(const uint_t n_draws, const uint_t seed) const;
         void simul(empirical& obj_out) const;

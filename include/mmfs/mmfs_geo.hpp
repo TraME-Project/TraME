@@ -43,9 +43,9 @@ class geo
         // build objects
         bool need_norm;
 
-        int nbX;
-        int nbY;
-        int dim_params;
+        uint_t nbX;
+        uint_t nbY;
+        uint_t dim_params;
 
         arma::mat phi;
         arma::mat aux_phi_exp; // exp(phi_inp/(2*sigma)), also labelled K

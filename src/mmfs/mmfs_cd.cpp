@@ -47,7 +47,7 @@ trame::mmfs::cd::build(const arma::mat& lambda_inp, const arma::mat& phi_inp, co
     lambda = lambda_inp;
     phi = phi_inp;
 
-    aux_zeta = 1 - lambda_inp;
+    aux_zeta = 1.0 - lambda_inp;
     aux_phi_exp = arma::exp(phi_inp);
 }
 
