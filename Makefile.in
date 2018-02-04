@@ -40,25 +40,40 @@ CXXFLAGS = $(CXX_STD) $(OPT_FLAGS) -I$(ARMA_INCLUDE_PATH) $(LP_CXXFLAGS) -I$(TRA
 FFLAGS = @TRAME_WARN_FLAGS@ @TRAME_FC_OPT_FLAGS@
 LIBS= -lgfortran @TRAME_BLAS_LAPACK@
 
+#
+
+TRAME_OPTIM_DIR= $(TRAME_SRC_DIR)/optim
+TRAME_ANC_DIR=   $(TRAME_SRC_DIR)/ancillary
+TRAME_ARUMS_DIR= $(TRAME_SRC_DIR)/arums
+TRAME_MMFS_DIR=  $(TRAME_SRC_DIR)/mmfs
+TRAME_TRANS_DIR= $(TRAME_SRC_DIR)/transfers
+
+# Optim files
+SOURCES_TRAME_OPTIM= $(TRAME_OPTIM_DIR)/unconstrained/bfgs.cpp $(TRAME_OPTIM_DIR)/unconstrained/lbfgs.cpp \
+                     $(TRAME_OPTIM_DIR)/zeros/broyden.cpp $(TRAME_OPTIM_DIR)/line_search/more_thuente.cpp \
+                     $(TRAME_OPTIM_DIR)/constrained/sumt.cpp
+OBJECTS_TRAME_OPTIM= $(SOURCES_TRAME_OPTIM:.cpp=.o)
+
 # core TraME files
 OBJECTS_TRAME_F90= $(TRAME_SRC_DIR)/prob/prob.o $(TRAME_SRC_DIR)/math/quadpack_double.o $(TRAME_SRC_DIR)/prob/trame_F90_aux.o
 
-SOURCES_TRAME_ANC= $(TRAME_SRC_DIR)/ancillary/inv_pwa.cpp $(TRAME_SRC_DIR)/ancillary/trame_stats.cpp $(TRAME_SRC_DIR)/ancillary/zeroin.cpp
+SOURCES_TRAME_ANC= $(TRAME_ANC_DIR)/inv_pwa.cpp $(TRAME_ANC_DIR)/trame_stats.cpp $(TRAME_ANC_DIR)/zeroin.cpp
 OBJECTS_TRAME_ANC= $(SOURCES_TRAME_ANC:.cpp=.o)
 
-SOURCES_TRAME_ARUMS= $(TRAME_SRC_DIR)/arums/arums_empirical.cpp $(TRAME_SRC_DIR)/arums/arums_evd.cpp $(TRAME_SRC_DIR)/arums/arums_none.cpp $(TRAME_SRC_DIR)/arums/arums_probit.cpp $(TRAME_SRC_DIR)/arums/arums_rsc.cpp $(TRAME_SRC_DIR)/arums/arums_rusc.cpp
+SOURCES_TRAME_ARUMS= $(TRAME_ARUMS_DIR)/arums_empirical.cpp $(TRAME_ARUMS_DIR)/arums_evd.cpp $(TRAME_ARUMS_DIR)/arums_none.cpp \
+                     $(TRAME_ARUMS_DIR)/arums_probit.cpp $(TRAME_ARUMS_DIR)/arums_rsc.cpp $(TRAME_ARUMS_DIR)/arums_rusc.cpp
 OBJECTS_TRAME_ARUMS= $(SOURCES_TRAME_ARUMS:.cpp=.o)
 
-SOURCES_TRAME_MMFS= $(TRAME_SRC_DIR)/mmfs/mmfs_ces.cpp $(TRAME_SRC_DIR)/mmfs/mmfs_cd.cpp $(TRAME_SRC_DIR)/mmfs/mmfs_min.cpp $(TRAME_SRC_DIR)/mmfs/mmfs_geo.cpp
+SOURCES_TRAME_MMFS= $(TRAME_MMFS_DIR)/mmfs_ces.cpp $(TRAME_MMFS_DIR)/mmfs_cd.cpp $(TRAME_MMFS_DIR)/mmfs_min.cpp \
+                    $(TRAME_MMFS_DIR)/mmfs_geo.cpp
 OBJECTS_TRAME_MMFS= $(SOURCES_TRAME_MMFS:.cpp=.o)
 
-SOURCES_TRAME_OPTIM= $(TRAME_SRC_DIR)/optim/unconstrained/bfgs.cpp $(TRAME_SRC_DIR)/optim/unconstrained/lbfgs.cpp $(TRAME_SRC_DIR)/optim/zeros/broyden.cpp $(TRAME_SRC_DIR)/optim/line_search/more_thuente.cpp $(TRAME_SRC_DIR)/optim/constrained/sumt.cpp
-OBJECTS_TRAME_OPTIM= $(SOURCES_TRAME_OPTIM:.cpp=.o)
-
-SOURCES_TRAME_TRANS= $(TRAME_SRC_DIR)/transfers/transfers_etu.cpp $(TRAME_SRC_DIR)/transfers/transfers_ltu.cpp $(TRAME_SRC_DIR)/transfers/transfers_ntu.cpp $(TRAME_SRC_DIR)/transfers/transfers_tu.cpp
+SOURCES_TRAME_TRANS= $(TRAME_TRANS_DIR)/transfers_etu.cpp $(TRAME_TRANS_DIR)/transfers_ltu.cpp $(TRAME_TRANS_DIR)/transfers_ntu.cpp \
+                     $(TRAME_TRANS_DIR)/transfers_tu.cpp
 OBJECTS_TRAME_TRANS= $(SOURCES_TRAME_TRANS:.cpp=.o)
 
-OBJECTS_TRAME= $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_TRAME_F90) $(OBJECTS_TRAME_ANC) $(OBJECTS_TRAME_OPTIM) $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_MMFS) $(OBJECTS_TRAME_TRANS)
+OBJECTS_TRAME= $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_TRAME_F90) $(OBJECTS_TRAME_OPTIM) $(OBJECTS_TRAME_ANC) \
+               $(OBJECTS_TRAME_ARUMS) $(OBJECTS_TRAME_MMFS) $(OBJECTS_TRAME_TRANS)
 
 all: $(TRAME_DIR)/$(SHLIB) $(OBJECTS_TRAME)
 
@@ -84,38 +99,29 @@ $(TRAME_SRC_DIR)/ancillary/%.o: $(TRAME_SRC_DIR)/ancillary/%.cpp
 
 # optim
 
-$(TRAME_SRC_DIR)/optim/constrained/sumt.o: $(TRAME_SRC_DIR)/optim/constrained/sumt.cpp
+$(TRAME_OPTIM_DIR)/constrained/sumt.o: $(TRAME_OPTIM_DIR)/constrained/sumt.cpp
 	$(CXX) $(CXXFLAGS) -I$(SDIR)/include/optim $^ -c -o $@
 
-$(TRAME_SRC_DIR)/optim/line_search/more_thuente.o: $(TRAME_SRC_DIR)/optim/line_search/more_thuente.cpp
+$(TRAME_OPTIM_DIR)/line_search/more_thuente.o: $(TRAME_OPTIM_DIR)/line_search/more_thuente.cpp
 	$(CXX) $(CXXFLAGS) -I$(SDIR)/include/optim $^ -c -o $@
 
-$(TRAME_SRC_DIR)/optim/unconstrained/bfgs.o: $(TRAME_SRC_DIR)/optim/unconstrained/bfgs.cpp
+$(TRAME_OPTIM_DIR)/unconstrained/bfgs.o: $(TRAME_OPTIM_DIR)/unconstrained/bfgs.cpp
 	$(CXX) $(CXXFLAGS) -I$(SDIR)/include/optim $^ -c -o $@
 
-$(TRAME_SRC_DIR)/optim/unconstrained/lbfgs.o: $(TRAME_SRC_DIR)/optim/unconstrained/lbfgs.cpp
+$(TRAME_OPTIM_DIR)/unconstrained/lbfgs.o: $(TRAME_OPTIM_DIR)/unconstrained/lbfgs.cpp
 	$(CXX) $(CXXFLAGS) -I$(SDIR)/include/optim $^ -c -o $@
 
-$(TRAME_SRC_DIR)/optim/zeros/broyden.o: $(TRAME_SRC_DIR)/optim/zeros/broyden.cpp
+$(TRAME_OPTIM_DIR)/zeros/broyden.o: $(TRAME_OPTIM_DIR)/zeros/broyden.cpp
 	$(CXX) $(CXXFLAGS) -I$(SDIR)/include/optim $^ -c -o $@
 
 # core TraME files
-$(TRAME_SRC_DIR)/arums/%.o: $(TRAME_SRC_DIR)/arums/%.cpp
+$(TRAME_ARUMS_DIR)/%.o: $(TRAME_ARUMS_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
-$(TRAME_SRC_DIR)/markets/%.o: $(TRAME_SRC_DIR)/markets/%.cpp
+$(TRAME_MMFS_DIR)/%.o: $(TRAME_MMFS_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
-$(TRAME_SRC_DIR)/mmfs/%.o: $(TRAME_SRC_DIR)/mmfs/%.cpp
-	$(CXX) $(CXXFLAGS) $< -c -o $@
-
-$(TRAME_SRC_DIR)/models/%.o: $(TRAME_SRC_DIR)/models/%.cpp
-	$(CXX) $(CXXFLAGS) $< -c -o $@
-
-$(TRAME_SRC_DIR)/solvers/%.o: $(TRAME_SRC_DIR)/solvers/%.cpp
-	$(CXX) $(CXXFLAGS) $< -c -o $@
-
-$(TRAME_SRC_DIR)/transfers/%.o: $(TRAME_SRC_DIR)/transfers/%.cpp
+$(TRAME_TRANS_DIR)/%.o: $(TRAME_TRANS_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
 # shared library
@@ -125,11 +131,15 @@ $(TRAME_DIR)/$(SHLIB): $(OBJECTS_TRAME)
 # cleanup and install
 .PHONY: clean
 clean:
-	@rm -f *.so $(TRAME_SRC_DIR)/*/*.o $(TRAME_SRC_DIR)/*/*.gcov $(TRAME_SRC_DIR)/*/*.gcno $(TRAME_SRC_DIR)/*/*.gcda $(TRAME_SRC_DIR)/*/*.dSYM $(TRAME_SRC_DIR)/*/*/*.o $(TRAME_SRC_DIR)/*/*/*.gcov $(TRAME_SRC_DIR)/*/*/*.gcno $(TRAME_SRC_DIR)/*/*/*.gcda $(TRAME_SRC_DIR)/*/*/*.dSYM
+	@rm -f *.so $(TRAME_SRC_DIR)/*/*.o $(TRAME_SRC_DIR)/*/*.gcov $(TRAME_SRC_DIR)/*/*.gcno $(TRAME_SRC_DIR)/*/*.gcda \
+        $(TRAME_SRC_DIR)/*/*.dSYM $(TRAME_SRC_DIR)/*/*/*.o $(TRAME_SRC_DIR)/*/*/*.gcov $(TRAME_SRC_DIR)/*/*/*.gcno \
+        $(TRAME_SRC_DIR)/*/*/*.gcda $(TRAME_SRC_DIR)/*/*/*.dSYM
 
 .PHONY: vclean
 vclean:
-	@rm -f *.so $(TRAME_SRC_DIR)/*/*.o $(TRAME_SRC_DIR)/*/*.gcov $(TRAME_SRC_DIR)/*/*.gcno $(TRAME_SRC_DIR)/*/*.gcda $(TRAME_SRC_DIR)/*/*.dSYM $(TRAME_SRC_DIR)/*/*/*.o $(TRAME_SRC_DIR)/*/*/*.gcov $(TRAME_SRC_DIR)/*/*/*.gcno $(TRAME_SRC_DIR)/*/*/*.gcda $(TRAME_SRC_DIR)/*/*/*.dSYM
+	@rm -f *.so $(TRAME_SRC_DIR)/*/*.o $(TRAME_SRC_DIR)/*/*.gcov $(TRAME_SRC_DIR)/*/*.gcno $(TRAME_SRC_DIR)/*/*.gcda \
+        $(TRAME_SRC_DIR)/*/*.dSYM $(TRAME_SRC_DIR)/*/*/*.o $(TRAME_SRC_DIR)/*/*/*.gcov $(TRAME_SRC_DIR)/*/*/*.gcno \
+        $(TRAME_SRC_DIR)/*/*/*.gcda $(TRAME_SRC_DIR)/*/*/*.dSYM
 	@rm -rf ./include/armadillo* ./glpk_tmp
 
 .PHONY: tclean
