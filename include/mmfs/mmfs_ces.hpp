@@ -29,7 +29,7 @@
  * 08/15/2016
  *
  * This version:
- * 07/24/2017
+ * 02/04/2018
  */
 
 // some functions are const restricted because of calls to const market pointers in equilibrium solvers
