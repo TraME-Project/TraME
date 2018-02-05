@@ -70,57 +70,57 @@ class dse : public dse_base
         // member functions
 
         template<class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::etu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::etu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const bool need_norm_inp);
 
         template<class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::etu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::etu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp);
 
         template<typename Ta, typename Tb, class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::etu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::etu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const arma::mat& tau_inp, Ta arums_G_inp, Tb arums_H_inp, const uint_t n_draws, const uint_t seed, const bool need_norm_inp);
 
         //
 
         template<class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::ltu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::ltu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda, const arma::mat& phi, const bool need_norm_inp);
 
         template<class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::ltu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::ltu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp);
 
         template<typename Ta, typename Tb, class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::ltu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::ltu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& lambda_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const uint_t n_draws, const uint_t seed, const bool need_norm_inp);
 
         //
 
         template<class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::ntu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::ntu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha, const arma::mat& gamma, const bool need_norm_inp);
 
         template<class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::ntu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::ntu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp);
 
         template<typename Ta, typename Tb, class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::ntu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::ntu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& alpha_inp, const arma::mat& gamma_inp, Ta arums_G_inp, Tb arums_H_inp, const uint_t n_draws, const uint_t seed, const bool need_norm_inp);
 
         //
 
         template<class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::tu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::tu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const bool need_norm_inp);
 
         template<class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::tu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::tu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, const Tg& arums_G_inp, const Th& arums_H_inp, const bool need_norm_inp);
 
         template<typename Ta, typename Tb, class Tq = Tt>
-        typename std::enable_if<std::is_same<Tq,transfers::tu>::value>::type
+        typename std::enable_if<std::is_same<Tq,transfers::tu>::value,void>::type
         build(const arma::vec& n_inp, const arma::vec& m_inp, const arma::mat& phi_inp, Ta arums_G_inp, Tb arums_H_inp, const uint_t n_draws, const uint_t seed, const bool need_norm_inp);
 
         //
