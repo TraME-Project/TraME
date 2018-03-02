@@ -51,7 +51,7 @@ build_disaggregate_epsilon(const arma::vec& n, const trame::arums::empirical& ar
 
     //
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
     #pragma omp parallel for
 #endif
     for (uint_t x=0; x < nbX; x++) 

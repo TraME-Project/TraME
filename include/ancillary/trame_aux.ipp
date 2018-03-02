@@ -242,7 +242,7 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_2);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < cols_2; i++) {
@@ -253,7 +253,7 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < cols_1; i++) {
@@ -272,7 +272,7 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_2,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < rows_2; i++) {
@@ -283,7 +283,7 @@ elem_add(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < rows_1; i++) {
@@ -346,7 +346,7 @@ elem_sub(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_2);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < cols_2; i++) {
@@ -357,7 +357,7 @@ elem_sub(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < cols_1; i++) {
@@ -376,7 +376,7 @@ elem_sub(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_2,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < rows_2; i++) {
@@ -387,7 +387,7 @@ elem_sub(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < rows_1; i++) {
@@ -450,7 +450,7 @@ elem_prod(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_2);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < cols_2; i++) {
@@ -461,7 +461,7 @@ elem_prod(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < cols_1; i++) {
@@ -480,7 +480,7 @@ elem_prod(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_2,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < rows_2; i++) {
@@ -491,7 +491,7 @@ elem_prod(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < rows_1; i++) {
@@ -555,7 +555,7 @@ elem_div(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_2);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < cols_2; i++) {
@@ -566,7 +566,7 @@ elem_div(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < cols_1; i++) {
@@ -585,7 +585,7 @@ elem_div(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_2,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < rows_2; i++) {
@@ -596,7 +596,7 @@ elem_div(const arma::mat& mat_1, const arma::mat& mat_2)
         {
             ret.set_size(rows_1,cols_1);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
             #pragma omp parallel for
 #endif
             for (size_t i=0; i < rows_1; i++) {
@@ -753,7 +753,7 @@ cube_sum(const arma::cube& cube_inp, const uint_t which_dim)
     {   // over rows
         ret.set_size(dim_0,dim_2);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
         #pragma omp parallel for
 #endif
         for (size_t i=0; i < dim_2; i++)
@@ -766,7 +766,7 @@ cube_sum(const arma::cube& cube_inp, const uint_t which_dim)
     {   // dim == 1
         ret.set_size(dim_1,dim_2);
 
-#ifdef TRAME_USE_OMP
+#ifdef TRAME_USE_OPENMP
         #pragma omp parallel for
 #endif
         for (size_t i=0; i < dim_2; i++)

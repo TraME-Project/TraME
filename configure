@@ -91,7 +91,7 @@ else
 
     if [[ "${TRAME_PARALLEL}" == "y" ]]; then
         echo "TraME: using OpenMP"
-        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp -DTRAME_USE_OMP -DARMA_USE_OPENMP -DARMA_USE_CXX11"
+        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp -DTRAME_USE_OPENMP -DARMA_USE_OPENMP -DARMA_USE_CXX11"
     fi
 
     echo "TraME: optimization flags set to: ${TRAME_OPT_FLAGS}"

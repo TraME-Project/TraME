@@ -32,7 +32,11 @@
     #include "armadillo"
 #endif
 
-#ifdef TRAME_USE_OMP
+#if defined(_OPENMP) && !defined(TRAME_NO_OPENMP) && !defined(TRAME_USE_OPENMP)
+    #define TRAME_USE_OPENMP
+#endif
+
+#ifdef TRAME_USE_OPENMP
     // #include "omp.h" //  OpenMP
     #ifndef ARMA_USE_OPENMP
         #define ARMA_USE_OPENMP
