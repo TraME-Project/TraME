@@ -1,9 +1,26 @@
 #!/bin/bash
 ## TraME config script
 
-# inputs
-while getopts cdl:m:o:pv option; do
+function print_help
+{ 
+    # echo "" ;
+    echo -e "\x1B[32mConfigure options:\033[0m" >&2 ;
+    echo "" ;
+    echo "-c    Coverage build" ;
+    echo "-d    Development build (install paths set to current directory)" ;
+    echo "-g    Debugging build (optimization flags set to -O0 -g)" ;
+    echo "-h    Print help" ;
+    echo "-l    Enable wrappers for a linear programming library" ;
+    echo "        Examples: -l glpk or -l gurobi" ;
+    echo "-m    Specify the BLAS and Lapack libraries to link against" ; 
+    echo "        Examples: -m \"-lopenblas\" or -m \"-framework Accelerate\"" ;
+    echo "-o    Compiler optimization options; defaults to -O3 -march=native" ;
+    echo "-p    Enable OpenMP parallelization features" ;
+}
+
+while getopts hcdl:m:o:pv option; do
     case "${option}" in
+        h) print_help; exit 2;;
         c) TRAME_COVERAGE_BUILD="y";;
         d) TRAME_BUILD="dev";;
         l) TRAME_LP=${OPTARG};;
@@ -11,6 +28,7 @@ while getopts cdl:m:o:pv option; do
         o) TRAME_OPT=${OPTARG};;
         p) TRAME_PARALLEL="y";;
         v) TRAME_BUILD_VERBOSE="y";;
+        ?) print_help; exit 2;;
     esac
 done
 
