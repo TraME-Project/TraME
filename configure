@@ -20,7 +20,7 @@ function print_help
     echo "" ;
 }
 
-while getopts hcdgl:m:o:pv option; do
+while getopts hcdgi:l:m:o:pv option; do
     case "${option}" in
         h) print_help; exit 2;;
         c) TRAME_COVERAGE_BUILD="y";;
@@ -48,6 +48,7 @@ fi
 
 echo ""
 echo -e "\x1B[32mTraME Configuration...\033[0m" >&2 ;
+echo ""
 
 # compiler checks
 
@@ -73,7 +74,6 @@ if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
     done
 
     if [[ $ARMA_INCLUDE_PATH == "" ]]; then
-        echo ""
         echo -e "\x1B[31m  - note: cannot find Armadillo files. Cloning from GitHub\033[0m" >&2 ;
         echo ""
 
@@ -188,6 +188,7 @@ if [[ $OSTYPE == darwin* ]] ; then
                 ./configure --prefix=${WDIR}/glpk_tmp
                 make
                 make PREFIX=${WDIR}/glpk_tmp install
+                echo ""
             else
                 curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.64.tar.gz > /dev/null 2>&1
                 tar -xzf glpk-4.64.tar.gz > /dev/null 2>&1
@@ -201,7 +202,6 @@ if [[ $OSTYPE == darwin* ]] ; then
 
             rm -f ${WDIR}/glpk_tmp/glpk-4.64.tar.gz
             rm -rf ${WDIR}/glpk_tmp/glpk-4.64
-            echo ""
 
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
             LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
@@ -268,6 +268,7 @@ elif [[ $OSTYPE == *linux* ]] ; then
                 ./configure --prefix=${WDIR}/glpk_tmp
                 make
                 make PREFIX=${WDIR}/glpk_tmp install
+                echo ""
             else
                 curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.64.tar.gz > /dev/null 2>&1
                 tar -xzf glpk-4.64.tar.gz > /dev/null 2>&1
@@ -281,7 +282,6 @@ elif [[ $OSTYPE == *linux* ]] ; then
 
             rm -f ${WDIR}/glpk_tmp/glpk-4.64.tar.gz
             rm -rf ${WDIR}/glpk_tmp/glpk-4.64
-            echo ""
 
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
             LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
@@ -351,6 +351,7 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
                 ./configure --prefix=${WDIR}/glpk_tmp
                 make
                 make PREFIX=${WDIR}/glpk_tmp install
+                echo ""
             else
                 curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.64.tar.gz > /dev/null 2>&1
                 tar -xzf glpk-4.64.tar.gz > /dev/null 2>&1
@@ -364,7 +365,6 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
 
             rm -f ${WDIR}/glpk_tmp/glpk-4.64.tar.gz
             rm -rf ${WDIR}/glpk_tmp/glpk-4.64
-            echo ""
 
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
             LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
@@ -412,7 +412,6 @@ fi
 #
 # final print:
 
-echo ""
 echo "  - OS: ${OSTYPE}"
 
 if [[ "${TRAME_BUILD}" == "dev" ]]; then

@@ -10,18 +10,19 @@ demand and matching frameworks via the Mass Transportation Approach.
 
 TraME can be installed via
 ```
-./configure
+./configure -i "/usr/local"
 make
 make install
 ```
 
-The last line will install TraME into `/usr/local`.
+This will install TraME into `/usr/local`.
 
 There are several configuration options available (`./configure -h`):
 * `-c` a coverage build (used with Codecov)
-* `-d` a 'development' build with install names set to the build directory (as opposed to an install path)
+* `-d` a 'development' build
 * `-g` a debugging build (optimization flags set to `-O0 -g`)
 * `-h` print help
+* `-i` install path (default: current directory)
 * `-l` specify the linear programming library to link against, either GLPK (`-l glpk`) or Gurobi (`-l gurobi`)
 * `-m` specify the BLAS and Lapack libraries to link against; for example, `-m "-lopenblas"` or `-m "-framework Accelerate"`
 * `-o` compiler optimization options; defaults to `-O3 -march=native`
