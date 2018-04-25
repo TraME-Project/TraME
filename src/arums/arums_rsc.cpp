@@ -28,7 +28,7 @@
  * 08/08/2016
  * 
  * This version:
- * 02/04/2018
+ * 04/25/2018
  */
 
 #include "ancillary/ancillary.hpp"
@@ -187,19 +187,17 @@ const
     
     //
 
-    int j,y,z;
-
     for (uint_t i=0; i < nbAlt; i++)
     {
-        y = aux_ord(x,i);
+        uint_t y = aux_ord(x,i);
         run_max = quantile(0);
 
         //
 
-        j = 0;
+        uint_t j = 0;
 
         while (j < i) {
-            z = aux_ord(x,j);
+            uint_t z = aux_ord(x,j);
 
             if (zeta(x,z) != zeta(x,y)) {
                 run_temp = (U_x_tilde(y) - U_x_tilde(z)) / (zeta(x,z) - zeta(x,y));
@@ -220,7 +218,7 @@ const
         j = nbAlt-1;
 
         while (j > i) {
-            z = aux_ord(x,j);
+            uint_t z = aux_ord(x,j);
             
             if (zeta(x,z) != zeta(x,y)) {
                 run_temp = (U_x_tilde(y) - U_x_tilde(z)) / (zeta(x,z) - zeta(x,y));
