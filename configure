@@ -185,17 +185,17 @@ if [[ $OSTYPE == darwin* ]] ; then
             cd glpk_tmp
 
             if [[ "${TRAME_BUILD_VERBOSE}" == "y" ]]; then 
-                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.64.tar.gz
-                tar -xzf glpk-4.64.tar.gz
-                cd glpk-4.64
+                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.65.tar.gz
+                tar -xzf glpk-4.65.tar.gz
+                cd glpk-4.65
                 ./configure --prefix=${WDIR}/glpk_tmp
                 make
                 make PREFIX=${WDIR}/glpk_tmp install
                 echo ""
             else
-                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.64.tar.gz > /dev/null 2>&1
-                tar -xzf glpk-4.64.tar.gz > /dev/null 2>&1
-                cd glpk-4.64
+                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.65.tar.gz > /dev/null 2>&1
+                tar -xzf glpk-4.65.tar.gz > /dev/null 2>&1
+                cd glpk-4.65
                 ./configure --prefix=${WDIR}/glpk_tmp > /dev/null 2>&1
                 make > /dev/null 2>&1
                 make PREFIX=${WDIR}/glpk_tmp install > /dev/null 2>&1
@@ -203,8 +203,8 @@ if [[ $OSTYPE == darwin* ]] ; then
 
             cd ${WDIR}
 
-            rm -f ${WDIR}/glpk_tmp/glpk-4.64.tar.gz
-            rm -rf ${WDIR}/glpk_tmp/glpk-4.64
+            rm -f ${WDIR}/glpk_tmp/glpk-4.65.tar.gz
+            rm -rf ${WDIR}/glpk_tmp/glpk-4.65
 
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
             LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
@@ -265,17 +265,17 @@ elif [[ $OSTYPE == *linux* ]] ; then
             cd glpk_tmp
 
             if [[ "${TRAME_BUILD_VERBOSE}" == "y" ]]; then 
-                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.64.tar.gz
-                tar -xzf glpk-4.64.tar.gz
-                cd glpk-4.64
+                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.65.tar.gz
+                tar -xzf glpk-4.65.tar.gz
+                cd glpk-4.65
                 ./configure --prefix=${WDIR}/glpk_tmp
                 make
                 make PREFIX=${WDIR}/glpk_tmp install
                 echo ""
             else
-                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.64.tar.gz > /dev/null 2>&1
-                tar -xzf glpk-4.64.tar.gz > /dev/null 2>&1
-                cd glpk-4.64
+                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.65.tar.gz > /dev/null 2>&1
+                tar -xzf glpk-4.65.tar.gz > /dev/null 2>&1
+                cd glpk-4.65
                 ./configure --prefix=${WDIR}/glpk_tmp > /dev/null 2>&1
                 make > /dev/null 2>&1
                 make PREFIX=${WDIR}/glpk_tmp install > /dev/null 2>&1
@@ -283,8 +283,8 @@ elif [[ $OSTYPE == *linux* ]] ; then
 
             cd ${WDIR}
 
-            rm -f ${WDIR}/glpk_tmp/glpk-4.64.tar.gz
-            rm -rf ${WDIR}/glpk_tmp/glpk-4.64
+            rm -f ${WDIR}/glpk_tmp/glpk-4.65.tar.gz
+            rm -rf ${WDIR}/glpk_tmp/glpk-4.65
 
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
             LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
@@ -348,17 +348,17 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
             cd glpk_tmp
 
             if [[ "${TRAME_BUILD_VERBOSE}" == "y" ]]; then 
-                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.64.tar.gz
-                tar -xzf glpk-4.64.tar.gz
-                cd glpk-4.64
+                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.65.tar.gz
+                tar -xzf glpk-4.65.tar.gz
+                cd glpk-4.65
                 ./configure --prefix=${WDIR}/glpk_tmp
                 make
                 make PREFIX=${WDIR}/glpk_tmp install
                 echo ""
             else
-                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.64.tar.gz > /dev/null 2>&1
-                tar -xzf glpk-4.64.tar.gz > /dev/null 2>&1
-                cd glpk-4.64
+                curl -O http://ftp.gnu.org/gnu/glpk/glpk-4.65.tar.gz > /dev/null 2>&1
+                tar -xzf glpk-4.65.tar.gz > /dev/null 2>&1
+                cd glpk-4.65
                 ./configure --prefix=${WDIR}/glpk_tmp > /dev/null 2>&1
                 make > /dev/null 2>&1
                 make PREFIX=${WDIR}/glpk_tmp install > /dev/null 2>&1
@@ -366,8 +366,8 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
 
             cd ${WDIR}
 
-            rm -f ${WDIR}/glpk_tmp/glpk-4.64.tar.gz
-            rm -rf ${WDIR}/glpk_tmp/glpk-4.64
+            rm -f ${WDIR}/glpk_tmp/glpk-4.65.tar.gz
+            rm -rf ${WDIR}/glpk_tmp/glpk-4.65
 
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I${WDIR}/glpk_tmp/include"
             LP_LIB_PATH="-L${WDIR}/glpk_tmp/lib"
