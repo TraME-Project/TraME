@@ -48,7 +48,6 @@ fi
 
 echo ""
 echo -e "\x1B[32mTraME Configuration...\033[0m" >&2 ;
-echo ""
 
 # compiler checks
 
@@ -103,7 +102,9 @@ else
     fi
 
     if [[ "${TRAME_PARALLEL}" == "y" ]]; then
-        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp -DTRAME_USE_OPENMP -DARMA_USE_OPENMP -DARMA_USE_CXX11"
+        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp"
+    else
+        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -DTRAME_DONT_USE_OPENMP"
     fi
 fi
 
@@ -174,7 +175,6 @@ if [[ $OSTYPE == darwin* ]] ; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/opt/local/include"
             LP_LIB_PATH="-L/opt/local/lib"
         else
-            echo ""
             echo -e "\x1B[31m  - note: cannot find a linear programming solver. Downloading and building GLPK.\033[0m" >&2 ;
             echo ""
 
@@ -255,7 +255,6 @@ elif [[ $OSTYPE == *linux* ]] ; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/opt/local/include"
             LP_LIB_PATH="-L/opt/local/lib"
         else
-            echo ""
             echo -e "\x1B[31m  - note: cannot find a linear programming solver. Downloading and building GLPK.\033[0m" >&2 ;
             echo ""
 
@@ -339,7 +338,6 @@ elif [[ $OSTYPE == *cygwin* ]] ; then
             LP_INCLUDE_PATH="-DTRAME_USE_GLPK -I/opt/local/include"
             LP_LIB_PATH="-L/opt/local/lib"
         else
-            echo ""
             echo -e "\x1B[31m  - note: cannot find a linear programming solver. Downloading and building GLPK.\033[0m" >&2 ;
             echo ""
 
@@ -414,6 +412,7 @@ fi
 #
 # final print:
 
+echo ""
 echo "  - OS: ${OSTYPE}"
 
 if [[ "${TRAME_BUILD}" == "dev" ]]; then
