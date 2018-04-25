@@ -22,7 +22,7 @@
   ################################################################################*/
 
 /*
- * Generic Linear/Quadratic Programming solver using Gurobi
+ * Generic Linear/Quadratic Programming solver using Gurobi or GLPK
  *
  * Keith O'Hara
  * 05/08/2016
