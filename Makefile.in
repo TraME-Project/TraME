@@ -26,7 +26,7 @@ SHLIB_FLAGS = $(CXX_STD) @TRAME_SHLIB_FLAGS@
 
 # linear programming flags
 LP_CFLAGS= @LP_INCLUDE_PATH@
-LP_LIBS= @LP_LIB_PATH@ @LP_LIBS@
+LP_LIB_FLAGS= @LP_LIB_PATH@ @LP_LIB_FLAGS@
 SOURCES_LP= $(TRAME_SRC_DIR)/lp/generic_lp_c.c
 OBJECTS_LP= $(TRAME_SRC_DIR)/lp/generic_lp_c.o
 
@@ -126,7 +126,7 @@ $(TRAME_TRANS_DIR)/%.o: $(TRAME_TRANS_DIR)/%.cpp
 
 # shared library
 $(TRAME_DIR)/$(SHLIB): $(OBJECTS_TRAME)
-	$(CXX) $(SHLIB_FLAGS) -o $@ $^ $(LIBS) $(LP_LIBS)
+	$(CXX) $(SHLIB_FLAGS) -o $@ $^ $(LIBS) $(LP_LIB_FLAGS)
 
 # cleanup and install
 .PHONY: clean
