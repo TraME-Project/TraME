@@ -66,7 +66,9 @@ model<dse<Tg,Th,Tt>>::build_int(const arma::cube& phi_xyk_inp, const arma::vec* 
 
     dX = std::sqrt(dim_theta);
     dY = std::sqrt(dim_theta);
+
     //
+
     n = (n_inp) ? *n_inp : arma::ones(nbX,1);
     m = (m_inp) ? *m_inp : arma::ones(nbY,1);
 
@@ -103,10 +105,12 @@ model<dse<Tg,Th,Tt>>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, 
     dY = Y_inp.n_cols;
 
     dim_theta = dX*dY;
+
     //
+
     n = (n_inp) ? *n_inp : arma::ones(nbX,1);
     m = (m_inp) ? *m_inp : arma::ones(nbY,1);
-    //
+
     model_data = model_build_int(market_obj,X_inp,Y_inp);
 }
 
@@ -153,7 +157,9 @@ model<dse<Tg,Th,Tt>>::dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta
     const arma::mat delta_theta_mat = (delta_theta_inp) ? *delta_theta_inp : arma::eye(dim_theta,dim_theta);
 
     dtheta_Psi_out = model_data * delta_theta_mat;
+
     //
+
     if (dtheta_G_out) {
         *dtheta_G_out = arma::zeros(0,delta_theta_mat.n_cols);
     }
@@ -229,7 +235,7 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
     // output
 
-    std::cout << "MLE val = " << settings.opt_value << std::endl;
+    std::cout << "MLE obj val = " << settings.opt_value << std::endl;
 
     theta_hat = theta_0;
 
@@ -351,13 +357,19 @@ model<dse<Tg,Th,Tt>>::initial_theta()
 
 template<typename Tg, typename Th, typename Tt>
 bool
-model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings* settings_inp, const int optim_method)
+model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn,
+                                      void* opt_data, optim::algo_settings* settings_inp, const int optim_method)
 {
-    if (optim_method == 1) {
+    if (optim_method == 1)
+    {
         return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
-    } else if (optim_method == 2) {
+    }
+    else if (optim_method == 2)
+    {
         return optim::bfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
-    } else {
+    }
+    else
+    {
         printf("error: unrecognized optim_method choice.\n");
         return false;
     }
@@ -371,39 +383,49 @@ model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_
 
     const bool by_individual = d->by_individual;
 
-    const int nbX = d->model_obj.nbX;
-    const int nbY = d->model_obj.nbY;
+    const uint_t nbX = d->model_obj.nbX;
+    const uint_t nbY = d->model_obj.nbY;
 
     const double scale = d->scale;
 
     const arma::mat mu_hat = d->mu_hat;
     const arma::vec mu_hat_x0 = d->mu_hat_x0;
     const arma::vec mu_hat_0y = d->mu_hat_0y;
+
     //
+
     arma::vec mu_x0, mu_0y;
     arma::mat mu, dmu;
 
     d->model_obj.dtheta_mu(vals_inp,nullptr,mu,mu_x0,mu_0y,dmu);
+
     //
+    
     double ret_val = 0.0;
 
-    if (by_individual) {
+    if (by_individual)
+    {
         ret_val = - arma::accu(2.0*mu_hat % arma::log(mu)) - arma::accu(mu_hat_x0 % arma::log(mu_x0)) - arma::accu(mu_hat_0y % arma::log(mu_0y));
 
-        if (grad_vec) {
+        if (grad_vec)
+        {
             const arma::mat term_1 = arma::trans( elem_sub(2.0*mu_hat/arma::reshape(mu,nbX,nbY), mu_hat_x0/mu_x0) );
             const arma::mat term_2 = mu_hat_0y / mu_0y;
 
             const arma::mat term_grad = elem_prod(arma::vectorise(arma::trans(elem_sub(term_1,term_2))),dmu);
 
-            *grad_vec = (- arma::trans(arma::sum(term_grad,0))) / scale;
+            *grad_vec = - arma::trans(arma::sum(term_grad,0)) / scale;
         }
-    } else {
-        const double N = arma::accu(arma::join_cols(arma::vectorise(mu),arma::join_cols(mu_x0,mu_0y)));
+    }
+    else
+    {
+        // const double N = arma::accu(arma::join_cols(arma::vectorise(mu),arma::join_cols(mu_x0,mu_0y)));
+        const double N = arma::accu(mu) + arma::accu(mu_x0) + arma::accu(mu_0y);
 
         ret_val = - arma::accu(mu_hat % arma::log(mu / N)) - arma::accu(mu_hat_x0 % arma::log(mu_x0 / N)) - arma::accu(mu_hat_0y % arma::log(mu_0y / N));
 
-        if (grad_vec) {
+        if (grad_vec)
+        {
             const arma::mat term_1 = arma::trans( elem_sub(mu_hat/arma::reshape(mu,nbX,nbY), mu_hat_x0/mu_x0) );
             const arma::mat term_2 = mu_hat_0y / mu_0y;
 
@@ -414,9 +436,11 @@ model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_
             *grad_vec = (- arma::trans(arma::sum(term_grad,0)) - term_3) / scale;
         }
     }
+
     //
+
     if (!std::isfinite(ret_val)) {
-        ret_val = 1E08;
+        ret_val = std::numeric_limits<double>::max();
     }
 
     return ret_val / scale;
@@ -427,13 +451,19 @@ model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_
 
 template<typename Tg, typename Th, typename Tt>
 bool
-model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings* settings_inp, const int optim_method)
+model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, 
+                                      void* opt_data, optim::algo_settings* settings_inp, const int optim_method)
 {
-    if (optim_method == 1) {
+    if (optim_method == 1)
+    {
         return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
-    } else if (optim_method == 2) {
+    }
+    else if (optim_method == 2)
+    {
         return optim::bfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
-    } else {
+    }
+    else
+    {
         printf("error: unrecognized optim_method choice.\n");
         return false;
     }
@@ -444,37 +474,49 @@ double
 model<dse<Tg,Th,Tt>>::model_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data)
 {
     trame_model_mme_opt_data<dse<Tg,Th,Tt>> *d = reinterpret_cast<trame_model_mme_opt_data<dse<Tg,Th,Tt>>*>(opt_data);
+
     //
+
     const int nbX = d->market.nbX;
     const int nbY = d->market.nbY;
     const int dim_theta = d->dim_theta;
 
     const arma::vec C_hat = d->C_hat;
     const arma::mat kron_term = d->kron_term;
+
     //
+
     const arma::mat U = arma::reshape(vals_inp.rows(0,nbX*nbY-1),nbX,nbY);
 
     const arma::vec theta = vals_inp.rows(nbX*nbY,dim_theta + nbX*nbY - 1);
     const arma::mat phi_mat = arma::reshape(kron_term * theta,nbX,nbY);
+
     //
+
     arma::mat mu_G, mu_H;
 
     const double val_G = d->market.arums_G.G(d->market.n,U,mu_G);
     const double val_H = d->market.arums_H.G(d->market.m,arma::trans(phi_mat - U),mu_H);
-    //
+
     double ret_val = val_G + val_H - arma::accu(theta%C_hat);
 
-    if (grad) {
+    //
+
+    if (grad)
+    {
         const arma::vec grad_U = arma::vectorise(mu_G - mu_H.t());
         const arma::vec grad_theta = arma::vectorise( arma::trans(arma::vectorise(mu_H.t())) * kron_term ) - C_hat;
 
         *grad = arma::join_cols(grad_U,grad_theta);
     }
 
-    if (!std::isfinite(ret_val)) {
-        ret_val = 1E08;
-    }
     //
+
+    if (!std::isfinite(ret_val))
+    {
+        ret_val = std::numeric_limits<double>::max();
+    }
+
     return ret_val;
 }
 
@@ -487,18 +529,22 @@ bool
 model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
 {
     bool success = false;
-    //
+
+    // data mats
+
     const arma::mat kron_mat = model_data;
     const arma::mat kron_mat_2 = arma::reshape(kron_mat.t(),dim_theta*nbX,nbY);
 
     // const arma::vec C_hat = arma::vectorise(arma::vectorise(mu_hat)*kron_mat);
     const arma::mat C_hat = arma::vectorise(arma::trans(arma::vectorise(mu_hat)) * kron_mat);
+
     //
+
     arma::mat epsilon_iy, epsilon_0i, I_ix;
     arma::mat eta_xj, eta_0j, I_yj;
 
-    const int n_draws_1 = build_disaggregate_epsilon(n,market_obj.arums_G,epsilon_iy,epsilon_0i,I_ix);
-    const int n_draws_2 = build_disaggregate_epsilon(m,market_obj.arums_H,eta_xj,eta_0j,I_yj);
+    const uint_t n_draws_1 = build_disaggregate_epsilon(n,market_obj.arums_G,epsilon_iy,epsilon_0i,I_ix);
+    const uint_t n_draws_2 = build_disaggregate_epsilon(m,market_obj.arums_H,eta_xj,eta_0j,I_yj);
 
     epsilon_0i = arma::vectorise(epsilon_0i);
 
@@ -509,8 +555,8 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     const arma::vec n_i = arma::vectorise(I_ix * n) / static_cast<double>(n_draws_1);
     const arma::vec m_j = arma::vectorise(m.t() * I_yj) / static_cast<double>(n_draws_2);
 
-    const int nbI = n_i.n_elem;
-    const int nbJ = m_j.n_elem;
+    const uint_t nbI = n_i.n_elem;
+    const uint_t nbJ = m_j.n_elem;
 
     arma::mat kron_data_mat = - arma::reshape(kron_mat_2*I_yj,dim_theta,nbX*nbJ);
 
@@ -531,14 +577,16 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
      * fourth block is filled from (nbI*nbY+1,nbI*nbY + nbJ*nbX) with kron_data_mat
      */
 
-    int jj, kk, ll, count_val = 0;
-    int num_non_zero = nbI*nbY + nbJ*nbX + nbX*nbY*n_draws_1 + nbY*n_draws_2*nbX + dim_theta*nbJ*nbX;
+    uint_t count_val = 0U;
+    uint_t num_non_zero = nbI*nbY + nbJ*nbX + nbX*nbY*n_draws_1 + nbY*n_draws_2*nbX + dim_theta*nbJ*nbX;
 
     arma::umat location_mat_1(2,num_non_zero);
     arma::rowvec vals_mat_1(num_non_zero);
 
-    for (jj=0; jj < nbY; jj++) { // first block
-        for (kk=0; kk < nbI; kk++) {
+    for (uint_t jj=0U; jj < nbY; jj++)
+    {   // first block
+        for (uint_t kk=0U; kk < nbI; kk++)
+        {
             location_mat_1(0,count_val) = kk; // rows
             location_mat_1(1,count_val) = kk + jj*nbI; // columns
 
@@ -548,8 +596,10 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
         }
     }
 
-    for (jj=0; jj < nbJ; jj++) { // second block
-        for (kk=0; kk < nbX; kk++) {
+    for (uint_t jj=0; jj < nbJ; jj++)
+    {   // second block
+        for (uint_t kk=0; kk < nbX; kk++)
+        {
             location_mat_1(0,count_val) = nbI + jj;
             location_mat_1(1,count_val) = nbI*nbY + kk + jj*nbX;
 
@@ -559,8 +609,10 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
         }
     }
 
-    for (jj=0; jj < nbX*nbY; jj++) { // third block, part 1
-        for (kk=0; kk < n_draws_1; kk++) {
+    for (uint_t jj=0; jj < nbX*nbY; jj++)
+    {   // third block, part 1
+        for (uint_t kk=0; kk < n_draws_1; kk++)
+        {
             location_mat_1(0,count_val) = nbI + nbJ + jj;
             location_mat_1(1,count_val) = kk + jj*n_draws_1;
 
@@ -570,9 +622,12 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
         }
     }
 
-    for (jj=0; jj < nbY; jj++) { // third block, part 2
-        for (kk=0; kk < n_draws_2; kk++) {
-            for (ll=0; ll < nbX; ll++) {
+    for (uint_t jj=0; jj < nbY; jj++)
+    {   // third block, part 2
+        for (uint_t kk=0; kk < n_draws_2; kk++)
+        {
+            for (uint_t ll=0; ll < nbX; ll++)
+            {
                 location_mat_1(0,count_val) = nbI + nbJ + jj*nbX + ll;
                 location_mat_1(1,count_val) = nbI*nbY + jj*(n_draws_2*nbX) + kk*nbX + ll;
 
@@ -583,8 +638,10 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
         }
     }
 
-    for (jj=0; jj < dim_theta; jj++) { // fourth block, data
-        for (kk=0; kk < nbJ*nbX; kk++) {
+    for (uint_t jj=0; jj < dim_theta; jj++)
+    { // fourth block, data
+        for (uint_t kk=0; kk < nbJ*nbX; kk++)
+        {
             location_mat_1(0,count_val) = nbI + nbJ + nbX*nbY + jj;
             location_mat_1(1,count_val) = nbI*nbY + kk;
 
@@ -641,7 +698,8 @@ model<dse<arums::empirical,arums::empirical,transfers::tu>>::mme(const arma::mat
     //
 
     try {
-        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_non_zero, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), num_non_zero, vbeg_lp, vind_lp, vval_lp, modelSense, rhs_lp.memptr(), sense_lp, nullptr, 
+                                lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
         if (lp_optimal) {
 
@@ -687,10 +745,14 @@ bool
 model<dse<arums::none,arums::none,transfers::tu>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp)
 {
     bool success = false;
+
     //
+
     const arma::mat kron_term = model_data;
     const arma::mat C_hat = arma::vectorise(arma::trans(arma::vectorise(mu_hat)) * kron_term);
+
     //
+
     arma::vec obj_lp = arma::join_cols(n,arma::join_cols(m,arma::zeros(dim_theta,1)));
 
     arma::mat A_11_lp = arma::kron(arma::ones(nbY,1), arma::eye(nbX,nbX));
@@ -729,7 +791,8 @@ model<dse<arums::none,arums::none,transfers::tu>>::mme(const arma::mat& mu_hat, 
     //
 
     try {
-        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, nullptr, lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        lp_optimal = generic_LP(k_lp, n_lp, obj_lp.memptr(), A_lp.memptr(), modelSense, rhs_lp.memptr(), sense_lp, nullptr, 
+                                lb_lp.memptr(), nullptr, nullptr, val_lp, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
 
         if (lp_optimal) {
             theta_hat = sol_mat(arma::span(nbX+nbY,nbX+nbY+dim_theta-1),0);

@@ -40,12 +40,12 @@ class model_base
         // build objects
         bool need_norm;
 
-        int nbX;
-        int nbY;
+        uint_t nbX;
+        uint_t nbY;
 
-        int dX;
-        int dY;
-        int dim_theta;
+        uint_t dX;
+        uint_t dY;
+        uint_t dim_theta;
 
         arma::vec n;
         arma::vec m;

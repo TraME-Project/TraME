@@ -34,8 +34,6 @@
 #ifndef _trame_transfers_ntu_HPP
 #define _trame_transfers_ntu_HPP
 
-// some functions are const restricted because of calls to const market pointers in equilibrium solvers
-
 class ntu
 {
     public:
