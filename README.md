@@ -29,7 +29,7 @@ There are several configuration options available (`./configure -h`):
 * `-i` install path; default: current directory.
 * `-l` specify the linear programming library to link against, either GLPK (`-l glpk`) or Gurobi (`-l gurobi`)
 * `-m` specify the BLAS and Lapack libraries to link against; for example, `-m "-lopenblas"` or `-m "-framework Accelerate"`
-* `-o` compiler optimization options; defaults to `-O3 -march=native`
+* `-o` compiler optimization options; defaults to `-O3 -march=native -ffp-contract=fast`
 * `-p` enable OpenMP parallelization features
 
 ## Example

@@ -101,7 +101,7 @@ elif [[ "${TRAME_DEBUG_BUILD}" == "y" ]]; then
 else
     if [[ "${TRAME_OPT}" == "" ]]; then
         # echo "TraME: experimental optimization enabled; use of NaN or +/-Inf not recognized"
-        TRAME_OPT_FLAGS="-O3 -march=native -flto -DARMA_NO_DEBUG"
+        TRAME_OPT_FLAGS="-O3 -march=native -flto -ffp-contract=fast -DARMA_NO_DEBUG"
     else
         TRAME_OPT_FLAGS="${TRAME_OPT}"
     fi
