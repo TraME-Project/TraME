@@ -10,6 +10,10 @@ demand and matching frameworks via the Mass Transportation Approach.
 
 TraME can be installed via
 ```
+# clone optim into the current directory
+git clone https://github.com/TraME-Project/TraME ./trame
+# build and install
+cd ./trame
 ./configure -i "/usr/local"
 make
 make install
