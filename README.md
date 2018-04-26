@@ -10,7 +10,7 @@ demand and matching frameworks via the Mass Transportation Approach.
 
 TraME can be installed via
 ```
-# clone optim into the current directory
+# clone TraME into the current directory
 git clone https://github.com/TraME-Project/TraME ./trame
 # build and install
 cd ./trame
@@ -26,7 +26,7 @@ There are several configuration options available (`./configure -h`):
 * `-d` a 'development' build
 * `-g` a debugging build (optimization flags set to `-O0 -g`)
 * `-h` print help
-* `-i` install path (default: current directory)
+* `-i` install path; default: current directory (`.`).
 * `-l` specify the linear programming library to link against, either GLPK (`-l glpk`) or Gurobi (`-l gurobi`)
 * `-m` specify the BLAS and Lapack libraries to link against; for example, `-m "-lopenblas"` or `-m "-framework Accelerate"`
 * `-o` compiler optimization options; defaults to `-O3 -march=native`

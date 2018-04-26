@@ -46,6 +46,8 @@ if [ -z ${FC+x} ]; then
     FC=gfortran
 fi
 
+#
+
 echo ""
 echo -e "\x1B[32mTraME Configuration...\033[0m" >&2 ;
 echo ""
