@@ -476,8 +476,7 @@ if [ "$IS_DARWIN" -eq "1" ] && [ "$GCC_COMPILER" -eq "0" ] && [ "$GFC_COMPILER" 
 fi
 
 echo ""
-echo -e "\x1B[32mConfiguration completed. Creating Makefile.\033[0m" >&2 ;
-echo ""
+echo -e "\x1B[32mConfiguration completed. Creating Makefile... \c\033[0m" >&2 ;
 
 # create Makefile
 
@@ -498,3 +497,6 @@ sed -e "s|@CC@|${CC}|" \
     -e "s|@LP_LIB_FLAGS@|${LP_LIB_FLAGS}|" \
     -e "s|@LP_LIB_RPATH@|${LP_LIB_RPATH}|" \
     Makefile.in > Makefile
+
+echo -e "\x1B[32mdone.\033[0m" >&2 ;
+echo ""
