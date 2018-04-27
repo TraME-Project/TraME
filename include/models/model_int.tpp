@@ -113,8 +113,8 @@ template<typename Tg, typename Th>
 arma::mat
 model_build_int(const dse<Tg,Th,transfers::etu>& market_obj, const arma::mat& X_inp, const arma::mat& Y_inp)
 {
-    int nbX = X_inp.n_rows;
-    int nbY = Y_inp.n_rows;
+    uint_t nbX = X_inp.n_rows;
+    uint_t nbY = Y_inp.n_rows;
 
     arma::mat model_data = arma::abs(arma::kron(arma::ones(nbY,1),X_inp) - arma::kron(Y_inp,arma::ones(nbX,1)));
 
@@ -125,14 +125,16 @@ template<typename Tg, typename Th>
 arma::mat
 model_build_int(const dse<Tg,Th,transfers::tu>& market_obj, const arma::mat& X_inp, const arma::mat& Y_inp)
 {
-    int nbX = X_inp.n_rows;
-    int nbY = Y_inp.n_rows;
+    uint_t nbX = X_inp.n_rows;
+    uint_t nbY = Y_inp.n_rows;
 
-    int dX = X_inp.n_cols;
-    int dY = Y_inp.n_cols;
+    uint_t dX = X_inp.n_cols;
+    uint_t dY = Y_inp.n_cols;
 
-    int dim_theta = dX*dY;
+    uint_t dim_theta = dX*dY;
+
     //
+    
     arma::mat phi_xy_temp = arma::kron(Y_inp,X_inp);
     arma::cube phi_xyk_temp(phi_xy_temp.memptr(),nbX,nbY,dim_theta,false); // share memory
 
@@ -146,14 +148,16 @@ inline
 arma::mat
 model_build_int(const mfe<mmfs::geo>& market_obj, const arma::mat& X_inp, const arma::mat& Y_inp)
 {
-    int nbX = X_inp.n_rows;
-    int nbY = Y_inp.n_rows;
+    uint_t nbX = X_inp.n_rows;
+    uint_t nbY = Y_inp.n_rows;
 
-    int dX = X_inp.n_cols;
-    int dY = Y_inp.n_cols;
+    uint_t dX = X_inp.n_cols;
+    uint_t dY = Y_inp.n_cols;
 
-    int dim_theta = dX*dY;
+    uint_t dim_theta = dX*dY;
+
     //
+
     arma::mat phi_xy_temp = arma::kron(Y_inp,X_inp);
     arma::cube phi_xyk_temp(phi_xy_temp.memptr(),nbX,nbY,dim_theta,false); // share memory
 
@@ -255,6 +259,8 @@ model_dmu(dse<Tg,Th,Tt>& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_
     mu_0y_out = mu_0y;
     dmu_out = dmu;
 }
+
+// special case of MFE-type market
 
 template<>
 inline
