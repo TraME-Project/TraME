@@ -14,7 +14,7 @@ TraME can be installed via
 git clone https://github.com/TraME-Project/TraME ./trame
 # build and install
 cd ./trame
-./configure -i "/usr/local"
+./configure -i "/usr/local" -p
 make
 make install
 ```
