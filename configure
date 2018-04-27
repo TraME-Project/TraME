@@ -417,16 +417,19 @@ fi
 #
 # final print:
 
-echo "  - OS: ${OSTYPE}"
+echo "  - OS:               ${OSTYPE}"
+echo "  - C compiler:       ${CC}"
+echo "  - C++ compiler:     ${CXX}"
+echo "  - Fortran compiler: ${FC}"
 
 if [[ "${TRAME_BUILD}" == "dev" ]]; then
-    echo "  - Build version: development"
+    echo "  - Build version:    development"
 elif [[ "${TRAME_COVERAGE_BUILD}" == "y" ]]; then
-    echo "  - Build version: coverage"
+    echo "  - Build version:    coverage"
 elif [[ "${TRAME_DEBUG_BUILD}" == "y" ]]; then
-    echo "  - Build version: debug"
+    echo "  - Build version:    debug"
 else
-    echo "  - Build version: release"
+    echo "  - Build version:    release"
 fi
 
 echo ""
