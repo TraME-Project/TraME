@@ -4,7 +4,7 @@
 function print_help
 { 
     echo "" ;
-    echo -e "\x1B[32mTraME Configure options:\033[0m" >&2 ;
+    echo -e "\x1B[32mTraME configure options:\033[0m" >&2 ;
     echo "-c    Coverage build" ;
     echo "-d    Development build" ;
     echo "-g    Debugging build (optimization flags set to -O0 -g)" ;
@@ -69,7 +69,7 @@ if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
     ARMA_INCLUDE_PATH=
 
     for i in "${ARMA_DIRS[@]}"; do
-        if [ -f "$i"/armadillo ]; then 
+        if [ -f "$i"/armadillo ]; then
             ARMA_INCLUDE_PATH="$i"
             break
         fi
@@ -80,7 +80,7 @@ if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
         echo ""
 
         mkdir ${WDIR}/arma_tmp
-        if [[ "${TRAME_BUILD_VERBOSE}" == "y" ]]; then 
+        if [[ "${TRAME_BUILD_VERBOSE}" == "y" ]]; then
             git clone -b unstable --single-branch https://github.com/conradsnicta/armadillo-code ${WDIR}/arma_tmp 
             echo ""
         else
@@ -101,7 +101,7 @@ elif [[ "${TRAME_DEBUG_BUILD}" == "y" ]]; then
 else
     if [[ "${TRAME_OPT}" == "" ]]; then
         # echo "TraME: experimental optimization enabled; use of NaN or +/-Inf not recognized"
-        TRAME_OPT_FLAGS="-O3 -march=native -flto -ffp-contract=fast -DARMA_NO_DEBUG"
+        TRAME_OPT_FLAGS="-O3 -march=native -flto -ffp-contract=fast -DNDEBUG -DARMA_NO_DEBUG"
     else
         TRAME_OPT_FLAGS="${TRAME_OPT}"
     fi
@@ -457,7 +457,7 @@ else
     echo -e "  - OpenMP features: \x1B[31mdisabled\033[0m" >&2 ;
 fi
 
-echo "  - optimization flags:"
+echo "  - Optimization flags:"
 echo "    ${TRAME_OPT_FLAGS}"
 
 echo ""
