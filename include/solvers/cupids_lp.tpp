@@ -176,7 +176,7 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
     arma::vec rhs_lp(epsilon_iy_nelem + eta_xj.n_elem);
 
     rhs_lp.rows(0,epsilon_iy_nelem-1) = std::move(arma::vectorise(epsilon_iy));
-    rhs_lp.rows(epsilon_iy_nelem,rhs_lp.n_elem-1) = arma::vectorise(eta_xj + market.trans_obj.phi * I_yj);
+    rhs_lp.rows(epsilon_iy_nelem,rhs_lp.n_elem-1) = arma::vectorise(eta_xj + market.transfers_obj.phi * I_yj);
 
     //
 
@@ -210,11 +210,11 @@ cupids_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_o
 
             if (U_out && V_out) {
                 *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
-                *V_out = market.trans_obj.phi - *U_out;
+                *V_out = market.transfers_obj.phi - *U_out;
             } else if (U_out) {
                 *U_out = arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
             } else if (V_out) {
-                *V_out = market.trans_obj.phi - arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
+                *V_out = market.transfers_obj.phi - arma::reshape(sol_mat(arma::span(nbI+nbJ,nbI+nbJ+nbX*nbY-1),0),nbX,nbY);
             }
 
             if (mu_x0_out) {

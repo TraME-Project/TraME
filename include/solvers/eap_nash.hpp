@@ -62,13 +62,13 @@ bool eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_o
 // internal functions
 
 template<typename Tt>
-arma::mat u_from_vs(const Tt& trans_obj, const arma::mat& v, const double* tol_inp, arma::mat* subdiff);
+arma::mat u_from_vs(const Tt& transfers_obj, const arma::mat& v, const double* tol_inp, arma::mat* subdiff);
 
 template<typename Tt>
-arma::mat v_from_us(const Tt& trans_obj, const arma::mat& u, const double* tol_inp, arma::mat* subdiff);
+arma::mat v_from_us(const Tt& transfers_obj, const arma::mat& u, const double* tol_inp, arma::mat* subdiff);
 
 template<typename Tt>
-arma::mat update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, const bool x_first);
+arma::mat update_v(const Tt& transfers_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, const bool x_first);
 
 #include "eap_nash.tpp"
 

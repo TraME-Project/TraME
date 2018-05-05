@@ -57,81 +57,81 @@ int main()
     printf("\n");
     //
 
-    trame::transfers::ntu trans_obj;
+    trame::transfers::ntu transfers_obj;
     
-    trans_obj.build(alpha,gamma,false);
+    transfers_obj.build(alpha,gamma,false);
 
     arma::uvec xs(1); xs(0) = 1;
     arma::uvec ys(1); ys(0) = 2;
 
     // Psi
 
-    trans_obj.Psi(U,V);
+    transfers_obj.Psi(U,V);
 
-    trans_obj.Psi(U,V,nullptr,nullptr);
-    trans_obj.Psi(U(xs,ys),V(xs,ys),&xs,&ys);
+    transfers_obj.Psi(U,V,nullptr,nullptr);
+    transfers_obj.Psi(U(xs,ys),V(xs,ys),&xs,&ys);
 
     double U_xy = U(1,2);
     double V_xy = V(1,2);
-    trans_obj.Psi(U_xy,V(xs,ys),&xs,&ys);
-    trans_obj.Psi(U(xs,ys),V_xy,&xs,&ys);
-    trans_obj.Psi(U_xy,V_xy,xs(0),ys(0));
+    transfers_obj.Psi(U_xy,V(xs,ys),&xs,&ys);
+    transfers_obj.Psi(U(xs,ys),V_xy,&xs,&ys);
+    transfers_obj.Psi(U_xy,V_xy,xs(0),ys(0));
 
     // du
 
-    trans_obj.du_Psi(U,V);
+    transfers_obj.du_Psi(U,V);
 
-    trans_obj.du_Psi(U,V,nullptr,nullptr);
-    trans_obj.du_Psi(U(xs,ys),V(xs,ys),&xs,&ys);
+    transfers_obj.du_Psi(U,V,nullptr,nullptr);
+    transfers_obj.du_Psi(U(xs,ys),V(xs,ys),&xs,&ys);
 
     // dparams_Psi
 
-    trans_obj.dparams_Psi(U,V);
+    transfers_obj.dparams_Psi(U,V);
     arma::mat dpars = arma::vectorise(arma::join_cols(alpha,gamma));
-    trans_obj.dparams_Psi(U,V,&dpars);
+    transfers_obj.dparams_Psi(U,V,&dpars);
 
     // Ucal and Vcal
 
-    trans_obj.Ucal(U);
-    trans_obj.Ucal(U(xs,ys),&xs,&ys);
-    trans_obj.Ucal(U_xy,1,2);
+    transfers_obj.Ucal(U);
+    transfers_obj.Ucal(U(xs,ys),&xs,&ys);
+    transfers_obj.Ucal(U_xy,1,2);
 
-    trans_obj.Vcal(U);
-    trans_obj.Vcal(U(xs,ys),&xs,&ys);
-    trans_obj.Vcal(U_xy,1,2);
+    transfers_obj.Vcal(U);
+    transfers_obj.Vcal(U(xs,ys),&xs,&ys);
+    transfers_obj.Vcal(U_xy,1,2);
 
     // UW and VW
 
-    trans_obj.UW(U);
-    trans_obj.UW(U(xs,ys),&xs,&ys);
-    trans_obj.UW(U_xy,1,2);
+    transfers_obj.UW(U);
+    transfers_obj.UW(U(xs,ys),&xs,&ys);
+    transfers_obj.UW(U_xy,1,2);
 
-    trans_obj.VW(U);
-    trans_obj.VW(U(xs,ys),&xs,&ys);
-    trans_obj.VW(U_xy,1,2);
+    transfers_obj.VW(U);
+    transfers_obj.VW(U(xs,ys),&xs,&ys);
+    transfers_obj.VW(U_xy,1,2);
 
     // dw
 
-    trans_obj.dw_UW(U);
-    trans_obj.dw_UW(U(xs,ys),&xs,&ys);
+    transfers_obj.dw_UW(U);
+    transfers_obj.dw_UW(U(xs,ys),&xs,&ys);
 
-    trans_obj.dw_VW(U);
-    trans_obj.dw_VW(U(xs,ys),&xs,&ys);
+    transfers_obj.dw_VW(U);
+    transfers_obj.dw_VW(U(xs,ys),&xs,&ys);
 
     // WU and WV
 
-    trans_obj.WU(U);
-    trans_obj.WU(U(xs,ys),&xs,&ys);
+    transfers_obj.WU(U);
+    transfers_obj.WU(U(xs,ys),&xs,&ys);
 
-    trans_obj.WV(U);
-    trans_obj.WV(U(xs,ys),&xs,&ys);
+    transfers_obj.WV(U);
+    transfers_obj.WV(U(xs,ys),&xs,&ys);
 
     // generate MMF object
 
-    trame::mmfs::min mmf_obj = trans_obj.gen_mmf();
-    trans_obj.gen_mmf(mmf_obj);
+    trame::mmfs::min mmf_obj = transfers_obj.gen_mmf();
+    transfers_obj.gen_mmf(mmf_obj);
 
-    trans_obj.trans();
+    transfers_obj.trans();
 
     //
     printf("\n*===================    End of transfers::ntu Test    ===================*\n");

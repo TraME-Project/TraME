@@ -69,8 +69,8 @@ darum_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out, 
 
         //
         
-        market.arums_G.Gbar(market.trans_obj.alpha,mu_NR,market.n,U_P,mu_P);
-        market.arums_H.Gbar(market.trans_obj.gamma.t(),mu_P.t(),market.m,U_D,mu_D);
+        market.arums_G.Gbar(market.transfers_obj.alpha,mu_NR,market.n,U_P,mu_P);
+        market.arums_H.Gbar(market.transfers_obj.gamma.t(),mu_P.t(),market.m,U_D,mu_D);
 
         arma::mat mu_diff = mu_P - mu_D.t();
         mu_NR -= mu_diff;

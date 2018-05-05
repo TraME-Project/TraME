@@ -89,7 +89,7 @@ oap_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out,
 
     //
 
-    arma::vec obj_lp = arma::vectorise(market.trans_obj.phi);
+    arma::vec obj_lp = arma::vectorise(market.transfers_obj.phi);
 
     arma::vec rhs_lp = arma::join_cols(market.n,market.m);
 
@@ -227,7 +227,7 @@ oap_lp_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out,
                     const arma::mat u_Psi = arma::repmat(u,1,nbY);     // Keith: check use of byrow here
                     const arma::mat v_Psi = arma::repmat(v.t(),nbX,1);
 
-                    *residuals_out = market.trans_obj.Psi(u_Psi,v_Psi);
+                    *residuals_out = market.transfers_obj.Psi(u_Psi,v_Psi);
                 }
             } else {
                 std::cout << "Non-optimal value found during optimization" << std::endl;

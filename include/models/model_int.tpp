@@ -243,14 +243,14 @@ model_dmu(dse<Tg,Th,Tt>& market_obj, const arma::mat& dtheta_Psi, arma::mat& mu_
     arma::vec mu_x0 = market_obj.n - arma::sum(mu,1);
     arma::vec mu_0y = market_obj.m - arma::trans(arma::sum(mu,0));
 
-    arma::vec du_Psi_vec = arma::vectorise(market_obj.trans_obj.du_Psi(U,V));
+    arma::vec du_Psi_vec = arma::vectorise(market_obj.transfers_obj.du_Psi(U,V));
     arma::vec dv_Psi_vec = 1.0 - du_Psi_vec;
     //
     arma::mat HessGstar = market_obj.arums_G.D2Gstar(market_obj.n,mu,true);
     arma::mat HessHstar = market_obj.arums_H.D2Gstar(market_obj.m,mu.t(),false);
     //
     arma::mat denom = elem_prod(du_Psi_vec,HessGstar) + elem_prod(dv_Psi_vec,HessHstar);
-    arma::mat term_1 = market_obj.trans_obj.dparams_Psi(U,V,&dtheta_Psi);
+    arma::mat term_1 = market_obj.transfers_obj.dparams_Psi(U,V,&dtheta_Psi);
 
     arma::mat dmu = - arma::solve(denom,term_1);
     //
@@ -278,7 +278,7 @@ model_dmu(dse<arums::logit,arums::logit,transfers::tu>& market_obj, const arma::
     arma::mat mu, U, V;
 
     mfe<mmfs::geo> mfe_obj(market_obj.n,market_obj.m);
-    mfe_obj.mmfs_obj = market_obj.trans_obj.gen_mmf();
+    mfe_obj.mmfs_obj = market_obj.transfers_obj.gen_mmf();
 
     ipfp(mfe_obj,mu,mu_x0,mu_0y,U,V,u_vec,v_vec,nullptr,1E-08,5000);
 
@@ -288,10 +288,10 @@ model_dmu(dse<arums::logit,arums::logit,transfers::tu>& market_obj, const arma::
     arma::mat u_mat = arma::repmat(u_vec,1,market_obj.nbY);        // us
     arma::mat v_mat = byrow(v_vec,market_obj.nbX,market_obj.nbY);  // vs
 
-    arma::mat du_Psi_mat = market_obj.trans_obj.du_Psi(U,V);
+    arma::mat du_Psi_mat = market_obj.transfers_obj.du_Psi(U,V);
     arma::mat dv_Psi_mat = 1.0 - du_Psi_mat;
 
-    arma::mat delta_Psi = market_obj.trans_obj.dparams_Psi(u_mat,v_mat,&dtheta_Psi);
+    arma::mat delta_Psi = market_obj.transfers_obj.dparams_Psi(u_mat,v_mat,&dtheta_Psi);
 
     // arma::mat mu_delta_Psi = arma::vectorise(mu) % arma::vectorise(delta_Psi);
     arma::mat mu_delta_Psi = elem_prod(arma::vectorise(mu), delta_Psi);

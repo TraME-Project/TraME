@@ -50,7 +50,7 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
     arma::mat v_curr;
 
     if (x_first) {
-        v_curr = v_from_us(market.trans_obj,arma::zeros(nbX,1),nullptr,nullptr);
+        v_curr = v_from_us(market.transfers_obj,arma::zeros(nbX,1),nullptr,nullptr);
     } else {
         v_curr = arma::zeros(nbY,1); // Keith: should this be u_from_vs?
     }
@@ -63,7 +63,7 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
     {
         iter++;
 
-        v_next = update_v(market.trans_obj,v_curr,market.n,market.m,x_first);
+        v_next = update_v(market.transfers_obj,v_curr,market.n,market.m,x_first);
         err = elem_max(arma::abs(v_next - v_curr));
 
         v_curr = std::move(v_next);
@@ -72,7 +72,7 @@ eap_nash_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_ou
     //
 
     arma::mat subdiff;
-    arma::mat u = u_from_vs(market.trans_obj,v_curr,nullptr,&subdiff);
+    arma::mat u = u_from_vs(market.transfers_obj,v_curr,nullptr,&subdiff);
 
     arma::vec uv_vec = arma::join_cols(arma::vectorise(u),arma::vectorise(v_curr));
 
@@ -226,15 +226,15 @@ eap_nash(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, a
 
 template<typename Tt>
 arma::mat
-u_from_vs(const Tt& trans_obj, const arma::mat& v, const double* tol_inp, arma::mat* subdiff)
+u_from_vs(const Tt& transfers_obj, const arma::mat& v, const double* tol_inp, arma::mat* subdiff)
 {
-    const arma::mat us = trans_obj.Ucal(v,nullptr,nullptr);
+    const arma::mat us = transfers_obj.Ucal(v,nullptr,nullptr);
     arma::mat u  = elem_max(arma::max(us,1),0.0);
     //
     if (subdiff) {
         const double tol = (tol_inp) ? *tol_inp : 0.0;
 
-        *subdiff = arma::zeros(trans_obj.nbX,trans_obj.nbY);
+        *subdiff = arma::zeros(transfers_obj.nbX,transfers_obj.nbY);
         subdiff->elem( arma::find(arma::abs(elem_sub(u,us)) <= tol) ).ones();
     }
     //
@@ -243,15 +243,15 @@ u_from_vs(const Tt& trans_obj, const arma::mat& v, const double* tol_inp, arma::
 
 template<typename Tt>
 arma::mat
-v_from_us(const Tt& trans_obj, const arma::mat& u, const double* tol_inp, arma::mat* subdiff)
+v_from_us(const Tt& transfers_obj, const arma::mat& u, const double* tol_inp, arma::mat* subdiff)
 {
-    const arma::mat vs = trans_obj.Vcal(u,nullptr,nullptr);
+    const arma::mat vs = transfers_obj.Vcal(u,nullptr,nullptr);
     arma::mat v  = arma::trans(elem_max(arma::max(vs,0),0.0));
     //
     if (subdiff) {
         const double tol = (tol_inp) ? *tol_inp : 0.0;
 
-        *subdiff = arma::zeros(trans_obj.nbY,trans_obj.nbX);
+        *subdiff = arma::zeros(transfers_obj.nbY,transfers_obj.nbX);
         subdiff->elem( arma::find(arma::abs(elem_sub(v,vs.t())) <= tol) ).ones();
         *subdiff = subdiff->t();
     }
@@ -261,10 +261,10 @@ v_from_us(const Tt& trans_obj, const arma::mat& u, const double* tol_inp, arma::
 
 template<typename Tt>
 arma::mat
-update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, const bool x_first)
+update_v(const Tt& transfers_obj, const arma::mat& v, const arma::vec& n, const arma::vec& m, const bool x_first)
 {
-    const uint_t nbX = trans_obj.nbX;
-    const uint_t nbY = trans_obj.nbY;
+    const uint_t nbX = transfers_obj.nbX;
+    const uint_t nbY = transfers_obj.nbY;
 
     arma::mat the_mat = arma::zeros(nbX,nbY);
     arma::mat v_updated = arma::zeros(nbY,1);
@@ -387,10 +387,10 @@ update_v(const Tt& trans_obj, const arma::mat& v, const arma::vec& n, const arma
         for (uint_t x=0; x<nbX; x++) {
             for (uint_t yp=0; yp<nbY; yp++) {
                 if (yp==y) {
-                    the_mat(x,yp) = trans_obj.Vcal(0.0,x,y);
+                    the_mat(x,yp) = transfers_obj.Vcal(0.0,x,y);
                 } else {
-                    double temp_u = trans_obj.Ucal(v(yp),x,yp);
-                    the_mat(x,yp) = trans_obj.Vcal(temp_u,x,y);
+                    double temp_u = transfers_obj.Ucal(v(yp),x,yp);
+                    the_mat(x,yp) = transfers_obj.Vcal(temp_u,x,y);
                 }
             } // end of yp loop
         } // end of x loop

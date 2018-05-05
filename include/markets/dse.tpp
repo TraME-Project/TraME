@@ -129,7 +129,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,need_norm_inp);
     //
-    trans_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
+    transfers_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
     //
     ETU = true;
 }
@@ -141,7 +141,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,need_norm_inp);
     //
-    trans_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
+    transfers_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
     //
     ETU = true;
 }
@@ -153,7 +153,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,n_draws,seed,need_norm_inp);
     //
-    trans_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
+    transfers_obj.build(alpha_inp,gamma_inp,tau_inp,need_norm_inp);
     //
     ETU = true;
 }
@@ -168,7 +168,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,need_norm_inp);
     //
-    trans_obj.build(lambda_inp,phi_inp,need_norm_inp);
+    transfers_obj.build(lambda_inp,phi_inp,need_norm_inp);
     //
     LTU = true;
 }
@@ -180,7 +180,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,need_norm_inp);
     //
-    trans_obj.build(lambda_inp,phi_inp,need_norm_inp);
+    transfers_obj.build(lambda_inp,phi_inp,need_norm_inp);
     //
     LTU = true;
 }
@@ -192,7 +192,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,n_draws,seed,need_norm_inp);
     //
-    trans_obj.build(lambda_inp,phi_inp,need_norm_inp);
+    transfers_obj.build(lambda_inp,phi_inp,need_norm_inp);
     //
     LTU = true;
 }
@@ -207,7 +207,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,need_norm_inp);
     //
-    trans_obj.build(alpha_inp,gamma_inp,need_norm_inp);
+    transfers_obj.build(alpha_inp,gamma_inp,need_norm_inp);
     //
     NTU = true;
 }
@@ -219,7 +219,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,need_norm_inp);
     //
-    trans_obj.build(alpha_inp,gamma_inp,need_norm_inp);
+    transfers_obj.build(alpha_inp,gamma_inp,need_norm_inp);
     //
     NTU = true;
 }
@@ -231,7 +231,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,n_draws,seed,need_norm_inp);
     //
-    trans_obj.build(alpha_inp,gamma_inp,need_norm_inp);
+    transfers_obj.build(alpha_inp,gamma_inp,need_norm_inp);
     //
     NTU = true;
 }
@@ -246,7 +246,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,need_norm_inp);
     //
-    trans_obj.build(phi_inp,need_norm_inp);
+    transfers_obj.build(phi_inp,need_norm_inp);
     //
     TU = true;
 }
@@ -258,7 +258,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,need_norm_inp);
     //
-    trans_obj.build(phi_inp,need_norm_inp);
+    transfers_obj.build(phi_inp,need_norm_inp);
     //
     TU = true;
 }
@@ -270,7 +270,7 @@ dse<Tg,Th,Tt>::build(const arma::vec& n_inp, const arma::vec& m_inp, const arma:
 {
     build_with_arums(n_inp,m_inp,arums_G_inp,arums_H_inp,n_draws,seed,need_norm_inp);
     //
-    trans_obj.build(phi_inp,need_norm_inp);
+    transfers_obj.build(phi_inp,need_norm_inp);
     //
     TU = true;
 }
@@ -288,8 +288,8 @@ trans_market(const dse<Tg,Th,Tt>& market_obj, dse<Th,Tg,Tt>& trans_market_obj)
     trans_market_obj.n = market_obj.m;
     trans_market_obj.m = market_obj.n;
 
-    trans_market_obj.trans_obj = market_obj.trans_obj;
-    trans_market_obj.trans_obj.trans();
+    trans_market_obj.transfers_obj = market_obj.transfers_obj;
+    trans_market_obj.transfers_obj.trans();
 
     trans_market_obj.arums_G = market_obj.arums_H;
     trans_market_obj.arums_H = market_obj.arums_G;

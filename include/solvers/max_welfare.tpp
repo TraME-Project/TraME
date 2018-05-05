@@ -66,7 +66,7 @@ max_welfare_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0
     settings.err_tol = err_tol;
     settings.iter_max = max_iter;
 
-    arma::vec sol_vec = arma::vectorise(market.trans_obj.phi / 2.0); // initial value
+    arma::vec sol_vec = arma::vectorise(market.transfers_obj.phi / 2.0); // initial value
 
     success = max_welfare_optim(sol_vec,max_welfare_opt_objfn<Tg,Th,transfers::tu>,&opt_data,&settings,optim_method);
 
@@ -78,7 +78,7 @@ max_welfare_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0
 
     arma::mat mu_G, mu_H;
     double val_G = market.arums_G.G(market.n,U,mu_G);
-    double val_H = market.arums_H.G(market.m,arma::trans(market.trans_obj.phi - U),mu_H);
+    double val_H = market.arums_H.G(market.m,arma::trans(market.transfers_obj.phi - U),mu_H);
 
     double val = val_G + val_H;
     
@@ -99,7 +99,7 @@ max_welfare_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0
         *U_out = U;
     }
     if (V_out) {
-        *V_out = market.trans_obj.phi - U;
+        *V_out = market.transfers_obj.phi - U;
     }
 
     if (val_out) {
@@ -169,7 +169,7 @@ max_welfare_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void *opt_data
 
     arma::mat mu_G, mu_H;
     const double val_G = d->market.arums_G.G(d->market.n,U,mu_G);
-    const double val_H = d->market.arums_H.G(d->market.m,arma::trans(d->market.trans_obj.phi - U),mu_H);
+    const double val_H = d->market.arums_H.G(d->market.m,arma::trans(d->market.transfers_obj.phi - U),mu_H);
 
     //
 

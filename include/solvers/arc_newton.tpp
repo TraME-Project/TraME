@@ -61,7 +61,7 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
     // construct equilibrium objects
 
     arma::mat sol_mat = arma::reshape(sol_vec,market.nbX,market.nbY);
-    arma::mat U = market.trans_obj.UW(sol_mat);
+    arma::mat U = market.transfers_obj.UW(sol_mat);
 
     arma::mat mu_G;
     market.arums_G.G(market.n,U,mu_G);
@@ -84,7 +84,7 @@ arc_newton_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_
         *U_out = U;
     }
     if (V_out) {
-        *V_out = market.trans_obj.VW(sol_mat);
+        *V_out = market.transfers_obj.VW(sol_mat);
     }
 
     if (val_out) {
@@ -160,8 +160,8 @@ arc_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
     // arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
     arma::mat inp_mat(const_cast<double*>(vals_inp.memptr()),nbX,nbY,false,true); // this is potentially very unsafe, but more efficient?
 
-    arma::mat U = d->market.trans_obj.UW(inp_mat);
-    arma::mat V = d->market.trans_obj.VW(inp_mat);
+    arma::mat U = d->market.transfers_obj.UW(inp_mat);
+    arma::mat V = d->market.transfers_obj.VW(inp_mat);
 
     arma::mat mu_G, mu_H;
     d->market.arums_G.G(d->market.n,U,mu_G);
@@ -186,11 +186,11 @@ arc_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
     // arma::mat inp_mat = arma::reshape(vals_inp,nbX,nbY);
     arma::mat inp_mat(const_cast<double*>(vals_inp.memptr()),nbX,nbY,false,true); // this is potentially unsafe, but more efficient?
 
-    arma::mat U = d->market.trans_obj.UW(inp_mat);
-    arma::mat V = d->market.trans_obj.VW(inp_mat);
+    arma::mat U = d->market.transfers_obj.UW(inp_mat);
+    arma::mat V = d->market.transfers_obj.VW(inp_mat);
 
-    arma::mat dwUW = d->market.trans_obj.dw_UW(inp_mat);
-    arma::mat dwVW = d->market.trans_obj.dw_VW(inp_mat);
+    arma::mat dwUW = d->market.transfers_obj.dw_UW(inp_mat);
+    arma::mat dwVW = d->market.transfers_obj.dw_VW(inp_mat);
 
     arma::mat D2G_mat, D2H_mat;
     d->market.arums_G.D2G(D2G_mat,d->market.n,U,true);

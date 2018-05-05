@@ -62,8 +62,8 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
     } else {
         w = *w_up_inp;
 
-        arma::mat temp_UW = market.trans_obj.UW(w);
-        arma::mat temp_VW = market.trans_obj.VW(w);
+        arma::mat temp_UW = market.transfers_obj.UW(w);
+        arma::mat temp_VW = market.transfers_obj.VW(w);
 
         market.arums_G.G(market.n,temp_UW,mu_G);
         market.arums_H.G(market.m,temp_VW.t(),mu_H);
@@ -85,8 +85,8 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
     } else {
         w_low = *w_low_inp;
 
-        arma::mat temp_UW = market.trans_obj.UW(w_low);
-        arma::mat temp_VW = market.trans_obj.VW(w_low);
+        arma::mat temp_UW = market.transfers_obj.UW(w_low);
+        arma::mat temp_VW = market.transfers_obj.VW(w_low);
 
         market.arums_G.G(market.n,temp_UW,mu_G);
         market.arums_H.G(market.m,temp_VW.t(),mu_H);
@@ -99,8 +99,8 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
 
     //
 
-    arma::mat U = market.trans_obj.UW(w);
-    arma::mat V = market.trans_obj.VW(w);
+    arma::mat U = market.transfers_obj.UW(w);
+    arma::mat V = market.transfers_obj.VW(w);
 
     // market.arums_G.G(market.n,U,mu_G);
     // market.arums_H.G(market.m,V.t(),mu_H);
@@ -132,8 +132,8 @@ jacobi_int(const dse<Tg,Th,Tt>& market, const arma::mat* w_low_inp, const arma::
 
                 w(x,y) = zeroin(w_low(x,y), w(x,y), jacobi_zeroin_fn<Tg,Th,Tt>, &root_data, nullptr, nullptr);
 
-                U(x,y) = market.trans_obj.UW(w(x,y),x,y);
-                V(x,y) = market.trans_obj.VW(w(x,y),x,y);
+                U(x,y) = market.transfers_obj.UW(w(x,y),x,y);
+                V(x,y) = market.transfers_obj.VW(w(x,y),x,y);
 
                 root_data.U = U;
                 root_data.V = V;
@@ -223,8 +223,8 @@ jacobi_zeroin_fn(double z, void* opt_data)
     arma::mat U = d->U;
     arma::mat V = d->V;
     
-    U(d->x_ind,d->y_ind) = d->market_obj.trans_obj.UW(z,d->x_ind,d->y_ind);
-    V(d->x_ind,d->y_ind) = d->market_obj.trans_obj.VW(z,d->x_ind,d->y_ind);
+    U(d->x_ind,d->y_ind) = d->market_obj.transfers_obj.UW(z,d->x_ind,d->y_ind);
+    V(d->x_ind,d->y_ind) = d->market_obj.transfers_obj.VW(z,d->x_ind,d->y_ind);
 
     arma::mat mu_G, mu_H;
     d->market_obj.arums_G.G(d->market_obj.n,U,mu_G);

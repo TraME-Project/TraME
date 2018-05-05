@@ -65,7 +65,7 @@ class dse : public dse_base
         Tg arums_G;
         Th arums_H;
 
-        Tt trans_obj;
+        Tt transfers_obj;
 
         // member functions
 
