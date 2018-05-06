@@ -65,9 +65,9 @@ install:
 
 script:
   - ./configure -c -l glpk
-  - make
+  - make -j
   - cd ./tests
-  - ./cov_setup
+  - ./setup && ./test_setup/run_cov
   - cd ..
 
 after_success:

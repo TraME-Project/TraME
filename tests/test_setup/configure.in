@@ -1,0 +1,208 @@
+#!/bin/bash
+## OptimLib config script for tests
+
+function print_help
+{
+    echo "" ;
+    echo -e "\x1B[32mTraME Test Configuration Options:\033[0m" >&2 ;
+    echo "-c    Coverage build" ;
+    echo "-d    Development build" ;
+    echo "-g    Debugging build (optimization flags set to -O0 -g)" ;
+    echo "-h    Print help" ;
+    echo "-i    OptimLib install path (default: build directory)" ;
+    echo "        Example: /usr/local" ;
+    echo "-m    Specify the BLAS and Lapack libraries to link against" ; 
+    echo "        Examples: -m \"-lopenblas\" or -m \"-framework Accelerate\"" ;
+    echo "-o    Compiler optimization options; defaults to:" ;
+    echo "        -O3 -march=native -ffp-contract=fast -DARMA_NO_DEBUG" ;
+    echo "-p    Enable OpenMP parallelization features" ;
+    echo "" ;
+}
+
+while getopts hcdgi:m:o:p option; do
+    case "${option}" in
+        h) print_help; exit 2;;
+        c) TRAME_COVERAGE_BUILD="y";;
+        d) TRAME_DEV_BUILD="y";;
+        g) TRAME_DEBUG_BUILD="y";;
+        i) TRAME_INSTALL_PATH=${OPTARG};;
+        m) TRAME_MATRIX_OPS=${OPTARG};;
+        o) TRAME_OPT=${OPTARG};;
+        p) TRAME_PARALLEL="y";;
+        ?) print_help; exit 2;;
+    esac
+done
+
+if [ -z ${CXX+x} ]; then 
+    CXX=g++
+fi
+
+#
+
+echo ""
+echo -e "\x1B[32mTraME Test Configuration...\033[0m" >&2 ;
+echo ""
+
+# compiler checks
+
+IS_DARWIN=$($CXX -dumpmachine 2>&1 | grep -i -c "darwin")
+GCC_COMPILER=$($CXX --version 2>&1 | grep -i -c -E "gcc")
+APPLE_COMPILER=$($CXX --version 2>&1 | grep -i -c -E 'apple llvm')
+
+# get working directory
+WDIR=${PWD}
+
+# shared library name and install path
+
+TRAME_SHLIB_NAME="trame"
+
+if [[ "${TRAME_INSTALL_PATH}" == "" ]]; then
+    declare -a BUILD_DIRS=("${WDIR}/../.." "${WDIR}/../../..")
+    TRAME_INSTALL_PATH=
+
+    for i in "${BUILD_DIRS[@]}"; do
+        if [ -f "$i/include/trame.hpp" ]; then 
+            TRAME_INSTALL_PATH="$i"
+            break
+        fi
+    done
+
+    cd ${TRAME_INSTALL_PATH}   # removes trailing backspaces
+    TRAME_INSTALL_PATH=${PWD}
+
+    TRAME_INSTALL_INCLUDE_PATH=${TRAME_INSTALL_PATH}/include
+    TRAME_INSTALL_LIB_PATH=${TRAME_INSTALL_PATH}
+    cd ${WDIR}
+else
+    TRAME_INSTALL_INCLUDE_PATH="${TRAME_INSTALL_PATH}/include"
+    TRAME_INSTALL_LIB_PATH="${TRAME_INSTALL_PATH}/lib"
+fi
+
+# find build directory
+
+
+# look for Armadillo
+if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
+    
+    declare -a ARMA_DIRS=("${WDIR}/../../include" "/usr/include" "/usr/local/include" "/opt/include" "/opt/local/include")
+    ARMA_INCLUDE_PATH=
+
+    for i in "${ARMA_DIRS[@]}"; do
+        if [ -f "$i"/armadillo ]; then 
+            ARMA_INCLUDE_PATH="$i"
+            break
+        fi
+    done
+
+    if [[ $ARMA_INCLUDE_PATH == "" ]]; then
+        echo -e "  \x1B[31m- error: cannot find the Armadillo library. Exiting.\033[0m" >&2 ;
+        echo ""
+        exit 1
+    fi
+fi
+
+# set build and optimization flags
+
+if [[ "${TRAME_COVERAGE_BUILD}" == "y" ]]; then 
+    TRAME_OPT_FLAGS="-g -O0 --coverage -fno-inline -fno-inline-small-functions -fno-default-inline"
+elif [[ "${TRAME_DEBUG_BUILD}" == "y" ]]; then
+    TRAME_OPT_FLAGS="-g -O0"
+else
+    if [[ "${TRAME_OPT}" == "" ]]; then
+        TRAME_OPT_FLAGS="-O3 -march=native -ffp-contract=fast -DNDEBUG -DARMA_NO_DEBUG"
+    else
+        TRAME_OPT_FLAGS="${TRAME_OPT}"
+    fi
+
+    if [[ "${TRAME_PARALLEL}" == "y" ]]; then
+        TRAME_OPT_FLAGS="${TRAME_OPT_FLAGS} -fopenmp"
+    fi
+fi
+
+TRAME_WARN_FLAGS="-Wall"
+
+# BLAS and LAPACK settings
+
+if [[ !(-z ${TRAME_MATRIX_OPS+x}) ]]; then
+    TRAME_BLAS_LAPACK="${TRAME_MATRIX_OPS}"
+else
+    if [[ $OSTYPE == darwin* ]] ; then
+        TRAME_BLAS_LAPACK="-framework Accelerate"
+    else
+        TRAME_BLAS_LAPACK="-lblas -llapack"
+    fi
+fi
+
+# final optimization checks
+
+if [ "$IS_DARWIN" -eq "1" ] && [ "$GCC_COMPILER" -eq "1" ]; then
+    TRAME_OPT_FLAGS="-Wa,-q ${TRAME_OPT_FLAGS}"
+fi
+
+#
+# final print:
+
+echo "  - OS:            ${OSTYPE}"
+echo "  - C++ compiler:  ${CXX}"
+
+if [[ "${TRAME_DEV_BUILD}" == "y" ]]; then
+    echo "  - Build version: development"
+elif [[ "${TRAME_COVERAGE_BUILD}" == "y" ]]; then
+    echo "  - Build version: coverage"
+elif [[ "${TRAME_DEBUG_BUILD}" == "y" ]]; then
+    echo "  - Build version: debug"
+else
+    echo "  - Build version: release"
+fi
+
+echo ""
+
+echo "  - ARMA_INCLUDE_PATH set to:"
+echo "    ${ARMA_INCLUDE_PATH}"
+echo "  - BLAS and Lapack libraries set to:"
+echo "    ${TRAME_BLAS_LAPACK}"
+
+echo ""
+
+if [[ "${TRAME_PARALLEL}" == "y" ]]; then
+    echo -e "  - OpenMP features: \x1B[32menabled\033[0m" >&2 ;
+else
+    echo -e "  - OpenMP features: \x1B[31mdisabled\033[0m" >&2 ;
+fi
+
+echo "  - optimization flags:"
+echo "    ${TRAME_OPT_FLAGS}"
+
+echo ""
+
+echo "  - OptimLib install path:"
+echo "    ${TRAME_INSTALL_PATH}"
+
+echo ""
+echo "  - Additional notes:"
+
+if [ "$APPLE_COMPILER" -eq "1" ] && [[ "${TRAME_PARALLEL}" == "y" ]]; then
+    echo -e "    \x1B[31m- You have enabled OpenMP, but your C++ compiler does not\033[0m" >&2 ;
+    echo -e "    \x1B[31m  support this feature!\033[0m" >&2 ;
+fi
+
+if [ "$IS_DARWIN" -eq "1" ] && [ "$GCC_COMPILER" -eq "1" ]; then
+    echo "    - To enable AVX features, your compiler will use the Apple LLVM"
+    echo "      assembler"
+fi
+
+echo ""
+echo -e "\x1B[32mConfiguration completed. Creating Makefile... \c\033[0m" >&2 ;
+
+sed -e "s|@CXX@|${CXX}|" \
+    -e "s|@ARMA_INCLUDE_PATH@|${ARMA_INCLUDE_PATH}|" \
+    -e "s|@TRAME_BLAS_LAPACK@|${TRAME_BLAS_LAPACK}|" \
+    -e "s|@TRAME_WARN_FLAGS@|${TRAME_WARN_FLAGS}|" \
+    -e "s|@TRAME_OPT_FLAGS@|${TRAME_OPT_FLAGS}|" \
+    -e "s|@TRAME_SHLIB_NAME@|${TRAME_SHLIB_NAME}|" \
+    -e "s|@TRAME_INCLUDE_PATH@|${TRAME_INSTALL_INCLUDE_PATH}|" \
+    -e "s|@TRAME_INSTALL_PATH@|${TRAME_INSTALL_LIB_PATH}|" \
+    Makefile.in > Makefile
+
+echo -e "\x1B[32mdone.\033[0m" >&2 ;
+echo ""

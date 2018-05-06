@@ -51,10 +51,13 @@ int main()
     const int nbY = U.n_cols;
     
     arma::vec n = arma::sum(mu,1);
+
     //
     // results
+    
     printf("\n*===================   Start of arums::logit test   ===================*\n");
     printf("\n");
+
     arma::cout << "\nU: \n" << U << arma::endl;
     arma::cout << "mu: \n" << mu << arma::endl;
 
