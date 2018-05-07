@@ -77,14 +77,16 @@ OBJECTS_TRAME= $(OBJECTS_LP) $(OBJECTS_LPXX) $(OBJECTS_TRAME_F90) $(OBJECTS_TRAM
 
 all: $(TRAME_DIR)/$(SHLIB) $(OBJECTS_TRAME)
 
-# LP
+# LP files
+
 $(OBJECTS_LP): $(SOURCES_LP)
 	$(CC) $(CFLAGS) $^ -c -o $@
 
 $(OBJECTS_LPXX): $(SOURCES_LPXX)
 	$(CXX) $(CXXFLAGS) $^ -c -o $@
 
-# anc and Fortran code
+# Misc code and Fortran code
+
 $(TRAME_SRC_DIR)/prob/prob.o: $(TRAME_SRC_DIR)/prob/prob.f90
 	$(FC) $(FFLAGS) $^ -c -o $@
 
@@ -97,7 +99,7 @@ $(TRAME_SRC_DIR)/prob/trame_F90_aux.o: $(TRAME_SRC_DIR)/prob/trame_F90_aux.f90
 $(TRAME_SRC_DIR)/ancillary/%.o: $(TRAME_SRC_DIR)/ancillary/%.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
-# optim
+# Optim files
 
 $(TRAME_OPTIM_DIR)/constrained/sumt.o: $(TRAME_OPTIM_DIR)/constrained/sumt.cpp
 	$(CXX) $(CXXFLAGS) -I$(SDIR)/include/optim $^ -c -o $@
@@ -115,6 +117,7 @@ $(TRAME_OPTIM_DIR)/zeros/broyden.o: $(TRAME_OPTIM_DIR)/zeros/broyden.cpp
 	$(CXX) $(CXXFLAGS) -I$(SDIR)/include/optim $^ -c -o $@
 
 # core TraME files
+
 $(TRAME_ARUMS_DIR)/%.o: $(TRAME_ARUMS_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $< -c -o $@
 
@@ -131,20 +134,16 @@ $(TRAME_DIR)/$(SHLIB): $(OBJECTS_TRAME)
 # cleanup and install
 .PHONY: clean
 clean:
-	@rm -f *.so $(TRAME_SRC_DIR)/*/*.o $(TRAME_SRC_DIR)/*/*.gcov $(TRAME_SRC_DIR)/*/*.gcno $(TRAME_SRC_DIR)/*/*.gcda \
-        $(TRAME_SRC_DIR)/*/*.dSYM $(TRAME_SRC_DIR)/*/*/*.o $(TRAME_SRC_DIR)/*/*/*.gcov $(TRAME_SRC_DIR)/*/*/*.gcno \
-        $(TRAME_SRC_DIR)/*/*/*.gcda $(TRAME_SRC_DIR)/*/*/*.dSYM
+	@rm -f *.so $(TRAME_SRC_DIR)/*/*.o $(TRAME_SRC_DIR)/*/*.tmp $(TRAME_SRC_DIR)/*/*.gcov $(TRAME_SRC_DIR)/*/*.gcno     \
+                $(TRAME_SRC_DIR)/*/*.gcda $(TRAME_SRC_DIR)/*/*.dSYM $(TRAME_SRC_DIR)/*/*/*.o $(TRAME_SRC_DIR)/*/*/*.tmp \
+                $(TRAME_SRC_DIR)/*/*/*.gcov $(TRAME_SRC_DIR)/*/*/*.gcno $(TRAME_SRC_DIR)/*/*/*.gcda $(TRAME_SRC_DIR)/*/*/*.dSYM
 
 .PHONY: vclean
 vclean:
-	@rm -f *.so $(TRAME_SRC_DIR)/*/*.o $(TRAME_SRC_DIR)/*/*.gcov $(TRAME_SRC_DIR)/*/*.gcno $(TRAME_SRC_DIR)/*/*.gcda \
-        $(TRAME_SRC_DIR)/*/*.dSYM $(TRAME_SRC_DIR)/*/*/*.o $(TRAME_SRC_DIR)/*/*/*.gcov $(TRAME_SRC_DIR)/*/*/*.gcno \
-        $(TRAME_SRC_DIR)/*/*/*.gcda $(TRAME_SRC_DIR)/*/*/*.dSYM
+	@rm -f *.so $(TRAME_SRC_DIR)/*/*.o $(TRAME_SRC_DIR)/*/*.tmp $(TRAME_SRC_DIR)/*/*.gcov $(TRAME_SRC_DIR)/*/*.gcno     \
+                $(TRAME_SRC_DIR)/*/*.gcda $(TRAME_SRC_DIR)/*/*.dSYM $(TRAME_SRC_DIR)/*/*/*.o $(TRAME_SRC_DIR)/*/*/*.tmp \
+                $(TRAME_SRC_DIR)/*/*/*.gcov $(TRAME_SRC_DIR)/*/*/*.gcno $(TRAME_SRC_DIR)/*/*/*.gcda $(TRAME_SRC_DIR)/*/*/*.dSYM
 	@rm -rf ./include/armadillo* ./glpk_tmp
-
-.PHONY: tclean
-tclean:
-	@rm -rf *.so ./tests/*/*.test ./tests/*/*.o ./tests/*/*.gcda ./tests/*/*.gcno ./tests/*/*.gcov ./tests/*/*.dSYM
 
 .PHONY: install
 install: $(SHLIB)
