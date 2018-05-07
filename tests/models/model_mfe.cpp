@@ -51,8 +51,6 @@ int main()
     arma::mat A = 1.0 + arma::randu(dX,dY);
     arma::mat phi = X_vals*A*Y_vals.t();
 
-    // arma::cout << "phi:\n" << phi << arma::endl; 
-
     trame::mfe<trame::mmfs::geo> mfe_obj_TU;
     mfe_obj_TU.build(n,m,phi);
 

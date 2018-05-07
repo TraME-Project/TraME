@@ -5,7 +5,7 @@ function print_help
 {
     echo "" ;
     echo -e "\x1B[32mTraME Test Setup Options:\033[0m" >&2 ;
-    echo "-c    Clean binary files" ;
+    echo "-c    Clean test directories" ;
     echo "-h    Print help" ;
     echo "" ;
 }
@@ -24,7 +24,7 @@ declare -a DIRS=("ancillary" "arums" "markets" "models" "solvers" \
                  "unit_tests/arums" "unit_tests/misc" "unit_tests/mmfs" \
                  "unit_tests/models" "unit_tests/solvers" "unit_tests/transfers")
 
-# 
+#
 
 if [[ "${TRAME_TEST_SETUP_CLEAN}" == "y" ]]; then
     for i in "${DIRS[@]}"; do

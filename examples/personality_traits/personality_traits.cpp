@@ -23,7 +23,7 @@
   ##
   ################################################################################*/
 
-// g++-mp-7 -O3 -Wall -std=c++11 -fopenmp -I./../../include personality_traits.cpp -o personality_traits.test -framework Accelerate -L./../.. -ltrame
+// $CXX -O3 -Wall -std=c++11 -fopenmp -I$ARMA_INCLUDE_PATH -I./../../include personality_traits.cpp -o personality_traits.test -framework Accelerate -L./../.. -ltrame
 
 #include "trame.hpp"
 

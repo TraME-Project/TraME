@@ -157,24 +157,28 @@ const
 {
     const arma::mat term_1 = arma::exp(elem_prod(lambda, arma::log(a_xs)));
     const arma::mat term_2 = arma::trans(arma::exp( elem_prod(arma::trans(aux_zeta), arma::log(b_ys)) ));
-    const arma::mat term_3 = aux_phi_exp;
 
     const arma::mat log_ratio = arma::log(a_xs * arma::trans(1.0 / b_ys));
 
-    const arma::mat der_1 = log_ratio % term_1 % term_2 % term_3;
+    const arma::mat der_1 = log_ratio % term_1 % term_2 % aux_phi_exp;
     const arma::mat der_2 = term_1 % term_2;
 
     arma::mat ret;
 
-    if (delta_params_M) {
+    if (delta_params_M)
+    {
         const arma::mat delta_params_1 = arma::reshape((*delta_params_M).rows(0,nbX*nbY-1),nbX,nbY);
         const arma::mat delta_params_2 = arma::reshape((*delta_params_M).rows(nbX*nbY,2*nbX*nbY-1),nbX,nbY);
 
         ret = arma::vectorise(delta_params_1 % der_1 + delta_params_2 % der_2);
-    } else {
+    }
+    else
+    {
         ret = arma::join_rows( arma::diagmat(arma::vectorise(der_1)), arma::diagmat(arma::vectorise(der_2)) );
     }
+
     //
+
     return ret;
 }
 
