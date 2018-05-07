@@ -64,10 +64,10 @@ nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out,
     //
     // construct equilibrium objects
 
-    const arma::vec mu_x0_s = arma::exp(- sol_vec.rows(0,nbX-1) / sigma);
-    const arma::vec mu_0y_s = arma::exp(- sol_vec.rows(nbX,nbX+nbY-1) / sigma);
+    const arma::vec mu_x0 = arma::exp(- sol_vec.rows(0,nbX-1) / sigma);
+    const arma::vec mu_0y = arma::exp(- sol_vec.rows(nbX,nbX+nbY-1) / sigma);
 
-    const arma::mat mu = market.mmfs_obj.M(mu_x0_s,mu_0y_s);
+    const arma::mat mu = market.mmfs_obj.M(mu_x0,mu_0y);
 
     // return equilibrium objects
 
@@ -76,17 +76,17 @@ nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out,
     }
 
     if (mu_x0_out) {
-        *mu_x0_out = mu_x0_s;
+        *mu_x0_out = mu_x0;
     }
     if (mu_0y_out) {
-        *mu_0y_out = mu_0y_s;
+        *mu_0y_out = mu_0y;
     }
 
     if (U_out) {
-        *U_out = sigma * arma::log(elem_div(mu,mu_x0_s));
+        *U_out = sigma * arma::log(elem_div(mu,mu_x0));
     }
     if (V_out) {
-        *V_out = sigma * arma::trans(arma::log(elem_div(mu.t(),mu_0y_s)));
+        *V_out = sigma * arma::trans(arma::log(elem_div(mu.t(),mu_0y)));
     }
 
     if (val_out) {
@@ -159,14 +159,14 @@ nodal_newton_opt_objfn(const arma::vec& vals_inp, void *opt_data)
     const uint_t nbY = d->market.nbY;
     const double sigma = d->market.sigma;
 
-    const arma::vec mu_x0_s = arma::exp(- vals_inp.rows(0,nbX-1) / sigma);
-    const arma::vec mu_0y_s = arma::exp(- vals_inp.rows(nbX,nbX+nbY-1) / sigma);
+    const arma::vec mu_x0 = arma::exp(- vals_inp.rows(0,nbX-1) / sigma);
+    const arma::vec mu_0y = arma::exp(- vals_inp.rows(nbX,nbX+nbY-1) / sigma);
 
-    const arma::mat mu = d->market.mmfs_obj.M(mu_x0_s,mu_0y_s);
+    const arma::mat mu = d->market.mmfs_obj.M(mu_x0,mu_0y);
 
     //
 
-    return arma::join_cols(mu_x0_s + arma::sum(mu,1) - d->market.n, mu_0y_s + arma::trans(arma::sum(mu,0)) - d->market.m);
+    return arma::join_cols(mu_x0 + arma::sum(mu,1) - d->market.n, mu_0y + arma::trans(arma::sum(mu,0)) - d->market.m);
 }
 
 template<typename Tt>
@@ -181,21 +181,21 @@ nodal_newton_jacobian(const arma::vec& vals_inp, void *jacob_data)
     const uint_t nbY = d->market.nbY;
     const double sigma = d->market.sigma;
 
-    const arma::vec mu_x0_s = arma::exp(- vals_inp.rows(0,nbX-1) / sigma);
-    const arma::vec mu_0y_s = arma::exp(- vals_inp.rows(nbX,nbX+nbY-1) / sigma);
+    const arma::vec mu_x0 = arma::exp(- vals_inp.rows(0,nbX-1) / sigma);
+    const arma::vec mu_0y = arma::exp(- vals_inp.rows(nbX,nbX+nbY-1) / sigma);
 
-    const arma::mat mu = d->market.mmfs_obj.M(mu_x0_s,mu_0y_s);
+    const arma::mat mu = d->market.mmfs_obj.M(mu_x0,mu_0y);
     
     //
     
-    const arma::mat du_s = d->market.mmfs_obj.dmu_x0(mu_x0_s,mu_0y_s);
-    const arma::mat dv_s = d->market.mmfs_obj.dmu_0y(mu_x0_s,mu_0y_s);
+    const arma::mat du_mat = d->market.mmfs_obj.dmu_x0(mu_x0,mu_0y);
+    const arma::mat dv_mat = d->market.mmfs_obj.dmu_0y(mu_x0,mu_0y);
 
-    const arma::mat Delta_11 = - arma::diagmat(mu_x0_s % (1.0 + arma::sum(du_s,1)));
-    const arma::mat Delta_22 = - arma::diagmat(mu_0y_s % (1.0 + arma::trans(arma::sum(dv_s,0))));
+    const arma::mat Delta_11 = - arma::diagmat(mu_x0 % (1.0 + arma::sum(du_mat,1)));
+    const arma::mat Delta_22 = - arma::diagmat(mu_0y % (1.0 + arma::trans(arma::sum(dv_mat,0))));
 
-    const arma::mat Delta_12 = - arma::trans(elem_prod(mu_0y_s,dv_s.t()));
-    const arma::mat Delta_21 = - arma::trans(elem_prod(mu_x0_s,du_s));
+    const arma::mat Delta_12 = - arma::trans(elem_prod(mu_0y,dv_mat.t()));
+    const arma::mat Delta_21 = - arma::trans(elem_prod(mu_x0,du_mat));
 
     return arma::join_cols( arma::join_rows(Delta_11,Delta_12), arma::join_rows(Delta_21,Delta_22) );
 }
