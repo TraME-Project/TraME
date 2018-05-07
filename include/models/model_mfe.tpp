@@ -28,10 +28,10 @@
  * 11/19/2016
  *
  * This version:
- * 06/06/2017
+ * 05/07/2018
  */
 
-// Note: 'theta' refers to model parameters; 'params' refers to the structural parameters
+// Notation: 'theta' refers to model parameters; 'params' refers to the structural parameters
 
 //
 // build
@@ -73,14 +73,19 @@ model<mfe<Tt>>::build_int(const arma::mat& X_inp, const arma::mat& Y_inp, const 
 
     double sigma = (sigma_inp) ? *sigma_inp : 1.0;
     market_obj.sigma = sigma;
-    //
+
+    // types
+
     n = (n_inp) ? *n_inp : arma::ones(nbX,1);
     m = (m_inp) ? *m_inp : arma::ones(nbY,1);
 
-    if (arma::accu(n) != arma::accu(m)) {
+    if (arma::accu(n) != arma::accu(m))
+    {
         printf("Unequal mass of individuals in an affinity model.\n");
     }
-    //
+
+    // construct model 'data'
+
     model_data = model_build_int(market_obj,X_inp,Y_inp);
 }
 
@@ -101,9 +106,7 @@ template<typename Tt>
 void
 model<mfe<Tt>>::dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_M_out)
 {
-    arma::mat delta_theta_mat = (delta_theta_inp) ? *delta_theta_inp : arma::eye(dim_theta,dim_theta);
-
-    dtheta_M_out = model_data * delta_theta_mat;
+    dtheta_M_out = (delta_theta_inp) ? model_data * (*delta_theta_inp) : model_data;
 }
 
 template<typename Tt>
@@ -189,9 +192,6 @@ model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doubl
 
     opt_data.sigma = market_obj.sigma;
 
-    opt_data.p = p;
-    opt_data.q = q;
-
     opt_data.IX = IX;
     opt_data.tIY = tIY;
 
@@ -245,7 +245,8 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const d
 
 template<typename Tt>
 bool
-model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const double lambda, double* val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
+model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const double lambda, double* val_ret, 
+                          double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
 {
     bool success = false;
 
@@ -263,7 +264,8 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const d
 
     double total_mass = arma::accu(n);
 
-    if (std::abs(arma::accu(mu_hat) - total_mass) > 1E-06) { // we use this instead of a raw '!=' to account for rounding error
+    if (std::abs(arma::accu(mu_hat) - total_mass) > 1E-06)
+    {   // we use this instead of a raw '!=' to account for rounding error
         printf("Total number of couples does not coincide with margins.\n");
         return success;
     }
@@ -288,7 +290,7 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const d
     int iter_ipfp = 0, iter_count = 0;
     double err_ipfp = 2*tol_ipfp, err_val = 1.0;
 
-    const double t_k = 0.3;   // step size for the prox grad algorithm (or grad descent when lambda=0)
+    const double t_k = 0.3;   // step size for the prox. grad algorithm (or grad descent when lambda=0)
     const double alpha = 1.0; // for optimality check
 
     double the_val = 1.0, the_val_old = 1E04;
@@ -324,28 +326,34 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const d
 
         //
 
-        if (lambda > 0.0) {
-            // compute the proximal operator
+        if (lambda > 0.0)
+        {   // compute the proximal operator
             arma::mat A_mat = arma::reshape(A,dX,dY);
             arma::svd(U,d,V,A_mat);
 
             arma::mat D = arma::diagmat(elem_max(d - lambda*t_k,0.0));
 
-            if (dX != dY) { // R's SVD behaves differently
+            if (dX != dY) 
+            {   // R's SVD behaves differently
                 const int d_l = d.n_elem;
                 A = arma::vectorise(U.cols(0,d_l-1) * D * V.cols(0,d_l-1).t());
-            } else {
+            }
+            else
+            {
                 A = arma::vectorise(U * D * V.t());
             }
 
             the_val = arma::accu(the_grad % arma::vectorise(A)) - sigma * arma::accu(Pi % arma::log(Pi)) + lambda * arma::accu(D);
-        } else { // if lambda = 0 then we are just taking one step of gradient descent
+        }
+        else
+        {   // if lambda = 0 then we are just taking one step of gradient descent
             the_val = arma::accu(the_grad % arma::vectorise(A)) - sigma * arma::accu(Pi % arma::log(Pi));
         }
 
         //
 
-        if (iter_count % 10 == 0) {
+        if (iter_count % 10 == 0)
+        {
 
             arma::mat svd_mat = arma::reshape(A - alpha*the_grad,dX,dY);
             arma::svd(U,d_opt,V,svd_mat);
@@ -354,7 +362,7 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const d
             const int d_l = d_opt.n_elem;
 
             // opt_check = arma::accu(arma::pow(A - arma::vectorise(U.cols(0,d_l-1) * D_opt *V.cols(0,d_l-1).t()), 2));
-            opt_check = std::pow( arma::norm(A - arma::vectorise(U.cols(0,d_l-1) * D_opt *V.cols(0,d_l-1).t()),2) , 2);
+            opt_check = std::pow( arma::norm(A - arma::vectorise(U.cols(0,d_l-1) * D_opt * V.cols(0,d_l-1).t()),2) , 2);
 
             std::cout << "Regularized MME: testing optimality: " << opt_check << std::endl;
         }
@@ -439,11 +447,16 @@ template<typename Tt>
 bool
 model<mfe<Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings* settings_inp, const int optim_method)
 {
-    if (optim_method == 1) {
+    if (optim_method == 1)
+    {
         return optim::lbfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
-    } else if (optim_method == 2) {
+    }
+    else if (optim_method == 2)
+    {
         return optim::bfgs_int(init_out_vals,opt_objfn,opt_data,settings_inp);
-    } else {
+    }
+    else
+    {
         printf("error: unrecognized optim_method choice.\n");
         return false;
     }
@@ -465,17 +478,10 @@ model<mfe<Tt>>::model_mfe_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* gr
 
     const double sigma = d->sigma;
 
-    const arma::vec p = d->p;
-    const arma::vec q = d->q;
-
-    const arma::mat IX = d->IX;
-    const arma::mat tIY = d->tIY;
-
     const arma::mat f = d->f;
     const arma::mat g = d->g;
 
     arma::rowvec v = d->v;
-    arma::mat Pi_hat = d->Pi_hat;
 
     arma::mat phi_xy = d->phi_xy; // should be (nbX*nbY) x (dim_theta), replaces a member function call
 
@@ -491,25 +497,27 @@ model<mfe<Tt>>::model_mfe_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* gr
     arma::rowvec v_next = v;
     arma::vec u;
 
-    while (err_ipfp > tol_ipfp && iter_ipfp < max_iter_ipfp) {
+    while (err_ipfp > tol_ipfp && iter_ipfp < max_iter_ipfp)
+    {
         iter_ipfp++;
 
-        u = sigma * arma::log(arma::sum(g % arma::exp((Phi - IX * v)/sigma),1));
-        v_next = sigma * arma::log(arma::sum( f % arma::exp((Phi - u * tIY)/sigma),0));
+        u = sigma * arma::log(arma::sum(g % arma::exp((Phi - d->IX * v)/sigma),1));
+        v_next = sigma * arma::log(arma::sum( f % arma::exp((Phi - u * d->tIY)/sigma),0));
 
-        err_ipfp = elem_max(arma::abs( arma::sum(g % arma::exp((Phi - IX * v_next - u*tIY)/sigma),1) - 1.0 ));
+        err_ipfp = elem_max(arma::abs( arma::sum(g % arma::exp((Phi - d->IX * v_next - u * d->tIY)/sigma),1) - 1.0 ));
         v = v_next;
     }
+
     //
 
-    const arma::mat Pi = f % g % arma::exp( (Phi - IX*v - u*tIY)/sigma );
-    const arma::mat the_grad = phi_xy.t() * arma::vectorise(Pi - Pi_hat);
+    const arma::mat Pi = f % g % arma::exp( (Phi - d->IX * v - u * d->tIY)/sigma );
+    const arma::mat the_grad = phi_xy.t() * arma::vectorise(Pi - d->Pi_hat);
 
-    if (grad) {
+    if (grad)
+    {
         *grad = the_grad;
     }
 
-    //
     // update v for the next opt call
 
     d->v = v;
@@ -517,7 +525,5 @@ model<mfe<Tt>>::model_mfe_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* gr
 
     //
 
-    double ret = arma::accu(the_grad % arma::vectorise(vals_inp)) - sigma*arma::accu(Pi%arma::log(Pi));
-
-    return ret;
+    return arma::accu(the_grad % arma::vectorise(vals_inp)) - sigma*arma::accu(Pi%arma::log(Pi));
 }
