@@ -7,7 +7,7 @@ if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
     export ARMA_INCLUDE_PATH="$PWD/include"
 fi
 export CXXCOV=gcov
-export LD_LIBRARY_PATH="$PWD":$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="$PWD:$PWD/glpk_tmp/lib":$LD_LIBRARY_PATH
 cd tests
 
 #

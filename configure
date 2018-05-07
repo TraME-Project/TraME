@@ -24,7 +24,7 @@ while getopts hcdgi:l:m:o:pv option; do
     case "${option}" in
         h) print_help; exit 2;;
         c) TRAME_COVERAGE_BUILD="y";;
-        d) TRAME_BUILD="dev";;
+        d) TRAME_DEV_BUILD="dev";;
         g) TRAME_DEBUG_BUILD="y";;
         i) TRAME_INSTALL_PATH=${OPTARG};;
         l) TRAME_LP=${OPTARG};;
@@ -422,7 +422,7 @@ echo "  - C compiler:       ${CC}"
 echo "  - C++ compiler:     ${CXX}"
 echo "  - Fortran compiler: ${FC}"
 
-if [[ "${TRAME_BUILD}" == "dev" ]]; then
+if [[ "${TRAME_DEV_BUILD}" == "dev" ]]; then
     echo "  - Build version:    development"
 elif [[ "${TRAME_COVERAGE_BUILD}" == "y" ]]; then
     echo "  - Build version:    coverage"
