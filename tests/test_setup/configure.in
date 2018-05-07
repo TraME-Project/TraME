@@ -157,6 +157,11 @@ fi
 
 echo ""
 
+echo "  - Test directory:"
+echo "    ${PWD}"
+
+echo ""
+
 echo "  - ARMA_INCLUDE_PATH set to:"
 echo "    ${ARMA_INCLUDE_PATH}"
 echo "  - BLAS and Lapack libraries set to:"
