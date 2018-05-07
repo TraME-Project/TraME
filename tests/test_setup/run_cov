@@ -18,7 +18,7 @@ for i in "${DIRS[@]}"; do
     cd "$WDIR"/"$i"
 
     ./configure -c
-    make -j
+    make
     sh ./../test_setup/cov_check
 done
 

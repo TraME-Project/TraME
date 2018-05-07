@@ -61,7 +61,7 @@ bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& u_out, ar
 
 template<typename Tg, typename Th, typename Tt>
 bool oap_lp(const dse<Tg,Th,Tt>& market, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::vec& u_out, arma::vec& v_out, 
-            double* val_out, arma::mat* residuals_out, const bool x_first_inp);
+            double& val_out, arma::mat& residuals_out, const bool x_first_inp);
 
 #include "oap_lp.tpp"
 

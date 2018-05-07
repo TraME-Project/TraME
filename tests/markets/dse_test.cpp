@@ -28,24 +28,29 @@ int main()
     arma::mat gamma  = arma::randu(nbX,nbY);
 
     arma::mat phi = alpha + gamma;
+
     //
     // results
+
     printf("\n*===================   Start of DSE Test   ===================*\n");
     printf("\n");
-    //
+
     // TU
+
     trame::dse<trame::arums::none,trame::arums::none,trame::transfers::tu> dse_obj_TU;
     dse_obj_TU.build(n,m,phi,false);
-    //
+    
     double val;
     arma::vec mux0, mu0y, u, v;
     arma::mat mu_TU, residuals;
-    trame::oap_lp(dse_obj_TU, mu_TU, mux0, mu0y, u, v, true, val, residuals);
+    trame::oap_lp(dse_obj_TU, mu_TU, mux0, mu0y, u, v, val, residuals, true);
 
     std::cout << "Solution of TU-none problem using oap_lp:\n" << std::endl;
     arma::cout << "u:\n" << u << "\n v:\n" << v << "\n resid:\n" << residuals << arma::endl;
+
     //
     // NTU
+
     arma::mat alpha_d(2,3);
     alpha_d << 1.6 << 3.2 << 1.1 << arma::endr 
             << 2.9 << 1.0 << 3.1 << arma::endr;
