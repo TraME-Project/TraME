@@ -358,7 +358,7 @@ model<dse<Tg,Th,Tt>>::initial_theta()
 template<typename Tg, typename Th, typename Tt>
 bool
 model<dse<Tg,Th,Tt>>::model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn,
-                                      void* opt_data, optim::algo_settings* settings_inp, const int optim_method)
+                                      void* opt_data, optim::algo_settings_t* settings_inp, const int optim_method)
 {
     if (optim_method == 1)
     {
@@ -452,7 +452,7 @@ model<dse<Tg,Th,Tt>>::log_likelihood(const arma::vec& vals_inp, arma::vec* grad_
 template<typename Tg, typename Th, typename Tt>
 bool
 model<dse<Tg,Th,Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, 
-                                      void* opt_data, optim::algo_settings* settings_inp, const int optim_method)
+                                      void* opt_data, optim::algo_settings_t* settings_inp, const int optim_method)
 {
     if (optim_method == 1)
     {
