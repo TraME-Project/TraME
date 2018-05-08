@@ -52,7 +52,7 @@ nodal_newton_int(const mfe<Tt>& market, arma::mat* mu_out, arma::vec* mu_x0_out,
 
     // optim
 
-    optim::algo_settings settings;
+    optim::algo_settings_t settings;
 
     settings.err_tol = err_tol;
     settings.iter_max = max_iter;

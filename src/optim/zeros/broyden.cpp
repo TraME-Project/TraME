@@ -4,15 +4,17 @@
   ##
   ##   This file is part of the OptimLib C++ library.
   ##
-  ##   OptimLib is free software: you can redistribute it and/or modify
-  ##   it under the terms of the GNU General Public License as published by
-  ##   the Free Software Foundation, either version 2 of the License, or
-  ##   (at your option) any later version.
+  ##   Licensed under the Apache License, Version 2.0 (the "License");
+  ##   you may not use this file except in compliance with the License.
+  ##   You may obtain a copy of the License at
   ##
-  ##   OptimLib is distributed in the hope that it will be useful,
-  ##   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ##   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ##   GNU General Public License for more details.
+  ##       http://www.apache.org/licenses/LICENSE-2.0
+  ##
+  ##   Unless required by applicable law or agreed to in writing, software
+  ##   distributed under the License is distributed on an "AS IS" BASIS,
+  ##   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ##   See the License for the specific language governing permissions and
+  ##   limitations under the License.
   ##
   ################################################################################*/
 
@@ -23,7 +25,7 @@
 #include "optim.hpp"
 
 bool
-optim::broyden_int(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, algo_settings* settings_inp)
+optim::broyden_int(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, algo_settings_t* settings_inp)
 {
     // notation: 'p' stands for '+1'.
 
@@ -34,7 +36,7 @@ optim::broyden_int(arma::vec& init_out_vals, std::function<arma::vec (const arma
     //
     // Broyden settings
 
-    algo_settings settings;
+    algo_settings_t settings;
 
     if (settings_inp) {
         settings = *settings_inp;
@@ -130,7 +132,7 @@ optim::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::ve
 }
 
 bool
-optim::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, algo_settings& settings)
+optim::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, algo_settings_t& settings)
 {
     return broyden_int(init_out_vals,opt_objfn,opt_data,&settings);
 }
@@ -140,7 +142,7 @@ optim::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::ve
 
 bool
 optim::broyden_int(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
-                   std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data, algo_settings* settings_inp)
+                   std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data, algo_settings_t* settings_inp)
 {
     // notation: 'p' stands for '+1'.
     
@@ -149,7 +151,7 @@ optim::broyden_int(arma::vec& init_out_vals, std::function<arma::vec (const arma
     //
     // Broyden settings
 
-    algo_settings settings;
+    algo_settings_t settings;
 
     if (settings_inp) {
         settings = *settings_inp;
@@ -252,7 +254,7 @@ optim::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::ve
 bool
 optim::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
                std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data,
-               algo_settings& settings)
+               algo_settings_t& settings)
 {
     return broyden_int(init_out_vals,opt_objfn,opt_data,jacob_objfn,jacob_data,&settings);
 }
@@ -261,7 +263,7 @@ optim::broyden(arma::vec& init_out_vals, std::function<arma::vec (const arma::ve
 // derivative-free method of Li and Fukushima (2000)
 
 bool
-optim::broyden_df_int(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, algo_settings* settings_inp)
+optim::broyden_df_int(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, algo_settings_t* settings_inp)
 {
     // notation: 'p' stands for '+1'.
     
@@ -272,7 +274,7 @@ optim::broyden_df_int(arma::vec& init_out_vals, std::function<arma::vec (const a
     //
     // Broyden settings
 
-    algo_settings settings;
+    algo_settings_t settings;
 
     if (settings_inp) {
         settings = *settings_inp;
@@ -400,7 +402,7 @@ optim::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma:
 }
 
 bool
-optim::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, algo_settings& settings)
+optim::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data, algo_settings_t& settings)
 {
     return broyden_df_int(init_out_vals,opt_objfn,opt_data,&settings);
 }
@@ -410,7 +412,7 @@ optim::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma:
 
 bool
 optim::broyden_df_int(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
-                      std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data, algo_settings* settings_inp)
+                      std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data, algo_settings_t* settings_inp)
 {
     // notation: 'p' stands for '+1'.
     
@@ -419,7 +421,7 @@ optim::broyden_df_int(arma::vec& init_out_vals, std::function<arma::vec (const a
     //
     // Broyden settings
 
-    algo_settings settings;
+    algo_settings_t settings;
 
     if (settings_inp) {
         settings = *settings_inp;
@@ -556,7 +558,7 @@ optim::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma:
 
 bool
 optim::broyden_df(arma::vec& init_out_vals, std::function<arma::vec (const arma::vec& vals_inp, void* opt_data)> opt_objfn, void* opt_data,
-               std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data, algo_settings& settings)
+               std::function<arma::mat (const arma::vec& vals_inp, void* jacob_data)> jacob_objfn, void* jacob_data, algo_settings_t& settings)
 {
     return broyden_df_int(init_out_vals,opt_objfn,opt_data,jacob_objfn,jacob_data,&settings);
 }

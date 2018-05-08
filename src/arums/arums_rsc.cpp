@@ -429,7 +429,7 @@ const
 
     //
 
-    optim::algo_settings settings;
+    optim::algo_settings_t settings;
 
     settings.vals_bound = true;
 

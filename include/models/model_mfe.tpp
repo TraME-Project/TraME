@@ -207,7 +207,7 @@ model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doubl
 
     const int optim_method = (optim_method_inp) ? *optim_method_inp : 1;
 
-    optim::algo_settings settings;
+    optim::algo_settings_t settings;
 
     settings.err_tol = xtol_rel;
     settings.iter_max = max_eval;

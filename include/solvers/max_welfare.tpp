@@ -61,7 +61,7 @@ max_welfare_int(const dse<Tg,Th,Tt>& market, arma::mat* mu_out, arma::vec* mu_x0
 
     const uint_t optim_method = 2;
 
-    optim::algo_settings settings;
+    optim::algo_settings_t settings;
 
     settings.err_tol = err_tol;
     settings.iter_max = max_iter;

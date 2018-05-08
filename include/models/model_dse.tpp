@@ -226,7 +226,7 @@ model<dse<Tg,Th,Tt>>::mle(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
     const int optim_method = (optim_method_inp) ? *optim_method_inp : 1;
 
-    optim::algo_settings settings;
+    optim::algo_settings_t settings;
 
     // settings.err_tol  = 1E-06;
     // settings.iter_max = 1000;
@@ -284,7 +284,7 @@ model<dse<Tg,Th,Tt>>::mme(const arma::mat& mu_hat, arma::mat& theta_hat, const a
 
     const int optim_method = (optim_method_inp) ? *optim_method_inp : 1;
 
-    optim::algo_settings settings;
+    optim::algo_settings_t settings;
 
     // settings.err_tol = 1E-04;
     // settings.iter_max = 1000;
