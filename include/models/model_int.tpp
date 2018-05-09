@@ -343,7 +343,7 @@ model_dmu(dse<arums::logit,arums::logit,transfers::tu>& market_obj, const arma::
     dmu_out = elem_prod(arma::vectorise(mu),dlogmu);
 }
 
-// for MFE markets
+// for general MFE markets
 
 template<typename Tm>
 inline
@@ -400,7 +400,9 @@ model_dmu(mfe<Tm>& market_obj, const arma::mat& dtheta_M, arma::mat& mu_out, arm
         dmu_0y_full_mat.rows(y*nbX,(y+1)*nbX-1) = arma::repmat(dmu_0y.row(y),nbX,1);
     }
 
-    arma::mat dmu = elem_prod(arma::vectorise(du_mat),dmu_x0_full_mat) + elem_prod(arma::vectorise(dv_mat),dmu_0y_full_mat) + delta_M / sigma;
+    arma::mat dmu = elem_prod(arma::vectorise(du_mat),dmu_x0_full_mat)    \
+                     + elem_prod(arma::vectorise(dv_mat),dmu_0y_full_mat) \
+                     + delta_M / sigma;
 
     //
 

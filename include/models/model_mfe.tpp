@@ -250,7 +250,7 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const d
 template<typename Tt>
 bool
 model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const double lambda, double* val_ret, 
-                          double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp)
+                          double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, int* max_iter_ipfp_inp)
 {
     bool success = false;
 

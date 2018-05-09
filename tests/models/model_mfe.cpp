@@ -59,7 +59,7 @@ int main()
     arma::mat mu_mfe;
     mfe_obj_TU.solve(mu_mfe);
 
-    arma::cout << "mu:\n " << mu_mfe(arma::span(0,9),arma::span(0,9));
+    arma::cout << "mu:\n" << mu_mfe(arma::span(0,9),arma::span(0,9));
 
     // arma::mat noise = 1.0 + noise_scale*arma::randn(nbX,nbY);
     // arma::mat mu_hat = mu_mfe % noise;
@@ -80,7 +80,7 @@ int main()
     // mu_hat = mu_hat / arma::accu(mu_hat);
     mu_hat = mu_hat / arma::repmat( arma::sum(mu_hat,1),1,nbY );
 
-    arma::cout << "mu_hat:\n " << mu_hat(arma::span(0,9),arma::span(0,9));
+    arma::cout << "mu_hat:\n" << mu_hat(arma::span(0,9),arma::span(0,9));
 
     //
 
@@ -100,9 +100,12 @@ int main()
     arma::cout << "theta_hat without regularization:\n" << arma::reshape(theta_hat_aff_2,dX,dY) << arma::endl;
 
     //
+
     printf("\n*===================    End of general model Test    ===================*\n");
     printf("\n");
+
     //
+    
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
     std::chrono::duration<double> elapsed_seconds = end-start;
@@ -110,6 +113,7 @@ int main()
 
     std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
+
     //
     return 0;
 }

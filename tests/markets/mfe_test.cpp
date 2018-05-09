@@ -97,8 +97,10 @@ int main()
     arma::cout << "Solution of LTU-logit problem using ipfp:\n" << mu_LTU << arma::endl;
 
     //
+
     printf("\n*===================    End of MFE Test    ===================*\n");
     printf("\n");
+    
     //
 
     end = std::chrono::system_clock::now();

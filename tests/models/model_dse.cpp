@@ -101,8 +101,10 @@ int main()
     arma::cout << "theta_hat mle: \n" << theta_hat_mle << arma::endl;
 
     //
+
     printf("\n*===================    End of general model Test    ===================*\n");
     printf("\n");
+    
     //
 
     std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
@@ -112,6 +114,8 @@ int main()
 
     std::cout << "finished computation at " << std::ctime(&end_time)
               << "elapsed time: " << elapsed_seconds.count() << "s\n";
+
     //
+
     return 0;
 }
