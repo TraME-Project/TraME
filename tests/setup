@@ -18,7 +18,7 @@ while getopts hcdgi:m:o:p option; do
     esac
 done
 
-# 
+#
 
 declare -a DIRS=("ancillary" "arums" "markets" "models" "solvers" \
                  "unit_tests/arums" "unit_tests/misc" "unit_tests/mmfs" \

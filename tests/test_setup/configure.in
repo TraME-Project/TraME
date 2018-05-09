@@ -50,6 +50,7 @@ GCC_COMPILER=$($CXX --version 2>&1 | grep -i -c -E "gcc")
 APPLE_COMPILER=$($CXX --version 2>&1 | grep -i -c -E 'apple llvm')
 
 # get working directory
+
 WDIR=${PWD}
 
 # shared library name and install path
@@ -78,10 +79,8 @@ else
     TRAME_INSTALL_LIB_PATH="${TRAME_INSTALL_PATH}/lib"
 fi
 
-# find build directory
-
-
 # look for Armadillo
+
 if [ -z ${ARMA_INCLUDE_PATH+x} ]; then 
     
     declare -a ARMA_DIRS=("${TRAME_INSTALL_INCLUDE_PATH}" "/usr/include" "/usr/local/include" "/opt/include" "/opt/local/include")

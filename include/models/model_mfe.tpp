@@ -138,7 +138,10 @@ model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doubl
 
 template<typename Tt>
 bool
-model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp, const int* optim_method_inp)
+model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_ret, 
+                            double* xtol_rel_inp, int* max_eval_inp, 
+                            double* tol_ipfp_inp, int* max_iter_ipfp_inp, 
+                            const int* optim_method_inp)
 {
     bool success = false;
 
@@ -218,7 +221,8 @@ model<mfe<Tt>>::mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, doubl
 
     //
 
-    if (success) {
+    if (success)
+    {
         theta_hat = opt_vec;
 
         if (val_ret) {
@@ -300,7 +304,8 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const d
     arma::rowvec v_next = v;
     arma::mat U, V;
 
-    while (err_val > xtol_rel && iter_count < max_eval) {
+    while (err_val > xtol_rel && iter_count < max_eval)
+    {
         iter_count++;
 
         arma::mat Phi = arma::reshape(dtheta(&A),nbX,nbY);
@@ -343,6 +348,8 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const d
                 A = arma::vectorise(U * D * V.t());
             }
 
+            // arma::cout << "A mfe up\n" << A << arma::endl;
+
             the_val = arma::accu(the_grad % arma::vectorise(A)) - sigma * arma::accu(Pi % arma::log(Pi)) + lambda * arma::accu(D);
         }
         else
@@ -376,13 +383,15 @@ model<mfe<Tt>>::mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const d
         the_val_old = the_val;
     }
 
-    if (err_val <= xtol_rel && iter_count < max_eval) {
+    if (err_val <= xtol_rel && iter_count < max_eval)
+    {
         success = true;
     }
 
     //
 
-    theta_hat = arma::vectorise(A);
+    // theta_hat = arma::vectorise(A);
+    theta_hat = A;
 
     if (val_ret) {
         *val_ret = the_val;
@@ -445,7 +454,8 @@ model<mfe<Tt>>::Phi_k(const arma::mat& mu_hat)
 
 template<typename Tt>
 bool
-model<mfe<Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings_t* settings_inp, const int optim_method)
+model<mfe<Tt>>::model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn,
+                                void* opt_data, optim::algo_settings_t* settings_inp, const int optim_method)
 {
     if (optim_method == 1)
     {
@@ -521,7 +531,7 @@ model<mfe<Tt>>::model_mfe_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* gr
     // update v for the next opt call
 
     d->v = v;
-    opt_data = reinterpret_cast<void*>(d);
+    // opt_data = reinterpret_cast<void*>(d);
 
     //
 

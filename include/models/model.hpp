@@ -102,7 +102,8 @@ class model<dse<Tg,Th,Tt>> : public model_base
         arma::mat initial_theta();
 
         // optimization-related objects
-        bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings_t* settings_inp, const int optim_method);
+        bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, 
+                             void* opt_data, optim::algo_settings_t* settings_inp, const int optim_method);
         static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 
         bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings_t* settings_inp, const int optim_method);
@@ -129,11 +130,11 @@ class model<mfe<Tt>> : public model_base
 
         bool mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const double lambda);
         bool mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const double lambda, double& val_ret);
-        bool mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const double lambda, double* val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp);
+        bool mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const double lambda, double* val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, int* max_iter_ipfp_inp);
 
         bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat);
         bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double& val_ret);
-        bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_ret, double* xtol_rel_inp, int* max_iter_inp, double* tol_ipfp_inp, double* max_iter_ipfp_inp, const int* optim_method_inp);
+        bool mme_woregul(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_ret, double* xtol_rel_inp, int* max_iter_inp, double* tol_ipfp_inp, int* max_iter_ipfp_inp, const int* optim_method_inp);
 
         // bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
         // bool mme(const arma::mat& mu_hat, double lambda_inp, arma::mat& theta_hat);
