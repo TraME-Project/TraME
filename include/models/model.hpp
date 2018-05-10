@@ -28,7 +28,7 @@
  * 11/19/2016
  *
  * This version:
- * 08/20/2017
+ * 05/09/2018
  */
 
 #ifndef _trame_model_HPP
@@ -79,7 +79,8 @@ class model<dse<Tg,Th,Tt>> : public model_base
         void dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_Psi_out);
         void dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_Psi_out, arma::mat* dtheta_G_out, arma::mat* dtheta_H_out);
 
-        void dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu);
+        void dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, 
+                       arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu);
 
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp);
         bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp, const int* optim_method_inp);
@@ -128,6 +129,9 @@ class model<mfe<Tt>> : public model_base
         void dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_M_out);
         arma::mat dtheta(const arma::mat* delta_theta_inp);
 
+        void dtheta_mu(const arma::mat& theta, const arma::mat* dtheta, arma::mat& mu_out, 
+                       arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu);
+
         bool mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const double lambda);
         bool mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const double lambda, double& val_ret);
         bool mme_regul(const arma::mat& mu_hat, arma::mat& theta_hat, const double lambda, double* val_ret, double* xtol_rel_inp, int* max_eval_inp, double* tol_ipfp_inp, int* max_iter_ipfp_inp);
@@ -139,6 +143,9 @@ class model<mfe<Tt>> : public model_base
         // bool mme(const arma::mat& mu_hat, arma::mat& theta_hat);
         // bool mme(const arma::mat& mu_hat, double lambda_inp, arma::mat& theta_hat);
         // bool mme(const arma::mat& mu_hat, arma::mat& theta_hat, double* val_out, arma::mat* mu_out, arma::mat* U_out, arma::mat* V_out);
+
+        bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp);
+        bool mle(const arma::mat& mu_hat, arma::mat& theta_hat, const arma::mat* theta_0_inp, const int* optim_method_inp);
 
         // solve wrappers
         bool solve(arma::mat& mu_sol);
@@ -155,6 +162,10 @@ class model<mfe<Tt>> : public model_base
         arma::mat Phi_k(const arma::mat& mu_hat);
 
         // optimization-related objects
+        bool model_mle_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, 
+                             void* opt_data, optim::algo_settings_t* settings_inp, const int optim_method);
+        static double log_likelihood(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
+
         bool model_mme_optim(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad, void* opt_data)> opt_objfn, void* opt_data, optim::algo_settings_t* settings_inp, const int optim_method);
         static double model_mfe_mme_opt_objfn(const arma::vec& vals_inp, arma::vec* grad, void* opt_data);
 };

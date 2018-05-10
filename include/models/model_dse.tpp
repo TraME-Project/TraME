@@ -28,7 +28,7 @@
  * 11/19/2016
  *
  * This version:
- * 08/20/2017
+ * 05/09/2018
  */
 
 // Note: 'theta' refers to model parameters; 'params' refers to structural parameters
@@ -152,25 +152,25 @@ model<dse<Tg,Th,Tt>>::dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta
 
 template<typename Tg, typename Th, typename Tt>
 void
-model<dse<Tg,Th,Tt>>::dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_Psi_out, arma::mat* dtheta_G_out, arma::mat* dtheta_H_out)
+model<dse<Tg,Th,Tt>>::dtheta(const arma::mat* delta_theta_inp, arma::mat& dtheta_Psi_out, 
+                             arma::mat* dtheta_G_out, arma::mat* dtheta_H_out)
 {
-    const arma::mat delta_theta_mat = (delta_theta_inp) ? *delta_theta_inp : arma::eye(dim_theta,dim_theta);
-
-    dtheta_Psi_out = model_data * delta_theta_mat;
+    dtheta_Psi_out = (delta_theta_inp) ? model_data * (*delta_theta_inp) : model_data;
 
     //
 
     if (dtheta_G_out) {
-        *dtheta_G_out = arma::zeros(0,delta_theta_mat.n_cols);
+        *dtheta_G_out = arma::zeros(0,dim_theta);
     }
     if (dtheta_H_out) {
-        *dtheta_H_out = arma::zeros(0,delta_theta_mat.n_cols);
+        *dtheta_H_out = arma::zeros(0,dim_theta);
     }
 }
 
 template<typename Tg, typename Th, typename Tt>
 void
-model<dse<Tg,Th,Tt>>::dtheta_mu(const arma::mat& theta, const arma::mat* delta_theta, arma::mat& mu_out, arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
+model<dse<Tg,Th,Tt>>::dtheta_mu(const arma::mat& theta, const arma::mat* delta_theta, arma::mat& mu_out, 
+                                arma::vec& mu_x0_out, arma::vec& mu_0y_out, arma::mat& dmu_out)
 {
     model_to_market(theta); // need to replace this later with general 'parametric_market'
     //

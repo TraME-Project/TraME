@@ -78,7 +78,7 @@ int main()
 
     // mu_hat = mu_hat / static_cast<double>(nbX);
     // mu_hat = mu_hat / arma::accu(mu_hat);
-    mu_hat = mu_hat / arma::repmat( arma::sum(mu_hat,1),1,nbY );
+    mu_hat = mu_hat / arma::repmat( arma::sum(mu_hat,1),1,nbY ); // renormalize
 
     arma::cout << "mu_hat:\n" << mu_hat(arma::span(0,9),arma::span(0,9));
 

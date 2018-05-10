@@ -29,7 +29,7 @@
  * 11/19/2016
  *
  * This version:
- * 02/04/2018
+ * 05/09/2018
  */
 
 //
@@ -39,10 +39,13 @@ template<typename Tm>
 arma::mat model_build_int(const Tm& market_obj, const arma::mat& X_inp, const arma::mat& Y_inp);
 
 template<typename Tm>
-void model_to_market_int(Tm& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm);
+void model_to_market_int(Tm& market_obj, const arma::mat& model_data, const arma::mat& theta, 
+                         const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm);
 
 template<typename Tg, typename Th, typename Tt>
-void model_to_market_int(dse<Tg,Th,Tt>& market_obj, const arma::mat& model_data, const arma::mat& theta, const Tg& arums_G_inp, const Th& arums_H_inp, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, bool need_norm);
+void model_to_market_int(dse<Tg,Th,Tt>& market_obj, const arma::mat& model_data, const arma::mat& theta, 
+                         const Tg& arums_G_inp, const Th& arums_H_inp, const arma::vec& n, const arma::vec& m, 
+                         int nbX, int nbY, int dX, int dY, bool need_norm);
 
 template<typename Tt>
 void model_to_market_int(mfe<Tt>& market_obj, const arma::mat& model_data, const arma::mat& theta, const arma::vec& n, const arma::vec& m, int nbX, int nbY, int dX, int dY, double sigma, bool need_norm);
