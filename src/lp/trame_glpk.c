@@ -34,13 +34,13 @@
 #include "lp/trame_glpk.h"
 
 //
-// Dense setup; to be used with Armadillo memptr-based passing 
+// Dense setup: to be used with Armadillo memptr-based passing 
 // Note: Armadillo uses column-major ordering, as opposed to C-standard row-major ordering
 
-int trame_glpk(int n_constr, int n_vars, double* __restrict obj, double* __restrict A, int model_opt_sense, 
-               double* __restrict rhs, char* __restrict constr_sense, double* lb, double* ub, 
-               double* __restrict objval, double* __restrict sol_mat_X, double* __restrict sol_mat_RC, 
-               double* __restrict dual_mat_PI, double* __restrict dual_mat_SLACK)
+int trame_glpk(int n_constr, int n_vars, double* __restrict__ obj, double* __restrict__ A, int model_opt_sense, 
+               double* __restrict__ rhs, char* __restrict__ constr_sense, double* lb, double* ub, 
+               double* __restrict__ objval, double* __restrict__ sol_mat_X, double* __restrict__ sol_mat_RC, 
+               double* __restrict__ dual_mat_PI, double* __restrict__ dual_mat_SLACK)
 {
     int success = 0;
 
@@ -188,12 +188,12 @@ QUIT:
 //
 // for use with sparse constraint matrix A
 
-int trame_glpk_sparse(int n_constr, int n_vars, double* __restrict obj, int numnz, 
-                      int* __restrict vbeg, int* __restrict vind, double* __restrict vval, 
-                      int model_opt_sense, double* __restrict rhs, char* __restrict constr_sense, 
+int trame_glpk_sparse(int n_constr, int n_vars, double* __restrict__ obj, int numnz, 
+                      int* __restrict__ vbeg, int* __restrict__ vind, double* __restrict__ vval, 
+                      int model_opt_sense, double* __restrict__ rhs, char* __restrict__ constr_sense, 
                       double* lb, double* ub, 
-                      double* __restrict objval, double* __restrict sol_mat_X, double* __restrict sol_mat_RC, 
-                      double* __restrict dual_mat_PI, double* __restrict dual_mat_SLACK)
+                      double* __restrict__ objval, double* __restrict__ sol_mat_X, double* __restrict__ sol_mat_RC, 
+                      double* __restrict__ dual_mat_PI, double* __restrict__ dual_mat_SLACK)
 {
 
     int success = 0;
