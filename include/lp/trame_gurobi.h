@@ -39,16 +39,16 @@
 #include "gurobi_c.h"
 
 int trame_gurobi(int rows, int cols, double* obj, double* A, int model_opt_sense, 
-                 double* rhs, char* constr_sense, double* Q, double* lb, double* ub,
+                 double* rhs, char* constr_dir, double* Q, double* lb, double* ub,
                  double* objval, double* sol_mat_X, double* sol_mat_RC,
                  double* dual_mat_PI, double* dual_mat_SLACK);
 int trame_gurobi_switch(int rows, int cols, double* obj, double* A, int model_opt_sense, 
-                        double* rhs, char* constr_sense, double* Q, double* lb, double* ub,
+                        double* rhs, char* constr_dir, double* Q, double* lb, double* ub,
                         double* objval, double* sol_mat_X, double* sol_mat_RC,
                         double* dual_mat_PI, double* dual_mat_SLACK);
 int trame_gurobi_sparse(int rows, int cols, double* obj, int numnz,
                         int* vbeg, int* vind, double* vval, int model_opt_sense,
-                        double* rhs, char* constr_sense, double* Q, double* lb, double* ub,
+                        double* rhs, char* constr_dir, double* Q, double* lb, double* ub,
                         double* objval, double* sol_mat_X, double* sol_mat_RC,
                         double* dual_mat_PI, double* dual_mat_SLACK);
 

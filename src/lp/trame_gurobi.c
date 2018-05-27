@@ -39,7 +39,7 @@
 //
 // Dense setup; NOT to be used with Armadillo memptr-based passing 
 int trame_gurobi(int rows, int cols, double* obj, double* A, int model_opt_sense, 
-                 double* rhs, char* constr_sense, double* Q, double* lb, double* ub, 
+                 double* rhs, char* constr_dir, double* Q, double* lb, double* ub, 
                  double* objval, double* sol_mat_X, double* sol_mat_RC, 
                  double* dual_mat_PI, double* dual_mat_SLACK)
 {
@@ -72,7 +72,7 @@ int trame_gurobi(int rows, int cols, double* obj, double* A, int model_opt_sense
     }
     if (error) goto QUIT;
 
-    error = GRBaddconstrs(model, rows, 0, NULL, NULL, NULL, constr_sense, rhs, NULL);
+    error = GRBaddconstrs(model, rows, 0, NULL, NULL, NULL, constr_dir, rhs, NULL);
     if (error) goto QUIT;
     
     /* Integrate new rows and columns */
@@ -161,7 +161,7 @@ QUIT:
 // Dense setup; to be used with Armadillo memptr-based passing 
 // Armadillo uses column-major ordering, as opposed to C-standard row-major ordering
 int trame_gurobi_switch(int rows, int cols, double* obj, double* A, int model_opt_sense, 
-                        double* rhs, char* constr_sense, double* Q, double* lb, double* ub, 
+                        double* rhs, char* constr_dir, double* Q, double* lb, double* ub, 
                         double* objval, double* sol_mat_X, double* sol_mat_RC, 
                         double* dual_mat_PI, double* dual_mat_SLACK)
 {
@@ -195,7 +195,7 @@ int trame_gurobi_switch(int rows, int cols, double* obj, double* A, int model_op
     }
     if (error) goto QUIT;
 
-    error = GRBaddconstrs(model, rows, 0, NULL, NULL, NULL, constr_sense, rhs, NULL);
+    error = GRBaddconstrs(model, rows, 0, NULL, NULL, NULL, constr_dir, rhs, NULL);
     if (error) goto QUIT;
     
     /* Integrate new rows and columns */
@@ -408,7 +408,7 @@ QUIT:
 //
 // for use with sparse matrix inputs; sparse A, dense (or empty) Q
 int trame_gurobi_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, int* vind, double* vval, 
-                        int model_opt_sense, double* rhs, char* constr_sense, double* Q, double* lb, double* ub, 
+                        int model_opt_sense, double* rhs, char* constr_dir, double* Q, double* lb, double* ub, 
                         double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
 {
     int i, j, optimstatus;
@@ -445,8 +445,8 @@ int trame_gurobi_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, i
     error = GRBupdatemodel(model);
     if (error) goto QUIT;
 
-    //error = GRBaddconstrs(model, rows, 0, NULL, NULL, NULL, constr_sense, rhs, NULL);
-    error = GRBaddconstrs(model, rows, numnz, vbeg, vind, vval, constr_sense, rhs, NULL);
+    //error = GRBaddconstrs(model, rows, 0, NULL, NULL, NULL, constr_dir, rhs, NULL);
+    error = GRBaddconstrs(model, rows, numnz, vbeg, vind, vval, constr_dir, rhs, NULL);
     if (error) goto QUIT;
     
     //error = GRBaddvars(model, cols, numnz, vbeg, vind, vval, obj, lb, ub, NULL, NULL);

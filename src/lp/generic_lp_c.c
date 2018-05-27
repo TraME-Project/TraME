@@ -46,18 +46,18 @@
 //
 // Dense setup 
 int generic_LP_C(int rows, int cols, double* obj, double* A, int model_opt_sense, 
-                 double* rhs, char* constr_sense, double* Q, double* lb, double* ub, 
+                 double* rhs, char* constr_dir, double* Q, double* lb, double* ub, 
                  double* objval, double* sol_mat_X, double* sol_mat_RC, 
                  double* dual_mat_PI, double* dual_mat_SLACK)
 {
     int success = 0;
 #if defined(TRAME_USE_GUROBI)
-    success = trame_gurobi_switch(rows,cols,obj,A,model_opt_sense,rhs,constr_sense,Q,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
+    success = trame_gurobi_switch(rows,cols,obj,A,model_opt_sense,rhs,constr_dir,Q,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
 #elif defined(TRAME_USE_GLPK)
     if (Q) {
         printf("GLPK does not support quadratic programming problems\n");
     }
-    success = trame_glpk(rows,cols,obj,A,model_opt_sense,rhs,constr_sense,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
+    success = trame_glpk(rows,cols,obj,A,model_opt_sense,rhs,constr_dir,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
 #else
     printf("No linear programming kit detected\n");
     success = 0;
@@ -69,17 +69,17 @@ int generic_LP_C(int rows, int cols, double* obj, double* A, int model_opt_sense
 //
 // for use with sparse matrix inputs; sparse A, dense (or empty) Q
 int generic_LP_C_sparse(int rows, int cols, double* obj, int numnz, int* vbeg, int* vind, double* vval, 
-                        int model_opt_sense, double* rhs, char* constr_sense, double* Q, double* lb, double* ub, 
+                        int model_opt_sense, double* rhs, char* constr_dir, double* Q, double* lb, double* ub, 
                         double* objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK)
 {
     int success = 0;
 #if defined(TRAME_USE_GUROBI)
-    success = trame_gurobi_sparse(rows,cols,obj,numnz,vbeg,vind,vval,model_opt_sense,rhs,constr_sense,Q,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
+    success = trame_gurobi_sparse(rows,cols,obj,numnz,vbeg,vind,vval,model_opt_sense,rhs,constr_dir,Q,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
 #elif defined(TRAME_USE_GLPK)
     if (Q) {
         printf("GLPK does not support quadratic programming problems\n");
     }
-    success = trame_glpk_sparse(rows,cols,obj,numnz,vbeg,vind,vval,model_opt_sense,rhs,constr_sense,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
+    success = trame_glpk_sparse(rows,cols,obj,numnz,vbeg,vind,vval,model_opt_sense,rhs,constr_dir,lb,ub,objval,sol_mat_X,sol_mat_RC,dual_mat_PI,dual_mat_SLACK);
 #else
     printf("No linear programming kit detected\n");
     success = 0;

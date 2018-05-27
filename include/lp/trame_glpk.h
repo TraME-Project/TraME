@@ -39,13 +39,13 @@
 #include "glpk.h"
 
 int trame_glpk(int n_constr, int n_vars, double* __restrict__ obj, double* __restrict__ A, int model_opt_sense, 
-               double* __restrict__ rhs, char* __restrict__ constr_sense, double* lb, double* ub, 
+               double* __restrict__ rhs, char* __restrict__ constr_dir, double* lb, double* ub, 
                double* __restrict__ objval, double* __restrict__ sol_mat_X, double* __restrict__ sol_mat_RC, 
                double* __restrict__ dual_mat_PI, double* __restrict__ dual_mat_SLACK);
 
 int trame_glpk_sparse(int n_constr, int n_vars, double* __restrict__ obj, int numnz, 
                       int* __restrict__ vbeg, int* __restrict__ vind, double* __restrict__ vval, 
-                      int model_opt_sense, double* __restrict__ rhs, char* __restrict__ constr_sense, 
+                      int model_opt_sense, double* __restrict__ rhs, char* __restrict__ constr_dir, 
                       double* lb, double* ub, 
                       double* __restrict__ objval, double* __restrict__ sol_mat_X, double* __restrict__ sol_mat_RC, 
                       double* __restrict__ dual_mat_PI, double* __restrict__ dual_mat_SLACK);

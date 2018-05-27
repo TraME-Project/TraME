@@ -485,9 +485,9 @@ const
     /*
      * Here we build and store the linear constraint matrix ('A') used in Gstarx.
      *
-     * (Note: we actually construct A-transpose because Armadillo sparse matrices
-     * are stored in compressed sparse column (CSC) format, whereas  Gurobi 
-     * requires inputs to be in compressed sparse row (CSR) format.)
+     * Note: we actually construct A-transpose because Armadillo sparse matrices
+     * are stored in compressed sparse column (CSC) format, whereas Gurobi 
+     * requires compressed sparse row (CSR) format.
      * 
      * We use batch allocation because this is *much* faster than first 
      * constructing a sparse matrix and then (ex-post) inserting values.
@@ -541,9 +541,9 @@ const
     /*
      * Here we build and store the linear constraint matrix ('A') used in Gbarx.
      *
-     * (Note: we actually construct A-transpose because Armadillo sparse matrices
-     * are stored in compressed sparse column (CSC) format, whereas  Gurobi 
-     * requires inputs to be in compressed sparse row (CSR) format.)
+     * Note: we actually construct A-transpose because Armadillo sparse matrices
+     * are stored in compressed sparse column (CSC) format, whereas Gurobi 
+     * requires compressed sparse row (CSR) format.
      * 
      * We use batch allocation because this is *much* faster than first 
      * constructing a sparse matrix and then (ex-post) inserting values.
@@ -600,7 +600,7 @@ const
     n_Gbar = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
 
     vind_Gbar = uword_to_int(A_lp_t.row_indices,num_non_zero_Gbar); // index of what row each non-zero value belongs to
-    vbeg_Gbar = uword_to_int(A_lp_t.col_ptrs,k_Gbar+1);    // index of how many non-zero values are in each column
+    vbeg_Gbar = uword_to_int(A_lp_t.col_ptrs,k_Gbar+1);             // index of how many non-zero values are in each column
 
     vval_Gbar = new double[num_non_zero_Gbar];
     std::memcpy(vval_Gbar, A_lp_t.values, num_non_zero_Gbar * sizeof(double));

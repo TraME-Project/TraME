@@ -34,10 +34,10 @@
 #ifndef _generic_lp_HPP
 #define _generic_lp_HPP
 
-bool generic_LP(int k, int n, double *obj, double* A, int model_opt_sense, double* rhs, char* constr_sense, double* Q, 
+bool generic_LP(int k, int n, double *obj, double* A, int model_opt_sense, double* rhs, char* constr_dir, double* Q, 
                 double* lb, double* ub, double* start, double& objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK);
 
-bool generic_LP(int k, int n, double *obj, int numnz, int* vbeg, int* vind, double* vval, int model_opt_sense, double* rhs, char* constr_sense, double* Q, 
+bool generic_LP(int k, int n, double *obj, int numnz, int* vbeg, int* vind, double* vval, int model_opt_sense, double* rhs, char* constr_dir, double* Q, 
                 double* lb, double* ub, double* start, double& objval, double* sol_mat_X, double* sol_mat_RC, double* dual_mat_PI, double* dual_mat_SLACK);
 
 #endif

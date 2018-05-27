@@ -38,7 +38,7 @@
 // Note: Armadillo uses column-major ordering, as opposed to C-standard row-major ordering
 
 int trame_glpk(int n_constr, int n_vars, double* __restrict__ obj, double* __restrict__ A, int model_opt_sense, 
-               double* __restrict__ rhs, char* __restrict__ constr_sense, double* lb, double* ub, 
+               double* __restrict__ rhs, char* __restrict__ constr_dir, double* lb, double* ub, 
                double* __restrict__ objval, double* __restrict__ sol_mat_X, double* __restrict__ sol_mat_RC, 
                double* __restrict__ dual_mat_PI, double* __restrict__ dual_mat_SLACK)
 {
@@ -75,9 +75,9 @@ int trame_glpk(int n_constr, int n_vars, double* __restrict__ obj, double* __res
     glp_add_cols(lp, n_vars);
 
     for (j=0; j < n_constr; j++) {
-        if (constr_sense[j]=='<') {
+        if (constr_dir[j]=='<') {
             glp_set_row_bnds(lp, j+1, GLP_UP, 0.0, rhs[j]);
-        } else if (constr_sense[j]=='>') {
+        } else if (constr_dir[j]=='>') {
             glp_set_row_bnds(lp, j+1, GLP_LO, rhs[j], 0.0);
         } else {
             glp_set_row_bnds(lp, j+1, GLP_FX, rhs[j], rhs[j]);
@@ -190,7 +190,7 @@ QUIT:
 
 int trame_glpk_sparse(int n_constr, int n_vars, double* __restrict__ obj, int numnz, 
                       int* __restrict__ vbeg, int* __restrict__ vind, double* __restrict__ vval, 
-                      int model_opt_sense, double* __restrict__ rhs, char* __restrict__ constr_sense, 
+                      int model_opt_sense, double* __restrict__ rhs, char* __restrict__ constr_dir, 
                       double* lb, double* ub, 
                       double* __restrict__ objval, double* __restrict__ sol_mat_X, double* __restrict__ sol_mat_RC, 
                       double* __restrict__ dual_mat_PI, double* __restrict__ dual_mat_SLACK)
@@ -231,9 +231,9 @@ int trame_glpk_sparse(int n_constr, int n_vars, double* __restrict__ obj, int nu
     int sp_incr = 0;
 
     for (j=0; j < n_constr; j++) {
-        if (constr_sense[j]=='<') {
+        if (constr_dir[j]=='<') {
             glp_set_row_bnds(lp, j+1, GLP_UP, 0.0, rhs[j]);
-        } else if (constr_sense[j]=='>') {
+        } else if (constr_dir[j]=='>') {
             glp_set_row_bnds(lp, j+1, GLP_LO, rhs[j], 0.0);
         } else {
             glp_set_row_bnds(lp, j+1, GLP_FX, rhs[j], rhs[j]);
