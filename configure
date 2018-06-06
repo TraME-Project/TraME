@@ -81,10 +81,10 @@ if [ -z ${ARMA_INCLUDE_PATH+x} ]; then
 
         mkdir ${WDIR}/arma_tmp
         if [[ "${TRAME_BUILD_VERBOSE}" == "y" ]]; then
-            git clone -b unstable --single-branch https://github.com/conradsnicta/armadillo-code ${WDIR}/arma_tmp 
+            git clone -b unstable --single-branch https://gitlab.com/conradsnicta/armadillo-code.git ${WDIR}/arma_tmp 
             echo ""
         else
-            git clone -b unstable --single-branch https://github.com/conradsnicta/armadillo-code ${WDIR}/arma_tmp > /dev/null 2>&1
+            git clone -b unstable --single-branch https://gitlab.com/conradsnicta/armadillo-code.git ${WDIR}/arma_tmp > /dev/null 2>&1
         fi
         mv ${WDIR}/arma_tmp/include/* ${WDIR}/include
         rm -rf ${WDIR}/arma_tmp
