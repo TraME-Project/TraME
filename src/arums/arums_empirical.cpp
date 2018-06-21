@@ -219,7 +219,9 @@ const
     arma::mat dual_mat(k_Gstar, 2);
     
     try {
-        lp_optimal = generic_LP(k_Gstar, n_Gstar, obj_lp.memptr(), num_non_zero_Gstar, vbeg_Gstar, vind_Gstar, vval_Gstar, modelSense, rhs_lp.memptr(), sense_lp, nullptr, nullptr, nullptr, nullptr, objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
+        lp_optimal = generic_LP(k_Gstar, n_Gstar, obj_lp.memptr(), num_non_zero_Gstar, vbeg_Gstar, vind_Gstar, vval_Gstar, modelSense, 
+                                rhs_lp.memptr(), sense_lp, nullptr, nullptr, nullptr, nullptr, 
+                                objval, sol_mat.colptr(0), sol_mat.colptr(1), dual_mat.colptr(0), dual_mat.colptr(1));
         
         //
 
@@ -523,8 +525,8 @@ const
     k_Gstar = A_lp_t.n_cols; // n_cols as we are working with the transpose of A
     n_Gstar = A_lp_t.n_rows; // n_rows as we are working with the transpose of A
 
-    vind_Gstar = uword_to_int(A_lp_t.row_indices,num_non_zero_Gstar); // index of what row each non-zero value belongs to
-    vbeg_Gstar = uword_to_int(A_lp_t.col_ptrs,k_Gstar+1);    // index of how many non-zero values are in each column
+    vind_Gstar = uword_to_int(A_lp_t.row_indices,num_non_zero_Gstar);   // index of what row each non-zero value belongs to
+    vbeg_Gstar = uword_to_int(A_lp_t.col_ptrs,k_Gstar+1);               // index of how many non-zero values are in each column
 
     vval_Gstar = new double[num_non_zero_Gstar];
     std::memcpy(vval_Gstar, A_lp_t.values, num_non_zero_Gstar * sizeof(double));

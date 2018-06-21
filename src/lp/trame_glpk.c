@@ -38,8 +38,9 @@
 // Note: Armadillo uses column-major ordering, as opposed to C-standard row-major ordering
 
 int trame_glpk(int n_constr, int n_vars, double* __restrict__ obj, double* __restrict__ A, int model_opt_sense, 
-               double* __restrict__ rhs, char* __restrict__ constr_dir, double* lb, double* ub, 
-               double* __restrict__ objval, double* __restrict__ sol_mat_X, double* __restrict__ sol_mat_RC, 
+               double* __restrict__ rhs, char* __restrict__ constr_dir, 
+               double* __restrict__ lb, double* __restrict__ ub, double* __restrict__ objval, 
+               double* __restrict__ sol_mat_X,   double* __restrict__ sol_mat_RC, 
                double* __restrict__ dual_mat_PI, double* __restrict__ dual_mat_SLACK)
 {
     int success = 0;
@@ -74,7 +75,8 @@ int trame_glpk(int n_constr, int n_vars, double* __restrict__ obj, double* __res
     glp_add_rows(lp, n_constr);
     glp_add_cols(lp, n_vars);
 
-    for (j=0; j < n_constr; j++) {
+    for (j=0; j < n_constr; j++)
+    {
         if (constr_dir[j]=='<') {
             glp_set_row_bnds(lp, j+1, GLP_UP, 0.0, rhs[j]);
         } else if (constr_dir[j]=='>') {
@@ -84,7 +86,8 @@ int trame_glpk(int n_constr, int n_vars, double* __restrict__ obj, double* __res
         }
     }
 
-    for (i=0; i < n_vars; i++) {
+    for (i=0; i < n_vars; i++)
+    {
         // c'x
         glp_set_obj_coef(lp, i+1, obj[i]);
 
@@ -144,7 +147,7 @@ int trame_glpk(int n_constr, int n_vars, double* __restrict__ obj, double* __res
     if (glpk_status==GLP_OPT) {
         // printf("GLPK: optimal solution found\n");
         success = 1;
-    } else { // need to recompute without presolve
+    } else { // print status and recompute without presolve
         if (glpk_status==GLP_FEAS) {
             printf("GLPK: feasible solution found\n");
         } else if (glpk_status==GLP_INFEAS) {
@@ -164,7 +167,10 @@ int trame_glpk(int n_constr, int n_vars, double* __restrict__ obj, double* __res
 
     success = 1;
     
-    *objval = glp_get_obj_val(lp);
+    if (objval)
+    {
+        *objval = glp_get_obj_val(lp);
+    }
     
     for (i=0; i < n_vars; i++) {
         sol_mat_X[i] = glp_get_col_prim(lp, i+1);
