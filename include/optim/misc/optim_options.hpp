@@ -27,7 +27,7 @@
 #endif
 
 #ifndef OPTIM_VERSION_MINOR
-    #define OPTIM_VERSION_MINOR 1
+    #define OPTIM_VERSION_MINOR 2
 #endif
 
 #ifndef OPTIM_VERSION_PATCH
@@ -78,6 +78,7 @@
 
 namespace optim
 {
+    static const double eps_dbl = std::numeric_limits<double>::epsilon();
     static const double inf = std::numeric_limits<double>::infinity();
     using uint_t = unsigned int;
 }

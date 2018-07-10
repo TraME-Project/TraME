@@ -61,8 +61,8 @@ optim::gd_basic_int(arma::vec& init_out_vals, std::function<double (const arma::
     = [opt_objfn, vals_bound, bounds_type, lower_bounds, upper_bounds] (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data) \
     -> double 
     {
-        if (vals_bound) {
-
+        if (vals_bound)
+        {
             arma::vec vals_inv_trans = inv_transform(vals_inp, bounds_type, lower_bounds, upper_bounds);
             
             double ret;
@@ -77,15 +77,17 @@ optim::gd_basic_int(arma::vec& init_out_vals, std::function<double (const arma::
 
                 // *grad_out = jacob_matrix * grad_obj; //
                 *grad_out = jacob_vec % grad_obj; //
-            } else {
+            }
+            else
+            {
                 ret = opt_objfn(vals_inv_trans,nullptr,opt_data);
             }
 
             return ret;
-        } else {
-            double ret = opt_objfn(vals_inp,grad_out,opt_data);
-
-            return ret;
+        }
+        else
+        {
+            return opt_objfn(vals_inp,grad_out,opt_data);
         }
     };
 
@@ -125,6 +127,22 @@ optim::gd_basic_int(arma::vec& init_out_vals, std::function<double (const arma::
     }
 
     //
+
+    arma::vec adam_vec_m;
+    arma::vec adam_vec_v;
+
+    if (settings.gd_method == 3 || settings.gd_method == 4)
+    {
+        adam_vec_v = arma::zeros(n_vals);
+    }
+
+    if (settings.gd_method == 5 || settings.gd_method == 6 || settings.gd_method == 7)
+    {
+        adam_vec_m = arma::zeros(n_vals);
+        adam_vec_v = arma::zeros(n_vals);
+    }
+
+    //
     // begin loop
 
     uint_t iter = 0;
@@ -135,7 +153,8 @@ optim::gd_basic_int(arma::vec& init_out_vals, std::function<double (const arma::
 
         //
 
-        d_p = gd_update(grad,grad_p,d,iter,settings.gd_method,gd_settings);
+        d_p = gd_update(x,grad,grad_p,d,box_objfn,opt_data,iter,
+                        settings.gd_method,gd_settings,adam_vec_m,adam_vec_v);
 
         x_p = x - d_p;
         grad = grad_p;
@@ -152,7 +171,8 @@ optim::gd_basic_int(arma::vec& init_out_vals, std::function<double (const arma::
 
     //
 
-    if (vals_bound) {
+    if (vals_bound)
+    {
         x_p = inv_transform(x_p, bounds_type, lower_bounds, upper_bounds);
     }
 
@@ -173,45 +193,4 @@ bool
 optim::gd(arma::vec& init_out_vals, std::function<double (const arma::vec& vals_inp, arma::vec* grad_out, void* opt_data)> opt_objfn, void* opt_data, algo_settings_t& settings)
 {
     return gd_basic_int(init_out_vals,opt_objfn,opt_data,&settings);
-}
-
-//
-// update formula
-
-arma::vec optim::gd_update(const arma::vec& grad, const arma::vec& grad_p, const arma::vec& direc, 
-                           const uint_t iter, const uint_t gd_method, gd_settings_t& gd_settings)
-{
-    arma::vec direc_out; // direction
-
-    if (gd_settings.step_decay)
-    {
-        if (iter % gd_settings.step_decay_periods == 0)
-        {
-            // printf("decay point!\n");
-            gd_settings.step_size *= gd_settings.step_decay_val;
-        }
-    }
-
-    switch (gd_method)
-    {
-        case 1: // basic
-        {
-            direc_out = gd_settings.step_size * grad_p;
-            break;
-        }
-
-        case 2: // momentum
-        {
-            direc_out = gd_settings.step_size * (gd_settings.momentum_par * direc + grad_p);
-            break;
-        }
-
-        default:
-        {
-            printf("error: unknown value for gd_method");
-            break;
-        }
-    }
-
-    return direc_out;
 }
